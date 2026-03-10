@@ -82,11 +82,12 @@
 
     /* список функцій */
     #ws-func-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
-    .function-item{background:#fff;padding:10px 12px;border-radius:8px;border-left:4px solid;display:flex;align-items:center;gap:8px;box-shadow:0 2px 5px rgba(0,0,0,0.07);}
-    .function-input{flex:1;border:none;padding:6px 8px;border-radius:4px;font-family:'Fira Code';font-size:0.88rem;background:#f0f4f8;}
+    .function-item{background:#fff;padding:8px 10px;border-radius:8px;border-left:4px solid;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 5px rgba(0,0,0,0.07);}
+    .function-item-top{display:flex;align-items:center;gap:6px;}
+    .function-input{flex:1;border:none;padding:5px 7px;border-radius:4px;font-family:'Fira Code';font-size:0.88rem;background:#f0f4f8;}
     .function-input:focus{outline:none;background:#fff;box-shadow:inset 0 0 0 2px var(--accent);}
-    .func-remove{background:none;border:none;color:#ff6b6b;cursor:pointer;font-size:18px;font-weight:bold;line-height:1;transition:0.2s;flex-shrink:0;}
-    .func-remove:hover{transform:scale(1.3);}
+    .func-remove{background:#fff0f3;border:1.5px solid #ffd0d9;color:#ff4d6d;cursor:pointer;font-size:14px;font-weight:bold;line-height:1;transition:0.2s;flex-shrink:0;border-radius:5px;padding:3px 7px;}
+    .func-remove:hover{background:#ff4d6d;color:#fff;}
     .add-func-btn{padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:0.3s;margin-top:auto;}
     .add-func-btn:hover{background:var(--blue);}
     .graph-controls{display:flex;flex-direction:column;gap:8px;}
@@ -259,7 +260,10 @@
             <div id="ws-panel-func">
               <h3>📈 Функції</h3>
               <div id="ws-func-list"></div>
-              <button class="add-func-btn" onclick="addFunction()">+ Додати функцію</button>
+              <div style="display:flex;gap:6px;margin-top:8px;">
+                <button class="add-func-btn" style="flex:1;" onclick="addFunction()">+ Додати</button>
+                <button class="add-func-btn" style="flex:1;background:#ff4d6d;" onclick="clearAllFunctions()">🗑 Всі</button>
+              </div>
               <div class="graph-controls" style="margin-top:8px;">
                 <button class="reset-btn" onclick="resetView()">🔄 Скинути вигляд</button>
                 <button class="reset-btn" onclick="autoScale()">🔍 Авто-масштаб</button>
@@ -585,8 +589,7 @@ function initOrResizeCanvas(){
       const wx=(e.offsetX-offsetX)/scale, wy=(offsetY-e.offsetY)/scale;
       for(let i=wsObjs.length-1;i>=0;i--){
         if(wsObjs[i].type==='note'&&wsObjHit(wsObjs[i],wx,wy)){
-          const t=prompt('Редагувати нотатку:',wsObjs[i].text);
-          if(t!==null){wsObjs[i].text=t;draw();wsSave();}return;
+          wsInlineEdit(wsObjs[i],e.clientX,e.clientY);return;
         }
       }
     });
@@ -718,14 +721,22 @@ function wsDrawObj(o){
     const a=o.a*S,b=o.b*S,hh=o.h*S,off=(a-b)/2;
     ctx.beginPath();ctx.moveTo(sx-a/2,sy+hh/2);ctx.lineTo(sx+a/2,sy+hh/2);ctx.lineTo(sx+a/2-off,sy-hh/2);ctx.lineTo(sx-a/2+off,sy-hh/2);ctx.closePath();ctx.fill();ctx.stroke();
   } else if(o.type==='note'){
-    const nw=Math.max(120,ctx.measureText(o.text).width+24);
-    const nh=50;
+    const nw=Math.max(120,(o.fontSize||13)*o.text.length*0.6+24);
+    const nh=(o.fontSize||13)+20;
     ctx.shadowBlur=0;
-    ctx.fillStyle=o.color||'#fffde7';
-    ctx.strokeStyle=sel?'#00d4ff':'#ffe082';
-    ctx.lineWidth=sel?2.5:1.5;
-    ctx.beginPath();ctx.roundRect(sx-nw/2,sy-nh/2,nw,nh,8);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#3e2700';ctx.font='12px Roboto,sans-serif';
+    // прозорий фон або кольоровий якщо вибрано
+    if(o.color&&o.color!=='transparent'){
+      ctx.fillStyle=o.color;
+      ctx.globalAlpha=0.75;
+      ctx.beginPath();ctx.roundRect(sx-nw/2,sy-nh/2,nw,nh,6);ctx.fill();
+      ctx.globalAlpha=1;
+    }
+    if(sel){
+      ctx.strokeStyle='#00d4ff';ctx.lineWidth=2;
+      ctx.beginPath();ctx.roundRect(sx-nw/2,sy-nh/2,nw,nh,6);ctx.stroke();
+    }
+    ctx.fillStyle=o.textColor||'#1a3e7c';
+    ctx.font=`${o.bold?'bold ':''}${o.fontSize||13}px Roboto,sans-serif`;
     ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(o.text,sx,sy);
   }
@@ -784,15 +795,18 @@ function addFunction(){
   renderFunctionList();draw();
 }
 function removeFunction(i){functions.splice(i,1);renderFunctionList();draw();}
+function clearAllFunctions(){functions=[];renderFunctionList();draw();wsSave();}
 function renderFunctionList(){
   const list=document.getElementById('ws-func-list');
   list.innerHTML='';
   functions.forEach((f,i)=>{
     const div=document.createElement('div');
     div.className='function-item';div.style.borderLeftColor=f.color;
-    div.innerHTML=`<input class="function-input" value="${f.expr}" oninput="updateFunc(${i},this.value)" title="Функція від x">
-      <input type="color" value="${f.color}" onchange="updateColor(${i},this.value)" style="width:32px;height:32px;border:none;cursor:pointer;border-radius:4px;padding:2px;">
-      <button class="func-remove" onclick="removeFunction(${i})" title="Видалити">×</button>`;
+    div.innerHTML=`<div class="function-item-top">
+      <input class="function-input" value="${f.expr}" oninput="updateFunc(${i},this.value)" title="Функція від x" placeholder="напр. sin(x)">
+      <input type="color" value="${f.color}" onchange="updateColor(${i},this.value)" style="width:28px;height:28px;border:none;cursor:pointer;border-radius:4px;padding:2px;flex-shrink:0;">
+      <button class="func-remove" onclick="removeFunction(${i})" title="Видалити">✕</button>
+    </div>`;
     list.appendChild(div);
   });
 }
@@ -859,6 +873,20 @@ function wsDelete(){
   wsSelId=null;wsCloseProps();draw();wsSave();
 }
 
+function wsInlineEdit(o,cx,cy){
+  const existing=document.getElementById('ws-inline-input');
+  if(existing) existing.remove();
+  const inp=document.createElement('input');
+  inp.id='ws-inline-input';
+  inp.value=o.text;
+  inp.style.cssText=`position:fixed;left:${cx-80}px;top:${cy-16}px;width:200px;padding:6px 10px;font-size:${o.fontSize||13}px;font-family:Roboto,sans-serif;border:2px solid #00d4ff;border-radius:8px;background:#fff;color:#1a3e7c;box-shadow:0 4px 16px rgba(0,0,0,0.18);z-index:9999;outline:none;`;
+  document.body.appendChild(inp);
+  inp.focus();inp.select();
+  const finish=()=>{o.text=inp.value||o.text;inp.remove();draw();wsSave();};
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='Escape')finish();});
+  inp.addEventListener('blur',finish);
+}
+
 // ─── PROPS PANEL ───
 function wsCloseProps(){
   document.getElementById('ws-props').classList.remove('open');
@@ -869,16 +897,35 @@ function wsShowProps(o){
   document.getElementById('ws-props-title').textContent=wsShapeNames[o.type]||'Нотатка';
   const body=document.getElementById('ws-props-body');
   if(o.type==='note'){
-    body.innerHTML=`<div class="ws-prop-lbl">Текст (подв. клік — редагувати)</div>
-      <div class="ws-prop-lbl" style="margin-top:8px;">Колір фону</div>
-      <div class="ws-color-row">${['#fffde7','#e8f5e9','#e3f2fd','#fce4ec','#f3e5f5','#fff8e1'].map(c=>
-        `<div class="ws-cdot" style="background:${c};" onclick="wsPropColor(${o.id},'${c}')"></div>`).join('')}</div>
+    body.innerHTML=`
+      <div class="ws-prop-lbl">Текст</div>
+      <input value="${o.text.replace(/"/g,'&quot;')}" oninput="wsPropNoteText(${o.id},this.value)" style="width:100%;padding:7px 9px;border-radius:7px;border:1.5px solid #b3d9ff;font-size:13px;margin-bottom:6px;box-sizing:border-box;">
+      <div class="ws-prop-lbl">Розмір шрифту</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <input type="range" min="10" max="36" value="${o.fontSize||13}" oninput="wsPropNote(${o.id},'fontSize',+this.value);document.getElementById('nfs${o.id}').textContent=this.value+'px'" style="flex:1;">
+        <span id="nfs${o.id}" style="font-size:12px;color:#6a8ab0;min-width:32px;">${o.fontSize||13}px</span>
+      </div>
+      <div class="ws-prop-lbl">Колір тексту</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+        ${['#1a3e7c','#000','#fff','#ff4d6d','#ff9800','#00a0c0'].map(c=>`<div class="ws-cdot" style="background:${c};border:2px solid #b3d9ff;" onclick="wsPropNote(${o.id},'textColor','${c}')"></div>`).join('')}
+        <input type="color" value="${o.textColor||'#1a3e7c'}" onchange="wsPropNote(${o.id},'textColor',this.value)" style="width:22px;height:22px;border-radius:50%;border:2px solid #b3d9ff;cursor:pointer;padding:0;">
+      </div>
+      <div class="ws-prop-lbl">Фон нотатки</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">
+        <div class="ws-cdot" style="background:transparent;border:2px dashed #b3d9ff;" onclick="wsPropNote(${o.id},'color','transparent')" title="Прозорий"></div>
+        ${['#fffde7','#e8f5e9','#e3f2fd','#fce4ec','#f3e5f5'].map(c=>`<div class="ws-cdot" style="background:${c};" onclick="wsPropNote(${o.id},'color','${c}')"></div>`).join('')}
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#6a8ab0;margin-bottom:10px;">
+        <input type="checkbox" ${o.bold?'checked':''} onchange="wsPropNote(${o.id},'bold',this.checked)"> Жирний текст
+      </label>
       <button class="ws-prop-delbtn" onclick="wsDelete()">🗑 Видалити</button>`;
     return;
   }
   const info=wsCalcInfo(o);
-  body.innerHTML=`<div class="ws-prop-lbl">Параметри</div>
-    ${info.params.map(p=>`<div class="ws-prop-row"><span>${p.l}</span><span>${p.v}</span></div>`).join('')}
+  // size controls per shape type
+  const sizeControls=wsGetSizeControls(o);
+  body.innerHTML=`<div class="ws-prop-lbl">Розмір</div>
+    ${sizeControls}
     <div class="ws-prop-lbl" style="margin-top:8px;">Обчислення</div>
     <div class="ws-prop-calc">${info.calcs.join('<br>')}</div>
     <div class="ws-prop-lbl" style="margin-top:8px;">Колір</div>
@@ -887,6 +934,33 @@ function wsShowProps(o){
     <button class="ws-prop-delbtn" onclick="wsDelete()">🗑 Видалити</button>`;
 }
 function wsPropColor(id,c){const o=wsObjs.find(o=>o.id===id);if(o){o.color=c;draw();wsSave();wsShowProps(o);}}
+function wsPropNote(id,key,val){const o=wsObjs.find(o=>o.id===id);if(o){o[key]=val;draw();wsSave();}}
+function wsPropNoteText(id,val){const o=wsObjs.find(o=>o.id===id);if(o){o.text=val;draw();wsSave();}}
+
+function wsGetSizeControls(o){
+  const sl=(key,label,min,max,val)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+    <span style="font-size:11px;color:#6a8ab0;min-width:40px;">${label}</span>
+    <input type="range" min="${min}" max="${max}" step="0.1" value="${val}" oninput="wsPropSize(${o.id},'${key}',+this.value);document.getElementById('sv${o.id}${key}').textContent=Math.round(this.value*10)/10" style="flex:1;">
+    <span id="sv${o.id}${key}" style="font-size:11px;color:#1a3e7c;min-width:30px;">${Math.round(val*10)/10}</span>
+  </div>`;
+  if(o.type==='circle') return sl('r','r',0.5,15,o.r);
+  if(o.type==='rectangle') return sl('a','a',0.5,15,o.a)+sl('b','b',0.5,15,o.b);
+  if(o.type==='square') return sl('a','a',0.5,15,o.a);
+  if(o.type==='triangle') return sl('a','a',0.5,15,o.a)+sl('b','b',0.5,15,o.b)+sl('c','c',0.5,15,o.c);
+  if(o.type==='rhombus') return sl('d1','d₁',0.5,15,o.d1)+sl('d2','d₂',0.5,15,o.d2);
+  if(o.type==='trapezoid') return sl('a','a',0.5,15,o.a)+sl('b','b',0.5,15,o.b)+sl('h','h',0.5,10,o.h);
+  return '';
+}
+function wsPropSize(id,key,val){
+  const o=wsObjs.find(o=>o.id===id);
+  if(!o)return;
+  o[key]=val;
+  // оновити обчислення в панелі
+  const info=wsCalcInfo(o);
+  const el=document.querySelector('.ws-prop-calc');
+  if(el) el.innerHTML=info.calcs.join('<br>');
+  draw();wsSave();
+}
 
 function wsCalcInfo(o){
   const R=v=>Math.round(v*100)/100;
