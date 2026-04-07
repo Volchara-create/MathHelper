@@ -269,7 +269,7 @@ function drawGrid(){
   // draw functions
   functions.forEach(f=>{
     const expr=parseExpr(f.expr);
-    let fn; try{fn=new Function('x',`"use strict"; return ${expr};`);}catch{return;}
+    let fn; try{fn=new Function('x',`"use strict"; const ctg=t=>1/Math.tan(t); return ${expr};`);}catch{return;}
     ctx.beginPath();ctx.strokeStyle=f.color;ctx.lineWidth=2.5;ctx.lineJoin='round';
     let prevY=null,prevValid=false;
     for(let px=0;px<=w;px++){
@@ -592,7 +592,7 @@ function autoScale(){scale=canvas.width/20;offsetX=canvas.width/2;offsetY=canvas
 // ─── EXPRESSION PARSER ───
 function parseExpr(expr){
   return expr.replace(/\^/g,'**').replace(/\bsin\b/g,'Math.sin').replace(/\bcos\b/g,'Math.cos')
-    .replace(/\btan\b/g,'Math.tan').replace(/\bctg\b/g,'(1/Math.tan')
+    .replace(/\btan\b/g,'Math.tan')
     .replace(/\blog\b/g,'Math.log10').replace(/\bln\b/g,'Math.log')
     .replace(/\bsqrt\b/g,'Math.sqrt').replace(/\babs\b/g,'Math.abs')
     .replace(/\bπ\b/g,'Math.PI').replace(/\bpi\b/g,'Math.PI').replace(/\be\b/g,'Math.E');
