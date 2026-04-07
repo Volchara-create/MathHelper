@@ -600,20 +600,48 @@ function parseExpr(expr){
 
 // ===== КАЛЬКУЛЯТОР =====
 let ccExpr='';
+let ccFreshResult=false; // after = next digit starts fresh
+
 function wsCalcOpen(){document.getElementById('ws-calc').classList.add('open');}
 function wsCalcClose(){document.getElementById('ws-calc').classList.remove('open');}
 document.getElementById('ws-calc').addEventListener('click',e=>{if(e.target===document.getElementById('ws-calc'))wsCalcClose();});
-function ccIn(v){ccExpr+=v;document.getElementById('cc-expr').textContent=ccExpr;}
-function ccFn(v){ccExpr+=v;document.getElementById('cc-expr').textContent=ccExpr;}
-function ccClear(){ccExpr='';document.getElementById('cc-expr').textContent='';document.getElementById('cc-res').textContent='0';}
-function ccBack(){ccExpr=ccExpr.slice(0,-1);document.getElementById('cc-expr').textContent=ccExpr;}
+
+function ccUpdateDisplay(){
+  document.getElementById('cc-res').textContent=ccExpr||'0';
+}
+function ccIn(v){
+  if(ccFreshResult){ccExpr='';ccFreshResult=false;}
+  ccExpr+=v;
+  ccUpdateDisplay();
+}
+function ccFn(v){
+  if(ccFreshResult) ccFreshResult=false;
+  ccExpr+=v;
+  ccUpdateDisplay();
+}
+function ccClear(){
+  ccExpr='';ccFreshResult=false;
+  document.getElementById('cc-expr').textContent='';
+  document.getElementById('cc-res').textContent='0';
+}
+function ccBack(){
+  if(ccFreshResult){ccClear();return;}
+  ccExpr=ccExpr.slice(0,-1);
+  ccUpdateDisplay();
+}
 function ccEval(){
   try{
-    const res=Function('"use strict";return ('+ccExpr.replace(/\^/g,'**')+')')();
+    const raw=ccExpr.replace(/\^/g,'**');
+    const res=Function('"use strict";return ('+raw+')')();
+    document.getElementById('cc-expr').textContent=ccExpr+' =';
     document.getElementById('cc-res').textContent=isFinite(res)?Math.round(res*1e10)/1e10:'Помилка';
     ccExpr=isFinite(res)?String(Math.round(res*1e10)/1e10):'';
+    ccFreshResult=true;
+  }catch{
     document.getElementById('cc-expr').textContent='';
-  }catch{document.getElementById('cc-res').textContent='Помилка';}
+    document.getElementById('cc-res').textContent='Помилка';
+    ccExpr='';ccFreshResult=true;
+  }
 }
 
 // ===== ЗАДАЧІ (оригінал) =====
