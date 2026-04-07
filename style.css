@@ -1,0 +1,157 @@
+    :root{--blue:#1a3e7c;--blue-light:#e6f0ff;--accent:#00d4ff;--text:#0d2340;}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Roboto',sans-serif;}
+    html{height:100%;}
+    body{background:#f0f4f8;color:var(--text);min-height:100%;display:flex;flex-direction:column;}
+    header{background:var(--blue);color:#fff;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
+    .logo{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent);}
+    nav button{background:none;border:none;color:#fff;font-size:15px;margin-left:16px;cursor:pointer;font-weight:600;transition:.3s;padding:6px 10px;border-radius:6px;}
+    nav button:hover{background:var(--accent);color:var(--blue);}
+    main{padding:30px 40px;max-width:1200px;margin:auto;flex:1;width:100%;}
+    section{display:none;}
+    section.active{display:block;}
+    .category-row{display:none;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:30px;}
+    .category-card{flex:0 0 calc(16% - 12px);background:var(--blue-light);border-radius:12px;padding:14px;box-shadow:0 3px 8px rgba(0,0,0,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;transition:0.3s;font-weight:600;color:var(--text);min-width:130px;}
+    .category-card:hover{background:var(--accent);color:#fff;transform:translateY(-3px);}
+    .formula-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;justify-content:center;align-items:center;overflow-y:auto;}
+    .formula-modal.active{display:flex;}
+    .formula-modal-content{background:#fff;padding:30px;border-radius:12px;max-width:700px;width:90%;max-height:90vh;overflow-y:auto;margin:20px auto;}
+    .formula-modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:2px solid var(--blue);padding-bottom:15px;}
+    .formula-modal-header h2{color:var(--blue);margin:0;}
+    .formula-modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:#999;}
+    .formula-modal-close:hover{color:var(--blue);}
+    .formula-display{background:var(--blue-light);padding:15px;border-radius:8px;margin-bottom:20px;font-size:1.4rem;text-align:center;font-family:'Fira Code',monospace;color:var(--text);}
+    .formula-svg{width:100%;max-width:300px;margin:20px auto;display:block;background:#f9f9f9;padding:15px;border-radius:8px;}
+    .formula-table{width:100%;border-collapse:collapse;margin:20px 0;}
+    .formula-table th,.formula-table td{padding:12px;text-align:left;border-bottom:1px solid #e6f0ff;}
+    .formula-table th{background:var(--blue);color:#fff;font-weight:600;}
+    .formula-table tr:hover{background:#f5f5f5;}
+    .category-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1500;justify-content:center;align-items:center;overflow-y:auto;}
+    .category-modal.active{display:flex;}
+    .category-modal-content{background:#fff;padding:30px;border-radius:12px;max-width:900px;width:90%;max-height:80vh;overflow-y:auto;margin:20px auto;position:relative;}
+    .category-modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;border-bottom:2px solid var(--blue);padding-bottom:15px;position:relative;}
+    .category-modal-header h2{color:var(--blue);margin:0;position:absolute;left:50%;transform:translateX(-50%);font-size:1.8rem;}
+    .category-modal-close{background:var(--accent);border:none;font-size:20px;cursor:pointer;color:#fff;width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:0.3s;position:relative;z-index:1;margin-left:auto;}
+    .category-modal-close:hover{background:var(--blue);transform:rotate(90deg);}
+    .formulas-in-modal{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+    .formula-in-modal-item{background:#eaf3ff;padding:15px;border-radius:10px;cursor:pointer;transition:0.3s;flex:1 1 calc(50% - 12px);min-width:200px;}
+    .formula-in-modal-item:hover{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);transform:translateY(-2px);}
+    .formula-in-modal-title{font-family:'Fira Code',monospace;font-size:1.1rem;color:var(--blue);margin-bottom:8px;font-weight:600;}
+    .formula-in-modal-expr{font-family:'Fira Code',monospace;font-size:0.95rem;color:var(--text);}
+
+    /* ===== WORKSPACE (замість графіка) ===== */
+    #graph{padding:0;}
+    .graph-container{display:flex;gap:0;height:calc(100vh - 130px);min-height:500px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;}
+
+    /* ліва панель інструментів */
+    .ws-toolbar{flex:0 0 64px;background:var(--blue-light);border-right:2px solid #b3d9ff;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;overflow-y:auto;}
+    .ws-tbtn{width:50px;height:50px;border:none;background:transparent;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:18px;color:#4a6fa0;transition:.2s;position:relative;}
+    .ws-tbtn:hover{background:#fff;color:var(--blue);}
+    .ws-tbtn.active{background:var(--blue);color:var(--accent);}
+    .ws-tbtn span{font-size:8px;font-weight:700;letter-spacing:.3px;}
+    .ws-tbtn::after{content:attr(data-tip);position:absolute;left:58px;top:50%;transform:translateY(-50%);background:var(--blue);color:#fff;font-size:11px;padding:4px 9px;border-radius:6px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:999;font-family:'Roboto',sans-serif;}
+    .ws-tbtn:hover::after{opacity:1;}
+    .ws-divider{width:36px;height:1px;background:#b3d9ff;margin:3px 0;flex-shrink:0;}
+
+    /* бічна панель (функції / фігури) */
+    .ws-side{flex:0 0 0;background:var(--blue-light);border-right:2px solid #b3d9ff;overflow:hidden;transition:flex-basis .22s ease;display:flex;flex-direction:column;}
+    .ws-side.open{flex:0 0 240px;}
+    .ws-side-inner{width:240px;padding:16px;display:flex;flex-direction:column;gap:10px;height:100%;overflow-y:auto;}
+    .ws-side-inner h3{color:var(--blue);font-size:1rem;margin-bottom:4px;}
+
+    /* список функцій */
+    #ws-func-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+    .function-item{background:#fff;padding:8px 10px;border-radius:8px;border-left:4px solid;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 5px rgba(0,0,0,0.07);}
+    .function-item-top{display:flex;align-items:center;gap:6px;}
+    .function-input{flex:1;border:none;padding:5px 7px;border-radius:4px;font-family:'Fira Code';font-size:0.88rem;background:#f0f4f8;}
+    .function-input:focus{outline:none;background:#fff;box-shadow:inset 0 0 0 2px var(--accent);}
+    .func-remove{background:#fff0f3;border:1.5px solid #ffd0d9;color:#ff4d6d;cursor:pointer;font-size:14px;font-weight:bold;line-height:1;transition:0.2s;flex-shrink:0;border-radius:5px;padding:3px 7px;}
+    .func-remove:hover{background:#ff4d6d;color:#fff;}
+    .add-func-btn{padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;transition:0.3s;margin-top:auto;}
+    .add-func-btn:hover{background:var(--blue);}
+    .graph-controls{display:flex;flex-direction:column;gap:8px;}
+    .reset-btn{padding:9px;border:none;border-radius:6px;cursor:pointer;font-weight:600;background:var(--blue);color:#fff;transition:0.3s;font-size:0.9rem;}
+    .reset-btn:hover{background:#0d2340;}
+
+    /* кнопки вибору типу фігури */
+    .ws-shape-btn{width:100%;padding:9px 12px;margin-bottom:5px;background:#fff;border:1.5px solid #b3d9ff;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);text-align:left;transition:.2s;}
+    .ws-shape-btn:hover{background:var(--accent);color:var(--blue);border-color:var(--accent);}
+
+    /* форма параметрів фігури */
+    .ws-shape-field{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+    .ws-shape-field label{font-size:10px;font-weight:700;color:#6a8ab0;text-transform:uppercase;letter-spacing:.5px;}
+    .ws-shape-field input{border:1.5px solid #b3d9ff;border-radius:6px;padding:7px 10px;font-family:'Fira Code',monospace;font-size:13px;outline:none;}
+    .ws-shape-field input:focus{border-color:var(--accent);}
+    .ws-back-btn{background:none;border:none;cursor:pointer;color:#6a8ab0;font-size:13px;margin-bottom:8px;padding:0;text-align:left;}
+    .ws-back-btn:hover{color:var(--blue);}
+
+    /* канвас */
+    .canvas-wrapper{flex:1;position:relative;background:#fff;overflow:hidden;}
+    #graph-canvas{display:block;cursor:default;}
+    .canvas-info{position:absolute;bottom:10px;right:10px;background:rgba(26,62,124,0.88);color:#fff;padding:6px 12px;border-radius:6px;font-size:0.85rem;font-family:'Fira Code';pointer-events:none;}
+    .graph-hint{position:absolute;top:10px;left:10px;background:rgba(0,212,255,0.15);color:var(--blue);padding:6px 12px;border-radius:6px;font-size:0.8rem;pointer-events:none;border:1px solid rgba(0,212,255,0.4);}
+
+    /* права панель властивостей */
+    .ws-props{flex:0 0 0;background:#fff;border-left:2px solid #b3d9ff;overflow:hidden;transition:flex-basis .22s ease;display:flex;flex-direction:column;}
+    .ws-props.open{flex:0 0 230px;}
+    .ws-props-inner{width:230px;display:flex;flex-direction:column;height:100%;}
+    .ws-props-head{padding:12px 14px;border-bottom:1.5px solid #b3d9ff;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--blue);font-size:13px;flex-shrink:0;}
+    .ws-props-head button{background:none;border:none;font-size:18px;cursor:pointer;color:#aaa;}
+    .ws-props-head button:hover{color:#ff4d6d;}
+    .ws-props-body{padding:12px 14px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:9px;}
+    .ws-prop-lbl{font-size:10px;font-weight:700;color:#6a8ab0;text-transform:uppercase;letter-spacing:.6px;}
+    .ws-prop-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--blue-light);font-size:12px;}
+    .ws-prop-row span:first-child{color:#6a8ab0;}
+    .ws-prop-row span:last-child{font-family:'Fira Code',monospace;font-weight:600;}
+    .ws-prop-calc{background:var(--blue-light);border-radius:7px;padding:9px 12px;font-family:'Fira Code',monospace;font-size:12px;line-height:1.9;}
+    .ws-color-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+    .ws-cdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:.15s;flex-shrink:0;}
+    .ws-cdot:hover{border-color:var(--blue);transform:scale(1.15);}
+    .ws-prop-delbtn{width:100%;padding:9px;border:1.5px solid #ffd0d9;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;background:#fff0f3;color:#ff4d6d;transition:.18s;margin-top:4px;}
+    .ws-prop-delbtn:hover{background:#ff4d6d;color:#fff;}
+
+    /* Tasks */
+    .task-card{background:#fff;border-radius:12px;padding:25px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);border-left:5px solid var(--blue);}
+    .task-question{font-size:1.2rem;color:var(--text);margin-bottom:15px;font-weight:600;}
+    .task-answer{background:var(--blue-light);padding:20px;border-radius:8px;margin-top:15px;display:none;}
+    .task-answer.show{display:block;animation:fadeIn 0.3s;}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    .task-answer h4{color:var(--blue);margin-bottom:10px;}
+    .task-answer p{margin-bottom:8px;line-height:1.6;}
+    .show-answer-btn{background:var(--accent);color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:600;transition:0.3s;margin-right:10px;}
+    .show-answer-btn:hover{background:var(--blue);}
+    .new-task-btn{background:var(--blue);color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:600;transition:0.3s;}
+    .new-task-btn:hover{background:#0d2340;}
+    .answer-input{width:100%;padding:12px;border:2px solid #b3d9ff;border-radius:6px;font-size:1rem;margin:15px 0;}
+    .check-btn{background:#4CAF50;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:600;transition:0.3s;}
+    .check-btn:hover{background:#45a049;}
+    .result-message{padding:15px;border-radius:6px;margin-top:15px;font-weight:600;display:none;}
+    .result-message.correct{background:#d4edda;color:#155724;border:2px solid #c3e6cb;display:block;}
+    .result-message.incorrect{background:#f8d7da;color:#721c24;border:2px solid #f5c6cb;display:block;}
+
+    /* Home & About */
+    #home-content{text-align:center;padding:60px 20px;}
+    #home-content h1{font-size:3rem;color:var(--blue);margin-bottom:20px;font-family:'Orbitron',sans-serif;}
+    #home-content p{font-size:1.2rem;color:var(--text);margin-bottom:16px;line-height:1.8;}
+    #about-content{padding:40px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+    #about-content h2{color:var(--blue);margin-bottom:20px;font-size:2rem;}
+    #about-content p{font-size:1.1rem;line-height:1.8;color:var(--text);margin-bottom:15px;}
+    .socials{display:flex;gap:20px;justify-content:center;margin-top:20px;}
+    .socials a{text-decoration:none;display:inline-block;transition:transform 0.3s;}
+    .socials img{width:40px;height:40px;display:block;transition:transform 0.3s;}
+    .socials a:hover img{transform:scale(1.2);}
+    footer{text-align:center;padding:16px;background:var(--blue);color:#fff;border-top:2px solid var(--accent);margin-top:auto;}
+
+    /* калькулятор */
+    .ws-calc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:3000;align-items:center;justify-content:center;}
+    .ws-calc-overlay.open{display:flex;}
+    .ws-calc-box{background:#fff;border-radius:18px;padding:22px;width:310px;box-shadow:0 20px 60px rgba(26,62,124,0.25);}
+    .ws-calc-disp{background:var(--blue);border-radius:12px;padding:18px 20px;margin-bottom:14px;text-align:right;}
+    .ws-calc-expr{font-family:'Fira Code',monospace;font-size:13px;color:rgba(255,255,255,0.65);min-height:18px;}
+    .ws-calc-res{font-family:'Fira Code',monospace;font-size:34px;color:#fff;font-weight:700;word-break:break-all;}
+    .ws-calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+    .ccbtn{padding:13px 0;border:none;border-radius:9px;cursor:pointer;font-size:14px;font-weight:600;font-family:'Roboto',sans-serif;transition:.13s;background:var(--blue-light);color:var(--text);}
+    .ccbtn:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(26,62,124,0.13);}
+    .ccbtn.op{background:#e8f4ff;color:var(--blue);}
+    .ccbtn.eq{background:var(--blue);color:var(--accent);grid-column:span 2;}
+    .ccbtn.fn{background:#f0f0f0;color:#555;font-size:11px;}
+    .ccbtn.cl{background:#fff0f3;color:#ff4d6d;}
