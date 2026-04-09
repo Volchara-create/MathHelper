@@ -664,33 +664,58 @@ const tasks=[
 {q:"Знайдіть діагональ прямокутника зі сторонами 6 см і 8 см.",answer:"10",steps:["Формула: d = √(a² + b²)","d = √(36 + 64) = √100 = 10 см"]},
 {q:"Сторона квадрата дорівнює 7 см. Знайдіть його площу.",answer:"49",steps:["Формула: S = a²","S = 7² = 49 см²"]}
 ];
-let currentTask=null;
+// Shuffle array (Fisher-Yates)
+function shuffleArr(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+let taskPool=[];
+let taskIndex=0;
+
 function loadRandomTask(){
-  currentTask=tasks[Math.floor(Math.random()*tasks.length)];
+  // Reshuffle when pool exhausted
+  if(taskIndex>=taskPool.length){
+    taskPool=shuffleArr(tasks);
+    taskIndex=0;
+  }
+  const t=taskPool[taskIndex++];
+  const id='task_'+Date.now();
   document.getElementById('tasks-list').innerHTML=`
-    <div class="task-card">
-      <div class="task-question">📝 ${currentTask.q}</div>
-      <input type="text" class="answer-input" id="user-answer" placeholder="Введіть числову відповідь">
-      <div>
-        <button class="check-btn" onclick="checkAnswer()">✅ Перевірити</button>
-        <button class="show-answer-btn" onclick="toggleAnswer()">📚 Розв'язання</button>
-        <button class="new-task-btn" onclick="loadRandomTask()">🔄 Нова задача</button>
+    <div class="task-progress">Задача ${taskIndex} з ${tasks.length} (перемішано)</div>
+    <div class="task-card" id="${id}">
+      <div class="task-question">📝 ${t.q}</div>
+      <input type="text" class="answer-input" id="user-answer" placeholder="Введіть числову відповідь" onkeydown="if(event.key==='Enter')checkAnswer(this,'${t.answer}','${id}')">
+      <div class="task-btns">
+        <button class="check-btn" onclick="checkAnswer(document.getElementById('user-answer'),'${t.answer}','${id}')">✅ Перевірити</button>
+        <button class="show-answer-btn" onclick="document.getElementById('ans_${id}').classList.toggle('show')">📚 Розв'язання</button>
+        <button class="new-task-btn" onclick="loadRandomTask()">🔄 Наступна</button>
       </div>
-      <div class="result-message" id="result-message"></div>
-      <div class="task-answer" id="task-answer">
+      <div class="result-message" id="res_${id}"></div>
+      <div class="task-answer" id="ans_${id}">
         <h4>📚 Розв'язання:</h4>
-        ${currentTask.steps.map((s,i)=>`<p><strong>Крок ${i+1}:</strong> ${s}</p>`).join('')}
+        ${t.steps.map((s,i)=>`<p><strong>Крок ${i+1}:</strong> ${s}</p>`).join('')}
       </div>
     </div>`;
+  document.getElementById('user-answer').focus();
 }
-function checkAnswer(){
-  const v=document.getElementById('user-answer').value.trim();
-  const r=document.getElementById('result-message');
+
+function checkAnswer(input,correct,id){
+  const v=input.value.trim();
+  const r=document.getElementById('res_'+id);
   if(!v){r.className='result-message incorrect';r.textContent='⚠️ Введіть відповідь!';return;}
-  if(v===currentTask.answer){r.className='result-message correct';r.textContent='✅ Правильно! Чудова робота!';}
-  else{r.className='result-message incorrect';r.textContent=`❌ Неправильно. Правильна відповідь: ${currentTask.answer}`;}
+  if(v===correct){
+    r.className='result-message correct';
+    r.textContent='✅ Правильно! Чудова робота! 🎉';
+    input.disabled=true;
+  }else{
+    r.className='result-message incorrect';
+    r.textContent=`❌ Неправильно. Спробуй ще раз!`;
+  }
 }
-function toggleAnswer(){document.getElementById('task-answer').classList.toggle('show');}
+
+function toggleAnswer(){document.getElementById('task-answer')?.classList.toggle('show');}
 
 // ===== DARK MODE =====
 function toggleDark(){

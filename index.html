@@ -28,22 +28,22 @@
 <body>
   <header>
     <div class="logo">
-      <svg class="logo-icon" viewBox="0 0 46 46" width="46" height="46" aria-hidden="true">
-        <!-- Ruler: rotated 45 -->
-        <g transform="rotate(45 23 23)">
-          <rect x="5" y="19" width="36" height="8" rx="2" fill="#e8f4ff" stroke="#2563eb" stroke-width="1.5"/>
-          <line x1="13" y1="19" x2="13" y2="24" stroke="#2563eb" stroke-width="1.2"/>
-          <line x1="19" y1="19" x2="19" y2="27" stroke="#2563eb" stroke-width="1.2"/>
-          <line x1="25" y1="19" x2="25" y2="24" stroke="#2563eb" stroke-width="1.2"/>
-          <line x1="31" y1="19" x2="31" y2="27" stroke="#2563eb" stroke-width="1.2"/>
+      <svg class="logo-icon" viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
+        <!-- Ruler: rotated 45, shorter -->
+        <g transform="rotate(45 25 25)">
+          <rect x="9" y="21" width="30" height="8" rx="2" fill="#e8f4ff" stroke="#2563eb" stroke-width="1.5"/>
+          <line x1="16" y1="21" x2="16" y2="26" stroke="#2563eb" stroke-width="1.2"/>
+          <line x1="22" y1="21" x2="22" y2="29" stroke="#2563eb" stroke-width="1.2"/>
+          <line x1="28" y1="21" x2="28" y2="26" stroke="#2563eb" stroke-width="1.2"/>
+          <line x1="34" y1="21" x2="34" y2="29" stroke="#2563eb" stroke-width="1.2"/>
         </g>
-        <!-- Pencil: rotated -45 -->
-        <g transform="rotate(-45 23 23)">
-          <rect x="5" y="19.5" width="6" height="7" rx="1.5" fill="#f87171" stroke="#dc2626" stroke-width="1"/>
-          <rect x="11" y="19.5" width="3" height="7" fill="#94a3b8"/>
-          <rect x="14" y="19.5" width="18" height="7" fill="#2563eb" stroke="#1d4ed8" stroke-width="1"/>
-          <polygon points="32,19.5 32,26.5 38,23" fill="#bfdbfe" stroke="#2563eb" stroke-width="1"/>
-          <polygon points="36.5,20.8 36.5,25.2 40,23" fill="#1e293b"/>
+        <!-- Pencil: rotated -45, longer -->
+        <g transform="rotate(-45 25 25)">
+          <rect x="2" y="21" width="7" height="8" rx="2" fill="#f87171" stroke="#dc2626" stroke-width="1"/>
+          <rect x="9" y="21" width="3.5" height="8" fill="#94a3b8"/>
+          <rect x="12.5" y="21" width="26" height="8" fill="#2563eb" stroke="#1d4ed8" stroke-width="1"/>
+          <polygon points="38.5,21 38.5,29 46,25" fill="#bfdbfe" stroke="#2563eb" stroke-width="1"/>
+          <polygon points="43,22.5 43,27.5 47.5,25" fill="#1e293b"/>
         </g>
       </svg>
       MathHelper
@@ -230,24 +230,79 @@
 
     <section id="trig">
       <div id="trig-content">
-        <h2>📐 Таблиця тригонометрії</h2>
-        <p class="trig-subtitle">Значення sin, cos, tan, ctg для стандартних кутів</p>
-        <div class="trig-table-wrap">
-          <table class="trig-table">
-            <thead>
-              <tr>
-                <th>Кут (°)</th><th>Кут (рад)</th>
-                <th>sin</th><th>cos</th><th>tan</th><th>ctg</th>
-              </tr>
-            </thead>
-            <tbody id="trig-tbody"></tbody>
-          </table>
-        </div>
-        <div class="trig-note-cards">
-          <div class="trig-note"><strong>📌 Формула синуса</strong>sin²α + cos²α = 1<br>Основна тригонометрична тотожність</div>
-          <div class="trig-note"><strong>📌 tan і ctg</strong>tan α = sin α / cos α<br>ctg α = cos α / sin α = 1 / tan α</div>
-          <div class="trig-note"><strong>📌 Кути у радіанах</strong>180° = π рад<br>1° = π/180 ≈ 0.01745 рад</div>
-          <div class="trig-note"><strong>📌 Знаки за чвертями</strong>I: +++ ✓&nbsp;&nbsp;II: +−−<br>III: −−+&nbsp;&nbsp;IV: −+−</div>
+        <h2>📐 Тригонометрія</h2>
+        <p class="trig-subtitle">Формули та таблиця значень sin, cos, tan, ctg</p>
+        <div class="trig-layout">
+          <!-- Formulas panel LEFT -->
+          <div class="trig-formulas-panel">
+            <h3>📋 Основні формули</h3>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Основна тотожність</div>
+              <div class="trig-formula-expr">sin²α + cos²α = 1</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">tan і ctg</div>
+              <div class="trig-formula-expr">tan α = sin α / cos α</div>
+              <div class="trig-formula-expr">ctg α = cos α / sin α</div>
+              <div class="trig-formula-expr">tan α · ctg α = 1</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Радіани</div>
+              <div class="trig-formula-expr">180° = π рад</div>
+              <div class="trig-formula-expr">1° = π/180 рад</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Формули суми кутів</div>
+              <div class="trig-formula-expr">sin(α±β) = sinα·cosβ ± cosα·sinβ</div>
+              <div class="trig-formula-expr">cos(α±β) = cosα·cosβ ∓ sinα·sinβ</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Подвійний кут</div>
+              <div class="trig-formula-expr">sin 2α = 2·sinα·cosα</div>
+              <div class="trig-formula-expr">cos 2α = cos²α − sin²α</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Пониження степеня</div>
+              <div class="trig-formula-expr">sin²α = (1 − cos 2α) / 2</div>
+              <div class="trig-formula-expr">cos²α = (1 + cos 2α) / 2</div>
+              <div class="trig-formula-expr">tan²α = (1 − cos 2α) / (1 + cos 2α)</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Формули зведення</div>
+              <div class="trig-formula-expr">sin(90°−α) = cos α</div>
+              <div class="trig-formula-expr">cos(90°−α) = sin α</div>
+              <div class="trig-formula-expr">sin(180°−α) = sin α</div>
+              <div class="trig-formula-expr">cos(180°−α) = −cos α</div>
+              <div class="trig-formula-expr">sin(−α) = −sin α</div>
+              <div class="trig-formula-expr">cos(−α) = cos α</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Теорема синусів / косинусів</div>
+              <div class="trig-formula-expr">a/sin A = b/sin B = c/sin C</div>
+              <div class="trig-formula-expr">c² = a² + b² − 2ab·cos C</div>
+            </div>
+            <div class="trig-formula-block signs-block">
+              <div class="trig-formula-title">Знаки за чвертями</div>
+              <div class="trig-quadrants">
+                <div class="trig-q trig-q2">II<br><span>sin+</span></div>
+                <div class="trig-q trig-q1">I<br><span>all+</span></div>
+                <div class="trig-q trig-q3">III<br><span>tan+</span></div>
+                <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Table RIGHT -->
+          <div class="trig-table-wrap">
+            <table class="trig-table">
+              <thead>
+                <tr>
+                  <th>Кут °</th><th>Рад</th>
+                  <th>sin</th><th>cos</th><th>tan</th><th>ctg</th>
+                </tr>
+              </thead>
+              <tbody id="trig-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>

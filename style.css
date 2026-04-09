@@ -115,6 +115,8 @@
     .ws-prop-delbtn:hover{background:#ff4d6d;color:#fff;}
 
     /* Tasks */
+    .task-progress{text-align:center;color:#6a8ab0;font-size:0.9rem;margin-bottom:12px;font-weight:600;}
+    .task-btns{display:flex;gap:10px;flex-wrap:wrap;}
     .task-card{background:#fff;border-radius:12px;padding:25px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);border-left:5px solid var(--blue);}
     .task-question{font-size:1.2rem;color:var(--text);margin-bottom:15px;font-weight:600;}
     .task-answer{background:var(--blue-light);padding:20px;border-radius:8px;margin-top:15px;display:none;}
@@ -211,25 +213,48 @@
     #dark-toggle:hover{background:rgba(255,255,255,0.1);}
 
     /* ===== TRIG TABLE ===== */
-    #trig-content{max-width:900px;margin:0 auto;}
+    #trig-content{max-width:1100px;margin:0 auto;}
     #trig-content h2{text-align:center;color:var(--blue);font-size:2rem;margin-bottom:10px;}
-    .trig-subtitle{text-align:center;color:#6a8ab0;margin-bottom:30px;font-size:1rem;}
+    .trig-subtitle{text-align:center;color:#6a8ab0;margin-bottom:24px;font-size:1rem;}
     body.dark .trig-subtitle{color:#7aa0c8;}
-    .trig-table-wrap{background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;overflow-x:auto;margin-bottom:30px;}
+
+    /* Split layout: formulas LEFT, table RIGHT */
+    .trig-layout{display:flex;gap:24px;align-items:flex-start;}
+    .trig-formulas-panel{flex:0 0 280px;display:flex;flex-direction:column;gap:12px;position:sticky;top:80px;}
+    .trig-formulas-panel h3{color:var(--blue);font-size:1.05rem;margin-bottom:4px;border-bottom:2px solid var(--accent);padding-bottom:8px;}
+    .trig-formula-block{background:#fff;border-radius:10px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.07);border-left:3px solid var(--accent);}
+    body.dark .trig-formula-block{background:#151c2a;}
+    .trig-formula-title{font-size:0.78rem;font-weight:700;color:#6a8ab0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+    .trig-formula-expr{font-family:'Fira Code',monospace;font-size:0.88rem;color:var(--text);line-height:1.8;}
+    body.dark .trig-formula-expr{color:#c8d8f0;}
+
+    /* Quadrant sign chart */
+    .trig-quadrants{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;}
+    .trig-q{background:var(--blue-light);border-radius:6px;padding:8px;text-align:center;font-weight:700;color:var(--blue);font-size:0.82rem;line-height:1.5;}
+    body.dark .trig-q{background:#1a2535;}
+    .trig-q span{font-size:0.75rem;font-weight:400;display:block;color:#6a8ab0;}
+    .trig-q1{border:2px solid #22c55e;}
+    .trig-q2{border:2px solid var(--accent);}
+    .trig-q3{border:2px solid #f59e0b;}
+    .trig-q4{border:2px solid #a78bfa;}
+
+    /* Table */
+    .trig-table-wrap{flex:1;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;overflow-x:auto;}
     body.dark .trig-table-wrap{background:#151c2a;}
     .trig-table{width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;}
-    .trig-table th{background:var(--blue);color:#fff;padding:14px 18px;text-align:center;font-size:1rem;}
-    .trig-table td{padding:13px 18px;text-align:center;border-bottom:1px solid #e6f0ff;font-size:1rem;transition:.15s;}
+    .trig-table th{background:var(--blue);color:#fff;padding:12px 14px;text-align:center;font-size:0.95rem;}
+    .trig-table td{padding:11px 14px;text-align:center;border-bottom:1px solid #e6f0ff;font-size:0.95rem;transition:.15s;}
     body.dark .trig-table td{border-color:#1e3050;}
     .trig-table tr:last-child td{border-bottom:none;}
     .trig-table tr:hover td{background:var(--blue-light);}
     .trig-table .angle-col{font-weight:700;color:var(--blue);background:var(--blue-light);}
     body.dark .trig-table .angle-col{background:#1a2535;}
     .trig-table .undef{color:#aaa;font-style:italic;}
-    .trig-note-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:10px;}
-    .trig-note{background:#fff;border-radius:10px;padding:18px 24px;box-shadow:0 3px 8px rgba(0,0,0,0.08);border-left:4px solid var(--accent);font-size:0.95rem;line-height:1.7;flex:1;min-width:220px;}
-    body.dark .trig-note{background:#151c2a;}
-    .trig-note strong{color:var(--blue);display:block;margin-bottom:6px;font-size:1rem;}
+
+    @media(max-width:700px){
+      .trig-layout{flex-direction:column;}
+      .trig-formulas-panel{flex:none;width:100%;position:static;}
+    }
 
     /* ===== QUIZ ===== */
     #quiz-content{max-width:700px;margin:0 auto;text-align:center;}
