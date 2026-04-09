@@ -71,10 +71,12 @@ function show(sec){
   if(sec==='tasks') loadRandomTask();
   if(sec==='trig') buildTrigTable();
   if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function showFormulas(){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById('category-row').style.display='flex';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function showGraph(){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
