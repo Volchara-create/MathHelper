@@ -611,7 +611,13 @@ function ccUpdateDisplay(){
   document.getElementById('cc-res').textContent=ccExpr||'0';
 }
 function ccIn(v){
-  if(ccFreshResult){ccExpr='';ccFreshResult=false;}
+  // If fresh result and user pressed an operator — continue from result
+  const isOperator = ['+','-','*','/','%'].includes(v);
+  if(ccFreshResult){
+    if(!isOperator) ccExpr=''; // digit/dot/paren → start fresh
+    ccFreshResult=false;
+    document.getElementById('cc-expr').textContent='';
+  }
   ccExpr+=v;
   ccUpdateDisplay();
 }
