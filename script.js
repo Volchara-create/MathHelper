@@ -69,6 +69,8 @@ function show(sec){
   document.getElementById(sec).classList.add('active');
   document.getElementById('category-row').style.display='none';
   if(sec==='tasks') loadRandomTask();
+  if(sec==='trig') buildTrigTable();
+  if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
 }
 function showFormulas(){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
@@ -684,3 +686,133 @@ function checkAnswer(){
   else{r.className='result-message incorrect';r.textContent=`❌ Неправильно. Правильна відповідь: ${currentTask.answer}`;}
 }
 function toggleAnswer(){document.getElementById('task-answer').classList.toggle('show');}
+
+// ===== DARK MODE =====
+function toggleDark(){
+  const dark=document.body.classList.toggle('dark');
+  document.getElementById('dark-toggle').textContent=dark?'☀️ Світла':'🌙 Темна';
+  localStorage.setItem('mathhelper-dark',dark?'1':'0');
+}
+(function(){
+  if(localStorage.getItem('mathhelper-dark')==='1'){
+    document.body.classList.add('dark');
+    const btn=document.getElementById('dark-toggle');
+    if(btn) btn.textContent='☀️ Світла';
+  }
+})();
+
+// ===== TRIG TABLE =====
+const trigData=[
+  {deg:0,  rad:'0',       sin:'0',          cos:'1',          tan:'0',           ctg:'∞'},
+  {deg:30, rad:'π/6',     sin:'1/2',         cos:'√3/2',       tan:'√3/3',        ctg:'√3'},
+  {deg:45, rad:'π/4',     sin:'√2/2',        cos:'√2/2',       tan:'1',           ctg:'1'},
+  {deg:60, rad:'π/3',     sin:'√3/2',        cos:'1/2',        tan:'√3',          ctg:'√3/3'},
+  {deg:90, rad:'π/2',     sin:'1',           cos:'0',          tan:'∞',           ctg:'0'},
+  {deg:120,rad:'2π/3',    sin:'√3/2',        cos:'-1/2',       tan:'-√3',         ctg:'-√3/3'},
+  {deg:135,rad:'3π/4',    sin:'√2/2',        cos:'-√2/2',      tan:'-1',          ctg:'-1'},
+  {deg:150,rad:'5π/6',    sin:'1/2',         cos:'-√3/2',      tan:'-√3/3',       ctg:'-√3'},
+  {deg:180,rad:'π',       sin:'0',           cos:'-1',         tan:'0',           ctg:'∞'},
+  {deg:210,rad:'7π/6',    sin:'-1/2',        cos:'-√3/2',      tan:'√3/3',        ctg:'√3'},
+  {deg:225,rad:'5π/4',    sin:'-√2/2',       cos:'-√2/2',      tan:'1',           ctg:'1'},
+  {deg:240,rad:'4π/3',    sin:'-√3/2',       cos:'-1/2',       tan:'√3',          ctg:'√3/3'},
+  {deg:270,rad:'3π/2',    sin:'-1',          cos:'0',          tan:'∞',           ctg:'0'},
+  {deg:300,rad:'5π/3',    sin:'-√3/2',       cos:'1/2',        tan:'-√3',         ctg:'-√3/3'},
+  {deg:315,rad:'7π/4',    sin:'-√2/2',       cos:'√2/2',       tan:'-1',          ctg:'-1'},
+  {deg:330,rad:'11π/6',   sin:'-1/2',        cos:'√3/2',       tan:'-√3/3',       ctg:'-√3'},
+  {deg:360,rad:'2π',      sin:'0',           cos:'1',          tan:'0',           ctg:'∞'},
+];
+function buildTrigTable(){
+  const tbody=document.getElementById('trig-tbody');
+  if(!tbody||tbody.children.length) return;
+  tbody.innerHTML=trigData.map(r=>`
+    <tr>
+      <td class="angle-col">${r.deg}°</td>
+      <td>${r.rad}</td>
+      <td>${r.sin}</td>
+      <td>${r.cos}</td>
+      <td class="${r.tan==='∞'?'undef':''}">${r.tan}</td>
+      <td class="${r.ctg==='∞'?'undef':''}">${r.ctg}</td>
+    </tr>`).join('');
+}
+
+// ===== QUIZ =====
+const quizQuestions=[
+  {q:'Яка формула площі прямокутника?',opts:['S = a + b','S = a × b','S = 2(a + b)','S = a²'],ans:1},
+  {q:'Яка формула периметру кола (довжина кола)?',opts:['C = π × r²','C = 2 × π × r','C = π × d²','C = π / r'],ans:1},
+  {q:'Яка формула площі кола?',opts:['S = π × r','S = 2πr','S = π × r²','S = πd'],ans:2},
+  {q:'Чому дорівнює sin 30°?',opts:['√3/2','1/2','√2/2','1'],ans:1},
+  {q:'Чому дорівнює cos 60°?',opts:['√3/2','√2/2','1/2','0'],ans:2},
+  {q:'Яка формула об\'єму куба?',opts:['V = a²','V = 6a²','V = a³','V = 3a'],ans:2},
+  {q:'Яка формула площі трикутника через основу і висоту?',opts:['S = a × h','S = (a × h) / 2','S = a + h','S = 2(a + h)'],ans:1},
+  {q:'Чому дорівнює tan 45°?',opts:['√3','√2/2','0','1'],ans:3},
+  {q:'Яка формула діагоналі прямокутника?',opts:['d = a + b','d = √(a + b)','d = √(a² + b²)','d = 2(a² + b²)'],ans:2},
+  {q:'Скільки градусів у прямому куті?',opts:['45°','180°','90°','60°'],ans:2},
+  {q:'Яка формула площі поверхні куба?',opts:['S = a²','S = 4a²','S = 6a²','S = 3a²'],ans:2},
+  {q:'Чому дорівнює sin 90°?',opts:['0','√2/2','1/2','1'],ans:3},
+  {q:'Яка формула об\'єму циліндра?',opts:['V = π × r × h','V = π × r² × h','V = 2πr × h','V = πr²'],ans:1},
+  {q:'Чому дорівнює cos 0°?',opts:['0','1/2','√2/2','1'],ans:3},
+  {q:'Яка формула площі ромба через діагоналі?',opts:['S = d₁ × d₂','S = (d₁ × d₂) / 2','S = d₁ + d₂','S = 4 × d'],ans:1},
+];
+
+let quizCurrent=0;
+let quizScore=0;
+let quizOrder=[];
+let quizAnswered=false;
+
+function startQuiz(){
+  quizOrder=[...quizQuestions].sort(()=>Math.random()-0.5).slice(0,10);
+  quizCurrent=0;quizScore=0;
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion(){
+  const area=document.getElementById('quiz-area');
+  if(quizCurrent>=quizOrder.length){
+    const pct=Math.round(quizScore/quizOrder.length*100);
+    const msg=pct>=80?'Відмінно! Ти справжній математик! 🏆':pct>=60?'Добре! Ще трохи практики 💪':'Не здавайся — повтори формули і спробуй ще! 📚';
+    area.innerHTML=`<div class="quiz-card quiz-result">
+      <div class="quiz-result-score">${quizScore}/${quizOrder.length}</div>
+      <div class="quiz-result-msg">${pct}% правильних<br>${msg}</div>
+      <button class="quiz-restart-btn" onclick="startQuiz()">🔄 Спробувати ще раз</button>
+    </div>`;
+    return;
+  }
+  const q=quizOrder[quizCurrent];
+  quizAnswered=false;
+  const prog=Math.round(quizCurrent/quizOrder.length*100);
+  area.innerHTML=`
+    <div class="quiz-card">
+      <div class="quiz-progress">Питання ${quizCurrent+1} / ${quizOrder.length}</div>
+      <div class="quiz-score-bar"><div class="quiz-score-fill" style="width:${prog}%"></div></div>
+      <div class="quiz-question">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((o,i)=>`<button class="quiz-opt" id="qopt${i}" onclick="quizAnswer(${i})">${String.fromCharCode(65+i)}) ${o}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="quiz-next-btn" id="quiz-next-btn" style="display:none" onclick="quizNext()">
+        ${quizCurrent+1<quizOrder.length?'Наступне питання →':'Переглянути результат'}
+      </button>
+    </div>`;
+}
+
+function quizAnswer(i){
+  if(quizAnswered) return;
+  quizAnswered=true;
+  const q=quizOrder[quizCurrent];
+  const fb=document.getElementById('quiz-feedback');
+  document.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
+  if(i===q.ans){
+    quizScore++;
+    document.getElementById('qopt'+i).classList.add('correct');
+    fb.className='quiz-feedback show-correct';
+    fb.textContent='✅ Правильно! Молодець!';
+  } else {
+    document.getElementById('qopt'+i).classList.add('wrong');
+    document.getElementById('qopt'+q.ans).classList.add('correct');
+    fb.className='quiz-feedback show-wrong';
+    fb.textContent=`❌ Неправильно. Правильна відповідь: ${String.fromCharCode(65+q.ans)}) ${q.opts[q.ans]}`;
+  }
+  document.getElementById('quiz-next-btn').style.display='inline-block';
+}
+
+function quizNext(){quizCurrent++;renderQuizQuestion();}

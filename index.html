@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MathHelper — Помічник з математики онлайн</title>
 
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
   <!-- SEO -->
   <meta name="description" content="MathHelper — безкоштовний онлайн помічник з математики. Формули геометрії, побудова графіків функцій, тренувальні задачі та інтерактивний робочий стіл. Для школярів та студентів.">
   <meta name="keywords" content="математика онлайн, формули геометрії, графік функції, помічник з математики, задачі з геометрії, площа кола, периметр, об'єм куба, тригонометрія, калькулятор">
@@ -29,7 +32,10 @@
       <button onclick="showFormulas()">Формули</button>
       <button onclick="show('tasks')">Задачі</button>
       <button onclick="showGraph()">Робочий стіл</button>
+      <button onclick="show('trig')">Тригонометрія</button>
+      <button onclick="show('quiz')">Квіз</button>
       <button onclick="show('about')">Про нас</button>
+      <button id="dark-toggle" onclick="toggleDark()">🌙 Темна</button>
     </nav>
   </header>
 
@@ -158,6 +164,44 @@
       </div>
     </section>
     <!-- /РОБОЧИЙ СТІЛ -->
+
+    <!-- AdSense banner -->
+    <div style="text-align:center;margin:10px 0;">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <section id="trig">
+      <div id="trig-content">
+        <h2>📐 Таблиця тригонометрії</h2>
+        <p class="trig-subtitle">Значення sin, cos, tan, ctg для стандартних кутів</p>
+        <div class="trig-table-wrap">
+          <table class="trig-table">
+            <thead>
+              <tr>
+                <th>Кут (°)</th><th>Кут (рад)</th>
+                <th>sin</th><th>cos</th><th>tan</th><th>ctg</th>
+              </tr>
+            </thead>
+            <tbody id="trig-tbody"></tbody>
+          </table>
+        </div>
+        <div class="trig-note-cards">
+          <div class="trig-note"><strong>📌 Формула синуса</strong>sin²α + cos²α = 1<br>Основна тригонометрична тотожність</div>
+          <div class="trig-note"><strong>📌 tan і ctg</strong>tan α = sin α / cos α<br>ctg α = cos α / sin α = 1 / tan α</div>
+          <div class="trig-note"><strong>📌 Кути у радіанах</strong>180° = π рад<br>1° = π/180 ≈ 0.01745 рад</div>
+          <div class="trig-note"><strong>📌 Знаки за чвертями</strong>I: +++ ✓&nbsp;&nbsp;II: +−−<br>III: −−+&nbsp;&nbsp;IV: −+−</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <div id="quiz-content">
+        <h2>🎮 Квіз з математики</h2>
+        <p class="quiz-subtitle">Перевір свої знання формул і задач!</p>
+        <div id="quiz-area"></div>
+      </div>
+    </section>
 
     <section id="tasks">
       <div id="tasks-content" style="max-width:800px;margin:0 auto;">
