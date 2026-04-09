@@ -1,18 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="14" fill="#1a3e7c"/>
-  <!-- Ruler diagonal \ -->
+  <!-- Ruler: rotated 45 -->
   <g transform="rotate(45 32 32)">
-    <rect x="6" y="27" width="52" height="10" rx="2.5" fill="#ddeeff" stroke="#99bbdd" stroke-width="1"/>
-    <line x1="18" y1="27" x2="18" y2="37" stroke="#88aacc" stroke-width="1.2"/>
-    <line x1="27" y1="27" x2="27" y2="37" stroke="#88aacc" stroke-width="1.2"/>
-    <line x1="36" y1="27" x2="36" y2="37" stroke="#88aacc" stroke-width="1.2"/>
-    <line x1="45" y1="27" x2="45" y2="37" stroke="#88aacc" stroke-width="1.2"/>
+    <rect x="7" y="27" width="50" height="10" rx="2.5" fill="#e8f4ff" stroke="#60a5fa" stroke-width="1.5"/>
+    <line x1="18" y1="27" x2="18" y2="33" stroke="#60a5fa" stroke-width="1.5"/>
+    <line x1="27" y1="27" x2="27" y2="37" stroke="#60a5fa" stroke-width="1.5"/>
+    <line x1="36" y1="27" x2="36" y2="33" stroke="#60a5fa" stroke-width="1.5"/>
+    <line x1="45" y1="27" x2="45" y2="37" stroke="#60a5fa" stroke-width="1.5"/>
   </g>
-  <!-- Pencil diagonal / -->
+  <!-- Pencil: rotated -45 -->
   <g transform="rotate(-45 32 32)">
-    <rect x="6" y="27" width="9" height="10" rx="2" fill="#ff8888"/>
-    <rect x="15" y="27" width="29" height="10" fill="#FFD700"/>
-    <polygon points="44,27 44,37 52,32" fill="#f0b800"/>
-    <polygon points="49.5,29 49.5,35 54,32" fill="#333"/>
+    <rect x="7" y="27" width="8" height="10" rx="2" fill="#f87171" stroke="#dc2626" stroke-width="1.2"/>
+    <rect x="15" y="27" width="4" height="10" fill="#94a3b8"/>
+    <rect x="19" y="27" width="24" height="10" fill="#3b82f6" stroke="#2563eb" stroke-width="1.2"/>
+    <polygon points="43,27 43,37 52,32" fill="#bfdbfe" stroke="#3b82f6" stroke-width="1.2"/>
+    <polygon points="49,29 49,35 55,32" fill="#1e293b"/>
   </g>
 </svg>
