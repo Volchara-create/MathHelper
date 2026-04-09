@@ -26,7 +26,22 @@
 </head>
 <body>
   <header>
-    <div class="logo">MathHelper</div>
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 40 40" width="38" height="38" aria-hidden="true">
+        <!-- Coordinate axes -->
+        <line x1="4" y1="20" x2="36" y2="20" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="20" y1="4" x2="20" y2="36" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        <!-- Arrow heads -->
+        <polyline points="33,17 36,20 33,23" fill="none" stroke="#00d4ff" stroke-width="1.8" stroke-linejoin="round"/>
+        <polyline points="17,7 20,4 23,7" fill="none" stroke="#00d4ff" stroke-width="1.8" stroke-linejoin="round"/>
+        <!-- Sine wave / function graph -->
+        <path d="M5,20 Q9,10 14,20 Q19,30 24,20 Q29,10 35,20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <!-- Tick marks -->
+        <line x1="14" y1="18" x2="14" y2="22" stroke="#00d4ff" stroke-width="1.2"/>
+        <line x1="26" y1="18" x2="26" y2="22" stroke="#00d4ff" stroke-width="1.2"/>
+      </svg>
+      MathHelper
+    </div>
     <nav>
       <button onclick="show('home')">Головна</button>
       <button onclick="showFormulas()">Формули</button>
@@ -93,8 +108,6 @@
           <div class="ws-divider"></div>
           <button class="ws-tbtn" id="wt-note" data-tip="Нотатка" onclick="wsAddNote()">📝<span>Нотатка</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-calc" data-tip="Калькулятор" onclick="wsCalcOpen()">🧮<span>Калк.</span></button>
-          <div class="ws-divider"></div>
           <button class="ws-tbtn" id="wt-del" data-tip="Видалити" onclick="wsDelete()" style="color:#ff4d6d;">🗑<span>Видал.</span></button>
           <div class="ws-divider"></div>
           <button class="ws-tbtn" data-tip="Скинути вигляд" onclick="resetView()">↺<span>Скинути</span></button>
@@ -114,7 +127,6 @@
               </div>
               <div class="graph-controls" style="margin-top:8px;">
                 <button class="reset-btn" onclick="resetView()">🔄 Скинути вигляд</button>
-                <button class="reset-btn" onclick="autoScale()">🔍 Авто-масштаб</button>
               </div>
             </div>
 
@@ -146,6 +158,10 @@
         <!-- Канвас (координатна площина) -->
         <div class="canvas-wrapper" id="canvas-wrapper">
           <canvas id="graph-canvas"></canvas>
+          <div class="canvas-quick-bar">
+            <button class="canvas-quick-btn" onclick="autoScale()" title="Авто-масштаб">🔍 Масштаб</button>
+            <button class="canvas-quick-btn" onclick="wsCalcOpen()" title="Калькулятор">🧮 Калк.</button>
+          </div>
           <div class="canvas-info" id="canvas-info">x: 0.00 | y: 0.00</div>
           <div class="graph-hint">🖱 Прокрутка — масштаб &nbsp;|&nbsp; Перетягування — переміщення &nbsp;|&nbsp; Клік на фігуру — властивості</div>
         </div>
