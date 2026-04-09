@@ -92,7 +92,7 @@ function wsToggleNotebook(){
   nb.classList.toggle('open');
   const btn=document.getElementById('wt-notebook');
   if(btn) btn.classList.toggle('active',nb.classList.contains('open'));
-  requestAnimationFrame(initOrResizeCanvas);
+  // ResizeObserver handles canvas resize automatically
 }
 
 // ===== МОДАЛКИ ФОРМУЛ (оригінал) =====
@@ -148,6 +148,15 @@ function initOrResizeCanvas(){
     functions=[{expr:'sin(x)',color:'#1a3e7c'}];
     renderFunctionList();
     wsLoadState();
+
+    // Auto-resize canvas whenever the wrapper changes size (notebook open/close, window resize)
+    new ResizeObserver(()=>{
+      const w=wrapper.clientWidth, h=wrapper.clientHeight;
+      if(w>0 && h>0 && (canvas.width!==w || canvas.height!==h)){
+        canvas.width=w; canvas.height=h;
+        draw();
+      }
+    }).observe(wrapper);
 
     // zoom
     canvas.addEventListener('wheel',e=>{
