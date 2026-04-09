@@ -80,7 +80,17 @@ function showGraph(){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById('graph').classList.add('active');
   document.getElementById('category-row').style.display='none';
+  // Open notebook by default
+  const nb=document.getElementById('ws-notebook');
+  if(!nb.classList.contains('open')){nb.classList.add('open');const btn=document.getElementById('wt-notebook');if(btn)btn.classList.add('active');}
   requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
+}
+function wsToggleNotebook(){
+  const nb=document.getElementById('ws-notebook');
+  nb.classList.toggle('open');
+  const btn=document.getElementById('wt-notebook');
+  if(btn) btn.classList.toggle('active',nb.classList.contains('open'));
+  requestAnimationFrame(initOrResizeCanvas);
 }
 
 // ===== МОДАЛКИ ФОРМУЛ (оригінал) =====
@@ -411,7 +421,34 @@ function renderFunctionList(){
       e.dataTransfer.setData('text/plain',`y = ${f.expr}`);
       e.dataTransfer.setData('application/nb-formula',`y = ${f.expr}`);
       e.dataTransfer.effectAllowed='copy';
-      div.style.opacity='0.5';
+      div.style.opacity='0.6';
+      const W=160,H=90,mc=document.createElement('canvas');
+      mc.width=W;mc.height=H;mc.style.cssText='position:fixed;left:-9999px;top:-9999px;';
+      document.body.appendChild(mc);
+      const mx=mc.getContext('2d');
+      mx.fillStyle='#1a3e7c';mx.fillRect(0,0,W,H);
+      mx.strokeStyle='#2a5090';mx.lineWidth=0.5;
+      for(let x=0;x<=W;x+=20){mx.beginPath();mx.moveTo(x,0);mx.lineTo(x,H);mx.stroke();}
+      for(let y=0;y<=H;y+=20){mx.beginPath();mx.moveTo(0,y);mx.lineTo(W,y);mx.stroke();}
+      mx.strokeStyle='rgba(255,255,255,0.25)';mx.lineWidth=1.2;
+      mx.beginPath();mx.moveTo(0,H/2);mx.lineTo(W,H/2);mx.stroke();
+      mx.beginPath();mx.moveTo(W/2,0);mx.lineTo(W/2,H);mx.stroke();
+      const sc=W/12,expr=parseExpr(f.expr);
+      mx.strokeStyle=f.color;mx.lineWidth=2.5;mx.beginPath();
+      let started=false;
+      for(let px=0;px<W;px++){
+        const wx=(px-W/2)/sc;
+        try{const wy=Function('x','"use strict";return ('+expr+')')(wx);
+          if(!isFinite(wy)){started=false;continue;}
+          const py=H/2-wy*sc;
+          if(!started){mx.moveTo(px,py);started=true;}else{mx.lineTo(px,py);}
+        }catch(err){started=false;}
+      }
+      mx.stroke();
+      mx.fillStyle='rgba(255,255,255,0.9)';mx.font='bold 11px monospace';
+      mx.fillText('y = '+f.expr,6,H-8);
+      e.dataTransfer.setDragImage(mc,W/2,H/2);
+      setTimeout(()=>mc.remove(),0);
     });
     div.addEventListener('dragend',()=>{div.style.opacity='1';});
     div.innerHTML=`<div class="function-item-top">
@@ -881,14 +918,6 @@ function quizNext(){quizCurrent++;renderQuizQuestion();}
 // ===== ЗОШИТ (NOTEBOOK) =====
 let nbStyleCurrent = 'lined';
 
-function wsToggleNotebook(){
-  const nb = document.getElementById('ws-notebook');
-  const btn = document.getElementById('wt-notebook');
-  nb.classList.toggle('open');
-  btn.classList.toggle('active');
-  // Resize canvas after animation
-  setTimeout(initOrResizeCanvas, 280);
-}
 
 function nbSetStyle(style){
   nbStyleCurrent = style;
@@ -936,39 +965,46 @@ function nbOnDragLeave(e){
 
 function nbOnDrop(e){
   e.preventDefault();
+  e.stopPropagation();
   e.currentTarget.classList.remove('drag-over');
   document.getElementById('nb-drop-hint').classList.remove('drag-active');
 
   const formula = e.dataTransfer.getData('application/nb-formula') || e.dataTransfer.getData('text/plain');
   if(!formula) return;
 
-  // Insert formula chip at cursor (or at end)
   const body = document.getElementById('ws-notebook-body');
-  body.focus();
 
+  // Build chip element
   const chip = document.createElement('span');
   chip.className = 'nb-formula-chip';
   chip.textContent = formula;
   chip.contentEditable = 'false';
 
-  const sel = window.getSelection();
-  if(sel && sel.rangeCount && body.contains(sel.anchorNode)){
-    const range = sel.getRangeAt(0);
+  // Use drop coordinates to find exact caret position
+  let range = null;
+  if(document.caretRangeFromPoint){
+    range = document.caretRangeFromPoint(e.clientX, e.clientY);
+  } else if(document.caretPositionFromPoint){
+    const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
+    if(pos){ range = document.createRange(); range.setStart(pos.offsetNode, pos.offset); }
+  }
+
+  if(range && body.contains(range.startContainer)){
     range.deleteContents();
     range.insertNode(chip);
-    // Move cursor after chip
     range.setStartAfter(chip);
     range.collapse(true);
+    const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
   } else {
     body.appendChild(chip);
   }
 
-  // Add space after chip
-  const space = document.createTextNode(' ');
+  // Space after chip so cursor lands after it
+  const space = document.createTextNode('\u00A0');
   chip.after(space);
-
+  body.focus();
   nbSave();
 }
 

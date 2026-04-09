@@ -50,11 +50,11 @@
     </div>
     <nav>
       <button onclick="show('home')">Головна</button>
-      <button onclick="showFormulas()">Формули</button>
       <button onclick="show('tasks')">Задачі</button>
-      <button onclick="showGraph()">Робочий стіл</button>
       <button onclick="show('trig')">Тригонометрія</button>
       <button onclick="show('quiz')">Квіз</button>
+      <button onclick="showFormulas()">Формули</button>
+      <button onclick="showGraph()">Робочий стіл</button>
       <button onclick="show('about')">Про нас</button>
       <button id="dark-toggle" onclick="toggleDark()">🌙 Темна</button>
     </nav>
@@ -73,7 +73,7 @@
         <div class="hero-stats">
           <div class="hero-stat"><span>30+</span><p>формул геометрії</p></div>
           <div class="hero-stat"><span>∞</span><p>графіків функцій</p></div>
-          <div class="hero-stat"><span>20+</span><p>задач з рандомом</p></div>
+          <div class="hero-stat"><span>20+</span><p>задач з геометрії</p></div>
           <div class="hero-stat"><span>15+</span><p>квіз-питань</p></div>
         </div>
         <div class="features-grid">
@@ -158,9 +158,9 @@
           <div class="ws-divider"></div>
           <button class="ws-tbtn" id="wt-del" data-tip="Видалити" onclick="wsDelete()" style="color:#ff4d6d;">🗑<span>Видал.</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" data-tip="Скинути вигляд" onclick="resetView()">↺<span>Скинути</span></button>
+          <button class="ws-tbtn" id="wt-notebook" data-tip="Зошит" onclick="wsToggleNotebook()">📓<span>Зошит</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-notebook" data-tip="Зошит / Конспект" onclick="wsToggleNotebook()">📓<span>Зошит</span></button>
+          <button class="ws-tbtn" data-tip="Скинути вигляд" onclick="resetView()">↺<span>Скинути</span></button>
         </div>
 
         <!-- Бічна панель (функції або фігури) -->
@@ -218,21 +218,23 @@
 
         <!-- Зошит (конспект) -->
         <div class="ws-notebook" id="ws-notebook">
-          <div class="ws-notebook-head">
-            <span>📓 Конспект</span>
-            <div class="ws-notebook-controls">
-              <button class="nb-style-btn active" id="nb-lined" onclick="nbSetStyle('lined')" title="Лінійка">≡</button>
-              <button class="nb-style-btn" id="nb-grid" onclick="nbSetStyle('grid')" title="Клітинки">⊞</button>
-              <button class="nb-clear-btn" onclick="nbClear()" title="Очистити">🗑</button>
-              <button class="nb-close-btn" onclick="wsToggleNotebook()">✕</button>
+          <div class="ws-notebook-inner">
+            <div class="ws-notebook-head">
+              <span>📓 Конспект</span>
+              <div class="ws-notebook-controls">
+                <button class="nb-style-btn active" id="nb-lined" onclick="nbSetStyle('lined')" title="Лінійка">≡</button>
+                <button class="nb-style-btn" id="nb-grid" onclick="nbSetStyle('grid')" title="Клітинки">⊞</button>
+                <button class="nb-clear-btn" onclick="nbClear()" title="Очистити">🗑</button>
+                <button class="nb-close-btn" onclick="wsToggleNotebook()" title="Закрити">✕</button>
+              </div>
             </div>
-          </div>
-          <div class="ws-notebook-drop-hint" id="nb-drop-hint">
-            ← Перетягни функцію сюди, щоб вставити у конспект
-          </div>
-          <div class="ws-notebook-body lined" id="ws-notebook-body" contenteditable="true" spellcheck="false"
-            ondrop="nbOnDrop(event)" ondragover="nbOnDragOver(event)" ondragleave="nbOnDragLeave(event)"
-            oninput="nbSave()">
+            <div class="ws-notebook-drop-hint" id="nb-drop-hint">
+              ← Перетягни функцію сюди, щоб вставити у конспект
+            </div>
+            <div class="ws-notebook-body lined" id="ws-notebook-body" contenteditable="true" spellcheck="false"
+              ondrop="nbOnDrop(event)" ondragover="nbOnDragOver(event)" ondragleave="nbOnDragLeave(event)"
+              oninput="nbSave()">
+            </div>
           </div>
         </div>
 

@@ -2,12 +2,12 @@
     *{box-sizing:border-box;margin:0;padding:0;font-family:'Roboto',sans-serif;}
     html{height:100%;}
     body{background:#f0f4f8;color:var(--text);min-height:100%;display:flex;flex-direction:column;}
-    header{background:var(--blue);color:#fff;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
+    header{background:var(--blue);color:#fff;padding:10px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
     .logo{font-family:'Orbitron',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:10px;}
     .logo-icon{flex-shrink:0;}
     nav button{background:none;border:none;color:#fff;font-size:15px;margin-left:16px;cursor:pointer;font-weight:600;transition:.3s;padding:6px 10px;border-radius:6px;}
     nav button:hover{background:var(--accent);color:var(--blue);}
-    main{padding:14px 40px 30px;max-width:1200px;margin:auto;flex:1;width:100%;}
+    main{padding:8px 24px 30px;max-width:1200px;margin:auto;flex:1;width:100%;}
     section{display:none;}
     section.active{display:block;}
     .category-row{display:none;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:30px;}
@@ -323,8 +323,9 @@
     .quiz-restart-btn:hover{background:var(--blue);}
 
     /* ===== ЗОШИТ (NOTEBOOK) ===== */
-    .ws-notebook{flex:0 0 0;background:#fafbff;border-left:2px solid #b3d9ff;overflow:hidden;transition:flex-basis .25s ease;display:flex;flex-direction:column;}
-    .ws-notebook.open{flex:0 0 320px;}
+    .ws-notebook{flex:0 0 0;background:#fafbff;border-left:2px solid #b3d9ff;overflow:hidden;display:flex;flex-direction:column;transition:flex-basis .22s ease;}
+    .ws-notebook.open{flex:0 0 300px;}
+    .ws-notebook-inner{width:300px;display:flex;flex-direction:column;height:100%;}
     .ws-notebook-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:2px solid #b3d9ff;background:#fff;flex-shrink:0;font-weight:700;color:var(--blue);font-size:13px;}
     .ws-notebook-controls{display:flex;align-items:center;gap:4px;}
     .nb-style-btn{background:var(--blue-light);border:1.5px solid #b3d9ff;border-radius:6px;padding:3px 8px;font-size:15px;cursor:pointer;color:var(--blue);transition:.15s;line-height:1;}
@@ -347,6 +348,7 @@
     .nb-formula-chip{display:inline-block;background:var(--blue);color:#fff;border-radius:6px;padding:2px 10px;font-family:'Fira Code',monospace;font-size:12px;font-weight:700;margin:0 3px;cursor:default;user-select:text;}
     /* Dark mode */
     body.dark .ws-notebook{background:#151c2a;border-color:#1e3050;}
+    body.dark .ws-notebook.open{flex:0 0 300px;}
     body.dark .ws-notebook-head{background:#0d1117;border-color:#1e3050;color:#4a90e2;}
     body.dark .ws-notebook-drop-hint{background:linear-gradient(90deg,#1a2535,#1e2d3e);color:#7aa0c8;border-color:#1e3050;}
     body.dark .ws-notebook-drop-hint.drag-active{background:linear-gradient(90deg,#1e3050,#1a3a50);color:#00d4ff;}
