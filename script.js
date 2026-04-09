@@ -594,7 +594,7 @@ function autoScale(){scale=canvas.width/20;offsetX=canvas.width/2;offsetY=canvas
 // ─── EXPRESSION PARSER ───
 function parseExpr(expr){
   return expr.replace(/\^/g,'**').replace(/\bsin\b/g,'Math.sin').replace(/\bcos\b/g,'Math.cos')
-    .replace(/\btan\b/g,'Math.tan')
+    .replace(/\btg\b/g,'Math.tan').replace(/\btan\b/g,'Math.tan')
     .replace(/\blog\b/g,'Math.log10').replace(/\bln\b/g,'Math.log')
     .replace(/\bsqrt\b/g,'Math.sqrt').replace(/\babs\b/g,'Math.abs')
     .replace(/\bπ\b/g,'Math.PI').replace(/\bpi\b/g,'Math.PI').replace(/\be\b/g,'Math.E');
@@ -604,9 +604,8 @@ function parseExpr(expr){
 let ccExpr='';
 let ccFreshResult=false; // after = next digit starts fresh
 
-function wsCalcOpen(){document.getElementById('ws-calc').classList.add('open');}
+function wsCalcOpen(){document.getElementById('ws-calc').classList.toggle('open');}
 function wsCalcClose(){document.getElementById('ws-calc').classList.remove('open');}
-document.getElementById('ws-calc').addEventListener('click',e=>{if(e.target===document.getElementById('ws-calc'))wsCalcClose();});
 
 function ccUpdateDisplay(){
   document.getElementById('cc-res').textContent=ccExpr||'0';
