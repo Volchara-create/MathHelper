@@ -63,9 +63,51 @@
   <main>
     <section id="home" class="active">
       <div id="home-content">
-        <h1>🧮 MathHelper</h1>
-        <p>Ваш персональний помічник з математики!</p>
-        <p>Формули для геометричних фігур, побудова графіків функцій та багато іншого.</p>
+        <div class="hero-badge">Безкоштовно для школярів</div>
+        <h1>MathHelper</h1>
+        <p class="hero-sub">Твій розумний помічник з математики — формули, графіки, задачі та тригонометрія в одному місці.</p>
+        <div class="hero-btns">
+          <button class="hero-btn-main" onclick="showFormulas()">📐 Відкрити формули</button>
+          <button class="hero-btn-sec" onclick="showGraph()">📈 Робочий стіл</button>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><span>30+</span><p>формул геометрії</p></div>
+          <div class="hero-stat"><span>∞</span><p>графіків функцій</p></div>
+          <div class="hero-stat"><span>20+</span><p>задач з рандомом</p></div>
+          <div class="hero-stat"><span>15+</span><p>квіз-питань</p></div>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card" onclick="showFormulas()">
+            <div class="feature-icon">📐</div>
+            <h3>Формули</h3>
+            <p>Всі формули геометрії з візуалізацією — площа, периметр, об'єм для 11 фігур</p>
+          </div>
+          <div class="feature-card" onclick="showGraph()">
+            <div class="feature-icon">📈</div>
+            <h3>Робочий стіл</h3>
+            <p>Будуй графіки функцій, розміщуй геометричні фігури на координатній площині</p>
+          </div>
+          <div class="feature-card" onclick="show('trig')">
+            <div class="feature-icon">📏</div>
+            <h3>Тригонометрія</h3>
+            <p>Таблиця sin/cos/tan/ctg, формули зведення, подвійного кута, пониження степеня</p>
+          </div>
+          <div class="feature-card" onclick="show('quiz')">
+            <div class="feature-icon">🎮</div>
+            <h3>Квіз</h3>
+            <p>Перевір знання у форматі тесту — 10 питань з перемішаними варіантами</p>
+          </div>
+          <div class="feature-card" onclick="show('tasks')">
+            <div class="feature-icon">🎯</div>
+            <h3>Задачі</h3>
+            <p>Тренувальні задачі з рандомними числами — кожен раз нові умови</p>
+          </div>
+          <div class="feature-card calc-card" onclick="showGraph();setTimeout(wsCalcOpen,400)">
+            <div class="feature-icon">🧮</div>
+            <h3>Калькулятор</h3>
+            <p>Науковий калькулятор з sin, cos, √, π прямо на робочому столі</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -317,7 +359,7 @@
 
     <section id="tasks">
       <div id="tasks-content" style="max-width:800px;margin:0 auto;">
-        <h2 style="text-align:center;color:var(--blue);margin-bottom:30px;font-size:2.2rem;">Тренувальні задачі з геометрії</h2>
+        <h2 style="text-align:center;color:var(--blue);margin-bottom:14px;font-size:1.8rem;">Тренувальні задачі з геометрії</h2>
         <div id="tasks-list"></div>
       </div>
     </section>

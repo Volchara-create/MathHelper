@@ -652,18 +652,37 @@ function ccEval(){
 }
 
 // ===== ЗАДАЧІ (оригінал) =====
-const tasks=[
-{q:"Знайдіть площу прямокутника зі сторонами a = 8 см і b = 5 см.",answer:"40",steps:["Дано: a = 8 см, b = 5 см","Потрібно знайти: S = ?","Формула: S = a × b","Підставляємо: S = 8 × 5","Результат: S = 40 см²"]},
-{q:"Периметр прямокутника дорівнює 30 см, а довжина однієї сторони 9 см. Знайдіть другу сторону.",answer:"6",steps:["Дано: P = 30 см, a = 9 см","Формула: P = 2(a + b)","30 = 2(9 + b) → 15 = 9 + b","b = 6 см"]},
-{q:"Знайдіть площу кола з радіусом r = 4 см. (π ≈ 3.14)",answer:"50.24",steps:["Дано: r = 4 см","Формула: S = π × r²","S = 3.14 × 16 = 50.24 см²"]},
-{q:"Довжина кола дорівнює 31.4 см. Знайдіть радіус. (π ≈ 3.14)",answer:"5",steps:["Дано: C = 31.4 см","Формула: C = 2 × π × r","r = 31.4 ÷ 6.28 = 5 см"]},
-{q:"Основа трикутника a = 10 см, висота h = 6 см. Знайдіть площу.",answer:"30",steps:["Дано: a = 10 см, h = 6 см","Формула: S = ½ × a × h","S = ½ × 10 × 6 = 30 см²"]},
-{q:"Трикутник має сторони a = 3 см, b = 4 см, c = 5 см. Знайдіть периметр.",answer:"12",steps:["Формула: P = a + b + c","P = 3 + 4 + 5 = 12 см"]},
-{q:"Знайдіть об'єм куба з ребром a = 5 см.",answer:"125",steps:["Формула: V = a³","V = 5³ = 125 см³"]},
-{q:"Площа поверхні куба дорівнює 150 см². Знайдіть довжину ребра.",answer:"5",steps:["Формула: S = 6 × a²","a² = 150 ÷ 6 = 25","a = √25 = 5 см"]},
-{q:"Знайдіть діагональ прямокутника зі сторонами 6 см і 8 см.",answer:"10",steps:["Формула: d = √(a² + b²)","d = √(36 + 64) = √100 = 10 см"]},
-{q:"Сторона квадрата дорівнює 7 см. Знайдіть його площу.",answer:"49",steps:["Формула: S = a²","S = 7² = 49 см²"]}
+// Random integer between min and max inclusive
+function ri(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function round2(x){return Math.round(x*100)/100;}
+
+// Task generators — return {q, answer, steps} with random values
+const taskGens=[
+  ()=>{const a=ri(2,15),b=ri(2,15);return{q:`Знайдіть площу прямокутника зі сторонами a = ${a} см і b = ${b} см.`,answer:String(a*b),steps:[`Формула: S = a × b`,`S = ${a} × ${b} = ${a*b} см²`]};},
+  ()=>{const a=ri(3,12),b=ri(3,12),p=2*(a+b);return{q:`Периметр прямокутника дорівнює ${p} см, одна сторона ${a} см. Знайдіть другу.`,answer:String(b),steps:[`Формула: P = 2(a + b)`,`${p} = 2(${a} + b) → ${p/2} = ${a} + b`,`b = ${b} см`]};},
+  ()=>{const r=ri(2,10),s=round2(3.14*r*r);return{q:`Знайдіть площу кола з радіусом r = ${r} см. (π ≈ 3.14)`,answer:String(s),steps:[`Формула: S = π × r²`,`S = 3.14 × ${r}² = 3.14 × ${r*r} = ${s} см²`]};},
+  ()=>{const r=ri(2,9),c=round2(2*3.14*r);return{q:`Знайдіть довжину кола з радіусом r = ${r} см. (π ≈ 3.14)`,answer:String(c),steps:[`Формула: C = 2 × π × r`,`C = 2 × 3.14 × ${r} = ${c} см`]};},
+  ()=>{const a=ri(4,16),h=ri(2,10),s=round2(a*h/2);return{q:`Основа трикутника a = ${a} см, висота h = ${h} см. Знайдіть площу.`,answer:String(s),steps:[`Формула: S = ½ × a × h`,`S = ½ × ${a} × ${h} = ${s} см²`]};},
+  ()=>{const a=ri(2,10),b=ri(2,10),c=ri(2,10),p=a+b+c;return{q:`Трикутник має сторони a = ${a} см, b = ${b} см, c = ${c} см. Знайдіть периметр.`,answer:String(p),steps:[`Формула: P = a + b + c`,`P = ${a} + ${b} + ${c} = ${p} см`]};},
+  ()=>{const a=ri(2,8),v=a*a*a;return{q:`Знайдіть об'єм куба з ребром a = ${a} см.`,answer:String(v),steps:[`Формула: V = a³`,`V = ${a}³ = ${v} см³`]};},
+  ()=>{const a=ri(2,8),s=6*a*a;return{q:`Знайдіть площу поверхні куба з ребром a = ${a} см.`,answer:String(s),steps:[`Формула: S = 6 × a²`,`S = 6 × ${a}² = 6 × ${a*a} = ${s} см²`]};},
+  ()=>{const a=ri(2,10),sq=a*a,s=a*a;return{q:`Сторона квадрата дорівнює ${a} см. Знайдіть його площу.`,answer:String(s),steps:[`Формула: S = a²`,`S = ${a}² = ${s} см²`]};},
+  ()=>{const a=ri(2,10),p=4*a;return{q:`Сторона квадрата дорівнює ${a} см. Знайдіть його периметр.`,answer:String(p),steps:[`Формула: P = 4 × a`,`P = 4 × ${a} = ${p} см`]};},
+  ()=>{const r=ri(2,9),h=ri(3,12),v=round2(3.14*r*r*h);return{q:`Знайдіть об'єм циліндра з радіусом r = ${r} см і висотою h = ${h} см. (π ≈ 3.14)`,answer:String(v),steps:[`Формула: V = π × r² × h`,`V = 3.14 × ${r}² × ${h} = 3.14 × ${r*r} × ${h} = ${v} см³`]};},
+  ()=>{const a=ri(3,12),b=ri(3,12),h=ri(2,8),s=round2((a+b)*h/2);return{q:`Знайдіть площу трапеції з основами a = ${a} см, b = ${b} см і висотою h = ${h} см.`,answer:String(s),steps:[`Формула: S = (a + b) / 2 × h`,`S = (${a} + ${b}) / 2 × ${h} = ${(a+b)/2} × ${h} = ${s} см²`]};},
+  ()=>{const d1=ri(4,14),d2=ri(4,14),s=round2(d1*d2/2);return{q:`Знайдіть площу ромба з діагоналями d₁ = ${d1} см і d₂ = ${d2} см.`,answer:String(s),steps:[`Формула: S = (d₁ × d₂) / 2`,`S = (${d1} × ${d2}) / 2 = ${d1*d2} / 2 = ${s} см²`]};},
+  ()=>{const a=ri(2,8),h=ri(3,10),s=round2(a*h);return{q:`Знайдіть площу паралелограма з основою a = ${a} см і висотою h = ${h} см.`,answer:String(s),steps:[`Формула: S = a × h`,`S = ${a} × ${h} = ${s} см²`]};},
+  ()=>{const r=ri(2,8),h=ri(3,12),v=round2(3.14*r*r*h/3);return{q:`Знайдіть об'єм конуса з радіусом r = ${r} см і висотою h = ${h} см. (π ≈ 3.14)`,answer:String(v),steps:[`Формула: V = ⅓ × π × r² × h`,`V = 3.14 × ${r}² × ${h} / 3 = ${round2(3.14*r*r*h)} / 3 = ${v} см³`]};},
+  ()=>{const a=ri(2,8),h=ri(3,10),v=round2(a*a*h/3);return{q:`Знайдіть об'єм піраміди з квадратною основою a = ${a} см і висотою h = ${h} см.`,answer:String(v),steps:[`Формула: V = ⅓ × a² × h`,`V = ${a}² × ${h} / 3 = ${a*a*h} / 3 = ${v} см³`]};},
+  ()=>{const a=ri(3,12),b=ri(3,12),c=ri(3,12),s=a+b+c,r=a+b+c;return{q:`Знайдіть периметр трикутника зі сторонами ${a} см, ${b} см і ${c} см.`,answer:String(r),steps:[`P = ${a} + ${b} + ${c} = ${r} см`]};},
+  ()=>{const r=ri(2,10),d=2*r;return{q:`Радіус кола дорівнює ${r} см. Знайдіть діаметр.`,answer:String(d),steps:[`Формула: d = 2 × r`,`d = 2 × ${r} = ${d} см`]};},
+  ()=>{const a=ri(2,8),b=ri(2,8),d=round2(Math.sqrt(a*a+b*b));if(!Number.isInteger(d))return{q:`Знайдіть діагональ прямокутника зі сторонами ${a} см і ${b} см. (відповідь округли до 2 знаків)`,answer:String(d),steps:[`Формула: d = √(a² + b²)`,`d = √(${a}² + ${b}²) = √(${a*a} + ${b*b}) = √${a*a+b*b} ≈ ${d} см`]};return{q:`Знайдіть діагональ прямокутника зі сторонами ${a} см і ${b} см.`,answer:String(d),steps:[`Формула: d = √(a² + b²)`,`d = √(${a*a} + ${b*b}) = √${a*a+b*b} = ${d} см`]};},
+  ()=>{const a=ri(2,8),b=ri(2,8),p=2*(a+b),s=a*b;return{q:`Прямокутник має сторони ${a} см і ${b} см. Знайдіть його периметр.`,answer:String(p),steps:[`Формула: P = 2(a + b)`,`P = 2 × (${a} + ${b}) = 2 × ${a+b} = ${p} см`]};},
 ];
+
+// Build initial task pool — generate one instance of each generator
+function buildTasks(){return taskGens.map(g=>g());}
+const tasks=buildTasks();
 // Shuffle array (Fisher-Yates)
 function shuffleArr(arr){
   const a=[...arr];
@@ -673,17 +692,19 @@ function shuffleArr(arr){
 
 let taskPool=[];
 let taskIndex=0;
+let taskCount=0;
 
 function loadRandomTask(){
-  // Reshuffle when pool exhausted
+  // Rebuild with fresh random values when pool exhausted
   if(taskIndex>=taskPool.length){
-    taskPool=shuffleArr(tasks);
+    taskPool=shuffleArr(taskGens.map(g=>g()));
     taskIndex=0;
   }
   const t=taskPool[taskIndex++];
+  taskCount++;
   const id='task_'+Date.now();
   document.getElementById('tasks-list').innerHTML=`
-    <div class="task-progress">Задача ${taskIndex} з ${tasks.length} (перемішано)</div>
+    <div class="task-progress">Задача #${taskCount} — ${taskGens.length} різних типів, нові числа щоразу</div>
     <div class="task-card" id="${id}">
       <div class="task-question">📝 ${t.q}</div>
       <input type="text" class="answer-input" id="user-answer" placeholder="Введіть числову відповідь" onkeydown="if(event.key==='Enter')checkAnswer(this,'${t.answer}','${id}')">
