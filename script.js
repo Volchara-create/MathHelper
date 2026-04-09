@@ -237,42 +237,52 @@ function draw(){
 function drawGrid(){
   const w=canvas.width,h=canvas.height;
   ctx.clearRect(0,0,w,h);
+  const dark=document.body.classList.contains('dark');
+  const gridMinor = dark ? '#2a3a50' : '#e8eef5';
+  const gridMajor = dark ? '#1e3a5a' : '#d4dfe9';
+  const axisColor = dark ? '#7aa0c8' : '#334';
+  const numColor  = dark ? '#aac4e0' : '#555';
+  const bgColor   = dark ? '#1a1a2e' : '#fff';
+
+  ctx.fillStyle=bgColor;
+  ctx.fillRect(0,0,w,h);
+
   let step=scale;
   while(step<30) step*=2;
   while(step>120) step/=2;
 
   // minor grid
-  ctx.strokeStyle='#e8eef5';ctx.lineWidth=0.8;
+  ctx.strokeStyle=gridMinor;ctx.lineWidth=0.8;
   for(let x=offsetX%step;x<w;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
   for(let y=offsetY%step;y<h;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
 
   // secondary grid
   if(step!==scale){
-    ctx.strokeStyle='#d4dfe9';ctx.lineWidth=0.5;
+    ctx.strokeStyle=gridMajor;ctx.lineWidth=0.5;
     for(let x=offsetX%scale;x<w;x+=scale){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
     for(let y=offsetY%scale;y<h;y+=scale){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
   }
 
   // axes
-  ctx.strokeStyle='#334';ctx.lineWidth=2;
+  ctx.strokeStyle=axisColor;ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(0,offsetY);ctx.lineTo(w,offsetY);ctx.stroke();
   ctx.beginPath();ctx.moveTo(offsetX,0);ctx.lineTo(offsetX,h);ctx.stroke();
 
   // arrows
-  ctx.fillStyle='#334';
+  ctx.fillStyle=axisColor;
   ctx.beginPath();ctx.moveTo(w-8,offsetY-5);ctx.lineTo(w,offsetY);ctx.lineTo(w-8,offsetY+5);ctx.fill();
   ctx.beginPath();ctx.moveTo(offsetX-5,8);ctx.lineTo(offsetX,0);ctx.lineTo(offsetX+5,8);ctx.fill();
 
   // numbers
-  ctx.fillStyle='#555';ctx.font='11px Fira Code,monospace';
+  ctx.fillStyle=numColor;ctx.font='11px Fira Code,monospace';
   const unit=step/scale;
   ctx.textAlign='center';ctx.textBaseline='top';
   for(let x=offsetX%step-step;x<w+step;x+=step){
     const val=Math.round((x-offsetX)/scale/unit)*unit;
     if(Math.abs(val)<0.0001) continue;
     if(x>5&&x<w-15){
-      ctx.beginPath();ctx.moveTo(x,offsetY-4);ctx.lineTo(x,offsetY+4);ctx.strokeStyle='#334';ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle='#555';ctx.fillText(Number.isInteger(val)?val:val.toFixed(1),x,offsetY+6);
+      ctx.beginPath();ctx.moveTo(x,offsetY-4);ctx.lineTo(x,offsetY+4);ctx.strokeStyle=axisColor;ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle=numColor;ctx.fillText(Number.isInteger(val)?val:val.toFixed(1),x,offsetY+6);
     }
   }
   ctx.textAlign='right';ctx.textBaseline='middle';
@@ -280,8 +290,8 @@ function drawGrid(){
     const val=Math.round((offsetY-y)/scale/unit)*unit;
     if(Math.abs(val)<0.0001) continue;
     if(y>5&&y<h-5){
-      ctx.beginPath();ctx.moveTo(offsetX-4,y);ctx.lineTo(offsetX+4,y);ctx.strokeStyle='#334';ctx.lineWidth=1.5;ctx.stroke();
-      ctx.fillStyle='#555';ctx.fillText(Number.isInteger(val)?val:val.toFixed(1),offsetX-7,y);
+      ctx.beginPath();ctx.moveTo(offsetX-4,y);ctx.lineTo(offsetX+4,y);ctx.strokeStyle=axisColor;ctx.lineWidth=1.5;ctx.stroke();
+      ctx.fillStyle=numColor;ctx.fillText(Number.isInteger(val)?val:val.toFixed(1),offsetX-7,y);
     }
   }
   ctx.fillStyle='#888';ctx.textAlign='right';ctx.textBaseline='top';ctx.fillText('0',offsetX-4,offsetY+4);
@@ -801,6 +811,7 @@ function toggleDark(){
   const dark=document.body.classList.toggle('dark');
   document.getElementById('dark-toggle').textContent=dark?'☀️ Світла':'🌙 Темна';
   localStorage.setItem('mathhelper-dark',dark?'1':'0');
+  if(canvas) draw();
 }
 (function(){
   if(localStorage.getItem('mathhelper-dark')==='1'){
