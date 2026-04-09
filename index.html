@@ -159,6 +159,8 @@
           <button class="ws-tbtn" id="wt-del" data-tip="Видалити" onclick="wsDelete()" style="color:#ff4d6d;">🗑<span>Видал.</span></button>
           <div class="ws-divider"></div>
           <button class="ws-tbtn" data-tip="Скинути вигляд" onclick="resetView()">↺<span>Скинути</span></button>
+          <div class="ws-divider"></div>
+          <button class="ws-tbtn" id="wt-notebook" data-tip="Зошит / Конспект" onclick="wsToggleNotebook()">📓<span>Зошит</span></button>
         </div>
 
         <!-- Бічна панель (функції або фігури) -->
@@ -212,6 +214,26 @@
           </div>
           <div class="canvas-info" id="canvas-info">x: 0.00 | y: 0.00</div>
           <div class="graph-hint">🖱 Прокрутка — масштаб &nbsp;|&nbsp; Перетягування — переміщення &nbsp;|&nbsp; Клік на фігуру — властивості</div>
+        </div>
+
+        <!-- Зошит (конспект) -->
+        <div class="ws-notebook" id="ws-notebook">
+          <div class="ws-notebook-head">
+            <span>📓 Конспект</span>
+            <div class="ws-notebook-controls">
+              <button class="nb-style-btn active" id="nb-lined" onclick="nbSetStyle('lined')" title="Лінійка">≡</button>
+              <button class="nb-style-btn" id="nb-grid" onclick="nbSetStyle('grid')" title="Клітинки">⊞</button>
+              <button class="nb-clear-btn" onclick="nbClear()" title="Очистити">🗑</button>
+              <button class="nb-close-btn" onclick="wsToggleNotebook()">✕</button>
+            </div>
+          </div>
+          <div class="ws-notebook-drop-hint" id="nb-drop-hint">
+            ← Перетягни функцію сюди, щоб вставити у конспект
+          </div>
+          <div class="ws-notebook-body lined" id="ws-notebook-body" contenteditable="true" spellcheck="false"
+            ondrop="nbOnDrop(event)" ondragover="nbOnDragOver(event)" ondragleave="nbOnDragLeave(event)"
+            oninput="nbSave()">
+          </div>
         </div>
 
         <!-- Права панель властивостей -->

@@ -405,7 +405,17 @@ function renderFunctionList(){
   functions.forEach((f,i)=>{
     const div=document.createElement('div');
     div.className='function-item';div.style.borderLeftColor=f.color;
+    div.draggable=true;
+    div.title='Перетягни у зошит';
+    div.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain',`y = ${f.expr}`);
+      e.dataTransfer.setData('application/nb-formula',`y = ${f.expr}`);
+      e.dataTransfer.effectAllowed='copy';
+      div.style.opacity='0.5';
+    });
+    div.addEventListener('dragend',()=>{div.style.opacity='1';});
     div.innerHTML=`<div class="function-item-top">
+      <span style="cursor:grab;color:#b3d9ff;font-size:14px;flex-shrink:0;" title="Перетягни у зошит">⠿</span>
       <input class="function-input" value="${f.expr}" oninput="updateFunc(${i},this.value)" title="Функція від x" placeholder="напр. sin(x)">
       <input type="color" value="${f.color}" onchange="updateColor(${i},this.value)" style="width:28px;height:28px;border:none;cursor:pointer;border-radius:4px;padding:2px;flex-shrink:0;">
       <button class="func-remove" onclick="removeFunction(${i})" title="Видалити">✕</button>
@@ -867,3 +877,100 @@ function quizAnswer(i){
 }
 
 function quizNext(){quizCurrent++;renderQuizQuestion();}
+
+// ===== ЗОШИТ (NOTEBOOK) =====
+let nbStyleCurrent = 'lined';
+
+function wsToggleNotebook(){
+  const nb = document.getElementById('ws-notebook');
+  const btn = document.getElementById('wt-notebook');
+  nb.classList.toggle('open');
+  btn.classList.toggle('active');
+  // Resize canvas after animation
+  setTimeout(initOrResizeCanvas, 280);
+}
+
+function nbSetStyle(style){
+  nbStyleCurrent = style;
+  const body = document.getElementById('ws-notebook-body');
+  body.classList.remove('lined','grid');
+  body.classList.add(style);
+  document.getElementById('nb-lined').classList.toggle('active', style==='lined');
+  document.getElementById('nb-grid').classList.toggle('active', style==='grid');
+  localStorage.setItem('mh_nb_style', style);
+}
+
+function nbClear(){
+  if(!confirm('Очистити весь конспект?')) return;
+  const body = document.getElementById('ws-notebook-body');
+  body.innerHTML = '';
+  localStorage.removeItem('mh_nb_text');
+}
+
+function nbSave(){
+  const body = document.getElementById('ws-notebook-body');
+  localStorage.setItem('mh_nb_text', body.innerHTML);
+}
+
+function nbLoad(){
+  const saved = localStorage.getItem('mh_nb_text');
+  if(saved){
+    document.getElementById('ws-notebook-body').innerHTML = saved;
+  }
+  const style = localStorage.getItem('mh_nb_style') || 'lined';
+  nbSetStyle(style);
+}
+
+// Drag & Drop — перетягування функції у зошит
+function nbOnDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+  e.currentTarget.classList.add('drag-over');
+  document.getElementById('nb-drop-hint').classList.add('drag-active');
+}
+
+function nbOnDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+  document.getElementById('nb-drop-hint').classList.remove('drag-active');
+}
+
+function nbOnDrop(e){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  document.getElementById('nb-drop-hint').classList.remove('drag-active');
+
+  const formula = e.dataTransfer.getData('application/nb-formula') || e.dataTransfer.getData('text/plain');
+  if(!formula) return;
+
+  // Insert formula chip at cursor (or at end)
+  const body = document.getElementById('ws-notebook-body');
+  body.focus();
+
+  const chip = document.createElement('span');
+  chip.className = 'nb-formula-chip';
+  chip.textContent = formula;
+  chip.contentEditable = 'false';
+
+  const sel = window.getSelection();
+  if(sel && sel.rangeCount && body.contains(sel.anchorNode)){
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(chip);
+    // Move cursor after chip
+    range.setStartAfter(chip);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } else {
+    body.appendChild(chip);
+  }
+
+  // Add space after chip
+  const space = document.createTextNode(' ');
+  chip.after(space);
+
+  nbSave();
+}
+
+// Load notebook on page start
+document.addEventListener('DOMContentLoaded', nbLoad);
