@@ -61,6 +61,100 @@
   </header>
 
   <main>
+    <section id="trig">
+      <div id="trig-content">
+        <h2>📐 Тригонометрія</h2>
+        <p class="trig-subtitle">Формули та таблиця значень sin, cos, tan, ctg</p>
+        <div class="trig-layout">
+          <!-- Formulas panel LEFT -->
+          <div class="trig-formulas-panel">
+            <h3>📋 Основні формули</h3>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Основна тотожність</div>
+              <div class="trig-formula-expr">sin²α + cos²α = 1</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">tan і ctg</div>
+              <div class="trig-formula-expr">tan α = sin α / cos α</div>
+              <div class="trig-formula-expr">ctg α = cos α / sin α</div>
+              <div class="trig-formula-expr">tan α · ctg α = 1</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Радіани</div>
+              <div class="trig-formula-expr">180° = π рад</div>
+              <div class="trig-formula-expr">1° = π/180 рад</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Формули суми кутів</div>
+              <div class="trig-formula-expr">sin(α±β) = sinα·cosβ ± cosα·sinβ</div>
+              <div class="trig-formula-expr">cos(α±β) = cosα·cosβ ∓ sinα·sinβ</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Подвійний кут</div>
+              <div class="trig-formula-expr">sin 2α = 2·sinα·cosα</div>
+              <div class="trig-formula-expr">cos 2α = cos²α − sin²α</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Пониження степеня</div>
+              <div class="trig-formula-expr">sin²α = (1 − cos 2α) / 2</div>
+              <div class="trig-formula-expr">cos²α = (1 + cos 2α) / 2</div>
+              <div class="trig-formula-expr">tan²α = (1 − cos 2α) / (1 + cos 2α)</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Формули зведення</div>
+              <div class="trig-formula-expr">sin(90°−α) = cos α</div>
+              <div class="trig-formula-expr">cos(90°−α) = sin α</div>
+              <div class="trig-formula-expr">sin(180°−α) = sin α</div>
+              <div class="trig-formula-expr">cos(180°−α) = −cos α</div>
+              <div class="trig-formula-expr">sin(−α) = −sin α</div>
+              <div class="trig-formula-expr">cos(−α) = cos α</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Теорема синусів / косинусів</div>
+              <div class="trig-formula-expr">a/sin A = b/sin B = c/sin C</div>
+              <div class="trig-formula-expr">c² = a² + b² − 2ab·cos C</div>
+            </div>
+            <div class="trig-formula-block signs-block">
+              <div class="trig-formula-title">Знаки за чвертями</div>
+              <div class="trig-quadrants">
+                <div class="trig-q trig-q2">II<br><span>sin+</span></div>
+                <div class="trig-q trig-q1">I<br><span>all+</span></div>
+                <div class="trig-q trig-q3">III<br><span>tan+</span></div>
+                <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Table RIGHT -->
+          <div class="trig-table-wrap">
+            <table class="trig-table">
+              <thead>
+                <tr>
+                  <th>Кут °</th><th>Рад</th>
+                  <th>sin</th><th>cos</th><th>tan</th><th>ctg</th>
+                </tr>
+              </thead>
+              <tbody id="trig-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <div id="quiz-content">
+        <h2>🎮 Квіз з математики</h2>
+        <p class="quiz-subtitle">Перевір свої знання формул і задач!</p>
+        <div id="quiz-area"></div>
+      </div>
+    </section>
+
+    <section id="tasks">
+      <div id="tasks-content" style="max-width:800px;margin:0 auto;">
+        <h2 style="text-align:center;color:var(--blue);margin-bottom:14px;font-size:1.8rem;">Тренувальні задачі з геометрії</h2>
+        <div id="tasks-list"></div>
+      </div>
+    </section>
+
     <section id="home" class="active">
       <div id="home-content">
         <div class="hero-badge">Безкоштовно для школярів</div>
@@ -288,105 +382,6 @@
     </section>
     <!-- /РОБОЧИЙ СТІЛ -->
 
-    <!-- AdSense banner -->
-    <div style="text-align:center;margin:10px 0;">
-      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <section id="trig">
-      <div id="trig-content">
-        <h2>📐 Тригонометрія</h2>
-        <p class="trig-subtitle">Формули та таблиця значень sin, cos, tan, ctg</p>
-        <div class="trig-layout">
-          <!-- Formulas panel LEFT -->
-          <div class="trig-formulas-panel">
-            <h3>📋 Основні формули</h3>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Основна тотожність</div>
-              <div class="trig-formula-expr">sin²α + cos²α = 1</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">tan і ctg</div>
-              <div class="trig-formula-expr">tan α = sin α / cos α</div>
-              <div class="trig-formula-expr">ctg α = cos α / sin α</div>
-              <div class="trig-formula-expr">tan α · ctg α = 1</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Радіани</div>
-              <div class="trig-formula-expr">180° = π рад</div>
-              <div class="trig-formula-expr">1° = π/180 рад</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Формули суми кутів</div>
-              <div class="trig-formula-expr">sin(α±β) = sinα·cosβ ± cosα·sinβ</div>
-              <div class="trig-formula-expr">cos(α±β) = cosα·cosβ ∓ sinα·sinβ</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Подвійний кут</div>
-              <div class="trig-formula-expr">sin 2α = 2·sinα·cosα</div>
-              <div class="trig-formula-expr">cos 2α = cos²α − sin²α</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Пониження степеня</div>
-              <div class="trig-formula-expr">sin²α = (1 − cos 2α) / 2</div>
-              <div class="trig-formula-expr">cos²α = (1 + cos 2α) / 2</div>
-              <div class="trig-formula-expr">tan²α = (1 − cos 2α) / (1 + cos 2α)</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Формули зведення</div>
-              <div class="trig-formula-expr">sin(90°−α) = cos α</div>
-              <div class="trig-formula-expr">cos(90°−α) = sin α</div>
-              <div class="trig-formula-expr">sin(180°−α) = sin α</div>
-              <div class="trig-formula-expr">cos(180°−α) = −cos α</div>
-              <div class="trig-formula-expr">sin(−α) = −sin α</div>
-              <div class="trig-formula-expr">cos(−α) = cos α</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Теорема синусів / косинусів</div>
-              <div class="trig-formula-expr">a/sin A = b/sin B = c/sin C</div>
-              <div class="trig-formula-expr">c² = a² + b² − 2ab·cos C</div>
-            </div>
-            <div class="trig-formula-block signs-block">
-              <div class="trig-formula-title">Знаки за чвертями</div>
-              <div class="trig-quadrants">
-                <div class="trig-q trig-q2">II<br><span>sin+</span></div>
-                <div class="trig-q trig-q1">I<br><span>all+</span></div>
-                <div class="trig-q trig-q3">III<br><span>tan+</span></div>
-                <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
-              </div>
-            </div>
-          </div>
-          <!-- Table RIGHT -->
-          <div class="trig-table-wrap">
-            <table class="trig-table">
-              <thead>
-                <tr>
-                  <th>Кут °</th><th>Рад</th>
-                  <th>sin</th><th>cos</th><th>tan</th><th>ctg</th>
-                </tr>
-              </thead>
-              <tbody id="trig-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="quiz">
-      <div id="quiz-content">
-        <h2>🎮 Квіз з математики</h2>
-        <p class="quiz-subtitle">Перевір свої знання формул і задач!</p>
-        <div id="quiz-area"></div>
-      </div>
-    </section>
-
-    <section id="tasks">
-      <div id="tasks-content" style="max-width:800px;margin:0 auto;">
-        <h2 style="text-align:center;color:var(--blue);margin-bottom:14px;font-size:1.8rem;">Тренувальні задачі з геометрії</h2>
-        <div id="tasks-list"></div>
-      </div>
-    </section>
   </main>
 
   <!-- Category modal -->
