@@ -1681,9 +1681,11 @@ function updateNavForGrade(grade) {
   if (trigTab) trigTab.style.display = grade <= 8 ? 'none' : '';
   if (tablesTab) tablesTab.style.display = grade <= 3 ? 'none' : '';
   if (geoTab) geoTab.style.display = grade <= 4 ? 'none' : '';
-  // Hide workspace from nav for grades 1-4
+  // Hide workspace + formulas from nav for grades 1-4
   const graphBtn = document.querySelector('nav button[onclick="showGraph()"]');
   if (graphBtn) graphBtn.style.display = grade <= 4 ? 'none' : '';
+  const formulasBtn = document.querySelector('nav button[onclick="show(\'formulas\')"]');
+  if (formulasBtn) formulasBtn.style.display = grade <= 4 ? 'none' : '';
   // Rebuild algebra tab when grade changes
   const grid = document.getElementById('algebra-cats-grid');
   if (grid) grid.innerHTML = '';
@@ -2108,3 +2110,81 @@ function nbOnDrop(e){
 
 // Load notebook on page start
 document.addEventListener('DOMContentLoaded', nbLoad);
+
+// ===== БИТВА МНОЖЕННЯ (Grade 4 game) =====
+let battleHP = 100;
+let battleEnemyHP = 100;
+let battleQuestion = null;
+
+function startBattle() {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.getElementById('battle').classList.add('active');
+  battleHP = 100;
+  battleEnemyHP = 100;
+  battleNextQuestion();
+  updateBattleUI();
+}
+
+function battleNextQuestion() {
+  const a = Math.floor(Math.random() * 9) + 2;
+  const b = Math.floor(Math.random() * 9) + 2;
+  battleQuestion = { a, b, answer: a * b };
+  document.getElementById('battle-question').textContent = `${a} × ${b} = ?`;
+  document.getElementById('battle-input').value = '';
+  document.getElementById('battle-input').focus();
+  document.getElementById('battle-feedback').textContent = '';
+}
+
+function battleSubmit() {
+  const inp = document.getElementById('battle-input');
+  const val = parseInt(inp.value);
+  if (isNaN(val)) return;
+
+  const feedback = document.getElementById('battle-feedback');
+  if (val === battleQuestion.answer) {
+    battleEnemyHP -= Math.floor(Math.random() * 15) + 10;
+    feedback.textContent = '✅ Удар! Молодець!';
+    feedback.style.color = '#16a34a';
+    battleEnemyHP = Math.max(0, battleEnemyHP);
+  } else {
+    battleHP -= Math.floor(Math.random() * 10) + 8;
+    feedback.textContent = `❌ Неправильно! Відповідь: ${battleQuestion.answer}`;
+    feedback.style.color = '#dc2626';
+    battleHP = Math.max(0, battleHP);
+  }
+
+  updateBattleUI();
+
+  if (battleEnemyHP <= 0) {
+    setTimeout(() => {
+      let stars = parseInt(localStorage.getItem('mh_stars') || '0');
+      stars += 3;
+      localStorage.setItem('mh_stars', stars);
+      alert('🏆 ПЕРЕМОГА! Ти переміг ворога! +3 зірочки!');
+      startBattle();
+    }, 800);
+    return;
+  }
+  if (battleHP <= 0) {
+    setTimeout(() => {
+      alert('💀 Ти програв... Спробуй ще раз!');
+      startBattle();
+    }, 800);
+    return;
+  }
+
+  setTimeout(battleNextQuestion, 1200);
+}
+
+function updateBattleUI() {
+  const hpPct = Math.max(0, battleHP);
+  const enemyPct = Math.max(0, battleEnemyHP);
+  const hpBar = document.getElementById('battle-hp-bar');
+  const enemyBar = document.getElementById('battle-enemy-bar');
+  if (hpBar) { hpBar.style.width = hpPct + '%'; hpBar.textContent = hpPct + ' HP'; }
+  if (enemyBar) { enemyBar.style.width = enemyPct + '%'; enemyBar.textContent = enemyPct + ' HP'; }
+  const hpColor = hpPct > 50 ? '#16a34a' : hpPct > 25 ? '#d97706' : '#dc2626';
+  const enemyColor = enemyPct > 50 ? '#dc2626' : enemyPct > 25 ? '#d97706' : '#16a34a';
+  if (hpBar) hpBar.style.background = hpColor;
+  if (enemyBar) enemyBar.style.background = enemyColor;
+}

@@ -431,6 +431,21 @@
       </div>
     </section>
 
+    <!-- DAILY REWARD POPUP -->
+    <div id="daily-reward-popup" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;">
+      <div style="background:#fff;border-radius:24px;padding:36px 32px;text-align:center;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:popIn .4s cubic-bezier(.34,1.56,.64,1);">
+        <div style="font-size:3.5rem;margin-bottom:8px;" id="daily-reward-emoji">🎁</div>
+        <h2 style="color:#1a3e7c;margin-bottom:8px;" id="daily-reward-title">Щоденна нагорода!</h2>
+        <p style="color:#666;margin-bottom:16px;" id="daily-reward-msg">Ти зайшов сьогодні — тримай зірочку!</p>
+        <div style="font-size:2rem;margin-bottom:8px;" id="daily-reward-stars">⭐</div>
+        <div id="daily-streak-wrap" style="display:none;background:#fff7ed;border-radius:12px;padding:10px 16px;margin-bottom:16px;">
+          <span style="font-size:1.4rem;">🔥</span>
+          <span id="daily-streak-text" style="font-weight:700;color:#ea580c;font-size:1.1rem;"> 5 днів підряд!</span>
+        </div>
+        <button onclick="closeDailyReward()" style="background:#1a3e7c;color:#fff;border:none;border-radius:12px;padding:12px 32px;font-size:1rem;font-weight:700;cursor:pointer;width:100%;">Вперед вчитись! 🚀</button>
+      </div>
+    </div>
+
     <!-- DASHBOARD — personal page after login -->
     <section id="dashboard">
       <div class="dashboard-wrap">
@@ -439,20 +454,31 @@
             <h1 id="dash-title">Привіт!</h1>
             <p id="dash-sub">Обери розділ для навчання</p>
           </div>
-          <div class="dash-grade-badge" id="dash-grade-badge">— клас</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+            <div class="dash-grade-badge" id="dash-grade-badge">— клас</div>
+            <div id="dash-streak-badge" style="display:none;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:20px;padding:4px 12px;font-size:0.85rem;font-weight:700;color:#ea580c;">🔥 <span id="dash-streak-num">0</span> днів</div>
+          </div>
         </div>
 
         <!-- Quick actions -->
-        <div class="dash-quick">
-          <button class="dash-q-btn" onclick="show('formulas')">📚 Формули</button>
+        <div class="dash-quick" id="dash-quick-btns">
+          <button class="dash-q-btn" id="dash-formulas-btn" onclick="show('formulas')">📚 Формули</button>
           <button class="dash-q-btn" id="dash-graph-btn" onclick="showGraph()">📈 Графіки</button>
           <button class="dash-q-btn" onclick="show('quiz')">🎮 Квіз</button>
           <button class="dash-q-btn" onclick="show('tasks')">🎯 Задачі</button>
           <button class="dash-q-btn" onclick="show('notes')">📓 Конспекти</button>
         </div>
 
-        <!-- Grade formulas -->
-        <div class="dash-section">
+        <!-- Games section for grades 1-4 -->
+        <div class="dash-section" id="dash-games-section" style="display:none;">
+          <h2 class="dash-section-title" id="dash-games-title">🎮 Ігри мого класу</h2>
+          <div class="dash-games-grid" id="dash-games-grid">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+        <!-- Grade formulas (grades 5+) -->
+        <div class="dash-section" id="dash-formulas-section">
           <h2 class="dash-section-title">📚 Формули мого класу</h2>
           <div class="dash-formulas-grid" id="dash-formulas-grid">
             <!-- filled by JS -->
@@ -472,6 +498,46 @@
           <h2 class="dash-section-title">🎯 Підготовка до НМТ</h2>
           <p>Ти в 11 класі — попереду НМТ! Тренуйся щодня:</p>
           <div class="dash-nmt-topics" id="dash-nmt-topics"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BATTLE (Grade 4 multiplication battle) -->
+    <section id="battle">
+      <div style="max-width:600px;margin:0 auto;padding:24px 16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h2 style="color:#dc2626;">⚔️ Битва множення</h2>
+          <button onclick="show('dashboard')" style="background:#f1f5f9;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:600;">← Назад</button>
+        </div>
+
+        <!-- HP bars -->
+        <div style="margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-weight:700;color:#1a3e7c;">🧑 Ти</span>
+            <span style="font-weight:700;color:#dc2626;">👾 Ворог</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="flex:1;background:#e5e7eb;border-radius:20px;height:28px;overflow:hidden;">
+              <div id="battle-hp-bar" style="height:100%;background:#16a34a;border-radius:20px;transition:.4s;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.85rem;width:100%;">100 HP</div>
+            </div>
+            <span style="font-size:1.5rem;">⚔️</span>
+            <div style="flex:1;background:#e5e7eb;border-radius:20px;height:28px;overflow:hidden;">
+              <div id="battle-enemy-bar" style="height:100%;background:#dc2626;border-radius:20px;transition:.4s;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.85rem;width:100%;">100 HP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question card -->
+        <div style="background:#fff;border-radius:20px;padding:36px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1);margin-bottom:16px;">
+          <div style="font-size:0.9rem;color:#888;margin-bottom:8px;">Правильна відповідь = удар по ворогу</div>
+          <div id="battle-question" style="font-size:3rem;font-weight:900;color:#1a3e7c;margin-bottom:20px;">? × ? = ?</div>
+          <div id="battle-feedback" style="font-size:1rem;min-height:24px;margin-bottom:12px;font-weight:700;"></div>
+          <div style="display:flex;gap:10px;justify-content:center;">
+            <input id="battle-input" type="number" placeholder="Відповідь" min="0" max="999"
+              style="padding:12px 20px;font-size:1.3rem;border:2px solid #e2e8f0;border-radius:12px;width:150px;text-align:center;font-weight:700;"
+              onkeydown="if(event.key==='Enter')battleSubmit()">
+            <button onclick="battleSubmit()" style="background:#dc2626;color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:1.1rem;font-weight:800;cursor:pointer;transition:.2s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">⚔️ Атака!</button>
+          </div>
         </div>
       </div>
     </section>

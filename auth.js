@@ -442,25 +442,165 @@ function authShowUser(user) {
   const dashGraphBtn = document.getElementById('dash-graph-btn');
   if (dashGraphBtn) dashGraphBtn.style.display = user.grade <= 4 ? 'none' : '';
   dashLoad(user);
+  checkDailyReward(user);
+}
+
+// ===== DAILY REWARD + STREAK =====
+function checkDailyReward(user) {
+  const today = new Date().toISOString().slice(0, 10);
+  const lastVisit = localStorage.getItem('mh_last_visit');
+  let streak = parseInt(localStorage.getItem('mh_streak') || '0');
+
+  if (lastVisit === today) {
+    // Already got reward today — just show streak badge
+    showStreakBadge(streak);
+    return;
+  }
+
+  // Calculate streak
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (lastVisit === yesterday) {
+    streak += 1;
+  } else {
+    streak = 1; // Reset streak if gap
+  }
+
+  localStorage.setItem('mh_last_visit', today);
+  localStorage.setItem('mh_streak', streak);
+
+  // Give star reward
+  let stars = parseInt(localStorage.getItem('mh_stars') || '0');
+  const bonusStars = streak >= 7 ? 3 : streak >= 3 ? 2 : 1;
+  stars += bonusStars;
+  localStorage.setItem('mh_stars', stars);
+
+  showStreakBadge(streak);
+  showDailyRewardPopup(streak, bonusStars);
+}
+
+function showStreakBadge(streak) {
+  const badge = document.getElementById('dash-streak-badge');
+  const num = document.getElementById('dash-streak-num');
+  if (badge && num && streak >= 2) {
+    num.textContent = streak;
+    badge.style.display = '';
+  }
+}
+
+function showDailyRewardPopup(streak, bonusStars) {
+  const popup = document.getElementById('daily-reward-popup');
+  if (!popup) return;
+  const emoji = document.getElementById('daily-reward-emoji');
+  const title = document.getElementById('daily-reward-title');
+  const msg = document.getElementById('daily-reward-msg');
+  const starsEl = document.getElementById('daily-reward-stars');
+  const streakWrap = document.getElementById('daily-streak-wrap');
+  const streakText = document.getElementById('daily-streak-text');
+
+  // Custom message based on streak
+  if (streak >= 7) {
+    emoji.textContent = '🏆';
+    title.textContent = 'Тиждень підряд!';
+    msg.textContent = `Неймовірно! ${streak} днів поспіль — ти справжній чемпіон!`;
+  } else if (streak >= 3) {
+    emoji.textContent = '🔥';
+    title.textContent = `${streak} дні підряд!`;
+    msg.textContent = 'Чудова серія! Так тримати!';
+  } else {
+    emoji.textContent = '🎁';
+    title.textContent = 'Щоденна нагорода!';
+    msg.textContent = 'Зайшов — молодець! Тримай зірочку!';
+  }
+
+  starsEl.textContent = '⭐'.repeat(bonusStars) + ` +${bonusStars}`;
+
+  if (streak >= 2) {
+    streakWrap.style.display = '';
+    streakText.textContent = ` ${streak} ${streak === 1 ? 'день' : streak < 5 ? 'дні' : 'днів'} підряд!`;
+  } else {
+    streakWrap.style.display = 'none';
+  }
+
+  popup.style.display = 'flex';
+}
+
+function closeDailyReward() {
+  const popup = document.getElementById('daily-reward-popup');
+  if (popup) popup.style.display = 'none';
 }
 
 // ===== DASHBOARD =====
+
+// Game configs per grade for the game dashboard (grades 1-4)
+const GRADE_GAMES = {
+  1: [
+    { emoji:'🃏', title:'Картки', desc:'Яблучка → цифри', color:'#dbeafe', border:'#93c5fd', action:`show('formulas')` },
+    { emoji:'🎯', title:'Квіз', desc:'Скільки яблук?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
+    { emoji:'🔐', title:'Таємний сейф', desc:'Розв\'яжи і відкрий!', color:'#fef9c3', border:'#fde047', action:`show('tasks')` },
+    { emoji:'📚', title:'Підручник', desc:'1 клас онлайн', color:'#f3e8ff', border:'#c084fc', action:`show('textbooks')` },
+  ],
+  2: [
+    { emoji:'📖', title:'Задачі', desc:'Було 5, дали ще 3...', color:'#dbeafe', border:'#93c5fd', action:`show('tasks')` },
+    { emoji:'⚡', title:'Квіз', desc:'Хто швидший?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
+    { emoji:'🃏', title:'Картки', desc:'Числа до 100', color:'#fef9c3', border:'#fde047', action:`show('formulas')` },
+    { emoji:'🔐', title:'Таємний сейф', desc:'Відкрий скарб!', color:'#ffe4e6', border:'#fca5a5', action:`show('tasks')` },
+  ],
+  3: [
+    { emoji:'✖️', title:'Множення', desc:'3 ряди по 4 = ?', color:'#dbeafe', border:'#93c5fd', action:`show('tasks')` },
+    { emoji:'⚡', title:'Швидкий квіз', desc:'Хто встигне?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
+    { emoji:'🃏', title:'Картки', desc:'Ділення і множення', color:'#fef9c3', border:'#fde047', action:`show('formulas')` },
+    { emoji:'🏆', title:'Мій прогрес', desc:'Мої зірочки', color:'#f3e8ff', border:'#c084fc', action:`showProgress()` },
+  ],
+  4: [
+    { emoji:'⚔️', title:'Битва множення', desc:'Атакуй правильною відповіддю!', color:'#fee2e2', border:'#fca5a5', action:`startBattle()` },
+    { emoji:'⚡', title:'Швидкий квіз', desc:'7 × 8 = ?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
+    { emoji:'🃏', title:'Картки', desc:'Таблиця множення', color:'#dbeafe', border:'#93c5fd', action:`show('formulas')` },
+    { emoji:'🔐', title:'Таємний сейф', desc:'Відкрий скарб!', color:'#fef9c3', border:'#fde047', action:`show('tasks')` },
+  ],
+};
 
 function dashLoad(user) {
   const grade = user.grade;
   document.getElementById('dash-title').textContent = `Привіт, ${user.name}! 👋`;
   document.getElementById('dash-grade-badge').textContent = `${grade} клас`;
 
-  // Fill grade-specific formulas
-  const formulas = GRADE_FORMULAS[grade] || GRADE_FORMULAS[11];
-  const grid = document.getElementById('dash-formulas-grid');
-  grid.innerHTML = formulas.map(f => `
-    <div class="dash-formula-card">
-      <div class="dash-formula-topic">${f.topic}</div>
-      <div class="dash-formula-title">${f.title}</div>
-      <div class="dash-formula-expr">${f.expr}</div>
-    </div>
-  `).join('');
+  const gamesSection = document.getElementById('dash-games-section');
+  const formulasSection = document.getElementById('dash-formulas-section');
+  const formulasBtn = document.getElementById('dash-formulas-btn');
+
+  if (grade <= 4) {
+    // Show games instead of formulas for grades 1-4
+    if (gamesSection) gamesSection.style.display = '';
+    if (formulasSection) formulasSection.style.display = 'none';
+    if (formulasBtn) formulasBtn.style.display = 'none';
+
+    const games = GRADE_GAMES[grade] || GRADE_GAMES[1];
+    const gamesGrid = document.getElementById('dash-games-grid');
+    if (gamesGrid) {
+      gamesGrid.innerHTML = games.map(g => `
+        <div class="dash-game-card" style="background:${g.color};border:2px solid ${g.border};" onclick="${g.action}">
+          <div class="dash-game-emoji">${g.emoji}</div>
+          <div class="dash-game-title">${g.title}</div>
+          <div class="dash-game-desc">${g.desc}</div>
+        </div>
+      `).join('');
+    }
+  } else {
+    // Grades 5+: show formulas
+    if (gamesSection) gamesSection.style.display = 'none';
+    if (formulasSection) formulasSection.style.display = '';
+    if (formulasBtn) formulasBtn.style.display = '';
+
+    const formulas = GRADE_FORMULAS[grade] || GRADE_FORMULAS[11];
+    const grid = document.getElementById('dash-formulas-grid');
+    if (grid) grid.innerHTML = formulas.map(f => `
+      <div class="dash-formula-card">
+        <div class="dash-formula-topic">${f.topic}</div>
+        <div class="dash-formula-title">${f.title}</div>
+        <div class="dash-formula-expr">${f.expr}</div>
+      </div>
+    `).join('');
+  }
 
   // Show NMT section for grades 9-11
   const nmtSection = document.getElementById('dash-nmt');
@@ -475,6 +615,12 @@ function dashLoad(user) {
 
   // Load recent notes
   dashLoadRecentNotes();
+}
+
+function showProgress() {
+  const stars = parseInt(localStorage.getItem('mh_stars') || '0');
+  const streak = parseInt(localStorage.getItem('mh_streak') || '0');
+  alert(`⭐ Зірочок: ${stars}\n🔥 Серія: ${streak} днів\n\nТак тримати! Продовжуй навчатись!`);
 }
 
 async function dashLoadRecentNotes() {
