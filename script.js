@@ -271,8 +271,7 @@ function openTableFullscreen(id){
 
   } else if(id === 'sq'){
     title.textContent = 'Квадрати чисел (1–25)';
-    let html = '<div class="sq-fs-grid">';
-    html += '<div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div>';
+    let html = '<div class="sq-fs-grid"><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div>';
     for(let i=1;i<=25;i++) html+=`<div class="mult-cell sq-n">${i}</div><div class="mult-cell sq-val">${i*i}</div>`;
     html += '</div>';
     body.innerHTML = html;
