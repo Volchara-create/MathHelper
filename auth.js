@@ -1,0 +1,365 @@
+const API = 'http://localhost:3001';
+
+// Grade-specific formula data for dashboard
+const GRADE_FORMULAS = {
+  4: [
+    { topic: 'Арифметика', title: 'Периметр прямокутника', expr: 'P = 2·(a + b)' },
+    { topic: 'Арифметика', title: 'Площа прямокутника', expr: 'S = a · b' },
+    { topic: 'Арифметика', title: 'Площа квадрата', expr: 'S = a²' },
+    { topic: 'Арифметика', title: 'Периметр квадрата', expr: 'P = 4 · a' },
+  ],
+  5: [
+    { topic: 'Дроби', title: 'Додавання дробів', expr: 'a/b + c/d = (ad + bc)/(bd)' },
+    { topic: 'Дроби', title: 'Множення дробів', expr: '(a/b)·(c/d) = ac/bd' },
+    { topic: 'Відсотки', title: 'Відсоток від числа', expr: 'X% від N = N·X/100' },
+    { topic: 'Площі', title: 'Площа трикутника', expr: 'S = (a·h) / 2' },
+  ],
+  6: [
+    { topic: 'Відсотки', title: 'Знайти відсоток', expr: 'X% = (частина/ціле)·100' },
+    { topic: "Від'ємні числа", title: 'Модуль числа', expr: '|a| = a, якщо a ≥ 0' },
+    { topic: 'Координати', title: 'Точка на площині', expr: 'A(x; y)' },
+    { topic: 'Рівняння', title: 'Просте рівняння', expr: 'x + a = b → x = b − a' },
+  ],
+  7: [
+    { topic: 'Алгебра', title: 'Лінійна функція', expr: 'y = kx + b' },
+    { topic: 'Алгебра', title: 'Степінь числа', expr: 'aⁿ · aᵐ = aⁿ⁺ᵐ' },
+    { topic: 'Геометрія', title: 'Сума кутів трикутника', expr: 'α + β + γ = 180°' },
+    { topic: 'Алгебра', title: 'Квадрат суми', expr: '(a+b)² = a² + 2ab + b²' },
+  ],
+  8: [
+    { topic: 'Алгебра', title: 'Квадратне рівняння', expr: 'ax² + bx + c = 0' },
+    { topic: 'Алгебра', title: 'Дискримінант', expr: 'D = b² − 4ac' },
+    { topic: 'Алгебра', title: 'Корені рівняння', expr: 'x = (−b ± √D) / 2a' },
+    { topic: 'Геометрія', title: 'Теорема Піфагора', expr: 'a² + b² = c²' },
+  ],
+  9: [
+    { topic: 'Тригонометрія', title: 'Основна тотожність', expr: 'sin²α + cos²α = 1' },
+    { topic: 'Тригонометрія', title: 'Подвійний кут', expr: 'sin 2α = 2·sinα·cosα' },
+    { topic: 'Геометрія', title: 'Теорема синусів', expr: 'a/sin A = b/sin B = 2R' },
+    { topic: 'Геометрія', title: 'Теорема косинусів', expr: 'c² = a²+b² − 2ab·cosC' },
+  ],
+  10: [
+    { topic: 'Аналіз', title: 'Похідна степені', expr: "(xⁿ)' = n·xⁿ⁻¹" },
+    { topic: 'Аналіз', title: 'Похідна добутку', expr: "(uv)' = u'v + uv'" },
+    { topic: 'Логарифми', title: 'Логарифм степеня', expr: 'logₐ(bⁿ) = n·logₐ(b)' },
+    { topic: 'Геометрія', title: "Об'єм кулі", expr: 'V = (4/3)·π·r³' },
+  ],
+  11: [
+    { topic: 'Аналіз', title: 'Інтеграл степені', expr: '∫xⁿdx = xⁿ⁺¹/(n+1) + C' },
+    { topic: 'Аналіз', title: 'Інтеграл sin', expr: '∫sin x dx = −cos x + C' },
+    { topic: 'НМТ', title: 'Дискримінант', expr: 'D = b² − 4ac' },
+    { topic: 'НМТ', title: 'Сума прогресії', expr: 'Sₙ = n(a₁ + aₙ)/2' },
+    { topic: 'НМТ', title: 'Логарифмічне рівняння', expr: 'logₐ(x) = b → x = aᵇ' },
+    { topic: 'НМТ', title: 'Показниковий вираз', expr: 'aˣ = aʸ → x = y' },
+  ]
+};
+
+const NMT_TOPICS = ['Квадратні рівняння', 'Тригонометрія', 'Логарифми', 'Прогресії', 'Похідна', 'Інтеграл', 'Геометрія', 'Стереометрія'];
+
+// Current note being edited
+let currentNoteId = null;
+let allNotes = [];
+
+// ===== INIT =====
+
+window.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('mh_token');
+  if (token) {
+    const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
+    authShowUser(user);
+  }
+
+  // Grade picker click handler
+  document.querySelectorAll('.grade-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+
+  // Wrap show() to handle dashboard/notes loading
+  const _origShow = window.show;
+  window.show = function(sec) {
+    _origShow(sec);
+    if (sec === 'notes') notesInit();
+    if (sec === 'dashboard') {
+      const user = JSON.parse(localStorage.getItem('mh_user') || 'null');
+      if (user) dashLoad(user);
+    }
+  };
+});
+
+// ===== AUTH =====
+
+function authOpen(mode) {
+  document.getElementById('auth-modal').classList.add('active');
+  authSwitch(mode);
+}
+
+function authClose() {
+  document.getElementById('auth-modal').classList.remove('active');
+}
+
+function authSwitch(mode) {
+  document.getElementById('auth-login-form').style.display = mode === 'login' ? '' : 'none';
+  document.getElementById('auth-register-form').style.display = mode === 'register' ? '' : 'none';
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('reg-error').textContent = '';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+
+  if (!email || !password) { errEl.textContent = 'Заповни всі поля'; return; }
+
+  try {
+    const res = await fetch(`${API}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error; return; }
+
+    localStorage.setItem('mh_token', data.token);
+    localStorage.setItem('mh_user', JSON.stringify(data.user));
+    authShowUser(data.user);
+    authClose();
+    show('dashboard');
+  } catch {
+    errEl.textContent = 'Помилка підключення до сервера';
+  }
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const gradeBtn = document.querySelector('.grade-btn.selected');
+  const errEl = document.getElementById('reg-error');
+
+  if (!name || !email || !password) { errEl.textContent = 'Заповни всі поля'; return; }
+  if (!gradeBtn) { errEl.textContent = 'Вибери свій клас'; return; }
+  if (password.length < 6) { errEl.textContent = 'Пароль мінімум 6 символів'; return; }
+
+  const grade = parseInt(gradeBtn.dataset.grade);
+
+  try {
+    const res = await fetch(`${API}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, grade })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error; return; }
+
+    localStorage.setItem('mh_token', data.token);
+    localStorage.setItem('mh_user', JSON.stringify(data.user));
+    authShowUser(data.user);
+    authClose();
+    show('dashboard');
+  } catch {
+    errEl.textContent = 'Помилка підключення до сервера';
+  }
+}
+
+function authLogout() {
+  localStorage.removeItem('mh_token');
+  localStorage.removeItem('mh_user');
+  document.getElementById('auth-nav').style.display = '';
+  document.getElementById('user-nav').style.display = 'none';
+  show('home');
+}
+
+function startTrial() {
+  const token = localStorage.getItem('mh_token');
+  if (!token) { authOpen('register'); return; }
+  alert('Незабаром тут буде оплата! Тримай 7 днів Pro безкоштовно 🎉');
+}
+
+function authShowUser(user) {
+  document.getElementById('auth-nav').style.display = 'none';
+  document.getElementById('user-nav').style.display = '';
+  document.getElementById('user-greeting').textContent = `${user.name} · ${user.grade} кл.`;
+  document.getElementById('user-badge').textContent = user.isPro ? '⭐ Pro' : '';
+  dashLoad(user);
+}
+
+// ===== DASHBOARD =====
+
+function dashLoad(user) {
+  const grade = user.grade;
+  document.getElementById('dash-title').textContent = `Привіт, ${user.name}! 👋`;
+  document.getElementById('dash-grade-badge').textContent = `${grade} клас`;
+
+  // Fill grade-specific formulas
+  const formulas = GRADE_FORMULAS[grade] || GRADE_FORMULAS[11];
+  const grid = document.getElementById('dash-formulas-grid');
+  grid.innerHTML = formulas.map(f => `
+    <div class="dash-formula-card">
+      <div class="dash-formula-topic">${f.topic}</div>
+      <div class="dash-formula-title">${f.title}</div>
+      <div class="dash-formula-expr">${f.expr}</div>
+    </div>
+  `).join('');
+
+  // Show NMT section for grades 10-11
+  const nmtSection = document.getElementById('dash-nmt');
+  if (grade >= 10) {
+    nmtSection.style.display = '';
+    document.getElementById('dash-nmt-topics').innerHTML = NMT_TOPICS.map(t =>
+      `<span class="dash-nmt-topic">${t}</span>`
+    ).join('');
+  } else {
+    nmtSection.style.display = 'none';
+  }
+
+  // Load recent notes
+  dashLoadRecentNotes();
+}
+
+async function dashLoadRecentNotes() {
+  const token = localStorage.getItem('mh_token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return;
+    allNotes = await res.json();
+    const container = document.getElementById('dash-recent-notes');
+    if (!allNotes.length) {
+      container.innerHTML = `<p class="dash-empty">Немає конспектів — <a href="#" onclick="show('notes')">створи перший!</a></p>`;
+      return;
+    }
+    container.innerHTML = allNotes.slice(0, 3).map(n => `
+      <div class="dash-note-card" onclick="openNoteFromDash(${n.id})">
+        <div class="dash-note-title">${n.title}</div>
+        <div class="dash-note-preview">${(n.content || 'Порожній конспект').substring(0, 60)}</div>
+      </div>
+    `).join('');
+  } catch { /* silent */ }
+}
+
+function openNoteFromDash(id) {
+  show('notes');
+  setTimeout(() => noteOpen(id), 200);
+}
+
+// ===== NOTES =====
+
+async function notesInit() {
+  const token = localStorage.getItem('mh_token');
+  if (!token) {
+    document.getElementById('notes-list').innerHTML =
+      `<p class="notes-empty">Увійди щоб бачити конспекти</p>`;
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
+    allNotes = await res.json();
+    notesRender(null);
+  } catch {
+    document.getElementById('notes-list').innerHTML = `<p class="notes-empty">Помилка завантаження</p>`;
+  }
+}
+
+function notesRender(openId) {
+  const list = document.getElementById('notes-list');
+  if (!allNotes.length) {
+    list.innerHTML = `<p class="notes-empty">Тут будуть твої конспекти</p>`;
+    document.getElementById('notes-editor').style.display = 'none';
+    return;
+  }
+  list.innerHTML = allNotes.map(n => `
+    <div class="notes-list-item ${n.id === currentNoteId ? 'active' : ''}" onclick="noteOpen(${n.id})">
+      <div class="notes-item-title">${n.title}</div>
+      <div class="notes-item-date">${new Date(n.updatedAt).toLocaleDateString('uk-UA')}</div>
+    </div>
+  `).join('');
+
+  if (openId) noteOpen(openId);
+}
+
+function noteOpen(id) {
+  const note = allNotes.find(n => n.id === id);
+  if (!note) return;
+  currentNoteId = id;
+  document.getElementById('note-title-input').value = note.title;
+  document.getElementById('note-content-input').value = note.content;
+  document.getElementById('notes-editor').style.display = 'flex';
+  // Highlight active in list
+  document.querySelectorAll('.notes-list-item').forEach((el, i) => {
+    el.classList.toggle('active', allNotes[i]?.id === id);
+  });
+}
+
+function noteNew() {
+  const token = localStorage.getItem('mh_token');
+  if (!token) { authOpen('login'); return; }
+  currentNoteId = null;
+  document.getElementById('note-title-input').value = '';
+  document.getElementById('note-content-input').value = '';
+  document.getElementById('notes-editor').style.display = 'flex';
+  document.querySelectorAll('.notes-list-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('note-title-input').focus();
+}
+
+function noteClose() {
+  currentNoteId = null;
+  document.getElementById('notes-editor').style.display = 'none';
+}
+
+async function noteSave() {
+  const token = localStorage.getItem('mh_token');
+  const title = document.getElementById('note-title-input').value.trim();
+  const content = document.getElementById('note-content-input').value;
+  if (!title) { alert('Введи назву конспекту'); return; }
+
+  try {
+    let res, note;
+    if (currentNoteId) {
+      res = await fetch(`${API}/notes/${currentNoteId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title, content })
+      });
+    } else {
+      res = await fetch(`${API}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title, content })
+      });
+    }
+    note = await res.json();
+    if (!res.ok) { alert(note.error); return; }
+
+    if (currentNoteId) {
+      allNotes = allNotes.map(n => n.id === currentNoteId ? note : n);
+    } else {
+      allNotes.unshift(note);
+      currentNoteId = note.id;
+    }
+    notesRender(note.id);
+  } catch {
+    alert('Помилка збереження');
+  }
+}
+
+async function noteDelete() {
+  if (!currentNoteId) return;
+  if (!confirm('Видалити цей конспект?')) return;
+  const token = localStorage.getItem('mh_token');
+  try {
+    await fetch(`${API}/notes/${currentNoteId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    allNotes = allNotes.filter(n => n.id !== currentNoteId);
+    currentNoteId = null;
+    document.getElementById('notes-editor').style.display = 'none';
+    notesRender(null);
+  } catch {
+    alert('Помилка видалення');
+  }
+}

@@ -48,8 +48,6 @@
       </svg>
       MathHelper
     </div>
-
-    <!-- Main navigation -->
     <nav>
       <button onclick="show('home')">Головна</button>
       <button onclick="show('tasks')">Задачі</button>
@@ -58,26 +56,8 @@
       <button onclick="showFormulas()">Формули</button>
       <button onclick="showGraph()">Робочий стіл</button>
       <button onclick="show('about')">Про нас</button>
-      <button onclick="show('pricing')" style="color:#f59e0b;font-weight:700;">⭐ Pro</button>
       <button id="dark-toggle" onclick="toggleDark()">🌙 Темна</button>
     </nav>
-
-    <!-- Auth block — top right corner -->
-    <div class="header-auth">
-      <div id="auth-nav">
-        <button class="auth-nav-btn" onclick="authOpen('login')">Увійти</button>
-        <button class="auth-nav-btn auth-nav-btn--accent" onclick="authOpen('register')">Реєстрація</button>
-      </div>
-      <div id="user-nav" style="display:none;">
-        <button class="auth-nav-btn auth-nav-btn--dash" onclick="show('dashboard')">🏠 Кабінет</button>
-        <button class="auth-nav-btn auth-nav-btn--notes" onclick="show('notes')">📓 Конспекти</button>
-        <div class="user-info" onclick="show('pricing')">
-          <span id="user-greeting"></span>
-          <span id="user-badge"></span>
-        </div>
-        <button class="auth-nav-btn" onclick="authLogout()">Вийти</button>
-      </div>
-    </div>
   </header>
 
   <main>
@@ -224,59 +204,6 @@
       </div>
     </section>
 
-    <section id="pricing">
-      <div class="pricing-wrap">
-        <h2 class="pricing-title">Обери свій план</h2>
-        <p class="pricing-sub">7 днів Pro безкоштовно — без карти</p>
-        <div class="pricing-cards">
-
-          <div class="pricing-card">
-            <div class="pricing-card-name">Безкоштовно</div>
-            <div class="pricing-card-price">0 ₴<span>/назавжди</span></div>
-            <ul class="pricing-features">
-              <li>✅ Формули свого класу</li>
-              <li>✅ Графік функцій</li>
-              <li>✅ Калькулятор</li>
-              <li>✅ 5 питань квізу на день</li>
-              <li class="disabled">❌ Конспект</li>
-              <li class="disabled">❌ Необмежений квіз</li>
-              <li class="disabled">❌ Підготовка до НМТ</li>
-              <li class="disabled">❌ Формули наступного класу</li>
-            </ul>
-            <button class="pricing-btn pricing-btn--free" onclick="authOpen('register')">Почати безкоштовно</button>
-          </div>
-
-          <div class="pricing-card pricing-card--pro">
-            <div class="pricing-card-badge">⭐ Популярне</div>
-            <div class="pricing-card-name">Pro — Місяць</div>
-            <div class="pricing-card-price">99 ₴<span>/місяць</span></div>
-            <ul class="pricing-features">
-              <li>✅ Все з безкоштовного</li>
-              <li>✅ Конспект</li>
-              <li>✅ Необмежений квіз</li>
-              <li>✅ Підготовка до НМТ</li>
-              <li>✅ Формули наступного класу</li>
-              <li>✅ Без реклами</li>
-            </ul>
-            <button class="pricing-btn pricing-btn--pro" onclick="startTrial()">7 днів безкоштовно</button>
-          </div>
-
-          <div class="pricing-card pricing-card--year">
-            <div class="pricing-card-badge">🔥 Вигідно −40%</div>
-            <div class="pricing-card-name">Pro — Рік</div>
-            <div class="pricing-card-price">699 ₴<span>/рік</span></div>
-            <ul class="pricing-features">
-              <li>✅ Все з Pro місяць</li>
-              <li>✅ Пріоритетна підтримка</li>
-              <li>✅ Ранній доступ до нових функцій</li>
-            </ul>
-            <button class="pricing-btn pricing-btn--pro" onclick="startTrial()">7 днів безкоштовно</button>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
     <section id="about">
       <div id="about-content">
         <h2>Про MathHelper</h2>
@@ -291,80 +218,6 @@
         <h2>Контакти</h2>
         <p>📧 Email: <strong><a href="mailto:math.helper.proba@gmail.com">math.helper.proba@gmail.com</a></strong></p>
         <p>🌍 Проєкт створений для навчання та саморозвитку</p>
-      </div>
-    </section>
-
-    <!-- DASHBOARD — personal page after login -->
-    <section id="dashboard">
-      <div class="dashboard-wrap">
-        <div class="dash-header">
-          <div class="dash-welcome">
-            <h1 id="dash-title">Привіт!</h1>
-            <p id="dash-sub">Обери розділ для навчання</p>
-          </div>
-          <div class="dash-grade-badge" id="dash-grade-badge">— клас</div>
-        </div>
-
-        <!-- Quick actions -->
-        <div class="dash-quick">
-          <button class="dash-q-btn" onclick="showFormulas()">📐 Формули</button>
-          <button class="dash-q-btn" onclick="show('trig')">📏 Тригонометрія</button>
-          <button class="dash-q-btn" onclick="showGraph()">📈 Графіки</button>
-          <button class="dash-q-btn" onclick="show('quiz')">🎮 Квіз</button>
-          <button class="dash-q-btn" onclick="show('tasks')">🎯 Задачі</button>
-          <button class="dash-q-btn" onclick="show('notes')">📓 Конспекти</button>
-        </div>
-
-        <!-- Grade formulas -->
-        <div class="dash-section">
-          <h2 class="dash-section-title">📚 Формули мого класу</h2>
-          <div class="dash-formulas-grid" id="dash-formulas-grid">
-            <!-- filled by JS -->
-          </div>
-        </div>
-
-        <!-- Recent notes -->
-        <div class="dash-section">
-          <h2 class="dash-section-title">📓 Останні конспекти <button class="dash-new-note-btn" onclick="show('notes')">+ Новий</button></h2>
-          <div id="dash-recent-notes" class="dash-recent-notes">
-            <p class="dash-empty">Немає конспектів — <a href="#" onclick="show('notes')">створи перший!</a></p>
-          </div>
-        </div>
-
-        <!-- NMT promo for grade 11 -->
-        <div class="dash-section dash-nmt-section" id="dash-nmt" style="display:none;">
-          <h2 class="dash-section-title">🎯 Підготовка до НМТ</h2>
-          <p>Ти в 11 класі — попереду НМТ! Тренуйся щодня:</p>
-          <div class="dash-nmt-topics" id="dash-nmt-topics"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- NOTES — конспекти -->
-    <section id="notes">
-      <div class="notes-wrap">
-        <div class="notes-header">
-          <h2>📓 Мої конспекти</h2>
-          <button class="notes-new-btn" onclick="noteNew()">+ Новий конспект</button>
-        </div>
-        <div class="notes-layout">
-          <!-- List of notes -->
-          <div class="notes-list" id="notes-list">
-            <p class="notes-empty" id="notes-empty">Тут будуть твої конспекти</p>
-          </div>
-          <!-- Editor -->
-          <div class="notes-editor" id="notes-editor" style="display:none;">
-            <div class="notes-editor-head">
-              <input class="notes-title-input" id="note-title-input" placeholder="Назва конспекту..." maxlength="80">
-              <div class="notes-editor-actions">
-                <button class="note-save-btn" onclick="noteSave()">💾 Зберегти</button>
-                <button class="note-delete-btn" onclick="noteDelete()">🗑 Видалити</button>
-                <button class="note-close-btn" onclick="noteClose()">✕</button>
-              </div>
-            </div>
-            <textarea class="notes-content-area" id="note-content-input" placeholder="Пиши сюди свої нотатки, формули, пояснення..."></textarea>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -567,66 +420,6 @@
     </div>
   </footer>
 
-  <!-- Auth modal -->
-  <div id="auth-modal" class="auth-modal">
-    <div class="auth-modal-content">
-      <button class="auth-modal-close" onclick="authClose()">×</button>
-
-      <!-- Login form -->
-      <div id="auth-login-form">
-        <h2>🔐 Вхід</h2>
-        <p class="auth-sub">Увійди щоб бачити формули свого класу</p>
-        <div class="auth-field">
-          <label>Email</label>
-          <input type="email" id="login-email" placeholder="твій@email.com">
-        </div>
-        <div class="auth-field">
-          <label>Пароль</label>
-          <input type="password" id="login-password" placeholder="••••••••">
-        </div>
-        <div id="login-error" class="auth-error"></div>
-        <button class="auth-btn" onclick="doLogin()">Увійти</button>
-        <p class="auth-switch">Немає акаунту? <a href="#" onclick="authSwitch('register')">Зареєструватись</a></p>
-      </div>
-
-      <!-- Register form -->
-      <div id="auth-register-form" style="display:none;">
-        <h2>📝 Реєстрація</h2>
-        <p class="auth-sub">Створи акаунт і вибери свій клас</p>
-        <div class="auth-field">
-          <label>Імʼя</label>
-          <input type="text" id="reg-name" placeholder="Як тебе звати?">
-        </div>
-        <div class="auth-field">
-          <label>Email</label>
-          <input type="email" id="reg-email" placeholder="твій@email.com">
-        </div>
-        <div class="auth-field">
-          <label>Пароль</label>
-          <input type="password" id="reg-password" placeholder="мінімум 6 символів">
-        </div>
-        <div class="auth-field">
-          <label>Твій клас</label>
-          <div class="grade-picker" id="grade-picker">
-            <button class="grade-btn" data-grade="4">4</button>
-            <button class="grade-btn" data-grade="5">5</button>
-            <button class="grade-btn" data-grade="6">6</button>
-            <button class="grade-btn" data-grade="7">7</button>
-            <button class="grade-btn" data-grade="8">8</button>
-            <button class="grade-btn" data-grade="9">9</button>
-            <button class="grade-btn" data-grade="10">10</button>
-            <button class="grade-btn" data-grade="11">11</button>
-          </div>
-        </div>
-        <div id="reg-error" class="auth-error"></div>
-        <button class="auth-btn" onclick="doRegister()">Зареєструватись</button>
-        <p class="auth-switch">Вже є акаунт? <a href="#" onclick="authSwitch('login')">Увійти</a></p>
-      </div>
-
-    </div>
-  </div>
-
   <script src="script.js"></script>
-  <script src="auth.js"></script>
 </body>
 </html>
