@@ -137,19 +137,19 @@ function showFormulas(){ show('formulas'); }
 // ===== ALGEBRA DATA =====
 // v = visual (emoji side), m = math side, expr = text-only fallback
 const ALGEBRA_CATS = [
-  { name:'🍎 Додавання', minGrade:1, maxGrade:2, formulas:[
-    {name:'Що таке додавання?', v:'🍎🍎 + 🍎🍎🍎 = 🍎🍎🍎🍎🍎', m:'2 + 3 = 5'},
-    {name:'Можна міняти місцями', v:'🍐🍐🍐 + 🍐🍐🍐🍐🍐 = 🍐🍐🍐🍐🍐🍐🍐🍐', m:'3 + 5 = 5 + 3 = 8'},
-    {name:'Додавання нуля', v:'🍎🍎🍎 + (нічого) = 🍎🍎🍎', m:'5 + 0 = 5'},
-    {name:'Склад числа 10', v:'⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ = 10', m:'1+9 · 2+8 · 3+7 · 4+6 · 5+5'},
-    {name:'Приклад', v:'🍎🍎🍎🍎 + 🍎🍎🍎🍎🍎🍎', m:'4 + 6 = 10'},
+  { name:'🐱 Додавання', minGrade:1, maxGrade:2, formulas:[
+    {name:'Кошенята прийшли!', v:'🐱🐱 + 🐱🐱🐱 = 🐱🐱🐱🐱🐱', m:'2 + 3 = 5'},
+    {name:'Можна міняти місцями', v:'🐶🐶🐶 + 🐶🐶🐶🐶🐶 = 🐶🐶🐶🐶🐶🐶🐶🐶', m:'3 + 5 = 5 + 3 = 8'},
+    {name:'Плюс нуль = те саме', v:'🐸🐸🐸 + (нікого немає) = 🐸🐸🐸', m:'3 + 0 = 3'},
+    {name:'Склад числа 10', v:'🐣🐣🐣🐣🐣🐣🐣🐣🐣🐣 = 10 пташенят', m:'1+9 · 2+8 · 3+7 · 4+6 · 5+5'},
+    {name:'Приклад з зайчиками', v:'🐰🐰🐰🐰 + 🐰🐰🐰🐰🐰🐰 = ?', m:'4 + 6 = 10'},
   ]},
-  { name:'🍇 Віднімання', minGrade:1, maxGrade:2, formulas:[
-    {name:'Що таке віднімання?', v:'🍇🍇🍇🍇🍇 − 🍇🍇 = 🍇🍇🍇', m:'5 − 2 = 3'},
-    {name:'Перевірка', v:'❓ + 🍇🍇 = 🍇🍇🍇🍇🍇', m:'5 − 2 = 3  →  3 + 2 = 5 ✓'},
-    {name:'Від нуля', v:'🍎🍎🍎🍎🍎 − (нічого) = 🍎🍎🍎🍎🍎', m:'5 − 0 = 5'},
-    {name:'Від себе', v:'🍎🍎🍎 − 🍎🍎🍎 = (порожньо)', m:'5 − 5 = 0'},
-    {name:'Приклад', v:'🍇🍇🍇🍇🍇🍇🍇🍇 → з\'їли 🍇🍇🍇', m:'8 − 3 = 5'},
+  { name:'🦊 Віднімання', minGrade:1, maxGrade:2, formulas:[
+    {name:'Лисенята пішли', v:'🦊🦊🦊🦊🦊 − 🦊🦊 = 🦊🦊🦊', m:'5 − 2 = 3'},
+    {name:'Перевірка', v:'❓ + 🐮🐮 = 🐮🐮🐮🐮🐮', m:'5 − 2 = 3  →  3 + 2 = 5 ✓'},
+    {name:'Мінус нуль = те саме', v:'🐼🐼🐼🐼🐼 − (нікого) = 🐼🐼🐼🐼🐼', m:'5 − 0 = 5'},
+    {name:'Всі пішли', v:'🐨🐨🐨 − 🐨🐨🐨 = (порожньо!)', m:'3 − 3 = 0'},
+    {name:'Приклад з пташками', v:'🐦🐦🐦🐦🐦🐦🐦🐦 → полетіли 🐦🐦🐦', m:'8 − 3 = 5'},
   ]},
   { name:'🔢 Числа до 100', minGrade:2, maxGrade:3, formulas:[
     {name:'Десятки', v:'🔵×10 🔵×20 🔵×30 ... 🔵×100', m:'10, 20, 30, 40, 50, 60, 70, 80, 90, 100'},
@@ -614,13 +614,68 @@ function buildTablesTab(){
 function showFormulaTab(tab){
   document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.ftab-content').forEach(t=>t.classList.remove('active'));
-  document.getElementById('ftab-'+tab).classList.add('active');
+  const tabEl = document.getElementById('ftab-'+tab);
+  if(tabEl) tabEl.classList.add('active');
   const btn = document.getElementById('ftab-btn-'+tab);
   if(btn) btn.classList.add('active');
   if(tab==='algebra') buildAlgebraTab();
+  if(tab==='all') buildAllTab();
   if(tab==='geometry') buildGeoTab();
   if(tab==='trigonometry') buildTrigTab();
   if(tab==='tables') buildTablesButtons();
+}
+
+// "Все разом" tab — all grade-appropriate cards mixed
+function buildAllTab() {
+  const grade = getUserGrade();
+  const grid = document.getElementById('all-cats-grid');
+  if (!grid) return;
+
+  // Gather ALL categories fitting the grade + shuffle formulas
+  const allFormulas = [];
+  ALGEBRA_CATS.forEach(cat => {
+    if (grade && (grade < (cat.minGrade || 1) || grade > (cat.maxGrade || 11))) return;
+    cat.formulas.forEach(f => allFormulas.push({ ...f, catName: cat.name }));
+  });
+
+  // Shuffle
+  for (let i = allFormulas.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allFormulas[i], allFormulas[j]] = [allFormulas[j], allFormulas[i]];
+  }
+
+  grid.innerHTML = allFormulas.map((f, i) => {
+    if (f.v && f.m) {
+      return `
+        <div class="alg-cat-btn" id="all-fc${i}" onclick="flipAllCard('all-fc${i}','all-fci${i}')" style="cursor:pointer;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;perspective:600px;">
+          <div style="position:relative;width:100%;min-height:90px;transform-style:preserve-3d;transition:transform .6s;" id="all-fci${i}">
+            <div style="position:absolute;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;text-align:center;">
+              <div style="font-size:0.7rem;color:#aaa;margin-bottom:4px;">${f.catName}</div>
+              <div style="font-size:1.4rem;line-height:1.5;">${f.v}</div>
+              <div style="font-size:0.7rem;color:#93c5fd;margin-top:4px;">👆 натисни</div>
+            </div>
+            <div style="position:absolute;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:linear-gradient(135deg,#1a3e7c,#2563eb);border-radius:12px;padding:12px;text-align:center;">
+              <div style="font-size:0.7rem;color:#93c5fd;margin-bottom:4px;">${f.catName}</div>
+              <div style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#fff;">${f.m}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+    return `
+      <div class="alg-cat-btn" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;">
+        <div style="font-size:0.7rem;color:#aaa;">${f.catName}</div>
+        <div style="font-weight:700;color:var(--blue);">${f.name}</div>
+        <div style="font-family:monospace;font-size:0.9rem;">${f.expr || f.m || ''}</div>
+      </div>`;
+  }).join('');
+}
+
+function flipAllCard(cardId, innerId) {
+  const inner = document.getElementById(innerId);
+  if (inner) {
+    const isFlipped = inner.style.transform === 'rotateY(180deg)';
+    inner.style.transform = isFlipped ? '' : 'rotateY(180deg)';
+  }
 }
 
 

@@ -441,6 +441,14 @@ function authShowUser(user) {
   // Hide graph button from dashboard for grades 1-4
   const dashGraphBtn = document.getElementById('dash-graph-btn');
   if (dashGraphBtn) dashGraphBtn.style.display = user.grade <= 4 ? 'none' : '';
+  // Hide notes for grades 1-2 (they can't write yet)
+  const notesBtn = document.getElementById('nav-notes-btn');
+  const dashNotesBtn = document.getElementById('dash-notes-btn');
+  const dashNotesSection = document.getElementById('dash-notes-section');
+  const showNotes = user.grade >= 3;
+  if (notesBtn) notesBtn.style.display = showNotes ? '' : 'none';
+  if (dashNotesBtn) dashNotesBtn.style.display = showNotes ? '' : 'none';
+  if (dashNotesSection) dashNotesSection.style.display = showNotes ? '' : 'none';
   dashLoad(user);
   checkDailyReward(user);
 }
@@ -534,9 +542,9 @@ function closeDailyReward() {
 // Game configs per grade for the game dashboard (grades 1-4)
 const GRADE_GAMES = {
   1: [
-    { emoji:'🃏', title:'Картки', desc:'Яблучка → цифри', color:'#dbeafe', border:'#93c5fd', action:`show('formulas')` },
-    { emoji:'🎯', title:'Квіз', desc:'Скільки яблук?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
-    { emoji:'🔐', title:'Таємний сейф', desc:'Розв\'яжи і відкрий!', color:'#fef9c3', border:'#fde047', action:`show('tasks')` },
+    { emoji:'🐱🐶🐸', title:'Картки з тваринами', desc:'Порахуй звірят!', color:'#dbeafe', border:'#93c5fd', action:`show('formulas')` },
+    { emoji:'🦊🐨🐼', title:'Квіз', desc:'Скільки тваринок?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
+    { emoji:'🔐', title:'Таємний сейф', desc:'Розв\'яжи і відкрий скарб!', color:'#fef9c3', border:'#fde047', action:`show('tasks')` },
     { emoji:'📚', title:'Підручник', desc:'1 клас онлайн', color:'#f3e8ff', border:'#c084fc', action:`show('textbooks')` },
   ],
   2: [

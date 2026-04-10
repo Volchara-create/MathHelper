@@ -59,8 +59,6 @@
       <button onclick="show('formulas')">Формули</button>
       <button onclick="show('textbooks')">Підручники</button>
       <button onclick="showGraph()">Робочий стіл</button>
-      <button onclick="show('about')">Про нас</button>
-      <button onclick="show('pricing')" style="color:#f59e0b;font-weight:700;">⭐ Pro</button>
       <button id="dark-toggle" onclick="toggleDark()">🌙 Темна</button>
     </nav>
 
@@ -72,14 +70,13 @@
       </div>
       <div id="user-nav" style="display:none;">
         <button class="auth-nav-btn auth-nav-btn--dash" onclick="show('dashboard')">🏠 Кабінет</button>
-        <button class="auth-nav-btn auth-nav-btn--notes" onclick="show('notes')">📓 Конспекти</button>
-        <div class="user-info" onclick="show('pricing')">
+        <button class="auth-nav-btn auth-nav-btn--notes" id="nav-notes-btn" onclick="show('notes')">📓 Конспекти</button>
+        <div class="user-info">
           <span id="user-greeting"></span>
           <span id="user-badge"></span>
         </div>
         <button class="auth-nav-btn" onclick="openChangeGrade()">Змінити клас</button>
         <button class="auth-nav-btn" onclick="authLogout()">Вийти</button>
-        <button class="auth-nav-btn danger-btn" onclick="deleteAccount()">Видалити акаунт</button>
       </div>
     </div>
   </header>
@@ -171,7 +168,8 @@
 
         <!-- Tabs -->
         <div class="ftabs">
-          <button class="ftab active" id="ftab-btn-algebra" onclick="showFormulaTab('algebra')">🔢 Алгебра</button>
+          <button class="ftab active" id="ftab-btn-algebra" onclick="showFormulaTab('algebra')">🃏 Картки</button>
+          <button class="ftab" id="ftab-btn-all" onclick="showFormulaTab('all')">🎲 Все разом</button>
           <button class="ftab" id="ftab-btn-geometry" onclick="showFormulaTab('geometry')">📐 Геометрія</button>
           <button class="ftab" id="ftab-btn-trigonometry" onclick="showFormulaTab('trigonometry')">📏 Тригонометрія</button>
           <button class="ftab" id="ftab-btn-tables" onclick="showFormulaTab('tables')">📊 Таблиці</button>
@@ -180,6 +178,11 @@
         <!-- ALGEBRA TAB — category buttons, filled by JS -->
         <div class="ftab-content active" id="ftab-algebra">
           <div class="algebra-cats-grid" id="algebra-cats-grid"></div>
+        </div>
+
+        <!-- ALL MIX TAB -->
+        <div class="ftab-content" id="ftab-all">
+          <div class="algebra-cats-grid" id="all-cats-grid"></div>
         </div>
 
         <!-- GEOMETRY TAB — clickable figure buttons → original SVG modal -->
@@ -466,7 +469,9 @@
           <button class="dash-q-btn" id="dash-graph-btn" onclick="showGraph()">📈 Графіки</button>
           <button class="dash-q-btn" onclick="show('quiz')">🎮 Квіз</button>
           <button class="dash-q-btn" onclick="show('tasks')">🎯 Задачі</button>
-          <button class="dash-q-btn" onclick="show('notes')">📓 Конспекти</button>
+          <button class="dash-q-btn" id="dash-notes-btn" onclick="show('notes')">📓 Конспекти</button>
+          <button class="dash-q-btn" onclick="show('about')" style="color:#6b7280;">ℹ️ Про нас</button>
+          <button class="dash-q-btn" onclick="show('pricing')" style="color:#d97706;font-weight:700;">⭐ Отримати Pro</button>
         </div>
 
         <!-- Games section for grades 1-4 -->
@@ -485,8 +490,8 @@
           </div>
         </div>
 
-        <!-- Recent notes -->
-        <div class="dash-section">
+        <!-- Recent notes (grades 3+) -->
+        <div class="dash-section" id="dash-notes-section">
           <h2 class="dash-section-title">📓 Останні конспекти <button class="dash-new-note-btn" onclick="show('notes')">+ Новий</button></h2>
           <div id="dash-recent-notes" class="dash-recent-notes">
             <p class="dash-empty">Немає конспектів — <a href="#" onclick="show('notes')">створи перший!</a></p>
