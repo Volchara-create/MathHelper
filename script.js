@@ -1743,8 +1743,30 @@ function updateNavForGrade(grade) {
   // Hide workspace + formulas from nav for grades 1-4
   const graphBtn = document.querySelector('nav button[onclick="showGraph()"]');
   if (graphBtn) graphBtn.style.display = grade <= 4 ? 'none' : '';
+  // For grades 1-4: show "Картки" instead of "Формули"
   const formulasBtn = document.querySelector('nav button[onclick="show(\'formulas\')"]');
-  if (formulasBtn) formulasBtn.style.display = grade <= 4 ? 'none' : '';
+  if (formulasBtn) {
+    formulasBtn.style.display = ''; // always visible
+    formulasBtn.textContent = grade <= 4 ? '🃏 Картки' : 'Формули';
+  }
+  // Dark mode: auto-enable for grades 6-11, hide toggle for 1-5
+  const darkBtn = document.getElementById('dark-toggle');
+  if (darkBtn) {
+    if (grade <= 5) {
+      // Kids: force light mode, hide toggle
+      document.body.classList.remove('dark');
+      darkBtn.style.display = 'none';
+      localStorage.setItem('mathhelper-dark', '0');
+    } else {
+      // Older grades: show toggle, auto-enable dark if not set yet
+      darkBtn.style.display = '';
+      if (localStorage.getItem('mathhelper-dark') === null) {
+        document.body.classList.add('dark');
+        darkBtn.textContent = '☀️ Світла';
+        localStorage.setItem('mathhelper-dark', '1');
+      }
+    }
+  }
   // Rebuild algebra tab when grade changes
   const grid = document.getElementById('algebra-cats-grid');
   if (grid) grid.innerHTML = '';

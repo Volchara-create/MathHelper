@@ -585,7 +585,7 @@ function dashLoad(user) {
     // Show games instead of formulas for grades 1-4
     if (gamesSection) gamesSection.style.display = '';
     if (formulasSection) formulasSection.style.display = 'none';
-    if (formulasBtn) formulasBtn.style.display = 'none';
+    if (formulasBtn) { formulasBtn.style.display = ''; formulasBtn.textContent = '🃏 Картки'; }
 
     const games = GRADE_GAMES[grade] || GRADE_GAMES[1];
     const gamesGrid = document.getElementById('dash-games-grid');
