@@ -102,7 +102,7 @@ function show(sec){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(sec).classList.add('active');
   document.getElementById('category-row').style.display='none';
-  if(sec==='tasks') loadRandomTask();
+  if(sec==='tasks') tasksInit();
   if(sec==='textbooks') buildTextbooks();
   if(sec==='trig') buildTrigTable();
   if(sec==='formulas') buildAlgebraTab();
@@ -1284,6 +1284,204 @@ function checkAnswer(input,correct,id){
 }
 
 function toggleAnswer(){document.getElementById('task-answer')?.classList.toggle('show');}
+
+// ===== TASKS SECTION (grade-aware) =====
+
+// Task generators by grade group
+const GRADE_TASKS = {
+  1: [ // Addition/subtraction to 10
+    ()=>{const a=ri(1,5),b=ri(1,5-a);return{q:`🍎 У кошику ${a} яблук, поклали ще ${b}. Скільки яблук стало?`,a:a+b,hint:`${a} + ${b} = ?`};},
+    ()=>{const a=ri(5,9),b=ri(1,a-1);return{q:`🍇 Було ${a} виноградин, з'їли ${b}. Скільки лишилось?`,a:a-b,hint:`${a} − ${b} = ?`};},
+    ()=>{const a=ri(1,4),b=ri(1,4);return{q:`🦋 ${a} метелики сиділи на квітці, прилетіло ще ${b}. Скільки їх тепер?`,a:a+b,hint:`${a} + ${b} = ?`};},
+    ()=>{const s=ri(4,9),a=ri(1,s-1);return{q:`🐣 В гнізді ${s} яєць, вилупилось ${a} пташенят. Скільки яєць залишилось?`,a:s-a,hint:`${s} − ${a} = ?`};},
+    ()=>{const a=ri(2,5),b=ri(1,4);return{q:`⭐ Намалювала ${a} зірки, потім ще ${b}. Скільки зірок всього?`,a:a+b,hint:`${a} + ${b} = ?`};},
+  ],
+  2: [ // Addition/subtraction to 100
+    ()=>{const a=ri(10,50),b=ri(5,40);return{q:`📦 На складі ${a} коробок, привезли ще ${b}. Скільки коробок стало?`,a:a+b,hint:`${a} + ${b} = ?`};},
+    ()=>{const a=ri(30,90),b=ri(5,a-10);return{q:`🍊 В магазині ${a} апельсинів, продали ${b}. Скільки лишилось?`,a:a-b,hint:`${a} − ${b} = ?`};},
+    ()=>{const a=ri(12,45),b=ri(5,30);return{q:`📚 На полиці ${a} книжок, поставили ще ${b}. Скільки книжок на полиці?`,a:a+b,hint:`${a} + ${b} = ?`};},
+    ()=>{const s=ri(40,90),a=ri(10,30);return{q:`🚌 В автобусі ${s} місць, зайнято ${a}. Скільки місць вільно?`,a:s-a,hint:`${s} − ${a} = ?`};},
+    ()=>{const a=ri(15,40),b=ri(10,40);return{q:`🌻 У саду ${a} жовтих і ${b} червоних квіток. Скільки квіток всього?`,a:a+b,hint:`${a} + ${b} = ?`};},
+  ],
+  3: [ // Multiplication tables
+    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`✖️ Скільки буде ${a} × ${b}?`,a:a*b,hint:`таблиця множення`};},
+    ()=>{const a=ri(2,9),b=ri(2,5);return{q:`🧁 Є ${b} тарілок, на кожній по ${a} кексів. Скільки кексів всього?`,a:a*b,hint:`${b} × ${a} = ?`};},
+    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`⚽ ${a} команд по ${b} гравців. Скільки гравців всього?`,a:a*b,hint:`${a} × ${b} = ?`};},
+    ()=>{const b=ri(2,8),p=b*ri(2,6);return{q:`🍫 ${p} цукерок порівну в ${b} пакетиків. По скільки в кожному?`,a:p/b,hint:`${p} ÷ ${b} = ?`};},
+    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`🌟 Скільки буде ${a} × ${b}?`,a:a*b,hint:`рахуй рядками`};},
+  ],
+  4: [ // Division + basic geometry
+    ()=>{const b=ri(2,9),q=ri(2,9);return{q:`➗ ${b*q} ÷ ${b} = ?`,a:q,hint:`ділення`};},
+    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`📐 Прямокутник ${a} см × ${b} см. Знайди периметр.`,a:2*(a+b),hint:`P = 2×(${a}+${b})`};},
+    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`📏 Сторони прямокутника ${a} і ${b} см. Знайди площу.`,a:a*b,hint:`S = ${a} × ${b}`};},
+    ()=>{const a=ri(2,8);return{q:`⬛ Сторона квадрата ${a} см. Знайди периметр.`,a:4*a,hint:`P = 4 × ${a}`};},
+    ()=>{const b=ri(2,9),q=ri(2,9);return{q:`🍕 ${b*q} шматочків піци порівну між ${b} друзями. По скільки кожному?`,a:q,hint:`${b*q} ÷ ${b} = ?`};},
+  ],
+  5: [ // Percentages + fractions
+    ()=>{const n=ri(2,9)*10,p=ri(1,5)*10;return{q:`💯 ${p}% від ${n} = ?`,a:n*p/100,hint:`${n} × ${p} ÷ 100`};},
+    ()=>{const a=ri(2,5),b=ri(2,5);return{q:`🍕 Від піци лишилось ${a}/${a+b}. Скільки частин з'їли з ${a+b}?`,a:b,hint:`${a+b} − ${a} = ?`};},
+    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`📐 Трикутник з основою ${a} см і висотою ${b} см. Знайди площу.`,a:a*b/2,hint:`S = (${a} × ${b}) ÷ 2`};},
+    ()=>{const n=ri(1,9)*10,p=50;return{q:`🎯 ${p}% від ${n} = ?`,a:n/2,hint:`половина від ${n}`};},
+    ()=>{const a=ri(2,9),b=ri(2,5),r=a*b;return{q:`✖️ ${a} × ${b} = ?  (і ще раз для впевненості 😄)`,a:r,hint:`таблиця`};},
+  ],
+};
+
+// Safe game state
+let safeAnswers = [];
+let safeCorrect = [false, false, false];
+let safeTotalStars = 0;
+
+function tasksInit() {
+  const grade = getUserGrade();
+  const label = document.getElementById('tasks-grade-label');
+  if (label) label.textContent = `${grade} клас — задачі підібрані для тебе`;
+  if (grade <= 5) {
+    tasksSetMode('safe');
+    safeNew();
+  } else {
+    tasksSetMode('regular');
+    loadRandomTask();
+  }
+}
+
+function tasksSetMode(mode) {
+  document.getElementById('tasks-safe').style.display = mode === 'safe' ? '' : 'none';
+  document.getElementById('tasks-regular').style.display = mode === 'regular' ? '' : 'none';
+  document.getElementById('tmode-safe').classList.toggle('active', mode === 'safe');
+  document.getElementById('tmode-regular').classList.toggle('active', mode === 'regular');
+}
+
+function getGradeTasks() {
+  const g = getUserGrade();
+  if (g <= 1) return GRADE_TASKS[1];
+  if (g <= 2) return GRADE_TASKS[2];
+  if (g <= 3) return GRADE_TASKS[3];
+  if (g <= 4) return GRADE_TASKS[4];
+  return GRADE_TASKS[5];
+}
+
+function safeNew() {
+  const pool = getGradeTasks();
+  // Pick 3 unique tasks
+  const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 3);
+  safeAnswers = shuffled.map(g => g());
+  safeCorrect = [false, false, false];
+
+  // Reset dial
+  safeTurnDial(0);
+
+  // Render questions
+  const qEl = document.getElementById('safe-questions');
+  qEl.innerHTML = safeAnswers.map((t, i) => `
+    <div class="safe-q" id="safe-q${i}">
+      <div class="safe-q-num">🔑 ${i+1}.</div>
+      <div class="safe-q-text">${t.q}</div>
+      <div class="safe-q-hint">${t.hint}</div>
+      <div class="safe-q-row">
+        <input class="safe-input" id="safe-ans${i}" type="text" placeholder="Відповідь..."
+          onkeydown="if(event.key==='Enter')safeCheck(${i})"
+          ${i > 0 ? 'disabled' : ''}>
+        <button class="safe-check-btn" onclick="safeCheck(${i})" ${i > 0 ? 'disabled' : ''}>→</button>
+      </div>
+      <div class="safe-q-result" id="safe-r${i}"></div>
+    </div>
+  `).join('');
+
+  // Reset digits
+  for (let i = 0; i < 3; i++) {
+    const d = document.getElementById(`sd${i}`);
+    if (d) { d.value = '?'; d.style.color = '#93c5fd'; d.classList.remove('unlocked'); }
+  }
+  document.getElementById('safe-msg').textContent = '';
+  document.getElementById('safe-status-text').textContent = '🔒 ЗАЧИНЕНО';
+
+  // Focus first input
+  setTimeout(() => document.getElementById('safe-ans0')?.focus(), 100);
+}
+
+let dialAngle = 0;
+function safeTurnDial(steps) {
+  dialAngle += steps * 40;
+  const ptr = document.getElementById('safe-pointer');
+  if (!ptr) return;
+  const rad = (dialAngle * Math.PI) / 180;
+  const cx = 80, cy = 80, len = 25;
+  ptr.setAttribute('x2', cx + Math.sin(rad) * len);
+  ptr.setAttribute('y2', cy - Math.cos(rad) * len);
+}
+
+function safeCheck(i) {
+  const input = document.getElementById(`safe-ans${i}`);
+  const result = document.getElementById(`safe-r${i}`);
+  const val = input.value.trim();
+  const correct = String(safeAnswers[i].a);
+
+  if (!val) { result.textContent = '⚠️ Введи відповідь!'; result.className = 'safe-q-result wrong'; return; }
+
+  if (val === correct) {
+    safeCorrect[i] = true;
+    result.textContent = '✅ Правильно!';
+    result.className = 'safe-q-result ok';
+    input.disabled = true;
+    document.querySelector(`#safe-q${i} .safe-check-btn`).disabled = true;
+    document.getElementById(`safe-q${i}`).classList.add('done');
+
+    // Show digit in code display
+    const d = document.getElementById(`sd${i}`);
+    if (d) { d.value = correct; d.style.color = '#22c55e'; d.classList.add('unlocked'); }
+
+    // Turn dial
+    safeTurnDial(1);
+
+    // Unlock next question
+    if (i < 2) {
+      const nextInput = document.getElementById(`safe-ans${i+1}`);
+      const nextBtn = document.querySelector(`#safe-q${i+1} .safe-check-btn`);
+      if (nextInput) { nextInput.disabled = false; nextInput.focus(); }
+      if (nextBtn) nextBtn.disabled = false;
+    }
+
+    // Check if all done
+    if (safeCorrect.every(Boolean)) safeOpen();
+  } else {
+    result.textContent = `❌ Не вірно, спробуй ще!`;
+    result.className = 'safe-q-result wrong';
+    input.value = '';
+    input.focus();
+    // Wrong shake animation
+    document.getElementById(`safe-q${i}`).classList.add('shake');
+    setTimeout(() => document.getElementById(`safe-q${i}`)?.classList.remove('shake'), 500);
+  }
+}
+
+function safeOpen() {
+  safeTotalStars++;
+  const statusText = document.getElementById('safe-status-text');
+  if (statusText) statusText.textContent = '🔓 ВІДЧИНЕНО!';
+
+  const door = document.getElementById('safe-door');
+  if (door) {
+    door.style.transition = 'transform 0.8s ease';
+    door.style.transformOrigin = '80px 80px';
+    door.style.transform = 'scale(0.1) rotate(360deg)';
+    setTimeout(() => { door.style.transform = 'scale(0)'; }, 800);
+  }
+
+  const starsEl = document.getElementById('safe-stars');
+  if (starsEl) {
+    starsEl.innerHTML = '⭐'.repeat(Math.min(safeTotalStars, 10));
+    starsEl.classList.add('pop');
+    setTimeout(() => starsEl.classList.remove('pop'), 600);
+  }
+
+  const msg = document.getElementById('safe-msg');
+  const phrases = ['Молодець! 🎉', 'Неймовірно! 🚀', 'Ти супер! 🌟', 'Так тримати! 🏆', 'Браво! 🎊'];
+  msg.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+  msg.className = 'safe-msg success';
+
+  // Auto-reset after 2 seconds
+  setTimeout(safeNew, 2500);
+}
 
 // ===== DARK MODE =====
 function toggleDark(){
