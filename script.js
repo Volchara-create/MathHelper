@@ -625,57 +625,61 @@ function showFormulaTab(tab){
   if(tab==='tables') buildTablesButtons();
 }
 
-// "Все разом" tab — all grade-appropriate cards mixed
+// "Все разом" tab — 6 random big flip cards with shuffle button
 function buildAllTab() {
   const grade = getUserGrade();
   const grid = document.getElementById('all-cats-grid');
   if (!grid) return;
 
-  // Gather ALL categories fitting the grade + shuffle formulas
+  // Gather all grade-appropriate formulas
   const allFormulas = [];
   ALGEBRA_CATS.forEach(cat => {
     if (grade && (grade < (cat.minGrade || 1) || grade > (cat.maxGrade || 11))) return;
     cat.formulas.forEach(f => allFormulas.push({ ...f, catName: cat.name }));
   });
 
-  // Shuffle
+  // Shuffle and pick 6
   for (let i = allFormulas.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [allFormulas[i], allFormulas[j]] = [allFormulas[j], allFormulas[i]];
   }
+  const pick = allFormulas.slice(0, 6);
 
-  grid.innerHTML = allFormulas.map((f, i) => {
-    if (f.v && f.m) {
-      return `
-        <div class="alg-cat-btn" id="all-fc${i}" onclick="flipAllCard('all-fc${i}','all-fci${i}')" style="cursor:pointer;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;perspective:600px;">
-          <div style="position:relative;width:100%;min-height:90px;transform-style:preserve-3d;transition:transform .6s;" id="all-fci${i}">
-            <div style="position:absolute;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;text-align:center;">
-              <div style="font-size:0.7rem;color:#aaa;margin-bottom:4px;">${f.catName}</div>
-              <div style="font-size:1.4rem;line-height:1.5;">${f.v}</div>
-              <div style="font-size:0.7rem;color:#93c5fd;margin-top:4px;">👆 натисни</div>
-            </div>
-            <div style="position:absolute;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:linear-gradient(135deg,#1a3e7c,#2563eb);border-radius:12px;padding:12px;text-align:center;">
-              <div style="font-size:0.7rem;color:#93c5fd;margin-bottom:4px;">${f.catName}</div>
-              <div style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#fff;">${f.m}</div>
-            </div>
+  grid.innerHTML = `
+    <div style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <span style="color:#888;font-size:0.9rem;">6 випадкових карток — перевертай!</span>
+      <button onclick="buildAllTab()" style="background:#e0f2fe;border:none;border-radius:10px;padding:8px 18px;font-size:0.9rem;font-weight:700;cursor:pointer;color:#0369a1;transition:.2s;" onmouseover="this.style.background='#bae6fd'" onmouseout="this.style.background='#e0f2fe'">🎲 Ще 6 карток</button>
+    </div>
+    ${pick.map((f, i) => `
+      <div class="flip-card" onclick="flipAllCard('all-fci${i}')">
+        <div class="flip-card-inner" id="all-fci${i}">
+          <div class="flip-card-front">
+            <div class="flip-card-label">${f.catName} · ${f.name}</div>
+            <div class="flip-card-visual">${f.v || f.name}</div>
+            <div class="flip-hint">👆 натисни або зачекай</div>
           </div>
-        </div>`;
-    }
-    return `
-      <div class="alg-cat-btn" style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;">
-        <div style="font-size:0.7rem;color:#aaa;">${f.catName}</div>
-        <div style="font-weight:700;color:var(--blue);">${f.name}</div>
-        <div style="font-family:monospace;font-size:0.9rem;">${f.expr || f.m || ''}</div>
-      </div>`;
-  }).join('');
+          <div class="flip-card-back">
+            <div class="flip-card-label">${f.catName} · ${f.name}</div>
+            <div class="flip-card-math">${f.m || f.expr || ''}</div>
+            <div class="flip-hint">👆 повернути</div>
+          </div>
+        </div>
+      </div>`).join('')}`;
+
+  // Auto-flip each card with a stagger
+  let allFlipTimers = [];
+  pick.forEach((f, i) => {
+    const t = setTimeout(() => {
+      const inner = document.getElementById(`all-fci${i}`);
+      if (inner && !inner.classList.contains('flipped')) inner.classList.add('flipped');
+    }, 3000 + i * 1000);
+    allFlipTimers.push(t);
+  });
 }
 
-function flipAllCard(cardId, innerId) {
+function flipAllCard(innerId) {
   const inner = document.getElementById(innerId);
-  if (inner) {
-    const isFlipped = inner.style.transform === 'rotateY(180deg)';
-    inner.style.transform = isFlipped ? '' : 'rotateY(180deg)';
-  }
+  if (inner) inner.classList.toggle('flipped');
 }
 
 

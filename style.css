@@ -605,6 +605,8 @@ header{flex-wrap:nowrap;gap:12px;}
 
 /* Algebra category buttons */
 .algebra-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+/* "Все разом" uses flip-card layout — single column on mobile, 2 col on desktop */
+#all-cats-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
 .alg-cat-btn{background:#fff;border:1.5px solid var(--blue-light);border-radius:14px;padding:20px 16px;cursor:pointer;transition:.2s;text-align:center;}
 .dark .alg-cat-btn{background:#1e293b;border-color:#334155;}
 .alg-cat-btn:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 6px 16px rgba(26,62,124,.12);}
