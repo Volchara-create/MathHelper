@@ -202,6 +202,16 @@ function initGoogleAuth() {
   }
 }
 
+// Decode JWT payload safely (base64url → base64)
+function parseJwt(token) {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+}
+
 // Handle redirect back from Google
 function handleGoogleRedirect() {
   const params = new URLSearchParams(window.location.search);
@@ -209,11 +219,12 @@ function handleGoogleRedirect() {
   // Successful login
   const token = params.get('google_token');
   if (token) {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    window.history.replaceState({}, '', '/');
+    const payload = parseJwt(token);
+    if (!payload) { authOpen('login'); return; }
     const user = { id: payload.id, name: payload.name, grade: payload.grade };
     localStorage.setItem('mh_token', token);
     localStorage.setItem('mh_user', JSON.stringify(user));
-    window.history.replaceState({}, '', '/');
     authShowUser(user);
     show('dashboard');
     return;
@@ -223,7 +234,8 @@ function handleGoogleRedirect() {
   const gradeToken = params.get('google_grade');
   if (gradeToken) {
     window.history.replaceState({}, '', '/');
-    const payload = JSON.parse(atob(gradeToken.split('.')[1]));
+    const payload = parseJwt(gradeToken);
+    if (!payload) { authOpen('register'); return; }
     showGoogleGradeModal(gradeToken, payload.name);
     return;
   }
