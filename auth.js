@@ -277,6 +277,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (token) {
     const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
     authShowUser(user);
+    // Logged-in users go straight to dashboard, not home
+    if (typeof show === 'function') show('dashboard');
   }
 
   // Grade picker click handler
@@ -436,6 +438,9 @@ function authShowUser(user) {
   document.getElementById('user-nav').style.display = '';
   document.getElementById('user-greeting').textContent = `${user.name} · ${user.grade} кл.`;
   document.getElementById('user-badge').textContent = user.isPro ? '⭐ Pro' : '';
+  // Hide "Головна" from nav — logged-in users have dashboard instead
+  const homeBtn = document.querySelector('nav button[onclick="show(\'home\')"]');
+  if (homeBtn) homeBtn.style.display = 'none';
   // Apply grade-based nav restrictions
   if (typeof updateNavForGrade === 'function') updateNavForGrade(user.grade);
   // Hide graph button from dashboard for grades 1-4
