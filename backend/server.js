@@ -36,8 +36,8 @@ app.post('/register', async (req, res) => {
   if (!name || !email || !password || !grade) {
     return res.status(400).json({ error: 'Всі поля обовʼязкові' });
   }
-  if (grade < 4 || grade > 11) {
-    return res.status(400).json({ error: 'Клас має бути від 4 до 11' });
+  if (grade < 1 || grade > 11) {
+    return res.status(400).json({ error: 'Клас має бути від 1 до 11' });
   }
   try {
     const hashed = await bcrypt.hash(password, 10);
@@ -191,6 +191,18 @@ app.post('/auth/google/grade', async (req, res) => {
   } catch {
     res.status(400).json({ error: 'Токен застарів, спробуй ще раз' });
   }
+});
+
+// PUT /me/grade — change user grade
+app.put('/me/grade', authMiddleware, async (req, res) => {
+  const { grade } = req.body;
+  if (!grade || grade < 1 || grade > 11) return res.status(400).json({ error: 'Клас від 1 до 11' });
+  const user = await prisma.user.update({
+    where: { id: req.user.id },
+    data: { grade: parseInt(grade) }
+  });
+  const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
+  res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
 });
 
 // DELETE /me — delete current user account

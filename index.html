@@ -76,6 +76,7 @@
           <span id="user-greeting"></span>
           <span id="user-badge"></span>
         </div>
+        <button class="auth-nav-btn" onclick="openChangeGrade()">Змінити клас</button>
         <button class="auth-nav-btn" onclick="authLogout()">Вийти</button>
         <button class="auth-nav-btn danger-btn" onclick="deleteAccount()">Видалити акаунт</button>
       </div>
@@ -661,6 +662,9 @@
         <div class="auth-field">
           <label>Твій клас</label>
           <div class="grade-picker" id="grade-picker">
+            <button class="grade-btn" data-grade="1">1</button>
+            <button class="grade-btn" data-grade="2">2</button>
+            <button class="grade-btn" data-grade="3">3</button>
             <button class="grade-btn" data-grade="4">4</button>
             <button class="grade-btn" data-grade="5">5</button>
             <button class="grade-btn" data-grade="6">6</button>

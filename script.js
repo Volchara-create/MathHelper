@@ -78,6 +78,27 @@ function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====
 const ALGEBRA_CATS = [
+  { name:'Додавання і віднімання', minGrade:1, maxGrade:4, formulas:[
+    {name:'Переставна властивість',expr:'a + b = b + a'},
+    {name:'Сполучна властивість',expr:'(a + b) + c = a + (b + c)'},
+    {name:'Віднімання',expr:'a − b = c  →  c + b = a'},
+    {name:'Нуль',expr:'a + 0 = a,   a − 0 = a'},
+    {name:'Округлення',expr:'до 10: дивись останню цифру'},
+  ]},
+  { name:'Множення і ділення', minGrade:3, maxGrade:6, formulas:[
+    {name:'Переставна властивість',expr:'a × b = b × a'},
+    {name:'Ділення',expr:'a ÷ b = c  →  c × b = a'},
+    {name:'На 0 і 1',expr:'a × 0 = 0,   a × 1 = a'},
+    {name:'Ділення на себе',expr:'a ÷ a = 1  (a ≠ 0)'},
+    {name:'Ділення з остачею',expr:'a = b × q + r'},
+  ]},
+  { name:'Дроби та відсотки', minGrade:5, maxGrade:7, formulas:[
+    {name:'Дріб',expr:'a/b — a чисельник, b знаменник'},
+    {name:'Скорочення',expr:'a·k / b·k = a / b'},
+    {name:'Додавання дробів',expr:'a/b + c/b = (a+c)/b'},
+    {name:'Відсоток від числа',expr:'X% від N = N × X ÷ 100'},
+    {name:'Знайти відсоток',expr:'(частина ÷ ціле) × 100%'},
+  ]},
   { name:'Степені та корені', icon:'⚡', minGrade:7, formulas:[
     {name:'Множення степенів',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ'},
     {name:'Ділення степенів',expr:'aⁿ / aᵐ = aⁿ⁻ᵐ'},

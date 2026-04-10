@@ -2,6 +2,24 @@ const API = '';
 
 // Grade-specific formula data for dashboard
 const GRADE_FORMULAS = {
+  1: [
+    { topic: 'Арифметика', title: 'Додавання', expr: 'a + b = b + a' },
+    { topic: 'Арифметика', title: 'Віднімання', expr: 'a − b = ?  →  ? + b = a' },
+    { topic: 'Арифметика', title: 'Нуль', expr: 'a + 0 = a' },
+    { topic: 'Арифметика', title: 'Порівняння', expr: '> більше,  < менше,  = рівно' },
+  ],
+  2: [
+    { topic: 'Арифметика', title: 'Таблиця додавання', expr: '7 + 8 = 15,  9 + 6 = 15' },
+    { topic: 'Арифметика', title: 'Різниця', expr: 'a − b = c  →  a = b + c' },
+    { topic: 'Геометрія', title: 'Відрізок', expr: 'виміряй лінійкою в см' },
+    { topic: 'Арифметика', title: 'Круглі числа', expr: '10, 20, 30 ... 100' },
+  ],
+  3: [
+    { topic: 'Множення', title: 'Таблиця множення', expr: 'a × b = b × a' },
+    { topic: 'Ділення', title: 'Ділення', expr: 'a ÷ b = c  →  c × b = a' },
+    { topic: 'Геометрія', title: 'Периметр', expr: 'P = сума всіх сторін' },
+    { topic: 'Арифметика', title: 'Порядок дій', expr: '× і ÷ виконуються раніше + і −' },
+  ],
   4: [
     { topic: 'Арифметика', title: 'Периметр прямокутника', expr: 'P = 2·(a + b)' },
     { topic: 'Арифметика', title: 'Площа прямокутника', expr: 'S = a · b' },
@@ -375,6 +393,27 @@ function authLogout() {
   show('home');
 }
 
+function openChangeGrade() {
+  const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
+  const current = user.grade;
+  const grade = prompt(`Твій поточний клас: ${current}\nВведи новий клас (1-11):`);
+  if (!grade) return;
+  const g = parseInt(grade);
+  if (isNaN(g) || g < 1 || g > 11) { alert('Клас має бути від 1 до 11'); return; }
+  const token = localStorage.getItem('mh_token');
+  fetch(`${API}/me/grade`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ grade: g })
+  }).then(r => r.json()).then(data => {
+    if (data.error) { alert(data.error); return; }
+    localStorage.setItem('mh_token', data.token);
+    localStorage.setItem('mh_user', JSON.stringify(data.user));
+    authShowUser(data.user);
+    alert(`Клас змінено на ${g}! Онови сторінку щоб побачити нові формули.`);
+  });
+}
+
 async function deleteAccount() {
   if (!confirm('Видалити акаунт назавжди? Всі конспекти теж видаляться!')) return;
   const token = localStorage.getItem('mh_token');
@@ -418,9 +457,9 @@ function dashLoad(user) {
     </div>
   `).join('');
 
-  // Show NMT section for grades 10-11
+  // Show NMT section for grades 9-11
   const nmtSection = document.getElementById('dash-nmt');
-  if (grade >= 10) {
+  if (grade >= 9) {
     nmtSection.style.display = '';
     document.getElementById('dash-nmt-topics').innerHTML = NMT_TOPICS.map(t =>
       `<span class="dash-nmt-topic">${t}</span>`
