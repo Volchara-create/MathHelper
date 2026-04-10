@@ -78,7 +78,7 @@ function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====
 const ALGEBRA_CATS = [
-  { name:'Степені та корені', icon:'⚡', formulas:[
+  { name:'Степені та корені', icon:'⚡', minGrade:7, formulas:[
     {name:'Множення степенів',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ'},
     {name:'Ділення степенів',expr:'aⁿ / aᵐ = aⁿ⁻ᵐ'},
     {name:'Степінь степеня',expr:'(aⁿ)ᵐ = aⁿ·ᵐ'},
@@ -88,7 +88,7 @@ const ALGEBRA_CATS = [
     {name:'Корінь',expr:'√(a·b) = √a · √b'},
     {name:'Частковий корінь',expr:'√(a/b) = √a / √b'},
   ]},
-  { name:'Скорочене множення', icon:'✖️', formulas:[
+  { name:'Скорочене множення', icon:'✖️', minGrade:7, formulas:[
     {name:'Квадрат суми',expr:'(a+b)² = a² + 2ab + b²'},
     {name:'Квадрат різниці',expr:'(a−b)² = a² − 2ab + b²'},
     {name:'Різниця квадратів',expr:'a² − b² = (a+b)(a−b)'},
@@ -97,7 +97,7 @@ const ALGEBRA_CATS = [
     {name:'Сума кубів',expr:'a³ + b³ = (a+b)(a²−ab+b²)'},
     {name:'Різниця кубів',expr:'a³ − b³ = (a−b)(a²+ab+b²)'},
   ]},
-  { name:'Квадратне рівняння', icon:'📐', formulas:[
+  { name:'Квадратне рівняння', icon:'📐', minGrade:8, formulas:[
     {name:'Загальний вигляд',expr:'ax² + bx + c = 0'},
     {name:'Дискримінант',expr:'D = b² − 4ac'},
     {name:'Корені (D > 0)',expr:'x = (−b ± √D) / 2a'},
@@ -105,7 +105,7 @@ const ALGEBRA_CATS = [
     {name:'D < 0',expr:'коренів немає'},
     {name:'Теорема Вієта',expr:'x₁+x₂ = −b/a,  x₁·x₂ = c/a'},
   ]},
-  { name:'Функції та графіки', icon:'📈', formulas:[
+  { name:'Функції та графіки', icon:'📈', minGrade:7, formulas:[
     {name:'Лінійна',expr:'y = kx + b'},
     {name:'k > 0',expr:'функція зростає'},
     {name:'k < 0',expr:'функція спадає'},
@@ -113,7 +113,7 @@ const ALGEBRA_CATS = [
     {name:'Вершина параболи',expr:'x₀ = −b/(2a)'},
     {name:'Обернена пропорц.',expr:'y = k/x (гіпербола)'},
   ]},
-  { name:'Прогресії', icon:'🔢', formulas:[
+  { name:'Прогресії', icon:'🔢', minGrade:9, formulas:[
     {name:'Арифм. n-й член',expr:'aₙ = a₁ + (n−1)·d'},
     {name:'Різниця',expr:'d = aₙ − aₙ₋₁'},
     {name:'Сума арифм.',expr:'Sₙ = n·(a₁ + aₙ) / 2'},
@@ -121,7 +121,7 @@ const ALGEBRA_CATS = [
     {name:'Знаменник',expr:'q = bₙ / bₙ₋₁'},
     {name:'Сума геом.',expr:'Sₙ = b₁·(qⁿ − 1) / (q − 1)'},
   ]},
-  { name:'Логарифми', icon:'🔬', formulas:[
+  { name:'Логарифми', icon:'🔬', minGrade:10, formulas:[
     {name:'Означення',expr:'logₐb = x  ↔  aˣ = b'},
     {name:'Добуток',expr:'logₐ(xy) = logₐx + logₐy'},
     {name:'Частка',expr:'logₐ(x/y) = logₐx − logₐy'},
@@ -130,7 +130,7 @@ const ALGEBRA_CATS = [
     {name:'Натуральний',expr:'ln x = logₑ x'},
     {name:'Десятковий',expr:'lg x = log₁₀ x'},
   ]},
-  { name:'Похідна (10-11 кл.)', icon:'📉', formulas:[
+  { name:'Похідна (10-11 кл.)', icon:'📉', minGrade:10, formulas:[
     {name:'Константа',expr:"(C)' = 0"},
     {name:'Степінь',expr:"(xⁿ)' = n · xⁿ⁻¹"},
     {name:'Сума',expr:"(u+v)' = u' + v'"},
@@ -141,7 +141,7 @@ const ALGEBRA_CATS = [
     {name:'eˣ',expr:"(eˣ)' = eˣ"},
     {name:'ln x',expr:"(ln x)' = 1/x"},
   ]},
-  { name:'Інтеграл (11 кл.)', icon:'∫', formulas:[
+  { name:'Інтеграл (11 кл.)', icon:'∫', minGrade:11, formulas:[
     {name:'Степінь',expr:'∫xⁿ dx = xⁿ⁺¹/(n+1) + C'},
     {name:'sin',expr:'∫sin x dx = −cos x + C'},
     {name:'cos',expr:'∫cos x dx = sin x + C'},
@@ -153,7 +153,7 @@ const ALGEBRA_CATS = [
 
 // ===== TRIGONOMETRY DATA =====
 const TRIG_CATS = [
-  { name:'Основні тотожності', formulas:[
+  { name:'Основні тотожності', minGrade:9, formulas:[
     {name:'Основна',expr:'sin²α + cos²α = 1'},
     {name:'tan через sin/cos',expr:'tan α = sin α / cos α'},
     {name:'ctg через sin/cos',expr:'ctg α = cos α / sin α'},
@@ -161,7 +161,7 @@ const TRIG_CATS = [
     {name:'1 + tan²',expr:'1 + tan²α = 1/cos²α'},
     {name:'1 + ctg²',expr:'1 + ctg²α = 1/sin²α'},
   ]},
-  { name:'Радіани', formulas:[
+  { name:'Радіани', minGrade:9, formulas:[
     {name:'π радіан',expr:'π рад = 180°'},
     {name:'1 радіан',expr:'1 рад ≈ 57.3°'},
     {name:'30°',expr:'π/6'},
@@ -170,7 +170,7 @@ const TRIG_CATS = [
     {name:'90°',expr:'π/2'},
     {name:'Формула',expr:'рад = градуси × π / 180'},
   ]},
-  { name:'Формули суми кутів', formulas:[
+  { name:'Формули суми кутів', minGrade:9, formulas:[
     {name:'sin(α+β)',expr:'sinα·cosβ + cosα·sinβ'},
     {name:'sin(α−β)',expr:'sinα·cosβ − cosα·sinβ'},
     {name:'cos(α+β)',expr:'cosα·cosβ − sinα·sinβ'},
@@ -178,21 +178,21 @@ const TRIG_CATS = [
     {name:'tan(α+β)',expr:'(tanα + tanβ)/(1 − tanα·tanβ)'},
     {name:'tan(α−β)',expr:'(tanα − tanβ)/(1 + tanα·tanβ)'},
   ]},
-  { name:'Подвійний кут', formulas:[
+  { name:'Подвійний кут', minGrade:10, formulas:[
     {name:'sin 2α',expr:'2·sinα·cosα'},
     {name:'cos 2α (варіант 1)',expr:'cos²α − sin²α'},
     {name:'cos 2α (варіант 2)',expr:'1 − 2sin²α'},
     {name:'cos 2α (варіант 3)',expr:'2cos²α − 1'},
     {name:'tan 2α',expr:'2tanα / (1 − tan²α)'},
   ]},
-  { name:'Пониження степеня', formulas:[
+  { name:'Пониження степеня', minGrade:10, formulas:[
     {name:'sin²α',expr:'(1 − cos 2α) / 2'},
     {name:'cos²α',expr:'(1 + cos 2α) / 2'},
     {name:'tan²α',expr:'(1 − cos 2α) / (1 + cos 2α)'},
     {name:'sin³α',expr:'(3sinα − sin 3α) / 4'},
     {name:'cos³α',expr:'(3cosα + cos 3α) / 4'},
   ]},
-  { name:'Формули зведення', formulas:[
+  { name:'Формули зведення', minGrade:10, formulas:[
     {name:'sin(90°−α)',expr:'cos α'},
     {name:'cos(90°−α)',expr:'sin α'},
     {name:'sin(90°+α)',expr:'cos α'},
@@ -202,7 +202,7 @@ const TRIG_CATS = [
     {name:'sin(−α)',expr:'−sin α'},
     {name:'cos(−α)',expr:'cos α'},
   ]},
-  { name:'Теорема синусів/косинусів', formulas:[
+  { name:'Теорема синусів/косинусів', minGrade:9, formulas:[
     {name:'Теорема синусів',expr:'a/sin A = b/sin B = c/sin C'},
     {name:'Через описане коло',expr:'a/sin A = 2R'},
     {name:'Теорема косинусів',expr:'c² = a² + b² − 2ab·cos C'},
@@ -214,8 +214,11 @@ const TRIG_CATS = [
 function buildTrigTab(){
   const grid = document.getElementById('trig-cats-grid');
   if(!grid || grid.children.length > 0) return;
-  grid.innerHTML = TRIG_CATS.map((cat,i) => `
-    <div class="alg-cat-btn geo-cat-btn" onclick="openTrigModal(${i})">
+  const grade = getUserGrade();
+  const cats = TRIG_CATS.filter(c => !grade || grade >= (c.minGrade || 1));
+  if(!cats.length) { grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Тригонометрія з\'являється у 9 класі</p>'; return; }
+  grid.innerHTML = cats.map(cat => `
+    <div class="alg-cat-btn geo-cat-btn" onclick="openTrigModal(${TRIG_CATS.indexOf(cat)})">
       <div class="alg-cat-name">${cat.name}</div>
       <div class="alg-cat-count">${cat.formulas.length} формул</div>
     </div>
@@ -236,15 +239,23 @@ function openTrigModal(idx){
 
 // ===== TABLES DATA =====
 const TABLES_LIST = [
-  { id:'mult',  name:'Таблиця множення', sub:'від 1 до 10' },
-  { id:'sq',    name:'Квадрати чисел',   sub:'від 1 до 49' },
-  { id:'trig',  name:'sin, cos, tan, ctg', sub:'основні кути' },
+  { id:'mult',  name:'Таблиця множення', sub:'від 1 до 10',  minGrade:4, maxGrade:8 },
+  { id:'sq',    name:'Квадрати чисел',   sub:'від 1 до 49',  minGrade:5, maxGrade:9 },
+  { id:'trig',  name:'sin, cos, tan, ctg', sub:'основні кути', minGrade:9 },
 ];
 
 function buildTablesButtons(){
   const grid = document.getElementById('tables-buttons-grid');
   if(!grid || grid.children.length > 0) return;
-  grid.innerHTML = TABLES_LIST.map(t => `
+  const grade = getUserGrade();
+  const tables = TABLES_LIST.filter(t => {
+    if(!grade) return true;
+    if(t.minGrade && grade < t.minGrade) return false;
+    if(t.maxGrade && grade > t.maxGrade) return false;
+    return true;
+  });
+  if(!tables.length) { grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Таблиці для твого класу не знайдено</p>'; return; }
+  grid.innerHTML = tables.map(t => `
     <div class="alg-cat-btn geo-cat-btn" onclick="openTableFullscreen('${t.id}')">
       <div class="alg-cat-name">${t.name}</div>
       <div class="alg-cat-count">${t.sub}</div>
@@ -325,12 +336,21 @@ function closeTableFullscreen(){
   document.getElementById('table-fullscreen-modal').classList.remove('active');
 }
 
+// Get current user grade (null = not logged in = show all)
+function getUserGrade() {
+  const user = JSON.parse(localStorage.getItem('mh_user') || 'null');
+  return user ? user.grade : null;
+}
+
 // Build algebra tab (category buttons)
 function buildAlgebraTab(){
   const grid = document.getElementById('algebra-cats-grid');
-  if(grid.children.length > 0) return; // already built
-  grid.innerHTML = ALGEBRA_CATS.map((cat,i) => `
-    <div class="alg-cat-btn" onclick="openAlgebraModal(${i})">
+  if(grid.children.length > 0) return;
+  const grade = getUserGrade();
+  const cats = ALGEBRA_CATS.filter(c => !grade || grade >= (c.minGrade || 1));
+  if(!cats.length) { grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Формули алгебри з\'являться у 7 класі</p>'; return; }
+  grid.innerHTML = cats.map(cat => `
+    <div class="alg-cat-btn" onclick="openAlgebraModal(${ALGEBRA_CATS.indexOf(cat)})">
       <div class="alg-cat-name">${cat.name}</div>
       <div class="alg-cat-count">${cat.formulas.length} формул</div>
     </div>
