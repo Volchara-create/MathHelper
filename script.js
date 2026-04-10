@@ -70,13 +70,40 @@ function show(sec){
   document.getElementById('category-row').style.display='none';
   if(sec==='tasks') loadRandomTask();
   if(sec==='trig') buildTrigTable();
+  if(sec==='formulas') { buildTrigTable2(); }
   if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function showFormulas(){
-  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('category-row').style.display='flex';
-  window.scrollTo({top:0,behavior:'smooth'});
+function showFormulas(){ show('formulas'); }
+
+// ===== FORMULA TABS =====
+function showFormulaTab(tab){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ftab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('ftab-'+tab).classList.add('active');
+  // Highlight correct tab button
+  document.querySelectorAll('.ftab').forEach(t=>{
+    if(t.getAttribute('onclick')===`showFormulaTab('${tab}')`) t.classList.add('active');
+  });
+  if(tab==='trigonometry') buildTrigTable2();
+}
+
+// Build trig table for the new formulas section
+function buildTrigTable2(){
+  const tbody=document.getElementById('trig-tbody-2');
+  if(!tbody || tbody.innerHTML!=='') return; // already built
+  const rows=[
+    [0,'0',0,1,'0','—'],
+    [30,'π/6','1/2','√3/2','√3/3','√3'],
+    [45,'π/4','√2/2','√2/2','1','1'],
+    [60,'π/3','√3/2','1/2','√3','√3/3'],
+    [90,'π/2','1','0','—','0'],
+    [120,'2π/3','√3/2','-1/2','-√3','-√3/3'],
+    [135,'3π/4','√2/2','-√2/2','-1','-1'],
+    [150,'5π/6','1/2','-√3/2','-√3/3','-√3'],
+    [180,'π','0','-1','0','—'],
+  ];
+  tbody.innerHTML=rows.map(r=>`<tr><td>${r[0]}°</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
 }
 function showGraph(){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
