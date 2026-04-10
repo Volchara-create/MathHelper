@@ -575,3 +575,13 @@ header{flex-wrap:nowrap;gap:12px;}
 .fs-trig-table th{background:var(--blue);color:#fff;font-weight:700;}
 .fs-trig-table tr:hover td{background:#f0f7ff;}
 .dark .fs-trig-table tr:hover td{background:#334155;}
+
+/* Google grade picker buttons */
+.grade-btn-g{width:46px;height:46px;border:2px solid #b3d9ff;border-radius:10px;background:#f0f4f8;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s;color:var(--text);}
+.grade-btn-g:hover{border-color:var(--blue);background:var(--blue-light);}
+.grade-btn-g.selected{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+/* Auth divider */
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#e2e8f0;}
+.auth-divider span{color:#94a3b8;font-size:0.85rem;white-space:nowrap;}

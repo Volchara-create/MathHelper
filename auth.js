@@ -60,6 +60,131 @@ const NMT_TOPICS = ['Квадратні рівняння', 'Тригономет
 let currentNoteId = null;
 let allNotes = [];
 
+// ===== GOOGLE OAUTH =====
+
+// Called by Google GSI library when user signs in
+function handleGoogleCredential(response) {
+  const credential = response.credential;
+  // Check if we need grade for new user
+  _googleSignIn(credential, null);
+}
+
+async function _googleSignIn(credential, grade) {
+  const errEl = document.getElementById('login-error') || document.getElementById('reg-error');
+  try {
+    const res = await fetch(`${API}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential, grade })
+    });
+    const data = await res.json();
+
+    if (data.needsGrade) {
+      // New Google user — ask for grade
+      showGoogleGradeModal(credential, data.name);
+      return;
+    }
+
+    if (!res.ok) {
+      if (errEl) errEl.textContent = data.error || 'Помилка Google входу';
+      return;
+    }
+
+    localStorage.setItem('mh_token', data.token);
+    localStorage.setItem('mh_user', JSON.stringify(data.user));
+    authShowUser(data.user);
+    authClose();
+    closeGoogleGradeModal();
+    show('dashboard');
+  } catch {
+    if (errEl) errEl.textContent = 'Помилка підключення до сервера';
+  }
+}
+
+function showGoogleGradeModal(credential, name) {
+  // Build a simple grade picker inside auth modal
+  const modal = document.getElementById('auth-modal');
+  modal.classList.add('active');
+
+  const loginForm = document.getElementById('auth-login-form');
+  const regForm = document.getElementById('auth-register-form');
+  loginForm.style.display = 'none';
+  regForm.style.display = 'none';
+
+  // Remove old grade picker if exists
+  let picker = document.getElementById('google-grade-picker');
+  if (!picker) {
+    picker = document.createElement('div');
+    picker.id = 'google-grade-picker';
+    picker.style.cssText = 'padding:24px 0;text-align:center;';
+    modal.querySelector('.auth-box').appendChild(picker);
+  }
+
+  picker.innerHTML = `
+    <h3 style="margin-bottom:8px;">Привіт, ${name}!</h3>
+    <p style="color:#666;margin-bottom:20px;">Вибери свій клас щоб продовжити</p>
+    <div class="grade-picker-row" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;">
+      ${[4,5,6,7,8,9,10,11].map(g =>
+        `<button class="grade-btn-g" data-grade="${g}" onclick="selectGoogleGrade(this)">${g}</button>`
+      ).join('')}
+    </div>
+    <button class="btn-primary" onclick="confirmGoogleGrade('${credential}')">Продовжити</button>
+    <p id="google-grade-error" style="color:#e53935;margin-top:8px;font-size:13px;"></p>
+  `;
+  picker.style.display = '';
+}
+
+function selectGoogleGrade(btn) {
+  document.querySelectorAll('.grade-btn-g').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function closeGoogleGradeModal() {
+  const picker = document.getElementById('google-grade-picker');
+  if (picker) picker.style.display = 'none';
+  document.getElementById('auth-login-form').style.display = '';
+  document.getElementById('auth-register-form').style.display = 'none';
+}
+
+function confirmGoogleGrade(credential) {
+  const picker = document.getElementById('google-grade-picker');
+  const selected = picker.querySelector('.grade-btn-g.selected');
+  if (!selected) {
+    document.getElementById('google-grade-error').textContent = 'Вибери клас!';
+    return;
+  }
+  const grade = parseInt(selected.dataset.grade);
+  _googleSignIn(credential, grade);
+}
+
+function initGoogleAuth() {
+  if (!window.google) return; // GSI not loaded yet
+  const clientId = document.querySelector('meta[name="google-client-id"]')?.content;
+  if (!clientId || clientId === 'YOUR_GOOGLE_CLIENT_ID') return; // Not configured
+
+  google.accounts.id.initialize({
+    client_id: clientId,
+    callback: handleGoogleCredential,
+    auto_select: false,
+  });
+
+  // Render button in login form
+  const loginBtn = document.getElementById('google-login-btn');
+  if (loginBtn) {
+    google.accounts.id.renderButton(loginBtn, {
+      theme: 'outline', size: 'large', width: '100%', text: 'signin_with'
+    });
+  }
+
+  // Render button in register form
+  const regBtn = document.getElementById('google-reg-btn');
+  if (regBtn) {
+    google.accounts.id.renderButton(regBtn, {
+      theme: 'outline', size: 'large', width: '100%', text: 'signup_with'
+    });
+  }
+}
+
 // ===== INIT =====
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -76,6 +201,13 @@ window.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('selected');
     });
   });
+
+  // Init Google after GSI loads
+  if (window.google) {
+    initGoogleAuth();
+  } else {
+    window.addEventListener('load', initGoogleAuth);
+  }
 
   // Wrap show() to handle dashboard/notes loading
   const _origShow = window.show;

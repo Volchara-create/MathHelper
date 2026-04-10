@@ -12,6 +12,7 @@
   <meta name="description" content="MathHelper — безкоштовний онлайн помічник з математики. Формули геометрії, побудова графіків функцій, тренувальні задачі та інтерактивний робочий стіл. Для школярів та студентів.">
   <meta name="keywords" content="математика онлайн, формули геометрії, графік функції, помічник з математики, задачі з геометрії, площа кола, периметр, об'єм куба, тригонометрія, калькулятор">
   <meta name="author" content="MathHelper">
+  <meta name="google-client-id" content="YOUR_GOOGLE_CLIENT_ID">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://volchara-create.github.io/MathHelper/">
 
@@ -24,6 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <header>
@@ -632,6 +634,8 @@
         </div>
         <div id="login-error" class="auth-error"></div>
         <button class="auth-btn" onclick="doLogin()">Увійти</button>
+        <div class="auth-divider"><span>або</span></div>
+        <div id="google-login-btn"></div>
         <p class="auth-switch">Немає акаунту? <a href="#" onclick="authSwitch('register')">Зареєструватись</a></p>
       </div>
 
@@ -666,6 +670,8 @@
         </div>
         <div id="reg-error" class="auth-error"></div>
         <button class="auth-btn" onclick="doRegister()">Зареєструватись</button>
+        <div class="auth-divider"><span>або</span></div>
+        <div id="google-reg-btn"></div>
         <p class="auth-switch">Вже є акаунт? <a href="#" onclick="authSwitch('login')">Увійти</a></p>
       </div>
 
