@@ -479,33 +479,68 @@ function buildAlgebraTab(){
   `).join('');
 }
 
+// Timers for auto-flip cards
+let flipTimers = [];
+
 function openAlgebraModal(idx){
+  // Clear any running timers from previous modal
+  flipTimers.forEach(t => clearTimeout(t));
+  flipTimers = [];
+
   const cat = ALGEBRA_CATS[idx];
   document.getElementById('alg-modal-title').textContent = cat.name;
-  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map(f => {
+
+  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map((f, i) => {
     if (f.v && f.m) {
-      // Card with two panels: visual (emoji) | math (formula)
+      // Flip card: front = emoji visual, back = math formula
       return `
-        <div class="alg-formula-card">
-          <div class="alg-card-name">${f.name}</div>
-          <div class="alg-card-split">
-            <div class="alg-card-visual">${f.v}</div>
-            <div class="alg-card-divider">=</div>
-            <div class="alg-card-math">${f.m}</div>
+        <div class="flip-card" id="fc${i}" onclick="flipCard('fc${i}')">
+          <div class="flip-card-inner" id="fci${i}">
+            <div class="flip-card-front">
+              <div class="flip-card-label">${f.name}</div>
+              <div class="flip-card-visual">${f.v}</div>
+              <div class="flip-hint">👆 натисни або зачекай</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="flip-card-label">${f.name}</div>
+              <div class="flip-card-math">${f.m}</div>
+              <div class="flip-hint" style="color:#93c5fd">👆 ще раз — повернути</div>
+            </div>
           </div>
         </div>`;
     }
-    // Fallback: plain row
+    // Non-visual formula (older grades)
     return `
       <div class="alg-modal-row">
         <span class="alg-modal-name">${f.name}</span>
-        <span class="alg-modal-expr">${f.expr || ''}</span>
+        <span class="alg-modal-expr">${f.expr || f.m || ''}</span>
       </div>`;
   }).join('');
+
   document.getElementById('algebra-modal').classList.add('active');
+
+  // Auto-flip each card with a delay (3s + 1.2s per card)
+  cat.formulas.forEach((f, i) => {
+    if (!f.v) return;
+    const delay = 3000 + i * 1200;
+    const t = setTimeout(() => {
+      const inner = document.getElementById(`fci${i}`);
+      if (inner && !inner.classList.contains('flipped')) {
+        inner.classList.add('flipped');
+      }
+    }, delay);
+    flipTimers.push(t);
+  });
+}
+
+function flipCard(id) {
+  const inner = document.getElementById('fci' + id.replace('fc',''));
+  if (inner) inner.classList.toggle('flipped');
 }
 
 function closeAlgebraModal(){
+  flipTimers.forEach(t => clearTimeout(t));
+  flipTimers = [];
   document.getElementById('algebra-modal').classList.remove('active');
 }
 

@@ -696,3 +696,18 @@ header{flex-wrap:nowrap;gap:12px;}
 .auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;}
 .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#e2e8f0;}
 .auth-divider span{color:#94a3b8;font-size:0.85rem;white-space:nowrap;}
+
+/* ===== FLIP CARDS (formula cards) ===== */
+.flip-card{perspective:1000px;cursor:pointer;margin-bottom:14px;width:100%;}
+.flip-card-inner{position:relative;width:100%;min-height:160px;transform-style:preserve-3d;transition:transform 0.7s cubic-bezier(.4,2,.6,1);}
+.flip-card-inner.flipped{transform:rotateY(180deg);}
+.flip-card-front,.flip-card-back{position:absolute;width:100%;min-height:160px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.flip-card-front{background:#f0f9ff;border:2px solid #bfdbfe;}
+.flip-card-back{background:linear-gradient(135deg,#1a3e7c,#2563eb);color:#fff;transform:rotateY(180deg);}
+.flip-card-label{font-size:0.85rem;font-weight:700;color:#555;align-self:flex-start;}
+.flip-card-back .flip-card-label{color:#93c5fd;}
+.flip-card-visual{font-size:1.6rem;text-align:center;line-height:1.7;word-break:break-word;}
+.flip-card-math{font-family:'Fira Code',monospace;font-size:2rem;font-weight:700;text-align:center;letter-spacing:2px;}
+.flip-hint{font-size:0.78rem;color:#60a5fa;margin-top:4px;}
+.flip-card-back .flip-hint{color:#93c5fd;}
+
