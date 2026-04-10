@@ -636,9 +636,9 @@
         <div id="login-error" class="auth-error"></div>
         <button class="auth-btn" onclick="doLogin()">Увійти</button>
         <div class="auth-divider"><span>або</span></div>
-        <a href="/auth/google/start" class="google-btn">
+        <button class="google-btn" onclick="window.location.href='/auth/google/start'">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Увійти через Google
-        </a>
+        </button>
         <p class="auth-switch">Немає акаунту? <a href="#" onclick="authSwitch('register')">Зареєструватись</a></p>
       </div>
 
@@ -674,9 +674,9 @@
         <div id="reg-error" class="auth-error"></div>
         <button class="auth-btn" onclick="doRegister()">Зареєструватись</button>
         <div class="auth-divider"><span>або</span></div>
-        <a href="/auth/google/start" class="google-btn">
+        <button class="google-btn" onclick="window.location.href='/auth/google/start'">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Зареєструватись через Google
-        </a>
+        </button>
         <p class="auth-switch">Вже є акаунт? <a href="#" onclick="authSwitch('login')">Увійти</a></p>
       </div>
 
