@@ -1,11 +1,10 @@
 services:
   app:
     build: .
-    ports:
-      - "4011:3001"
+    network_mode: host
     restart: unless-stopped
     environment:
       - DATABASE_URL=postgresql://student_admin:vibecode2026pg@172.17.0.1:5433/db_rostyslavv
       - JWT_SECRET=mathhelper_secret_key_2026
-      - PORT=3001
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - PORT=4011
+      - GOOGLE_CLIENT_ID=1004475773858-nondip8br7f0imavgej0vpm4gn6ld5pn.apps.googleusercontent.com
