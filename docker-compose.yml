@@ -1,10 +1,26 @@
 services:
-  app:
-    build: .
-    network_mode: host
+  db:
+    image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgresql://student_admin:vibecode2026pg@172.17.0.1:5433/db_rostyslavv
+      POSTGRES_USER: mathhelper
+      POSTGRES_PASSWORD: mh_secret_2026
+      POSTGRES_DB: mathhelper
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "4011:3001"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://mathhelper:mh_secret_2026@db:5432/mathhelper
       - JWT_SECRET=mathhelper_secret_key_2026
-      - PORT=4011
+      - PORT=3001
       - GOOGLE_CLIENT_ID=1004475773858-nondip8br7f0imavgej0vpm4gn6ld5pn.apps.googleusercontent.com
+
+volumes:
+  pgdata:
