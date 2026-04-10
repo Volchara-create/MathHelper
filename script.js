@@ -70,7 +70,7 @@ function show(sec){
   document.getElementById('category-row').style.display='none';
   if(sec==='tasks') loadRandomTask();
   if(sec==='trig') buildTrigTable();
-  if(sec==='formulas') { buildAlgebraTab(); buildTrigTable2(); }
+  if(sec==='formulas') buildAlgebraTab();
   if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -154,7 +154,7 @@ const ALGEBRA_CATS = [
 // Build algebra tab (category buttons)
 function buildAlgebraTab(){
   const grid = document.getElementById('algebra-cats-grid');
-  if(grid.innerHTML !== '') return;
+  if(grid.children.length > 0) return; // already built
   grid.innerHTML = ALGEBRA_CATS.map((cat,i) => `
     <div class="alg-cat-btn" onclick="openAlgebraModal(${i})">
       <div class="alg-cat-icon">${cat.icon}</div>
@@ -185,7 +185,7 @@ const GEO_ICONS = {rectangle:'▭',rhombus:'🔷',parallelogram:'▱',trapezoid:
 
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
-  if(grid.innerHTML !== '') return;
+  if(grid.children.length > 0) return; // already built
   const order = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle','cube','parallelepiped','cylinder','cone','pyramid'];
   grid.innerHTML = order.map(cat => {
     const formulas = data[cat] || [];
@@ -201,24 +201,52 @@ function buildGeoTab(){
   }).join('');
 }
 
-// Build multiplication table
-function buildMultTable(){
-  const wrap = document.getElementById('mult-table-wrap');
-  if(wrap.innerHTML !== '') return;
-  let html = '<div class="mult-wrap"><h3 class="mult-title">✖️ Таблиця множення</h3><div class="mult-grid">';
-  // Header row
+// Build all tables tab (mult + squares + sin/cos)
+function buildTablesTab(){
+  const wrap = document.getElementById('tables-wrap');
+  if(wrap.children.length > 0) return;
+
+  // 1. Multiplication table
+  let html = '<div class="tables-section"><h3 class="mult-title">✖️ Таблиця множення</h3><div class="mult-grid">';
   html += '<div class="mult-cell mult-header">×</div>';
   for(let i=1;i<=10;i++) html += `<div class="mult-cell mult-header">${i}</div>`;
-  // Rows
   for(let i=1;i<=10;i++){
     html += `<div class="mult-cell mult-header">${i}</div>`;
     for(let j=1;j<=10;j++){
-      const val = i*j;
-      const highlight = (i===j) ? ' mult-diagonal' : '';
-      html += `<div class="mult-cell${highlight}">${val}</div>`;
+      html += `<div class="mult-cell${i===j?' mult-diagonal':''}">${i*j}</div>`;
     }
   }
   html += '</div></div>';
+
+  // 2. Squares table
+  html += '<div class="tables-section"><h3 class="mult-title">² Таблиця квадратів (1–25)</h3><div class="sq-grid">';
+  html += '<div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div>';
+  // 3 columns of n | n²
+  for(let i=1;i<=25;i++){
+    if(i<=9 || (i>=10&&i<=17) || i>=18){
+      html += `<div class="mult-cell sq-n">${i}</div><div class="mult-cell sq-val">${i*i}</div>`;
+    }
+  }
+  html += '</div></div>';
+
+  // 3. Sin/Cos table
+  const trigRows = [
+    [0,'0','0','1','0','—'],
+    [30,'π/6','1/2','√3/2','√3/3','√3'],
+    [45,'π/4','√2/2','√2/2','1','1'],
+    [60,'π/3','√3/2','1/2','√3','√3/3'],
+    [90,'π/2','1','0','—','0'],
+    [120,'2π/3','√3/2','−1/2','−√3','−√3/3'],
+    [135,'3π/4','√2/2','−√2/2','−1','−1'],
+    [150,'5π/6','1/2','−√3/2','−√3/3','−√3'],
+    [180,'π','0','−1','0','—'],
+    [270,'3π/2','−1','0','—','0'],
+    [360,'2π','0','1','0','—'],
+  ];
+  html += '<div class="tables-section"><h3 class="mult-title">📐 Таблиця sin, cos, tan, ctg</h3><div class="trig-tbl-wrap"><table class="trig-table"><thead><tr><th>Кут °</th><th>Рад</th><th>sin</th><th>cos</th><th>tan</th><th>ctg</th></tr></thead><tbody>';
+  html += trigRows.map(r=>`<tr><td><b>${r[0]}°</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
+  html += '</tbody></table></div></div>';
+
   wrap.innerHTML = html;
 }
 
@@ -229,10 +257,9 @@ function showFormulaTab(tab){
   document.getElementById('ftab-'+tab).classList.add('active');
   const btn = document.getElementById('ftab-btn-'+tab);
   if(btn) btn.classList.add('active');
-  if(tab==='trigonometry') buildTrigTable2();
   if(tab==='algebra') buildAlgebraTab();
   if(tab==='geometry') buildGeoTab();
-  if(tab==='mult') buildMultTable();
+  if(tab==='tables') buildTablesTab();
 }
 
 

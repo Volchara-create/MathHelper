@@ -533,11 +533,19 @@ header{flex-wrap:nowrap;gap:12px;}
 .alg-modal-name{font-size:1rem;color:#666;flex-shrink:0;}
 .alg-modal-expr{font-family:'Fira Code',monospace;font-size:1.2rem;font-weight:700;color:var(--blue);text-align:right;}
 
-/* Multiplication table */
-.mult-wrap{overflow-x:auto;}
-.mult-title{font-size:1.2rem;color:var(--blue);margin-bottom:16px;}
-.mult-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;min-width:440px;}
-.mult-cell{padding:8px 4px;text-align:center;border-radius:6px;font-size:0.9rem;background:#fff;border:1px solid #e8f0fe;}
+/* Tables tab */
+.tables-section{margin-bottom:36px;overflow-x:auto;}
+.mult-title{font-size:1.15rem;font-weight:700;color:var(--blue);margin-bottom:14px;}
+.mult-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;min-width:400px;}
+.mult-cell{padding:7px 4px;text-align:center;border-radius:6px;font-size:0.88rem;background:#fff;border:1px solid #e8f0fe;}
 .dark .mult-cell{background:#1e293b;border-color:#334155;}
 .mult-header{background:var(--blue);color:#fff;font-weight:700;border:none;}
 .mult-diagonal{background:#dbeafe;font-weight:700;color:var(--blue);}
+.sq-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;min-width:300px;}
+.sq-n{background:#f0f7ff;font-weight:700;color:var(--blue);}
+.sq-val{background:#fff;}
+.trig-tbl-wrap{overflow-x:auto;}
+/* Wide trig formulas (no table beside) */
+.trig-formulas-wide{max-width:700px;columns:2;column-gap:24px;}
+.trig-formulas-wide .trig-formula-block{break-inside:avoid;margin-bottom:14px;}
+@media(max-width:600px){.trig-formulas-wide{columns:1;}}

@@ -169,176 +169,77 @@
           <button class="ftab active" id="ftab-btn-algebra" onclick="showFormulaTab('algebra')">🔢 Алгебра</button>
           <button class="ftab" id="ftab-btn-geometry" onclick="showFormulaTab('geometry')">📐 Геометрія</button>
           <button class="ftab" id="ftab-btn-trigonometry" onclick="showFormulaTab('trigonometry')">📏 Тригонометрія</button>
-          <button class="ftab" id="ftab-btn-mult" onclick="showFormulaTab('mult')">✖️ Таблиця</button>
+          <button class="ftab" id="ftab-btn-tables" onclick="showFormulaTab('tables')">📊 Таблиці</button>
         </div>
 
         <!-- ALGEBRA TAB — category buttons, filled by JS -->
         <div class="ftab-content active" id="ftab-algebra">
-          <div class="algebra-cats-grid" id="algebra-cats-grid">
-            <!-- JS fills this -->
-          </div>
+          <div class="algebra-cats-grid" id="algebra-cats-grid"></div>
         </div>
 
         <!-- GEOMETRY TAB — formula cards, filled by JS -->
         <div class="ftab-content" id="ftab-geometry">
-          <div class="algebra-grid" id="geo-cards-grid">
-            <!-- JS fills this -->
-          </div>
+          <div class="algebra-grid" id="geo-cards-grid"></div>
         </div>
 
-        <!-- OLD ALGEBRA STATIC (hidden, kept for reference, not shown) -->
-        <div style="display:none">
-          <div class="algebra-grid">
-
-            <div class="alg-card">
-              <div class="alg-card-title">Степені та коріні</div>
-              <div class="alg-row"><span class="alg-name">Степінь</span><span class="alg-expr">aⁿ · aᵐ = aⁿ⁺ᵐ</span></div>
-              <div class="alg-row"><span class="alg-name">Ділення</span><span class="alg-expr">aⁿ / aᵐ = aⁿ⁻ᵐ</span></div>
-              <div class="alg-row"><span class="alg-name">Степінь степеня</span><span class="alg-expr">(aⁿ)ᵐ = aⁿ·ᵐ</span></div>
-              <div class="alg-row"><span class="alg-name">Добуток</span><span class="alg-expr">(a·b)ⁿ = aⁿ·bⁿ</span></div>
-              <div class="alg-row"><span class="alg-name">Корінь</span><span class="alg-expr">√(a·b) = √a·√b</span></div>
-              <div class="alg-row"><span class="alg-name">Нульовий степінь</span><span class="alg-expr">a⁰ = 1</span></div>
-            </div>
-
-            <div class="alg-card">
-              <div class="alg-card-title">Скорочене множення</div>
-              <div class="alg-row"><span class="alg-name">Квадрат суми</span><span class="alg-expr">(a+b)² = a²+2ab+b²</span></div>
-              <div class="alg-row"><span class="alg-name">Квадрат різниці</span><span class="alg-expr">(a−b)² = a²−2ab+b²</span></div>
-              <div class="alg-row"><span class="alg-name">Різниця квадратів</span><span class="alg-expr">a²−b² = (a+b)(a−b)</span></div>
-              <div class="alg-row"><span class="alg-name">Куб суми</span><span class="alg-expr">(a+b)³ = a³+3a²b+3ab²+b³</span></div>
-              <div class="alg-row"><span class="alg-name">Куб різниці</span><span class="alg-expr">(a−b)³ = a³−3a²b+3ab²−b³</span></div>
-              <div class="alg-row"><span class="alg-name">Сума кубів</span><span class="alg-expr">a³+b³ = (a+b)(a²−ab+b²)</span></div>
-            </div>
-
-            <div class="alg-card">
-              <div class="alg-card-title">Квадратне рівняння</div>
-              <div class="alg-row"><span class="alg-name">Загальний вигляд</span><span class="alg-expr">ax² + bx + c = 0</span></div>
-              <div class="alg-row"><span class="alg-name">Дискримінант</span><span class="alg-expr">D = b² − 4ac</span></div>
-              <div class="alg-row"><span class="alg-name">Корені</span><span class="alg-expr">x = (−b ± √D) / 2a</span></div>
-              <div class="alg-row"><span class="alg-name">D &gt; 0</span><span class="alg-expr">два корені</span></div>
-              <div class="alg-row"><span class="alg-name">D = 0</span><span class="alg-expr">один корінь x = −b/2a</span></div>
-              <div class="alg-row"><span class="alg-name">D &lt; 0</span><span class="alg-expr">немає коренів</span></div>
-            </div>
-
-            <div class="alg-card">
-              <div class="alg-card-title">Лінійна функція</div>
-              <div class="alg-row"><span class="alg-name">Формула</span><span class="alg-expr">y = kx + b</span></div>
-              <div class="alg-row"><span class="alg-name">k &gt; 0</span><span class="alg-expr">функція зростає</span></div>
-              <div class="alg-row"><span class="alg-name">k &lt; 0</span><span class="alg-expr">функція спадає</span></div>
-              <div class="alg-row"><span class="alg-name">b</span><span class="alg-expr">зсув по осі y</span></div>
-              <div class="alg-row"><span class="alg-name">k = 0</span><span class="alg-expr">y = b (горизонталь)</span></div>
-            </div>
-
-            <div class="alg-card">
-              <div class="alg-card-title">Прогресії</div>
-              <div class="alg-row"><span class="alg-name">Арифм. nй член</span><span class="alg-expr">aₙ = a₁ + (n−1)·d</span></div>
-              <div class="alg-row"><span class="alg-name">Сума n членів</span><span class="alg-expr">Sₙ = n(a₁+aₙ)/2</span></div>
-              <div class="alg-row"><span class="alg-name">Геом. nй член</span><span class="alg-expr">bₙ = b₁ · qⁿ⁻¹</span></div>
-              <div class="alg-row"><span class="alg-name">Сума геом.</span><span class="alg-expr">Sₙ = b₁(qⁿ−1)/(q−1)</span></div>
-            </div>
-
-            <div class="alg-card">
-              <div class="alg-card-title">Логарифми</div>
-              <div class="alg-row"><span class="alg-name">Означення</span><span class="alg-expr">logₐ(b) = x ↔ aˣ = b</span></div>
-              <div class="alg-row"><span class="alg-name">Добуток</span><span class="alg-expr">logₐ(xy) = logₐx + logₐy</span></div>
-              <div class="alg-row"><span class="alg-name">Частка</span><span class="alg-expr">logₐ(x/y) = logₐx − logₐy</span></div>
-              <div class="alg-row"><span class="alg-name">Степінь</span><span class="alg-expr">logₐ(xⁿ) = n·logₐx</span></div>
-              <div class="alg-row"><span class="alg-name">Натуральний</span><span class="alg-expr">ln(x) = logₑ(x)</span></div>
-            </div>
-
-            <div class="alg-card">
-              <div class="alg-card-title">Похідна (10-11 кл.)</div>
-              <div class="alg-row"><span class="alg-name">Константа</span><span class="alg-expr">(C)' = 0</span></div>
-              <div class="alg-row"><span class="alg-name">Степінь</span><span class="alg-expr">(xⁿ)' = n·xⁿ⁻¹</span></div>
-              <div class="alg-row"><span class="alg-name">Сума</span><span class="alg-expr">(u+v)' = u' + v'</span></div>
-              <div class="alg-row"><span class="alg-name">Добуток</span><span class="alg-expr">(uv)' = u'v + uv'</span></div>
-              <div class="alg-row"><span class="alg-name">sin</span><span class="alg-expr">(sin x)' = cos x</span></div>
-              <div class="alg-row"><span class="alg-name">cos</span><span class="alg-expr">(cos x)' = −sin x</span></div>
-            </div>
-
-            <div class="alg-card">
-              <div class="alg-card-title">Інтеграл (11 кл.)</div>
-              <div class="alg-row"><span class="alg-name">Степінь</span><span class="alg-expr">∫xⁿdx = xⁿ⁺¹/(n+1) + C</span></div>
-              <div class="alg-row"><span class="alg-name">sin</span><span class="alg-expr">∫sin x dx = −cos x + C</span></div>
-              <div class="alg-row"><span class="alg-name">cos</span><span class="alg-expr">∫cos x dx = sin x + C</span></div>
-              <div class="alg-row"><span class="alg-name">1/x</span><span class="alg-expr">∫(1/x)dx = ln|x| + C</span></div>
-              <div class="alg-row"><span class="alg-name">eˣ</span><span class="alg-expr">∫eˣdx = eˣ + C</span></div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- MULTIPLICATION TABLE TAB -->
-        <div class="ftab-content" id="ftab-mult">
-          <div id="mult-table-wrap"></div>
-        </div>
-
-        <!-- TRIGONOMETRY TAB -->
+        <!-- TRIGONOMETRY TAB — formulas only, no table -->
         <div class="ftab-content" id="ftab-trigonometry">
-          <div class="trig-layout">
-            <div class="trig-formulas-panel">
-              <h3>📋 Основні формули</h3>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">Основна тотожність</div>
-                <div class="trig-formula-expr">sin²α + cos²α = 1</div>
-              </div>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">tan і ctg</div>
-                <div class="trig-formula-expr">tan α = sin α / cos α</div>
-                <div class="trig-formula-expr">ctg α = cos α / sin α</div>
-                <div class="trig-formula-expr">tan α · ctg α = 1</div>
-              </div>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">Радіани</div>
-                <div class="trig-formula-expr">180° = π рад</div>
-                <div class="trig-formula-expr">1° = π/180 рад</div>
-              </div>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">Формули суми кутів</div>
-                <div class="trig-formula-expr">sin(α±β) = sinα·cosβ ± cosα·sinβ</div>
-                <div class="trig-formula-expr">cos(α±β) = cosα·cosβ ∓ sinα·sinβ</div>
-              </div>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">Подвійний кут</div>
-                <div class="trig-formula-expr">sin 2α = 2·sinα·cosα</div>
-                <div class="trig-formula-expr">cos 2α = cos²α − sin²α</div>
-              </div>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">Пониження степеня</div>
-                <div class="trig-formula-expr">sin²α = (1 − cos 2α) / 2</div>
-                <div class="trig-formula-expr">cos²α = (1 + cos 2α) / 2</div>
-              </div>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">Формули зведення</div>
-                <div class="trig-formula-expr">sin(90°−α) = cos α</div>
-                <div class="trig-formula-expr">cos(90°−α) = sin α</div>
-                <div class="trig-formula-expr">sin(180°−α) = sin α</div>
-                <div class="trig-formula-expr">cos(180°−α) = −cos α</div>
-              </div>
-              <div class="trig-formula-block">
-                <div class="trig-formula-title">Теорема синусів / косинусів</div>
-                <div class="trig-formula-expr">a/sin A = b/sin B = c/sin C</div>
-                <div class="trig-formula-expr">c² = a² + b² − 2ab·cos C</div>
-              </div>
-              <div class="trig-formula-block signs-block">
-                <div class="trig-formula-title">Знаки за чвертями</div>
-                <div class="trig-quadrants">
-                  <div class="trig-q trig-q2">II<br><span>sin+</span></div>
-                  <div class="trig-q trig-q1">I<br><span>all+</span></div>
-                  <div class="trig-q trig-q3">III<br><span>tan+</span></div>
-                  <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
-                </div>
-              </div>
+          <div class="trig-formulas-panel trig-formulas-wide">
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Основна тотожність</div>
+              <div class="trig-formula-expr">sin²α + cos²α = 1</div>
             </div>
-            <div class="trig-table-wrap">
-              <table class="trig-table">
-                <thead>
-                  <tr><th>Кут °</th><th>Рад</th><th>sin</th><th>cos</th><th>tan</th><th>ctg</th></tr>
-                </thead>
-                <tbody id="trig-tbody-2"></tbody>
-              </table>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">tan і ctg</div>
+              <div class="trig-formula-expr">tan α = sin α / cos α</div>
+              <div class="trig-formula-expr">ctg α = cos α / sin α</div>
+              <div class="trig-formula-expr">tan α · ctg α = 1</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Радіани</div>
+              <div class="trig-formula-expr">180° = π рад &nbsp;|&nbsp; 1° = π/180 рад</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Формули суми кутів</div>
+              <div class="trig-formula-expr">sin(α±β) = sinα·cosβ ± cosα·sinβ</div>
+              <div class="trig-formula-expr">cos(α±β) = cosα·cosβ ∓ sinα·sinβ</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Подвійний кут</div>
+              <div class="trig-formula-expr">sin 2α = 2·sinα·cosα</div>
+              <div class="trig-formula-expr">cos 2α = cos²α − sin²α</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Пониження степеня</div>
+              <div class="trig-formula-expr">sin²α = (1 − cos 2α) / 2</div>
+              <div class="trig-formula-expr">cos²α = (1 + cos 2α) / 2</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Формули зведення</div>
+              <div class="trig-formula-expr">sin(90°−α) = cosα &nbsp;|&nbsp; cos(90°−α) = sinα</div>
+              <div class="trig-formula-expr">sin(180°−α) = sinα &nbsp;|&nbsp; cos(180°−α) = −cosα</div>
+              <div class="trig-formula-expr">sin(−α) = −sinα &nbsp;|&nbsp; cos(−α) = cosα</div>
+            </div>
+            <div class="trig-formula-block">
+              <div class="trig-formula-title">Теорема синусів / косинусів</div>
+              <div class="trig-formula-expr">a/sin A = b/sin B = c/sin C = 2R</div>
+              <div class="trig-formula-expr">c² = a² + b² − 2ab·cos C</div>
+            </div>
+            <div class="trig-formula-block signs-block">
+              <div class="trig-formula-title">Знаки за чвертями</div>
+              <div class="trig-quadrants">
+                <div class="trig-q trig-q2">II<br><span>sin+</span></div>
+                <div class="trig-q trig-q1">I<br><span>all+</span></div>
+                <div class="trig-q trig-q3">III<br><span>tan+</span></div>
+                <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
+              </div>
             </div>
           </div>
+        </div>
+
+        <!-- TABLES TAB — mult, squares, sin/cos -->
+        <div class="ftab-content" id="ftab-tables">
+          <div id="tables-wrap"></div>
         </div>
 
       </div>
