@@ -180,25 +180,17 @@ function closeAlgebraModal(){
   document.getElementById('algebra-modal').classList.remove('active');
 }
 
-// Build geometry tab — cards from data object, no SVG
-const GEO_ICONS = {rectangle:'▭',rhombus:'🔷',parallelogram:'▱',trapezoid:'🔻',circle:'⭕',triangle:'🔺',cube:'📦',parallelepiped:'🧱',cylinder:'🥫',cone:'🍦',pyramid:'🔼'};
-
+// Build geometry tab — clean text buttons that open original SVG modal
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
-  if(grid.children.length > 0) return; // already built
+  if(grid.children.length > 0) return;
   const order = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle','cube','parallelepiped','cylinder','cone','pyramid'];
-  grid.innerHTML = order.map(cat => {
-    const formulas = data[cat] || [];
-    const rows = formulas.map(f => `
-      <div class="alg-row">
-        <span class="alg-name">${f.title}</span>
-        <span class="alg-expr">${f.formula}</span>
-      </div>`).join('');
-    return `<div class="alg-card">
-      <div class="alg-card-title">${GEO_ICONS[cat] || ''} ${categoryNames[cat]}</div>
-      ${rows}
-    </div>`;
-  }).join('');
+  grid.innerHTML = order.map(cat => `
+    <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
+      <div class="alg-cat-name">${categoryNames[cat]}</div>
+      <div class="alg-cat-count">${(data[cat]||[]).length} формули</div>
+    </div>
+  `).join('');
 }
 
 // Build all tables tab (mult + squares + sin/cos)
