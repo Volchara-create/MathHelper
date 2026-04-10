@@ -99,6 +99,12 @@ function buildTextbooks() {
 }
 
 function show(sec){
+  const grade = getUserGrade();
+  // Block trig and trig-table for grades 1-4
+  if((sec==='trig') && grade && grade<=4){
+    alert('Тригонометрія вивчається з 9 класу. Зараз доступні формули та задачі для ' + grade + ' класу!');
+    return;
+  }
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(sec).classList.add('active');
   document.getElementById('category-row').style.display='none';
@@ -108,6 +114,8 @@ function show(sec){
   if(sec==='formulas') buildAlgebraTab();
   if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
+  // Hide nav buttons that are not relevant for young grades
+  updateNavForGrade(grade);
 }
 function showFormulas(){ show('formulas'); }
 
@@ -438,6 +446,8 @@ function buildAlgebraTab(){
   const grid = document.getElementById('algebra-cats-grid');
   if(grid.children.length > 0) return;
   const grade = getUserGrade();
+  // Hide trig/tables tabs for grades 1-4
+  updateNavForGrade(grade);
   const cats = ALGEBRA_CATS.filter(c => !grade || grade >= (c.minGrade || 1));
   if(!cats.length) { grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Формули алгебри з\'являться у 7 класі</p>'; return; }
   grid.innerHTML = cats.map(cat => `
@@ -1285,63 +1295,280 @@ function checkAnswer(input,correct,id){
 
 function toggleAnswer(){document.getElementById('task-answer')?.classList.toggle('show');}
 
-// ===== TASKS SECTION (grade-aware) =====
+// ===== TASKS SECTION (grade-aware with animations) =====
 
-// Task generators by grade group
+// Visual task generators — each returns { q, visual, a, formula }
+// visual: { op, emoji, name, start, change }  or null for text-only
 const GRADE_TASKS = {
-  1: [ // Addition/subtraction to 10
-    ()=>{const a=ri(1,5),b=ri(1,5-a);return{q:`🍎 У кошику ${a} яблук, поклали ще ${b}. Скільки яблук стало?`,a:a+b,hint:`${a} + ${b} = ?`};},
-    ()=>{const a=ri(5,9),b=ri(1,a-1);return{q:`🍇 Було ${a} виноградин, з'їли ${b}. Скільки лишилось?`,a:a-b,hint:`${a} − ${b} = ?`};},
-    ()=>{const a=ri(1,4),b=ri(1,4);return{q:`🦋 ${a} метелики сиділи на квітці, прилетіло ще ${b}. Скільки їх тепер?`,a:a+b,hint:`${a} + ${b} = ?`};},
-    ()=>{const s=ri(4,9),a=ri(1,s-1);return{q:`🐣 В гнізді ${s} яєць, вилупилось ${a} пташенят. Скільки яєць залишилось?`,a:s-a,hint:`${s} − ${a} = ?`};},
-    ()=>{const a=ri(2,5),b=ri(1,4);return{q:`⭐ Намалювала ${a} зірки, потім ще ${b}. Скільки зірок всього?`,a:a+b,hint:`${a} + ${b} = ?`};},
+  1: [ // Grade 1 — addition/subtraction to 10 with visuals
+    ()=>{const a=ri(2,4),b=ri(1,4-a+1);return{q:`Було ${a+b} ${['🍎','🍇','🍊','🍋','🍓'][ri(0,4)]}, з'їли ${b}. Скільки лишилось?`,visual:{op:'-',emoji:['🍎','🍇','🍊','🍋','🍓'][ri(0,4)],start:a+b,change:b},a,formula:`${a+b} − ${b} = ${a}`};},
+    ()=>{const a=ri(1,4),b=ri(1,5-a);return{q:`Прилетіло ${a} 🦋, потім ще ${b}. Скільки метеликів?`,visual:{op:'+',emoji:'🦋',start:a,change:b},a:a+b,formula:`${a} + ${b} = ${a+b}`};},
+    ()=>{const s=ri(4,8),r=ri(1,3);return{q:`В кошику ${s} 🍓. З'їли ${r}. Скільки лишилось?`,visual:{op:'-',emoji:'🍓',start:s,change:r},a:s-r,formula:`${s} − ${r} = ${s-r}`};},
+    ()=>{const a=ri(1,4),b=ri(1,4);return{q:`${a} ⭐ + ще ${b} ⭐ = ?`,visual:{op:'+',emoji:'⭐',start:a,change:b},a:a+b,formula:`${a} + ${b} = ${a+b}`};},
+    ()=>{const s=ri(5,9),r=ri(2,4);return{q:`В гнізді ${s} 🐣. ${r} пташеняти вилетіли. Скільки лишилось?`,visual:{op:'-',emoji:'🐣',start:s,change:r},a:s-r,formula:`${s} − ${r} = ${s-r}`};},
+    ()=>{const a=ri(1,3),b=ri(1,4);return{q:`${a} 🐸 сиділо на листку, стрибнуло ще ${b}. Скільки разом?`,visual:{op:'+',emoji:'🐸',start:a,change:b},a:a+b,formula:`${a} + ${b} = ${a+b}`};},
   ],
-  2: [ // Addition/subtraction to 100
-    ()=>{const a=ri(10,50),b=ri(5,40);return{q:`📦 На складі ${a} коробок, привезли ще ${b}. Скільки коробок стало?`,a:a+b,hint:`${a} + ${b} = ?`};},
-    ()=>{const a=ri(30,90),b=ri(5,a-10);return{q:`🍊 В магазині ${a} апельсинів, продали ${b}. Скільки лишилось?`,a:a-b,hint:`${a} − ${b} = ?`};},
-    ()=>{const a=ri(12,45),b=ri(5,30);return{q:`📚 На полиці ${a} книжок, поставили ще ${b}. Скільки книжок на полиці?`,a:a+b,hint:`${a} + ${b} = ?`};},
-    ()=>{const s=ri(40,90),a=ri(10,30);return{q:`🚌 В автобусі ${s} місць, зайнято ${a}. Скільки місць вільно?`,a:s-a,hint:`${s} − ${a} = ?`};},
-    ()=>{const a=ri(15,40),b=ri(10,40);return{q:`🌻 У саду ${a} жовтих і ${b} червоних квіток. Скільки квіток всього?`,a:a+b,hint:`${a} + ${b} = ?`};},
+  2: [ // Grade 2 — addition/subtraction to 100, round numbers
+    ()=>{const a=ri(1,5)*10,b=ri(1,5)*10;return{q:`В класі ${a} зошитів, принесли ще ${b}. Скільки стало?`,visual:{op:'+',emoji:'📓',start:a/10,change:b/10,scale:10},a:a+b,formula:`${a} + ${b} = ${a+b}`};},
+    ()=>{const s=ri(4,9)*10,r=ri(1,3)*10;return{q:`Було ${s} 🍊. Продали ${r}. Скільки лишилось?`,visual:{op:'-',emoji:'🍊',start:s/10,change:r/10,scale:10},a:s-r,formula:`${s} − ${r} = ${s-r}`};},
+    ()=>{const a=ri(13,40),b=ri(5,20);return{q:`На полиці ${a} 📚, поклали ще ${b}. Скільки книжок?`,visual:null,a:a+b,formula:`${a} + ${b} = ${a+b}`};},
+    ()=>{const s=ri(50,90),r=ri(10,30);return{q:`Було ${s} 🌻. Зрізали ${r}. Скільки лишилось?`,visual:null,a:s-r,formula:`${s} − ${r} = ${s-r}`};},
+    ()=>{const a=ri(20,60),b=ri(10,30);return{q:`${a} + ${b} = ?`,visual:{op:'+',emoji:'🔵',start:Math.min(a,10),change:Math.min(b,10),scale:null},a:a+b,formula:`${a} + ${b} = ${a+b}`};},
   ],
-  3: [ // Multiplication tables
-    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`✖️ Скільки буде ${a} × ${b}?`,a:a*b,hint:`таблиця множення`};},
-    ()=>{const a=ri(2,9),b=ri(2,5);return{q:`🧁 Є ${b} тарілок, на кожній по ${a} кексів. Скільки кексів всього?`,a:a*b,hint:`${b} × ${a} = ?`};},
-    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`⚽ ${a} команд по ${b} гравців. Скільки гравців всього?`,a:a*b,hint:`${a} × ${b} = ?`};},
-    ()=>{const b=ri(2,8),p=b*ri(2,6);return{q:`🍫 ${p} цукерок порівну в ${b} пакетиків. По скільки в кожному?`,a:p/b,hint:`${p} ÷ ${b} = ?`};},
-    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`🌟 Скільки буде ${a} × ${b}?`,a:a*b,hint:`рахуй рядками`};},
+  3: [ // Grade 3 — multiplication & division
+    ()=>{const a=ri(2,5),b=ri(2,6);return{q:`${a} тарілок, на кожній ${b} 🧁. Скільки кексів?`,visual:{op:'×',emoji:'🧁',rows:a,cols:b},a:a*b,formula:`${a} × ${b} = ${a*b}`};},
+    ()=>{const a=ri(2,5),b=ri(2,6);return{q:`${a} ряди по ${b} ⭐. Скільки зірок всього?`,visual:{op:'×',emoji:'⭐',rows:a,cols:b},a:a*b,formula:`${a} × ${b} = ${a*b}`};},
+    ()=>{const b=ri(2,5),q=ri(2,6);return{q:`${b*q} 🍫 цукерок рівно між ${b} дітьми. По скільки?`,visual:{op:'÷',emoji:'🍫',total:b*q,groups:b},a:q,formula:`${b*q} ÷ ${b} = ${q}`};},
+    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`${a} × ${b} = ?`,visual:{op:'×',emoji:'🔵',rows:Math.min(a,5),cols:Math.min(b,5)},a:a*b,formula:`${a} × ${b} = ${a*b}`};},
+    ()=>{const b=ri(2,9),q=ri(2,8);return{q:`${b*q} ÷ ${b} = ?`,visual:null,a:q,formula:`${b*q} ÷ ${b} = ${q}`};},
+    ()=>{const a=ri(2,5),b=ri(2,5);return{q:`${a} команд по ${b} ⚽ гравців. Скільки гравців?`,visual:{op:'×',emoji:'⚽',rows:a,cols:b},a:a*b,formula:`${a} × ${b} = ${a*b}`};},
   ],
-  4: [ // Division + basic geometry
-    ()=>{const b=ri(2,9),q=ri(2,9);return{q:`➗ ${b*q} ÷ ${b} = ?`,a:q,hint:`ділення`};},
-    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`📐 Прямокутник ${a} см × ${b} см. Знайди периметр.`,a:2*(a+b),hint:`P = 2×(${a}+${b})`};},
-    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`📏 Сторони прямокутника ${a} і ${b} см. Знайди площу.`,a:a*b,hint:`S = ${a} × ${b}`};},
-    ()=>{const a=ri(2,8);return{q:`⬛ Сторона квадрата ${a} см. Знайди периметр.`,a:4*a,hint:`P = 4 × ${a}`};},
-    ()=>{const b=ri(2,9),q=ri(2,9);return{q:`🍕 ${b*q} шматочків піци порівну між ${b} друзями. По скільки кожному?`,a:q,hint:`${b*q} ÷ ${b} = ?`};},
+  4: [ // Grade 4 — division + geometry (perimeter, area)
+    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`Периметр прямокутника ${a}×${b} см = ?`,visual:{op:'rect',w:a,h:b},a:2*(a+b),formula:`P = 2×(${a}+${b}) = ${2*(a+b)} см`};},
+    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`Площа прямокутника ${a}×${b} см = ?`,visual:{op:'rect',w:a,h:b},a:a*b,formula:`S = ${a}×${b} = ${a*b} см²`};},
+    ()=>{const a=ri(2,8);return{q:`Периметр квадрата зі стороною ${a} см = ?`,visual:{op:'square',s:a},a:4*a,formula:`P = 4×${a} = ${4*a} см`};},
+    ()=>{const b=ri(2,9),q=ri(2,9);return{q:`${b*q} ÷ ${b} = ?`,visual:null,a:q,formula:`${b*q} ÷ ${b} = ${q}`};},
+    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`${a} × ${b} = ?`,visual:null,a:a*b,formula:`${a} × ${b} = ${a*b}`};},
+    ()=>{const a=ri(3,7);return{q:`Площа квадрата зі стороною ${a} см = ?`,visual:{op:'square',s:a},a:a*a,formula:`S = ${a}² = ${a*a} см²`};},
   ],
-  5: [ // Percentages + fractions
-    ()=>{const n=ri(2,9)*10,p=ri(1,5)*10;return{q:`💯 ${p}% від ${n} = ?`,a:n*p/100,hint:`${n} × ${p} ÷ 100`};},
-    ()=>{const a=ri(2,5),b=ri(2,5);return{q:`🍕 Від піци лишилось ${a}/${a+b}. Скільки частин з'їли з ${a+b}?`,a:b,hint:`${a+b} − ${a} = ?`};},
-    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`📐 Трикутник з основою ${a} см і висотою ${b} см. Знайди площу.`,a:a*b/2,hint:`S = (${a} × ${b}) ÷ 2`};},
-    ()=>{const n=ri(1,9)*10,p=50;return{q:`🎯 ${p}% від ${n} = ?`,a:n/2,hint:`половина від ${n}`};},
-    ()=>{const a=ri(2,9),b=ri(2,5),r=a*b;return{q:`✖️ ${a} × ${b} = ?  (і ще раз для впевненості 😄)`,a:r,hint:`таблиця`};},
+  5: [ // Grade 5 — percentages, fractions, basic geometry
+    ()=>{const n=ri(2,9)*10,p=ri(1,5)*10;return{q:`${p}% від ${n} = ?`,visual:null,a:n*p/100,formula:`${n} × ${p}/100 = ${n*p/100}`};},
+    ()=>{const a=ri(2,8),b=ri(2,8);return{q:`Площа трикутника: основа ${a}, висота ${b} = ?`,visual:null,a:a*b/2,formula:`S = (${a}×${b})/2 = ${a*b/2} см²`};},
+    ()=>{const n=ri(2,9)*10;return{q:`50% від ${n} = ?`,visual:null,a:n/2,formula:`${n}/2 = ${n/2}`};},
+    ()=>{const a=ri(2,9),b=ri(2,9);return{q:`${a} × ${b} = ?`,visual:null,a:a*b,formula:`${a} × ${b} = ${a*b}`};},
+    ()=>{const n=ri(1,9)*10,p=10;return{q:`10% від ${n} = ?`,visual:null,a:n/10,formula:`${n}/10 = ${n/10}`};},
   ],
 };
 
-// Safe game state
+// ===== VISUAL TASK CARD ANIMATION =====
+
+let visualTaskData = null;
+let visualTaskAnswered = false;
+
+function renderVisualCard(task, cardEl) {
+  const v = task.visual;
+  if (!v) {
+    // Text-only task
+    cardEl.innerHTML = `
+      <div class="vtask-front">
+        <div class="vtask-q">${task.q}</div>
+        <div class="vtask-input-row">
+          <input class="vtask-input" id="vtask-ans" type="number" placeholder="?" onkeydown="if(event.key==='Enter')vtaskCheck()">
+          <button class="vtask-btn" onclick="vtaskCheck()">✓</button>
+        </div>
+        <div class="vtask-msg" id="vtask-msg"></div>
+      </div>`;
+    return;
+  }
+
+  // Build emoji animation area
+  let emojiHtml = '';
+  if (v.op === '+' || v.op === '-') {
+    const total = v.op === '+' ? v.start + v.change : v.start;
+    const scale = v.scale || 1;
+    // Limit to 10 emojis for display (use scale for groups)
+    const showCount = Math.min(total, 10);
+    const labelScale = scale > 1 ? ` (кожна = ${scale})` : '';
+    emojiHtml = `
+      <div class="vtask-scene">
+        <div class="vtask-emojis" id="vtask-emojis">
+          ${Array.from({length: showCount}, (_,i) => `<span class="vtask-em" id="vem${i}" data-idx="${i}">${v.emoji}</span>`).join('')}
+        </div>
+        <div class="vtask-scene-label" id="vtask-scene-label">Всього: ${total}${scale>1?' (показано умовно)':''}</div>
+      </div>`;
+  } else if (v.op === '×') {
+    const rows = Math.min(v.rows, 5), cols = Math.min(v.cols, 5);
+    emojiHtml = `
+      <div class="vtask-scene">
+        <div class="vtask-grid" id="vtask-emojis">
+          ${Array.from({length:rows},(_,r)=>`<div class="vtask-row">${Array.from({length:cols},(_,c)=>`<span class="vtask-em" id="vem${r*cols+c}">${v.emoji}</span>`).join('')}</div>`).join('')}
+        </div>
+        <div class="vtask-scene-label">${v.rows} рядки × ${v.cols} в ряду</div>
+      </div>`;
+  } else if (v.op === '÷') {
+    const perGroup = v.total / v.groups;
+    emojiHtml = `
+      <div class="vtask-scene">
+        <div class="vtask-groups" id="vtask-emojis">
+          ${Array.from({length:v.groups},(_,g)=>`<div class="vtask-group">${Array.from({length:Math.min(perGroup,6)},(_,i)=>`<span class="vtask-em" id="vem${g}_${i}">${v.emoji}</span>`).join('')}<div class="vtask-group-label">група ${g+1}</div></div>`).join('')}
+        </div>
+      </div>`;
+  } else if (v.op === 'rect') {
+    emojiHtml = `
+      <div class="vtask-scene">
+        <svg viewBox="0 0 200 120" width="200" height="120" class="vtask-svg" id="vtask-svg-shape">
+          <rect x="20" y="20" width="${Math.min(v.w*14,160)}" height="${Math.min(v.h*10,80)}" rx="4" fill="#bfdbfe" stroke="#2563eb" stroke-width="2.5"/>
+          <text x="${20+Math.min(v.w*14,160)/2}" y="15" text-anchor="middle" font-size="13" fill="#2563eb">${v.w} см</text>
+          <text x="${20+Math.min(v.w*14,160)+10}" y="${20+Math.min(v.h*10,80)/2}" text-anchor="start" font-size="13" fill="#2563eb">${v.h} см</text>
+        </svg>
+      </div>`;
+  } else if (v.op === 'square') {
+    const sz = Math.min(v.s*14, 120);
+    emojiHtml = `
+      <div class="vtask-scene">
+        <svg viewBox="0 0 180 130" width="180" height="130" class="vtask-svg" id="vtask-svg-shape">
+          <rect x="30" y="20" width="${sz}" height="${sz}" rx="4" fill="#bbf7d0" stroke="#16a34a" stroke-width="2.5"/>
+          <text x="${30+sz/2}" y="15" text-anchor="middle" font-size="13" fill="#16a34a">${v.s} см</text>
+          <text x="${30+sz+10}" y="${20+sz/2}" font-size="13" fill="#16a34a">${v.s} см</text>
+        </svg>
+      </div>`;
+  }
+
+  cardEl.innerHTML = `
+    <div class="vtask-card-flip" id="vtask-flip">
+      <div class="vtask-face vtask-face-front">
+        <div class="vtask-q">${task.q}</div>
+        ${emojiHtml}
+        <div class="vtask-input-row" id="vtask-input-area" style="display:none">
+          <input class="vtask-input" id="vtask-ans" type="number" placeholder="?" onkeydown="if(event.key==='Enter')vtaskCheck()">
+          <button class="vtask-btn" onclick="vtaskCheck()">✓</button>
+        </div>
+        <div class="vtask-msg" id="vtask-msg"></div>
+      </div>
+      <div class="vtask-face vtask-face-back">
+        <div class="vtask-formula">${task.formula}</div>
+        <div class="vtask-back-emoji">🌟</div>
+        <div class="vtask-back-label">Запам'ятай!</div>
+      </div>
+    </div>`;
+
+  // Run animation
+  if (v.op === '+') {
+    runAddAnimation(v.start, v.change, task.q);
+  } else if (v.op === '-') {
+    runRemoveAnimation(v.start, v.change, task.q);
+  } else if (v.op === '×' || v.op === '÷') {
+    runMultAnimation();
+  } else {
+    // SVG shape — show input immediately
+    showVtaskInput();
+  }
+}
+
+function runAddAnimation(start, add, q) {
+  // Phase 1: show only `start` items (others hidden)
+  const total = start + add;
+  for (let i = start; i < Math.min(total, 10); i++) {
+    const el = document.getElementById(`vem${i}`);
+    if (el) el.style.opacity = '0';
+  }
+  const lbl = document.getElementById('vtask-scene-label');
+  if (lbl) lbl.textContent = `Було: ${start}`;
+
+  // Phase 2: after 1.5s — add items with animation
+  setTimeout(() => {
+    if (lbl) lbl.textContent = `Прилетіло ще ${add}! Всього = ?`;
+    for (let i = start; i < Math.min(total, 10); i++) {
+      const el = document.getElementById(`vem${i}`);
+      if (el) {
+        el.style.transition = `opacity 0.4s ${(i-start)*0.15}s, transform 0.4s ${(i-start)*0.15}s`;
+        el.style.transform = 'scale(1.3)';
+        el.style.opacity = '1';
+        setTimeout(() => { if(el) el.style.transform = 'scale(1)'; }, 300 + (i-start)*150);
+      }
+    }
+    setTimeout(showVtaskInput, add * 150 + 500);
+  }, 1500);
+}
+
+function runRemoveAnimation(start, remove, q) {
+  const lbl = document.getElementById('vtask-scene-label');
+  if (lbl) lbl.textContent = `Було: ${start}`;
+  // Phase 2: after 1.5s — fade out `remove` items from the end
+  setTimeout(() => {
+    if (lbl) lbl.textContent = `Забрали ${remove}... Скільки лишилось?`;
+    const show = Math.min(start, 10);
+    const removeStart = Math.max(0, show - remove);
+    for (let i = removeStart; i < show; i++) {
+      const el = document.getElementById(`vem${i}`);
+      if (el) {
+        el.style.transition = `opacity 0.4s ${(i-removeStart)*0.2}s, transform 0.5s ${(i-removeStart)*0.2}s`;
+        el.style.opacity = '0.1';
+        el.style.transform = 'scale(0.3) translateY(-20px)';
+      }
+    }
+    setTimeout(showVtaskInput, remove * 200 + 500);
+  }, 1500);
+}
+
+function runMultAnimation() {
+  // Highlight rows one by one
+  const rows = document.querySelectorAll('#vtask-emojis .vtask-row, #vtask-emojis .vtask-group');
+  rows.forEach((row, i) => {
+    row.style.opacity = '0';
+    row.style.transition = `opacity 0.4s ${i*0.3}s`;
+    setTimeout(() => { row.style.opacity = '1'; }, i * 300 + 200);
+  });
+  setTimeout(showVtaskInput, rows.length * 300 + 600);
+}
+
+function showVtaskInput() {
+  const area = document.getElementById('vtask-input-area');
+  if (area) { area.style.display = 'flex'; area.style.animation = 'fadeIn 0.4s'; }
+  setTimeout(() => document.getElementById('vtask-ans')?.focus(), 100);
+}
+
+function vtaskCheck() {
+  if (visualTaskAnswered) return;
+  const input = document.getElementById('vtask-ans');
+  const msg = document.getElementById('vtask-msg');
+  if (!input || !msg) return;
+  const val = input.value.trim();
+  const correct = String(visualTaskData.a);
+  if (!val) { msg.textContent = '⚠️ Введи відповідь!'; msg.className = 'vtask-msg warn'; return; }
+  if (val === correct) {
+    visualTaskAnswered = true;
+    msg.textContent = '✅ Правильно!';
+    msg.className = 'vtask-msg ok';
+    // Flip card after 0.6s
+    setTimeout(() => {
+      const flip = document.getElementById('vtask-flip');
+      if (flip) flip.classList.add('flipped');
+    }, 600);
+    // After showing formula, auto-next
+    setTimeout(vtaskNext, 3200);
+  } else {
+    msg.textContent = '❌ Спробуй ще!';
+    msg.className = 'vtask-msg wrong';
+    input.value = '';
+    input.classList.add('shake');
+    setTimeout(() => input.classList.remove('shake'), 500);
+  }
+}
+
+function vtaskNext() {
+  const pool = getGradeTasks();
+  const gen = pool[ri(0, pool.length - 1)];
+  visualTaskData = gen();
+  visualTaskAnswered = false;
+  const card = document.getElementById('vtask-card');
+  if (card) renderVisualCard(visualTaskData, card);
+}
+
+// ===== SAFE GAME =====
+
 let safeAnswers = [];
 let safeCorrect = [false, false, false];
-let safeTotalStars = 0;
+let safeTotalStars = parseInt(localStorage.getItem('mh_stars') || '0');
 
 function tasksInit() {
   const grade = getUserGrade();
   const label = document.getElementById('tasks-grade-label');
-  if (label) label.textContent = `${grade} клас — задачі підібрані для тебе`;
-  if (grade <= 5) {
+  const gradeNames = {1:'1 клас — додавання та віднімання',2:'2 клас — числа до 100',3:'3 клас — множення та ділення',4:'4 клас — ділення + геометрія',5:'5 клас — дроби та відсотки'};
+  if (label) label.textContent = gradeNames[grade] || `${grade} клас`;
+
+  if (grade && grade <= 5) {
     tasksSetMode('safe');
     safeNew();
+    // Restore stars
+    const starsEl = document.getElementById('safe-stars');
+    if (starsEl) starsEl.innerHTML = '⭐'.repeat(Math.min(safeTotalStars, 15));
   } else {
     tasksSetMode('regular');
     loadRandomTask();
   }
+  // Init visual task card
+  if (grade && grade <= 5) vtaskNext();
 }
 
 function tasksSetMode(mode) {
@@ -1360,25 +1587,30 @@ function getGradeTasks() {
   return GRADE_TASKS[5];
 }
 
+function updateNavForGrade(grade) {
+  if (!grade) return;
+  // Hide trigonometry tab in formulas for grades 1-4
+  const trigTab = document.getElementById('ftab-btn-trigonometry');
+  const tablesTab = document.getElementById('ftab-btn-tables');
+  if (trigTab) trigTab.style.display = grade <= 4 ? 'none' : '';
+  if (tablesTab) tablesTab.style.display = grade <= 3 ? 'none' : '';
+}
+
 function safeNew() {
   const pool = getGradeTasks();
-  // Pick 3 unique tasks
   const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 3);
   safeAnswers = shuffled.map(g => g());
   safeCorrect = [false, false, false];
-
-  // Reset dial
+  dialAngle = 0;
   safeTurnDial(0);
 
-  // Render questions
   const qEl = document.getElementById('safe-questions');
   qEl.innerHTML = safeAnswers.map((t, i) => `
     <div class="safe-q" id="safe-q${i}">
       <div class="safe-q-num">🔑 ${i+1}.</div>
       <div class="safe-q-text">${t.q}</div>
-      <div class="safe-q-hint">${t.hint}</div>
       <div class="safe-q-row">
-        <input class="safe-input" id="safe-ans${i}" type="text" placeholder="Відповідь..."
+        <input class="safe-input" id="safe-ans${i}" type="number" placeholder="?"
           onkeydown="if(event.key==='Enter')safeCheck(${i})"
           ${i > 0 ? 'disabled' : ''}>
         <button class="safe-check-btn" onclick="safeCheck(${i})" ${i > 0 ? 'disabled' : ''}>→</button>
@@ -1387,25 +1619,25 @@ function safeNew() {
     </div>
   `).join('');
 
-  // Reset digits
   for (let i = 0; i < 3; i++) {
     const d = document.getElementById(`sd${i}`);
     if (d) { d.value = '?'; d.style.color = '#93c5fd'; d.classList.remove('unlocked'); }
   }
+  const door = document.getElementById('safe-door');
+  if (door) { door.style.transition = 'none'; door.style.transform = ''; }
   document.getElementById('safe-msg').textContent = '';
   document.getElementById('safe-status-text').textContent = '🔒 ЗАЧИНЕНО';
-
-  // Focus first input
   setTimeout(() => document.getElementById('safe-ans0')?.focus(), 100);
 }
 
 let dialAngle = 0;
 function safeTurnDial(steps) {
-  dialAngle += steps * 40;
+  dialAngle += steps * 45;
   const ptr = document.getElementById('safe-pointer');
   if (!ptr) return;
   const rad = (dialAngle * Math.PI) / 180;
   const cx = 80, cy = 80, len = 25;
+  ptr.style.transition = 'all 0.5s ease';
   ptr.setAttribute('x2', cx + Math.sin(rad) * len);
   ptr.setAttribute('y2', cy - Math.cos(rad) * len);
 }
@@ -1415,40 +1647,29 @@ function safeCheck(i) {
   const result = document.getElementById(`safe-r${i}`);
   const val = input.value.trim();
   const correct = String(safeAnswers[i].a);
-
   if (!val) { result.textContent = '⚠️ Введи відповідь!'; result.className = 'safe-q-result wrong'; return; }
-
   if (val === correct) {
     safeCorrect[i] = true;
-    result.textContent = '✅ Правильно!';
+    result.textContent = '✅ Правильно! ' + safeAnswers[i].formula;
     result.className = 'safe-q-result ok';
     input.disabled = true;
     document.querySelector(`#safe-q${i} .safe-check-btn`).disabled = true;
     document.getElementById(`safe-q${i}`).classList.add('done');
-
-    // Show digit in code display
     const d = document.getElementById(`sd${i}`);
     if (d) { d.value = correct; d.style.color = '#22c55e'; d.classList.add('unlocked'); }
-
-    // Turn dial
     safeTurnDial(1);
-
-    // Unlock next question
     if (i < 2) {
-      const nextInput = document.getElementById(`safe-ans${i+1}`);
-      const nextBtn = document.querySelector(`#safe-q${i+1} .safe-check-btn`);
-      if (nextInput) { nextInput.disabled = false; nextInput.focus(); }
-      if (nextBtn) nextBtn.disabled = false;
+      const ni = document.getElementById(`safe-ans${i+1}`);
+      const nb = document.querySelector(`#safe-q${i+1} .safe-check-btn`);
+      if (ni) { ni.disabled = false; ni.focus(); }
+      if (nb) nb.disabled = false;
     }
-
-    // Check if all done
     if (safeCorrect.every(Boolean)) safeOpen();
   } else {
-    result.textContent = `❌ Не вірно, спробуй ще!`;
+    result.textContent = '❌ Не вірно, спробуй ще!';
     result.className = 'safe-q-result wrong';
     input.value = '';
     input.focus();
-    // Wrong shake animation
     document.getElementById(`safe-q${i}`).classList.add('shake');
     setTimeout(() => document.getElementById(`safe-q${i}`)?.classList.remove('shake'), 500);
   }
@@ -1456,31 +1677,41 @@ function safeCheck(i) {
 
 function safeOpen() {
   safeTotalStars++;
-  const statusText = document.getElementById('safe-status-text');
-  if (statusText) statusText.textContent = '🔓 ВІДЧИНЕНО!';
-
+  localStorage.setItem('mh_stars', safeTotalStars);
+  document.getElementById('safe-status-text').textContent = '🔓 ВІДЧИНЕНО!';
   const door = document.getElementById('safe-door');
   if (door) {
-    door.style.transition = 'transform 0.8s ease';
+    door.style.transition = 'transform 0.8s cubic-bezier(.4,2,.6,1)';
     door.style.transformOrigin = '80px 80px';
-    door.style.transform = 'scale(0.1) rotate(360deg)';
-    setTimeout(() => { door.style.transform = 'scale(0)'; }, 800);
+    door.style.transform = 'scale(0) rotate(360deg)';
   }
-
   const starsEl = document.getElementById('safe-stars');
   if (starsEl) {
-    starsEl.innerHTML = '⭐'.repeat(Math.min(safeTotalStars, 10));
-    starsEl.classList.add('pop');
-    setTimeout(() => starsEl.classList.remove('pop'), 600);
+    starsEl.innerHTML = '⭐'.repeat(Math.min(safeTotalStars, 15));
+    starsEl.style.animation = 'none';
+    setTimeout(() => { starsEl.style.animation = 'starPop 0.5s ease'; }, 10);
   }
-
+  const phrases = ['Молодець! 🎉', 'Неймовірно! 🚀', 'Ти супер! 🌟', 'Так тримати! 🏆', 'Браво! 🎊', 'Ти — чемпіон! 👑'];
   const msg = document.getElementById('safe-msg');
-  const phrases = ['Молодець! 🎉', 'Неймовірно! 🚀', 'Ти супер! 🌟', 'Так тримати! 🏆', 'Браво! 🎊'];
-  msg.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+  msg.textContent = phrases[ri(0, phrases.length - 1)];
   msg.className = 'safe-msg success';
+  // Burst of confetti emoji
+  spawnConfetti();
+  setTimeout(() => { safeNew(); }, 3000);
+}
 
-  // Auto-reset after 2 seconds
-  setTimeout(safeNew, 2500);
+function spawnConfetti() {
+  const container = document.getElementById('tasks-content');
+  if (!container) return;
+  const emojis = ['⭐','🎉','🌟','🏆','✨','🎊'];
+  for (let i = 0; i < 12; i++) {
+    const el = document.createElement('span');
+    el.textContent = emojis[ri(0, emojis.length-1)];
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${ri(10,90)}%;animation-delay:${ri(0,8)*0.1}s;font-size:${ri(16,28)}px`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
 }
 
 // ===== DARK MODE =====
