@@ -237,7 +237,7 @@ function openTrigModal(idx){
 // ===== TABLES DATA =====
 const TABLES_LIST = [
   { id:'mult',  name:'Таблиця множення', sub:'від 1 до 10' },
-  { id:'sq',    name:'Квадрати чисел',   sub:'від 1 до 25' },
+  { id:'sq',    name:'Квадрати чисел',   sub:'від 1 до 49' },
   { id:'trig',  name:'sin, cos, tan, ctg', sub:'основні кути' },
 ];
 
@@ -270,9 +270,24 @@ function openTableFullscreen(id){
     body.innerHTML = html;
 
   } else if(id === 'sq'){
-    title.textContent = 'Квадрати чисел (1–25)';
-    let html = '<div class="sq-fs-grid"><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div>';
-    for(let i=1;i<=25;i++) html+=`<div class="mult-cell sq-n">${i}</div><div class="mult-cell sq-val">${i*i}</div>`;
+    title.textContent = 'Квадрати чисел (1–49)';
+    // 7 numbers per row: header row (n) + value row (n²), 7 groups
+    const cols = 7;
+    let html = '<div class="sq-fs-table">';
+    for(let row=0; row<7; row++){
+      const start = row*cols + 1;
+      const end = Math.min(start+cols-1, 49);
+      // n row
+      html += '<div class="sq-row">';
+      html += '<div class="sq-label">n</div>';
+      for(let n=start; n<=end; n++) html += `<div class="mult-cell mult-header">${n}</div>`;
+      html += '</div>';
+      // n² row
+      html += '<div class="sq-row sq-row-val">';
+      html += '<div class="sq-label">n²</div>';
+      for(let n=start; n<=end; n++) html += `<div class="mult-cell sq-val">${n*n}</div>`;
+      html += '</div>';
+    }
     html += '</div>';
     body.innerHTML = html;
 

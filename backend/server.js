@@ -11,6 +11,10 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
+// Serve frontend static files from parent directory
+const path = require('path');
+app.use(express.static(path.join(__dirname, '..')));
+
 // Middleware: check JWT token
 function authMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];

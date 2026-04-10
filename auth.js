@@ -1,4 +1,4 @@
-const API = 'http://localhost:3001';
+const API = '';
 
 // Grade-specific formula data for dashboard
 const GRADE_FORMULAS = {

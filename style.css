@@ -562,9 +562,13 @@ header{flex-wrap:nowrap;gap:12px;}
 /* Fullscreen table grids */
 .fs-mult-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;}
 .fs-mult-grid .mult-cell{padding:10px 6px;font-size:1rem;}
-.sq-fs-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;max-width:280px;}
-.sq-fs-grid .mult-cell{padding:11px 16px;font-size:1.05rem;text-align:center;}
-.sq-val{font-weight:700;color:var(--blue);}
+.sq-fs-table{display:flex;flex-direction:column;gap:6px;}
+.sq-row{display:flex;gap:3px;align-items:center;}
+.sq-row-val{margin-bottom:10px;}
+.sq-label{width:36px;flex-shrink:0;font-weight:700;color:#888;font-size:0.85rem;text-align:right;padding-right:6px;}
+.sq-row .mult-cell{flex:1;min-width:52px;padding:9px 4px;font-size:0.95rem;}
+.sq-val{font-weight:700;color:var(--blue);background:#f0f7ff;}
+.dark .sq-val{background:#1e3a5f;}
 .fs-trig-table{width:100%;border-collapse:collapse;}
 .fs-trig-table th,.fs-trig-table td{padding:10px 14px;text-align:center;border-bottom:1px solid #f1f5f9;font-size:1rem;}
 .dark .fs-trig-table th,.dark .fs-trig-table td{border-color:#334155;}
