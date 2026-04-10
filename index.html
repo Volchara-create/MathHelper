@@ -182,64 +182,14 @@
           <div class="algebra-cats-grid" id="geo-cards-grid"></div>
         </div>
 
-        <!-- TRIGONOMETRY TAB — formulas only, no table -->
+        <!-- TRIGONOMETRY TAB — category buttons like algebra -->
         <div class="ftab-content" id="ftab-trigonometry">
-          <div class="trig-formulas-panel trig-formulas-wide">
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Основна тотожність</div>
-              <div class="trig-formula-expr">sin²α + cos²α = 1</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">tan і ctg</div>
-              <div class="trig-formula-expr">tan α = sin α / cos α</div>
-              <div class="trig-formula-expr">ctg α = cos α / sin α</div>
-              <div class="trig-formula-expr">tan α · ctg α = 1</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Радіани</div>
-              <div class="trig-formula-expr">180° = π рад &nbsp;|&nbsp; 1° = π/180 рад</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Формули суми кутів</div>
-              <div class="trig-formula-expr">sin(α±β) = sinα·cosβ ± cosα·sinβ</div>
-              <div class="trig-formula-expr">cos(α±β) = cosα·cosβ ∓ sinα·sinβ</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Подвійний кут</div>
-              <div class="trig-formula-expr">sin 2α = 2·sinα·cosα</div>
-              <div class="trig-formula-expr">cos 2α = cos²α − sin²α</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Пониження степеня</div>
-              <div class="trig-formula-expr">sin²α = (1 − cos 2α) / 2</div>
-              <div class="trig-formula-expr">cos²α = (1 + cos 2α) / 2</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Формули зведення</div>
-              <div class="trig-formula-expr">sin(90°−α) = cosα &nbsp;|&nbsp; cos(90°−α) = sinα</div>
-              <div class="trig-formula-expr">sin(180°−α) = sinα &nbsp;|&nbsp; cos(180°−α) = −cosα</div>
-              <div class="trig-formula-expr">sin(−α) = −sinα &nbsp;|&nbsp; cos(−α) = cosα</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Теорема синусів / косинусів</div>
-              <div class="trig-formula-expr">a/sin A = b/sin B = c/sin C = 2R</div>
-              <div class="trig-formula-expr">c² = a² + b² − 2ab·cos C</div>
-            </div>
-            <div class="trig-formula-block signs-block">
-              <div class="trig-formula-title">Знаки за чвертями</div>
-              <div class="trig-quadrants">
-                <div class="trig-q trig-q2">II<br><span>sin+</span></div>
-                <div class="trig-q trig-q1">I<br><span>all+</span></div>
-                <div class="trig-q trig-q3">III<br><span>tan+</span></div>
-                <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
-              </div>
-            </div>
-          </div>
+          <div class="algebra-cats-grid" id="trig-cats-grid"></div>
         </div>
 
-        <!-- TABLES TAB — mult, squares, sin/cos -->
+        <!-- TABLES TAB — 3 buttons that open fullscreen -->
         <div class="ftab-content" id="ftab-tables">
-          <div id="tables-wrap"></div>
+          <div class="algebra-cats-grid" id="tables-buttons-grid"></div>
         </div>
 
       </div>
@@ -719,6 +669,17 @@
         <p class="auth-switch">Вже є акаунт? <a href="#" onclick="authSwitch('login')">Увійти</a></p>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Table fullscreen modal -->
+  <div id="table-fullscreen-modal" class="table-fs-modal">
+    <div class="table-fs-content">
+      <div class="table-fs-header">
+        <h2 id="table-fs-title"></h2>
+        <button class="table-fs-close" onclick="closeTableFullscreen()">✕</button>
+      </div>
+      <div class="table-fs-body" id="table-fs-body"></div>
     </div>
   </div>
 

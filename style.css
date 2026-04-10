@@ -546,8 +546,25 @@ header{flex-wrap:nowrap;gap:12px;}
 .sq-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;min-width:300px;}
 .sq-n{background:#f0f7ff;font-weight:700;color:var(--blue);}
 .sq-val{background:#fff;}
-.trig-tbl-wrap{overflow-x:auto;}
-/* Wide trig formulas (no table beside) */
-.trig-formulas-wide{max-width:700px;columns:2;column-gap:24px;}
-.trig-formulas-wide .trig-formula-block{break-inside:avoid;margin-bottom:14px;}
-@media(max-width:600px){.trig-formulas-wide{columns:1;}}
+/* Table fullscreen modal */
+.table-fs-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;}
+.table-fs-modal.active{display:flex;}
+.table-fs-content{background:#fff;border-radius:18px;width:95vw;max-width:900px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.dark .table-fs-content{background:#1e293b;}
+.table-fs-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1.5px solid #e2e8f0;}
+.dark .table-fs-header{border-color:#334155;}
+.table-fs-header h2{font-size:1.3rem;color:var(--blue);}
+.table-fs-close{background:#f1f5f9;border:none;border-radius:8px;width:36px;height:36px;font-size:1.1rem;cursor:pointer;color:#666;transition:.2s;}
+.table-fs-close:hover{background:#dc2626;color:#fff;}
+.table-fs-body{padding:20px 24px;overflow:auto;flex:1;}
+/* Fullscreen table grids */
+.fs-mult-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;}
+.fs-mult-grid .mult-cell{padding:10px 6px;font-size:1rem;}
+.sq-fs-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;}
+.sq-fs-grid .mult-cell{padding:10px 6px;font-size:1rem;}
+.fs-trig-table{width:100%;border-collapse:collapse;}
+.fs-trig-table th,.fs-trig-table td{padding:10px 14px;text-align:center;border-bottom:1px solid #f1f5f9;font-size:1rem;}
+.dark .fs-trig-table th,.dark .fs-trig-table td{border-color:#334155;}
+.fs-trig-table th{background:var(--blue);color:#fff;font-weight:700;}
+.fs-trig-table tr:hover td{background:#f0f7ff;}
+.dark .fs-trig-table tr:hover td{background:#334155;}

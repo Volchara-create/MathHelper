@@ -151,13 +151,172 @@ const ALGEBRA_CATS = [
   ]},
 ];
 
+// ===== TRIGONOMETRY DATA =====
+const TRIG_CATS = [
+  { name:'Основні тотожності', formulas:[
+    {name:'Основна',expr:'sin²α + cos²α = 1'},
+    {name:'tan через sin/cos',expr:'tan α = sin α / cos α'},
+    {name:'ctg через sin/cos',expr:'ctg α = cos α / sin α'},
+    {name:'tan · ctg',expr:'tan α · ctg α = 1'},
+    {name:'1 + tan²',expr:'1 + tan²α = 1/cos²α'},
+    {name:'1 + ctg²',expr:'1 + ctg²α = 1/sin²α'},
+  ]},
+  { name:'Радіани', formulas:[
+    {name:'π радіан',expr:'π рад = 180°'},
+    {name:'1 радіан',expr:'1 рад ≈ 57.3°'},
+    {name:'30°',expr:'π/6'},
+    {name:'45°',expr:'π/4'},
+    {name:'60°',expr:'π/3'},
+    {name:'90°',expr:'π/2'},
+    {name:'Формула',expr:'рад = градуси × π / 180'},
+  ]},
+  { name:'Формули суми кутів', formulas:[
+    {name:'sin(α+β)',expr:'sinα·cosβ + cosα·sinβ'},
+    {name:'sin(α−β)',expr:'sinα·cosβ − cosα·sinβ'},
+    {name:'cos(α+β)',expr:'cosα·cosβ − sinα·sinβ'},
+    {name:'cos(α−β)',expr:'cosα·cosβ + sinα·sinβ'},
+    {name:'tan(α+β)',expr:'(tanα + tanβ)/(1 − tanα·tanβ)'},
+    {name:'tan(α−β)',expr:'(tanα − tanβ)/(1 + tanα·tanβ)'},
+  ]},
+  { name:'Подвійний кут', formulas:[
+    {name:'sin 2α',expr:'2·sinα·cosα'},
+    {name:'cos 2α (варіант 1)',expr:'cos²α − sin²α'},
+    {name:'cos 2α (варіант 2)',expr:'1 − 2sin²α'},
+    {name:'cos 2α (варіант 3)',expr:'2cos²α − 1'},
+    {name:'tan 2α',expr:'2tanα / (1 − tan²α)'},
+  ]},
+  { name:'Пониження степеня', formulas:[
+    {name:'sin²α',expr:'(1 − cos 2α) / 2'},
+    {name:'cos²α',expr:'(1 + cos 2α) / 2'},
+    {name:'tan²α',expr:'(1 − cos 2α) / (1 + cos 2α)'},
+    {name:'sin³α',expr:'(3sinα − sin 3α) / 4'},
+    {name:'cos³α',expr:'(3cosα + cos 3α) / 4'},
+  ]},
+  { name:'Формули зведення', formulas:[
+    {name:'sin(90°−α)',expr:'cos α'},
+    {name:'cos(90°−α)',expr:'sin α'},
+    {name:'sin(90°+α)',expr:'cos α'},
+    {name:'cos(90°+α)',expr:'−sin α'},
+    {name:'sin(180°−α)',expr:'sin α'},
+    {name:'cos(180°−α)',expr:'−cos α'},
+    {name:'sin(−α)',expr:'−sin α'},
+    {name:'cos(−α)',expr:'cos α'},
+  ]},
+  { name:'Теорема синусів/косинусів', formulas:[
+    {name:'Теорема синусів',expr:'a/sin A = b/sin B = c/sin C'},
+    {name:'Через описане коло',expr:'a/sin A = 2R'},
+    {name:'Теорема косинусів',expr:'c² = a² + b² − 2ab·cos C'},
+    {name:'Косинус через сторони',expr:'cos C = (a²+b²−c²) / 2ab'},
+  ]},
+];
+
+// Build trigonometry tab
+function buildTrigTab(){
+  const grid = document.getElementById('trig-cats-grid');
+  if(!grid || grid.children.length > 0) return;
+  grid.innerHTML = TRIG_CATS.map((cat,i) => `
+    <div class="alg-cat-btn geo-cat-btn" onclick="openTrigModal(${i})">
+      <div class="alg-cat-name">${cat.name}</div>
+      <div class="alg-cat-count">${cat.formulas.length} формул</div>
+    </div>
+  `).join('');
+}
+
+function openTrigModal(idx){
+  const cat = TRIG_CATS[idx];
+  document.getElementById('alg-modal-title').textContent = cat.name;
+  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map(f => `
+    <div class="alg-modal-row">
+      <span class="alg-modal-name">${f.name}</span>
+      <span class="alg-modal-expr">${f.expr}</span>
+    </div>
+  `).join('');
+  document.getElementById('algebra-modal').classList.add('active');
+}
+
+// ===== TABLES DATA =====
+const TABLES_LIST = [
+  { id:'mult',  name:'Таблиця множення', sub:'від 1 до 10' },
+  { id:'sq',    name:'Квадрати чисел',   sub:'від 1 до 25' },
+  { id:'trig',  name:'sin, cos, tan, ctg', sub:'основні кути' },
+];
+
+function buildTablesButtons(){
+  const grid = document.getElementById('tables-buttons-grid');
+  if(!grid || grid.children.length > 0) return;
+  grid.innerHTML = TABLES_LIST.map(t => `
+    <div class="alg-cat-btn geo-cat-btn" onclick="openTableFullscreen('${t.id}')">
+      <div class="alg-cat-name">${t.name}</div>
+      <div class="alg-cat-count">${t.sub}</div>
+    </div>
+  `).join('');
+}
+
+function openTableFullscreen(id){
+  const modal = document.getElementById('table-fullscreen-modal');
+  const body  = document.getElementById('table-fs-body');
+  const title = document.getElementById('table-fs-title');
+
+  if(id === 'mult'){
+    title.textContent = 'Таблиця множення';
+    let html = '<div class="mult-grid fs-mult-grid">';
+    html += '<div class="mult-cell mult-header">×</div>';
+    for(let i=1;i<=10;i++) html+=`<div class="mult-cell mult-header">${i}</div>`;
+    for(let i=1;i<=10;i++){
+      html+=`<div class="mult-cell mult-header">${i}</div>`;
+      for(let j=1;j<=10;j++) html+=`<div class="mult-cell${i===j?' mult-diagonal':''}">${i*j}</div>`;
+    }
+    html += '</div>';
+    body.innerHTML = html;
+
+  } else if(id === 'sq'){
+    title.textContent = 'Квадрати чисел (1–25)';
+    let html = '<div class="sq-fs-grid">';
+    html += '<div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div>';
+    for(let i=1;i<=25;i++) html+=`<div class="mult-cell sq-n">${i}</div><div class="mult-cell sq-val">${i*i}</div>`;
+    html += '</div>';
+    body.innerHTML = html;
+
+  } else if(id === 'trig'){
+    title.textContent = 'Таблиця значень sin, cos, tan, ctg';
+    const rows = [
+      [0,'0','0','1','0','—'],
+      [30,'π/6','1/2','√3/2','√3/3','√3'],
+      [45,'π/4','√2/2','√2/2','1','1'],
+      [60,'π/3','√3/2','1/2','√3','√3/3'],
+      [90,'π/2','1','0','—','0'],
+      [120,'2π/3','√3/2','−1/2','−√3','−√3/3'],
+      [135,'3π/4','√2/2','−√2/2','−1','−1'],
+      [150,'5π/6','1/2','−√3/2','−√3/3','−√3'],
+      [180,'π','0','−1','0','—'],
+      [210,'7π/6','−1/2','−√3/2','√3/3','√3'],
+      [225,'5π/4','−√2/2','−√2/2','1','1'],
+      [240,'4π/3','−√3/2','−1/2','√3','√3/3'],
+      [270,'3π/2','−1','0','—','0'],
+      [300,'5π/3','−√3/2','1/2','−√3','−√3/3'],
+      [315,'7π/4','−√2/2','√2/2','−1','−1'],
+      [330,'11π/6','−1/2','√3/2','−√3/3','−√3'],
+      [360,'2π','0','1','0','—'],
+    ];
+    let html = '<table class="trig-table fs-trig-table"><thead><tr><th>Кут °</th><th>Рад</th><th>sin</th><th>cos</th><th>tan</th><th>ctg</th></tr></thead><tbody>';
+    html += rows.map(r=>`<tr><td><b>${r[0]}°</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
+    html += '</tbody></table>';
+    body.innerHTML = html;
+  }
+
+  modal.classList.add('active');
+}
+
+function closeTableFullscreen(){
+  document.getElementById('table-fullscreen-modal').classList.remove('active');
+}
+
 // Build algebra tab (category buttons)
 function buildAlgebraTab(){
   const grid = document.getElementById('algebra-cats-grid');
   if(grid.children.length > 0) return; // already built
   grid.innerHTML = ALGEBRA_CATS.map((cat,i) => `
     <div class="alg-cat-btn" onclick="openAlgebraModal(${i})">
-      <div class="alg-cat-icon">${cat.icon}</div>
       <div class="alg-cat-name">${cat.name}</div>
       <div class="alg-cat-count">${cat.formulas.length} формул</div>
     </div>
@@ -166,7 +325,7 @@ function buildAlgebraTab(){
 
 function openAlgebraModal(idx){
   const cat = ALGEBRA_CATS[idx];
-  document.getElementById('alg-modal-title').textContent = cat.icon + ' ' + cat.name;
+  document.getElementById('alg-modal-title').textContent = cat.name;
   document.getElementById('alg-modal-body').innerHTML = cat.formulas.map(f => `
     <div class="alg-modal-row">
       <span class="alg-modal-name">${f.name}</span>
@@ -251,7 +410,8 @@ function showFormulaTab(tab){
   if(btn) btn.classList.add('active');
   if(tab==='algebra') buildAlgebraTab();
   if(tab==='geometry') buildGeoTab();
-  if(tab==='tables') buildTablesTab();
+  if(tab==='trigonometry') buildTrigTab();
+  if(tab==='tables') buildTablesButtons();
 }
 
 
