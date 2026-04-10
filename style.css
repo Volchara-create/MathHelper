@@ -577,6 +577,13 @@ header{flex-wrap:nowrap;gap:12px;}
 .dark .fs-trig-table tr:hover td{background:#334155;}
 
 /* Google grade picker buttons */
+.textbook-card{display:block;padding:20px;border:1.5px solid #e2e8f0;border-radius:14px;background:#fff;text-decoration:none;color:var(--text);transition:.2s;}
+.textbook-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(66,133,244,.12);transform:translateY(-2px);}
+.textbook-grade{font-size:0.8rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.textbook-title{font-size:1rem;font-weight:700;margin-bottom:4px;}
+.textbook-author{font-size:0.85rem;color:#888;margin-bottom:10px;}
+.textbook-link{font-size:0.85rem;color:var(--blue);font-weight:600;}
+.dark .textbook-card{background:#1e293b;border-color:#334155;}
 .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:10px;border:1px solid #dadce0;border-radius:8px;background:#fff;color:#3c4043;font-size:0.95rem;font-weight:500;text-decoration:none;cursor:pointer;transition:.2s;}
 .google-btn:hover{background:#f8f9fa;border-color:#bbb;}
 .danger-btn{background:#fff0f0 !important;color:#e53935 !important;border-color:#ffcdd2 !important;}

@@ -57,6 +57,7 @@
       <button onclick="show('tasks')">Задачі</button>
       <button onclick="show('quiz')">Квіз</button>
       <button onclick="show('formulas')">Формули</button>
+      <button onclick="show('textbooks')">Підручники</button>
       <button onclick="showGraph()">Робочий стіл</button>
       <button onclick="show('about')">Про нас</button>
       <button onclick="show('pricing')" style="color:#f59e0b;font-weight:700;">⭐ Pro</button>
@@ -376,6 +377,15 @@
           <p>Ти в 11 класі — попереду НМТ! Тренуйся щодня:</p>
           <div class="dash-nmt-topics" id="dash-nmt-topics"></div>
         </div>
+      </div>
+    </section>
+
+    <!-- TEXTBOOKS -->
+    <section id="textbooks">
+      <div style="max-width:900px;margin:0 auto;padding:32px 16px;">
+        <h2 style="margin-bottom:8px;">📚 Безкоштовні підручники</h2>
+        <p style="color:#666;margin-bottom:24px;">Офіційні підручники МОН України — безкоштовно онлайн</p>
+        <div id="textbooks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;"></div>
       </div>
     </section>
 

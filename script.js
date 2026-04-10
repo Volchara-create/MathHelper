@@ -64,11 +64,46 @@ pyramid:[
 const categoryNames={rectangle:'Прямокутник',rhombus:'Ромб',parallelogram:'Паралелограм',trapezoid:'Трапеція',circle:'Коло',triangle:'Трикутник',cube:'Куб',parallelepiped:'Паралелепіпед',cylinder:'Циліндр',cone:'Конус',pyramid:'Піраміда'};
 
 // ===== НАВ (оригінал) =====
+const TEXTBOOKS = [
+  { grades:'1', title:'Математика 1 клас', author:'Скворцова', url:'https://lib.imzo.gov.ua/matematika/1-klas/' },
+  { grades:'2', title:'Математика 2 клас', author:'Скворцова', url:'https://lib.imzo.gov.ua/matematika/2-klas/' },
+  { grades:'3', title:'Математика 3 клас', author:'Богданович', url:'https://lib.imzo.gov.ua/matematika/3-klas/' },
+  { grades:'4', title:'Математика 4 клас', author:'Богданович', url:'https://lib.imzo.gov.ua/matematika/4-klas/' },
+  { grades:'5', title:'Математика 5 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/matematika/5-klas/' },
+  { grades:'6', title:'Математика 6 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/matematika/6-klas/' },
+  { grades:'7', title:'Алгебра 7 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/7-klas/' },
+  { grades:'7', title:'Геометрія 7 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/7-klas/' },
+  { grades:'8', title:'Алгебра 8 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/8-klas/' },
+  { grades:'8', title:'Геометрія 8 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/8-klas/' },
+  { grades:'9', title:'Алгебра 9 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/9-klas/' },
+  { grades:'9', title:'Геометрія 9 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/9-klas/' },
+  { grades:'10', title:'Алгебра 10 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/10-klas/' },
+  { grades:'10', title:'Геометрія 10 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/10-klas/' },
+  { grades:'11', title:'Алгебра 11 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/11-klas/' },
+  { grades:'11', title:'Геометрія 11 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/11-klas/' },
+];
+
+function buildTextbooks() {
+  const grid = document.getElementById('textbooks-grid');
+  if (!grid || grid.children.length > 0) return;
+  const grade = getUserGrade();
+  const books = grade ? TEXTBOOKS.filter(b => b.grades == grade || Math.abs(b.grades - grade) <= 1) : TEXTBOOKS;
+  grid.innerHTML = books.map(b => `
+    <a href="${b.url}" target="_blank" class="textbook-card">
+      <div class="textbook-grade">${b.grades} клас</div>
+      <div class="textbook-title">${b.title}</div>
+      <div class="textbook-author">${b.author}</div>
+      <div class="textbook-link">Читати онлайн →</div>
+    </a>
+  `).join('');
+}
+
 function show(sec){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(sec).classList.add('active');
   document.getElementById('category-row').style.display='none';
   if(sec==='tasks') loadRandomTask();
+  if(sec==='textbooks') buildTextbooks();
   if(sec==='trig') buildTrigTable();
   if(sec==='formulas') buildAlgebraTab();
   if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
@@ -78,26 +113,61 @@ function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====
 const ALGEBRA_CATS = [
-  { name:'Додавання і віднімання', minGrade:1, maxGrade:4, formulas:[
-    {name:'Переставна властивість',expr:'a + b = b + a'},
-    {name:'Сполучна властивість',expr:'(a + b) + c = a + (b + c)'},
-    {name:'Віднімання',expr:'a − b = c  →  c + b = a'},
-    {name:'Нуль',expr:'a + 0 = a,   a − 0 = a'},
-    {name:'Округлення',expr:'до 10: дивись останню цифру'},
+  { name:'🍎 Додавання', minGrade:1, maxGrade:2, formulas:[
+    {name:'Що таке додавання?',expr:'🍎🍎 + 🍎🍎🍎 = 🍎🍎🍎🍎🍎\n  2  +    3   =    5'},
+    {name:'Можна міняти місцями',expr:'3 + 5 = 5 + 3 = 8\n🍐🍐🍐 + 🍐🍐🍐🍐🍐 = 8'},
+    {name:'Додавання нуля',expr:'🍎🍎🍎 + нічого = 🍎🍎🍎\n     5   +  0  =  5'},
+    {name:'Приклад',expr:'У кошику 4🍎 + 6🍎 = 10🍎'},
+    {name:'Склад числа 10',expr:'1+9, 2+8, 3+7, 4+6, 5+5'},
   ]},
-  { name:'Множення і ділення', minGrade:3, maxGrade:6, formulas:[
-    {name:'Переставна властивість',expr:'a × b = b × a'},
-    {name:'Ділення',expr:'a ÷ b = c  →  c × b = a'},
-    {name:'На 0 і 1',expr:'a × 0 = 0,   a × 1 = a'},
-    {name:'Ділення на себе',expr:'a ÷ a = 1  (a ≠ 0)'},
-    {name:'Ділення з остачею',expr:'a = b × q + r'},
+  { name:'🍇 Віднімання', minGrade:1, maxGrade:2, formulas:[
+    {name:'Що таке віднімання?',expr:'🍇🍇🍇🍇🍇 − 🍇🍇 = 🍇🍇🍇\n    5    −  2  =  3'},
+    {name:'Перевірка',expr:'5 − 2 = 3  →  перевірка: 3 + 2 = 5 ✓'},
+    {name:'Від нуля',expr:'5 − 0 = 5  (нічого не забрали)'},
+    {name:'Від себе',expr:'5 − 5 = 0  (забрали все)'},
+    {name:'Приклад',expr:'Було 8🍇, з\'їли 3🍇, лишилось 5🍇'},
   ]},
-  { name:'Дроби та відсотки', minGrade:5, maxGrade:7, formulas:[
-    {name:'Дріб',expr:'a/b — a чисельник, b знаменник'},
-    {name:'Скорочення',expr:'a·k / b·k = a / b'},
-    {name:'Додавання дробів',expr:'a/b + c/b = (a+c)/b'},
-    {name:'Відсоток від числа',expr:'X% від N = N × X ÷ 100'},
-    {name:'Знайти відсоток',expr:'(частина ÷ ціле) × 100%'},
+  { name:'🔢 Числа до 100', minGrade:1, maxGrade:3, formulas:[
+    {name:'Десятки',expr:'10, 20, 30, 40, 50, 60, 70, 80, 90, 100'},
+    {name:'Розряди',expr:'Число 47 = 4 десятки + 7 одиниць'},
+    {name:'Порівняння',expr:'47 > 29  (більше десятків → більше число)'},
+    {name:'Сусіди числа',expr:'Сусіди 15: 14 і 16'},
+    {name:'Парні / непарні',expr:'Парні: 2,4,6,8...  Непарні: 1,3,5,7...'},
+  ]},
+  { name:'✖️ Множення', minGrade:3, maxGrade:5, formulas:[
+    {name:'Що таке множення?',expr:'3 × 4 = 4 + 4 + 4 = 12\n🍊🍊🍊🍊 | 🍊🍊🍊🍊 | 🍊🍊🍊🍊'},
+    {name:'Можна міняти місцями',expr:'3 × 4 = 4 × 3 = 12'},
+    {name:'На 0',expr:'будь-яке × 0 = 0'},
+    {name:'На 1',expr:'будь-яке × 1 = те саме число'},
+    {name:'Приклад',expr:'5 рядів по 6🍋 = 5 × 6 = 30🍋'},
+  ]},
+  { name:'➗ Ділення', minGrade:3, maxGrade:5, formulas:[
+    {name:'Що таке ділення?',expr:'12 🍬 ÷ 4 друзі = по 3🍬 кожному'},
+    {name:'Зв\'язок з множенням',expr:'12 ÷ 4 = 3  →  перевірка: 3 × 4 = 12 ✓'},
+    {name:'Ділення на 1',expr:'7 ÷ 1 = 7'},
+    {name:'Ділення на себе',expr:'7 ÷ 7 = 1'},
+    {name:'З остачею',expr:'13 ÷ 4 = 3 і ще 1  (3×4=12, лишилось 1)'},
+  ]},
+  { name:'📐 Геометрія (1-4 кл)', minGrade:1, maxGrade:4, formulas:[
+    {name:'Відрізок',expr:'пряма лінія між двома точками — вимірюй лінійкою'},
+    {name:'Периметр прямокутника',expr:'P = a + b + a + b = 2×(a+b)\n📏 Обійди навколо!'},
+    {name:'Площа прямокутника',expr:'S = а × b\n🔲 Скільки клітинок всередині?'},
+    {name:'Квадрат',expr:'всі сторони рівні! P = 4×a, S = a×a'},
+    {name:'Трикутник',expr:'P = a + b + c (сума трьох сторін)'},
+  ]},
+  { name:'🍕 Дроби (1/2, 1/4)', minGrade:3, maxGrade:5, formulas:[
+    {name:'Що таке дріб?',expr:'🍕 розрізали на 4 частини → кожна 1/4'},
+    {name:'Половина',expr:'1/2 — це одна з двох рівних частин\n🍎 розрізали → 🍎|🍎'},
+    {name:'Четвертина',expr:'1/4 — це одна з чотирьох частин'},
+    {name:'Порівняння',expr:'1/2 > 1/4  (більша частина = більший дріб)'},
+    {name:'Приклад',expr:'З\'їв 3/4 піци — лишилась 1/4 піци 🍕'},
+  ]},
+  { name:'💯 Відсотки', minGrade:5, maxGrade:7, formulas:[
+    {name:'Що таке відсоток?',expr:'% = частина від 100\n50% = половина, 25% = чверть'},
+    {name:'Знайти % від числа',expr:'20% від 50 = 50 × 20 ÷ 100 = 10'},
+    {name:'Знайти який %',expr:'10 з 50 = 10 ÷ 50 × 100 = 20%'},
+    {name:'Знижка',expr:'Ціна 200грн, знижка 10% → 200 × 0.1 = 20грн знижки'},
+    {name:'Приклад',expr:'У класі 30 учнів, 6 відсутні → 6÷30×100 = 20% відсутніх'},
   ]},
   { name:'Степені та корені', icon:'⚡', minGrade:7, formulas:[
     {name:'Множення степенів',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ'},
