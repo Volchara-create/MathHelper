@@ -21,6 +21,7 @@ services:
       - JWT_SECRET=mathhelper_secret_key_2026
       - PORT=3001
       - GOOGLE_CLIENT_ID=1004475773858-nondip8br7f0imavgej0vpm4gn6ld5pn.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
 
 volumes:
   pgdata:

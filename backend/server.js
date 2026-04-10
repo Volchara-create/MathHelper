@@ -118,13 +118,42 @@ app.delete('/notes/:id', authMiddleware, async (req, res) => {
   res.json({ ok: true });
 });
 
-// POST /auth/google/callback — redirect flow (Google posts credential here)
-app.post('/auth/google/callback', express.urlencoded({ extended: true }), async (req, res) => {
-  const credential = req.body.credential;
-  if (!credential) return res.redirect('/?google_error=no_token');
+const GOOGLE_REDIRECT_URI = 'https://rostyslavv.vibe.brobots.org.ua/auth/google/callback';
+
+// GET /auth/google/start — redirect to Google login page
+app.get('/auth/google/start', (req, res) => {
+  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  url.searchParams.set('client_id', process.env.GOOGLE_CLIENT_ID);
+  url.searchParams.set('redirect_uri', GOOGLE_REDIRECT_URI);
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('scope', 'openid email profile');
+  url.searchParams.set('access_type', 'online');
+  res.redirect(url.toString());
+});
+
+// GET /auth/google/callback — Google sends code here
+app.get('/auth/google/callback', async (req, res) => {
+  const { code } = req.query;
+  if (!code) return res.redirect('/?google_error=no_code');
   try {
+    // Exchange code for tokens
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code',
+      }),
+    });
+    const tokens = await tokenRes.json();
+    if (!tokens.id_token) throw new Error('No id_token');
+
+    // Verify ID token
     const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
+      idToken: tokens.id_token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
     const payload = ticket.getPayload();
@@ -132,7 +161,6 @@ app.post('/auth/google/callback', express.urlencoded({ extended: true }), async 
 
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      // New user — redirect to grade picker page
       const tempToken = jwt.sign({ googleId, email, name, needsGrade: true }, process.env.JWT_SECRET, { expiresIn: '10m' });
       return res.redirect(`/?google_grade=${encodeURIComponent(tempToken)}`);
     }
@@ -140,7 +168,7 @@ app.post('/auth/google/callback', express.urlencoded({ extended: true }), async 
     res.redirect(`/?google_token=${encodeURIComponent(token)}`);
   } catch (e) {
     console.error('Google callback error:', e.message);
-    res.redirect('/?google_error=invalid_token');
+    res.redirect('/?google_error=fail');
   }
 });
 
@@ -162,38 +190,6 @@ app.post('/auth/google/grade', async (req, res) => {
     res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
   } catch {
     res.status(400).json({ error: 'Токен застарів, спробуй ще раз' });
-  }
-});
-
-// POST /auth/google — sign in with Google
-app.post('/auth/google', async (req, res) => {
-  const { credential, grade } = req.body;
-  if (!credential) return res.status(400).json({ error: 'Немає токена Google' });
-  if (!process.env.GOOGLE_CLIENT_ID) return res.status(500).json({ error: 'Google OAuth не налаштований' });
-  try {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    const { sub: googleId, email, name } = payload;
-
-    // Find or create user
-    let user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      // New user — grade required
-      if (!grade || grade < 4 || grade > 11) {
-        return res.json({ needsGrade: true, email, name });
-      }
-      user = await prisma.user.create({
-        data: { name, email, password: googleId, grade: parseInt(grade) }
-      });
-    }
-    const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
-    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
-  } catch (e) {
-    console.error('Google auth error:', e.message);
-    res.status(400).json({ error: 'Невірний Google токен' });
   }
 });
 
