@@ -65,44 +65,52 @@ const categoryNames={rectangle:'Прямокутник',rhombus:'Ромб',paral
 
 // ===== НАВ (оригінал) =====
 const TEXTBOOKS = [
-  { grades:'1', title:'Математика 1 клас', author:'Скворцова', url:'https://lib.imzo.gov.ua/matematika/1-klas/' },
-  { grades:'2', title:'Математика 2 клас', author:'Скворцова', url:'https://lib.imzo.gov.ua/matematika/2-klas/' },
-  { grades:'3', title:'Математика 3 клас', author:'Богданович', url:'https://lib.imzo.gov.ua/matematika/3-klas/' },
-  { grades:'4', title:'Математика 4 клас', author:'Богданович', url:'https://lib.imzo.gov.ua/matematika/4-klas/' },
-  { grades:'5', title:'Математика 5 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/matematika/5-klas/' },
-  { grades:'6', title:'Математика 6 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/matematika/6-klas/' },
-  { grades:'7', title:'Алгебра 7 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/7-klas/' },
-  { grades:'7', title:'Геометрія 7 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/7-klas/' },
-  { grades:'8', title:'Алгебра 8 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/8-klas/' },
-  { grades:'8', title:'Геометрія 8 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/8-klas/' },
-  { grades:'9', title:'Алгебра 9 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/9-klas/' },
-  { grades:'9', title:'Геометрія 9 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/9-klas/' },
-  { grades:'10', title:'Алгебра 10 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/10-klas/' },
-  { grades:'10', title:'Геометрія 10 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/10-klas/' },
-  { grades:'11', title:'Алгебра 11 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/algebra/11-klas/' },
-  { grades:'11', title:'Геометрія 11 клас', author:'Мерзляк', url:'https://lib.imzo.gov.ua/geometriya/11-klas/' },
+  { grades:1, title:'Математика 1 клас', author:'Скворцова', url:'https://pidruchnyk.com.ua/1klas/matematyka1/' },
+  { grades:2, title:'Математика 2 клас', author:'Скворцова', url:'https://pidruchnyk.com.ua/2klas/matematyka2/' },
+  { grades:3, title:'Математика 3 клас', author:'Богданович', url:'https://pidruchnyk.com.ua/3klas/matematyka3/' },
+  { grades:4, title:'Математика 4 клас', author:'Богданович', url:'https://pidruchnyk.com.ua/4klas/matematyka4/' },
+  { grades:5, title:'Математика 5 клас', author:'Мерзляк', url:'https://pidruchnyk.com.ua/5klas/matematyka5/' },
+  { grades:6, title:'Математика 6 клас', author:'Мерзляк', url:'https://pidruchnyk.com.ua/6klas/matematyka6/' },
+  { grades:7, title:'Алгебра 7 клас', author:'Прокопенко 2024', url:'https://pidruchnyk.com.ua/2894-algebra-prokopenko-7-klas-2024.html' },
+  { grades:7, title:'Геометрія 7 клас', author:'Бевз 2024', url:'https://pidruchnyk.com.ua/2880-geometriia-bevz-7-klas-2024.html' },
+  { grades:8, title:'Математика 8 клас', author:'Істер 2025', url:'https://pidruchnyk.com.ua/2932-matematyka-ister-8-klas-2025.html' },
+  { grades:8, title:'Геометрія 8 клас', author:'Мерзляк', url:'https://pidruchnyk.com.ua/865-geometriya-8-z-poglyblenym-vyvchennyam-2016-merzlyak.html' },
+  { grades:9, title:'Геометрія 9 клас', author:'Мерзляк', url:'https://pidruchnyk.com.ua/996-geometriya-merzlyak-9-klas-2017.html' },
+  { grades:9, title:'Геометрія 9 клас', author:'Істер', url:'https://pidruchnyk.com.ua/1031-ister-geometriya-9-klas.html' },
+  { grades:10, title:'Алгебра 10 клас (профіль)', author:'Мерзляк', url:'https://pidruchnyk.com.ua/430-algebra-proflniy-rven-merzlyak-10-klas.html' },
+  { grades:11, title:'Математика 11 клас', author:'Афанасьєва та ін.', url:'https://pidruchnyk.com.ua/452-matematika-afanasyeva-brodskiy-pavlov-slpenko-11-klas.html' },
 ];
 
 function buildTextbooks() {
   const grid = document.getElementById('textbooks-grid');
-  if (!grid || grid.children.length > 0) return;
+  if (!grid) return;
+  // Always rebuild (no caching — grade can change)
   const grade = getUserGrade();
-  const books = grade ? TEXTBOOKS.filter(b => b.grades == grade || Math.abs(b.grades - grade) <= 1) : TEXTBOOKS;
+  const books = grade ? TEXTBOOKS.filter(b => b.grades === grade) : TEXTBOOKS;
+  if (!books.length) {
+    grid.innerHTML = `<p style="color:#888;padding:20px;text-align:center;grid-column:1/-1;">Підручники для ${grade} класу незабаром з'являться тут.</p>`;
+    return;
+  }
   grid.innerHTML = books.map(b => `
-    <a href="${b.url}" target="_blank" class="textbook-card">
+    <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="textbook-card">
       <div class="textbook-grade">${b.grades} клас</div>
       <div class="textbook-title">${b.title}</div>
       <div class="textbook-author">${b.author}</div>
-      <div class="textbook-link">Читати онлайн →</div>
+      <div class="textbook-link">📖 Читати онлайн →</div>
     </a>
   `).join('');
 }
 
 function show(sec){
   const grade = getUserGrade();
-  // Block trig and trig-table for grades 1-4
-  if((sec==='trig') && grade && grade<=4){
-    alert('Тригонометрія вивчається з 9 класу. Зараз доступні формули та задачі для ' + grade + ' класу!');
+  // Block trig for grades 1-4
+  if(sec==='trig' && grade && grade<=4){
+    show('formulas');
+    return;
+  }
+  // For grades 1-4, workspace shows a friendly notice instead of graphs
+  if(sec==='graph' && grade && grade<=4){
+    showKidWorkspace(grade);
     return;
   }
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
@@ -114,8 +122,15 @@ function show(sec){
   if(sec==='formulas') buildAlgebraTab();
   if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
-  // Hide nav buttons that are not relevant for young grades
   updateNavForGrade(grade);
+}
+
+// Kid-friendly workspace for grades 1-4
+function showKidWorkspace(grade) {
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tasks').classList.add('active');
+  tasksInit();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function showFormulas(){ show('formulas'); }
 
@@ -568,6 +583,8 @@ function buildTrigTable2(){
   tbody.innerHTML=rows.map(r=>`<tr><td>${r[0]}°</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
 }
 function showGraph(){
+  const grade = getUserGrade();
+  if(grade && grade <= 4){ showKidWorkspace(grade); return; }
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById('graph').classList.add('active');
   document.getElementById('category-row').style.display='none';
@@ -1553,29 +1570,38 @@ let safeTotalStars = parseInt(localStorage.getItem('mh_stars') || '0');
 
 function tasksInit() {
   const grade = getUserGrade();
+  const gradeNames = {1:'🍎 1 клас — Додавання та Віднімання',2:'🔢 2 клас — Числа до 100',3:'✖️ 3 клас — Множення та Ділення',4:'📐 4 клас — Ділення + Геометрія',5:'💯 5 клас — Дроби та Відсотки'};
   const label = document.getElementById('tasks-grade-label');
-  const gradeNames = {1:'1 клас — додавання та віднімання',2:'2 клас — числа до 100',3:'3 клас — множення та ділення',4:'4 клас — ділення + геометрія',5:'5 клас — дроби та відсотки'};
   if (label) label.textContent = gradeNames[grade] || `${grade} клас`;
 
+  const modeBar = document.querySelector('.tasks-mode-bar');
+  const visualWrap = document.getElementById('tasks-visual-wrap');
+
   if (grade && grade <= 5) {
+    // Young grades: show animated card + safe, hide regular, hide mode-bar
+    if (modeBar) modeBar.style.display = 'none';
+    if (visualWrap) visualWrap.style.display = '';
     tasksSetMode('safe');
     safeNew();
-    // Restore stars
     const starsEl = document.getElementById('safe-stars');
     if (starsEl) starsEl.innerHTML = '⭐'.repeat(Math.min(safeTotalStars, 15));
+    vtaskNext();
   } else {
+    // Older grades: hide animated card, show mode bar + regular tasks
+    if (modeBar) modeBar.style.display = '';
+    if (visualWrap) visualWrap.style.display = 'none';
     tasksSetMode('regular');
     loadRandomTask();
   }
-  // Init visual task card
-  if (grade && grade <= 5) vtaskNext();
 }
 
 function tasksSetMode(mode) {
-  document.getElementById('tasks-safe').style.display = mode === 'safe' ? '' : 'none';
-  document.getElementById('tasks-regular').style.display = mode === 'regular' ? '' : 'none';
-  document.getElementById('tmode-safe').classList.toggle('active', mode === 'safe');
-  document.getElementById('tmode-regular').classList.toggle('active', mode === 'regular');
+  const safe = document.getElementById('tasks-safe');
+  const reg = document.getElementById('tasks-regular');
+  if (safe) safe.style.display = mode === 'safe' ? '' : 'none';
+  if (reg) reg.style.display = mode === 'regular' ? '' : 'none';
+  document.getElementById('tmode-safe')?.classList.toggle('active', mode === 'safe');
+  document.getElementById('tmode-regular')?.classList.toggle('active', mode === 'regular');
 }
 
 function getGradeTasks() {
@@ -1589,11 +1615,18 @@ function getGradeTasks() {
 
 function updateNavForGrade(grade) {
   if (!grade) return;
-  // Hide trigonometry tab in formulas for grades 1-4
+  // Hide trig/tables formula tabs for young grades
   const trigTab = document.getElementById('ftab-btn-trigonometry');
   const tablesTab = document.getElementById('ftab-btn-tables');
   if (trigTab) trigTab.style.display = grade <= 4 ? 'none' : '';
   if (tablesTab) tablesTab.style.display = grade <= 3 ? 'none' : '';
+  // Rename "Робочий стіл" nav button for grades 1-4
+  const graphBtn = document.querySelector('nav button[onclick="showGraph()"]');
+  if (graphBtn) graphBtn.style.display = grade <= 4 ? 'none' : '';
+  // Update page title label in tasks section
+  const gradeNames = {1:'1 клас — додавання та віднімання',2:'2 клас — числа до 100',3:'3 клас — множення та ділення',4:'4 клас — ділення + геометрія',5:'5 клас — дроби та відсотки'};
+  const label = document.getElementById('tasks-grade-label');
+  if (label && gradeNames[grade]) label.textContent = gradeNames[grade];
 }
 
 function safeNew() {

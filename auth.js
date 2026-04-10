@@ -436,6 +436,11 @@ function authShowUser(user) {
   document.getElementById('user-nav').style.display = '';
   document.getElementById('user-greeting').textContent = `${user.name} · ${user.grade} кл.`;
   document.getElementById('user-badge').textContent = user.isPro ? '⭐ Pro' : '';
+  // Apply grade-based nav restrictions
+  if (typeof updateNavForGrade === 'function') updateNavForGrade(user.grade);
+  // Hide graph button from dashboard for grades 1-4
+  const dashGraphBtn = document.getElementById('dash-graph-btn');
+  if (dashGraphBtn) dashGraphBtn.style.display = user.grade <= 4 ? 'none' : '';
   dashLoad(user);
 }
 
