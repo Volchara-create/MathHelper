@@ -3,7 +3,10 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
+const { OAuth2Client } = require('google-auth-library');
 require('dotenv').config();
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const app = express();
 const prisma = new PrismaClient();
@@ -113,6 +116,49 @@ app.delete('/notes/:id', authMiddleware, async (req, res) => {
   if (!note || note.userId !== req.user.id) return res.status(403).json({ error: 'Немає доступу' });
   await prisma.note.delete({ where: { id } });
   res.json({ ok: true });
+});
+
+// POST /auth/google — sign in with Google
+app.post('/auth/google', async (req, res) => {
+  const { credential, grade } = req.body;
+  if (!credential) return res.status(400).json({ error: 'Немає токена Google' });
+  if (!process.env.GOOGLE_CLIENT_ID) return res.status(500).json({ error: 'Google OAuth не налаштований' });
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+
+    // Find or create user
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // New user — grade required
+      if (!grade || grade < 4 || grade > 11) {
+        return res.json({ needsGrade: true, email, name });
+      }
+      user = await prisma.user.create({
+        data: { name, email, password: googleId, grade: parseInt(grade) }
+      });
+    }
+    const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
+    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+  } catch (e) {
+    console.error('Google auth error:', e.message);
+    res.status(400).json({ error: 'Невірний Google токен' });
+  }
+});
+
+// DELETE /me — delete current user account
+app.delete('/me', authMiddleware, async (req, res) => {
+  try {
+    await prisma.note.deleteMany({ where: { userId: req.user.id } });
+    await prisma.user.delete({ where: { id: req.user.id } });
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ error: 'Помилка видалення' });
+  }
 });
 
 const PORT = process.env.PORT || 3001;

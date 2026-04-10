@@ -577,6 +577,8 @@ header{flex-wrap:nowrap;gap:12px;}
 .dark .fs-trig-table tr:hover td{background:#334155;}
 
 /* Google grade picker buttons */
+.danger-btn{background:#fff0f0 !important;color:#e53935 !important;border-color:#ffcdd2 !important;}
+.danger-btn:hover{background:#ffcdd2 !important;}
 .grade-btn-g{width:46px;height:46px;border:2px solid #b3d9ff;border-radius:10px;background:#f0f4f8;font-size:1rem;font-weight:700;cursor:pointer;transition:.2s;color:var(--text);}
 .grade-btn-g:hover{border-color:var(--blue);background:var(--blue-light);}
 .grade-btn-g.selected{background:var(--blue);color:#fff;border-color:var(--blue);}

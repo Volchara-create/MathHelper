@@ -305,6 +305,17 @@ function authLogout() {
   show('home');
 }
 
+async function deleteAccount() {
+  if (!confirm('Видалити акаунт назавжди? Всі конспекти теж видаляться!')) return;
+  const token = localStorage.getItem('mh_token');
+  try {
+    await fetch(`${API}/me`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+    authLogout();
+  } catch {
+    alert('Помилка видалення акаунту');
+  }
+}
+
 function startTrial() {
   const token = localStorage.getItem('mh_token');
   if (!token) { authOpen('register'); return; }
