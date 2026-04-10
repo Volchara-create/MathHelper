@@ -120,7 +120,7 @@ function show(sec){
   if(sec==='textbooks') buildTextbooks();
   if(sec==='trig') buildTrigTable();
   if(sec==='formulas') buildAlgebraTab();
-  if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
+  if(sec==='quiz') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
   updateNavForGrade(grade);
 }
@@ -135,48 +135,49 @@ function showKidWorkspace(grade) {
 function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====
+// v = visual (emoji side), m = math side, expr = text-only fallback
 const ALGEBRA_CATS = [
   { name:'🍎 Додавання', minGrade:1, maxGrade:2, formulas:[
-    {name:'Що таке додавання?',expr:'🍎🍎 + 🍎🍎🍎 = 🍎🍎🍎🍎🍎\n  2  +    3   =    5'},
-    {name:'Можна міняти місцями',expr:'3 + 5 = 5 + 3 = 8\n🍐🍐🍐 + 🍐🍐🍐🍐🍐 = 8'},
-    {name:'Додавання нуля',expr:'🍎🍎🍎 + нічого = 🍎🍎🍎\n     5   +  0  =  5'},
-    {name:'Приклад',expr:'У кошику 4🍎 + 6🍎 = 10🍎'},
-    {name:'Склад числа 10',expr:'1+9, 2+8, 3+7, 4+6, 5+5'},
+    {name:'Що таке додавання?', v:'🍎🍎 + 🍎🍎🍎 = 🍎🍎🍎🍎🍎', m:'2 + 3 = 5'},
+    {name:'Можна міняти місцями', v:'🍐🍐🍐 + 🍐🍐🍐🍐🍐 = 🍐🍐🍐🍐🍐🍐🍐🍐', m:'3 + 5 = 5 + 3 = 8'},
+    {name:'Додавання нуля', v:'🍎🍎🍎 + (нічого) = 🍎🍎🍎', m:'5 + 0 = 5'},
+    {name:'Склад числа 10', v:'⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ = 10', m:'1+9 · 2+8 · 3+7 · 4+6 · 5+5'},
+    {name:'Приклад', v:'🍎🍎🍎🍎 + 🍎🍎🍎🍎🍎🍎', m:'4 + 6 = 10'},
   ]},
   { name:'🍇 Віднімання', minGrade:1, maxGrade:2, formulas:[
-    {name:'Що таке віднімання?',expr:'🍇🍇🍇🍇🍇 − 🍇🍇 = 🍇🍇🍇\n    5    −  2  =  3'},
-    {name:'Перевірка',expr:'5 − 2 = 3  →  перевірка: 3 + 2 = 5 ✓'},
-    {name:'Від нуля',expr:'5 − 0 = 5  (нічого не забрали)'},
-    {name:'Від себе',expr:'5 − 5 = 0  (забрали все)'},
-    {name:'Приклад',expr:'Було 8🍇, з\'їли 3🍇, лишилось 5🍇'},
+    {name:'Що таке віднімання?', v:'🍇🍇🍇🍇🍇 − 🍇🍇 = 🍇🍇🍇', m:'5 − 2 = 3'},
+    {name:'Перевірка', v:'❓ + 🍇🍇 = 🍇🍇🍇🍇🍇', m:'5 − 2 = 3  →  3 + 2 = 5 ✓'},
+    {name:'Від нуля', v:'🍎🍎🍎🍎🍎 − (нічого) = 🍎🍎🍎🍎🍎', m:'5 − 0 = 5'},
+    {name:'Від себе', v:'🍎🍎🍎 − 🍎🍎🍎 = (порожньо)', m:'5 − 5 = 0'},
+    {name:'Приклад', v:'🍇🍇🍇🍇🍇🍇🍇🍇 → з\'їли 🍇🍇🍇', m:'8 − 3 = 5'},
   ]},
-  { name:'🔢 Числа до 100', minGrade:1, maxGrade:3, formulas:[
-    {name:'Десятки',expr:'10, 20, 30, 40, 50, 60, 70, 80, 90, 100'},
-    {name:'Розряди',expr:'Число 47 = 4 десятки + 7 одиниць'},
-    {name:'Порівняння',expr:'47 > 29  (більше десятків → більше число)'},
-    {name:'Сусіди числа',expr:'Сусіди 15: 14 і 16'},
-    {name:'Парні / непарні',expr:'Парні: 2,4,6,8...  Непарні: 1,3,5,7...'},
+  { name:'🔢 Числа до 100', minGrade:2, maxGrade:3, formulas:[
+    {name:'Десятки', v:'🔵×10 🔵×20 🔵×30 ... 🔵×100', m:'10, 20, 30, 40, 50, 60, 70, 80, 90, 100'},
+    {name:'Склад числа', v:'🟦🟦🟦🟦 і 🟨🟨🟨🟨🟨🟨🟨 = 47', m:'47 = 4 десятки + 7 одиниць'},
+    {name:'Порівняння', v:'🔵🔵🔵🔵🟡 (47) > 🔵🔵🟡🟡🟡🟡🟡🟡🟡 (29)', m:'47 > 29'},
+    {name:'Сусіди числа', v:'14 ← 15 → 16', m:'число −1 і число +1'},
+    {name:'Парні / непарні', v:'🔵🔵 🔵🔵 🔵🔵 (парні)', m:'2,4,6,8... діляться на 2\n1,3,5,7... не діляться'},
   ]},
   { name:'✖️ Множення', minGrade:3, maxGrade:5, formulas:[
-    {name:'Що таке множення?',expr:'3 × 4 = 4 + 4 + 4 = 12\n🍊🍊🍊🍊 | 🍊🍊🍊🍊 | 🍊🍊🍊🍊'},
-    {name:'Можна міняти місцями',expr:'3 × 4 = 4 × 3 = 12'},
-    {name:'На 0',expr:'будь-яке × 0 = 0'},
-    {name:'На 1',expr:'будь-яке × 1 = те саме число'},
-    {name:'Приклад',expr:'5 рядів по 6🍋 = 5 × 6 = 30🍋'},
+    {name:'Що таке множення?', v:'🍊🍊🍊🍊 | 🍊🍊🍊🍊 | 🍊🍊🍊🍊\n(3 рядки по 4)', m:'3 × 4 = 12\n= 4 + 4 + 4'},
+    {name:'Можна міняти місцями', v:'🟦🟦🟦 / 🟦🟦🟦 = 🟦🟦 / 🟦🟦 / 🟦🟦 / 🟦🟦', m:'2 × 4 = 4 × 2 = 8'},
+    {name:'На 0', v:'🍬 × (порожньо) = (порожньо)', m:'будь-яке × 0 = 0'},
+    {name:'На 1', v:'🐱🐱🐱 × 1 = 🐱🐱🐱', m:'будь-яке × 1 = те саме число'},
+    {name:'Приклад', v:'🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋\n(5 рядків по 6)', m:'5 × 6 = 30'},
   ]},
   { name:'➗ Ділення', minGrade:3, maxGrade:5, formulas:[
-    {name:'Що таке ділення?',expr:'12 🍬 ÷ 4 друзі = по 3🍬 кожному'},
-    {name:'Зв\'язок з множенням',expr:'12 ÷ 4 = 3  →  перевірка: 3 × 4 = 12 ✓'},
-    {name:'Ділення на 1',expr:'7 ÷ 1 = 7'},
-    {name:'Ділення на себе',expr:'7 ÷ 7 = 1'},
-    {name:'З остачею',expr:'13 ÷ 4 = 3 і ще 1  (3×4=12, лишилось 1)'},
+    {name:'Що таке ділення?', v:'🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬 → 4 друзі', m:'12 ÷ 4 = 3  (по 3 кожному)'},
+    {name:'Зв\'язок з множенням', v:'✅ перевірка завжди', m:'12 ÷ 4 = 3  →  3 × 4 = 12 ✓'},
+    {name:'Ділення на 1', v:'🐣🐣🐣🐣🐣🐣🐣 → 1 кошик', m:'7 ÷ 1 = 7'},
+    {name:'Ділення на себе', v:'🐣🐣🐣🐣🐣🐣🐣 → 7 кошиків', m:'7 ÷ 7 = 1'},
+    {name:'З остачею', v:'🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬 → 4 друзі + 1 залишок', m:'13 ÷ 4 = 3 і остача 1'},
   ]},
-  { name:'📐 Геометрія (1-4 кл)', minGrade:1, maxGrade:4, formulas:[
-    {name:'Відрізок',expr:'пряма лінія між двома точками — вимірюй лінійкою'},
-    {name:'Периметр прямокутника',expr:'P = a + b + a + b = 2×(a+b)\n📏 Обійди навколо!'},
-    {name:'Площа прямокутника',expr:'S = а × b\n🔲 Скільки клітинок всередині?'},
-    {name:'Квадрат',expr:'всі сторони рівні! P = 4×a, S = a×a'},
-    {name:'Трикутник',expr:'P = a + b + c (сума трьох сторін)'},
+  { name:'📐 Геометрія (3-4 кл)', minGrade:3, maxGrade:4, formulas:[
+    {name:'Периметр прямокутника', v:'📏 Обійди навколо!', m:'P = 2×(a+b)'},
+    {name:'Площа прямокутника', v:'🔲 Скільки клітинок всередині?', m:'S = a × b'},
+    {name:'Квадрат', v:'◼ всі 4 сторони рівні', m:'P = 4×a,  S = a²'},
+    {name:'Трикутник', v:'🔺 3 сторони', m:'P = a + b + c'},
+    {name:'Відрізок', v:'•———————————•', m:'Пряма між двома точками. Вимірюй лінійкою!'},
   ]},
   { name:'🍕 Дроби (1/2, 1/4)', minGrade:3, maxGrade:5, formulas:[
     {name:'Що таке дріб?',expr:'🍕 розрізали на 4 частини → кожна 1/4'},
@@ -459,16 +460,21 @@ function getUserGrade() {
 // Build algebra tab (category buttons)
 function buildAlgebraTab(){
   const grid = document.getElementById('algebra-cats-grid');
-  if(grid.children.length > 0) return;
+  // Always rebuild — grade may have changed
   const grade = getUserGrade();
-  // Hide trig/tables tabs for grades 1-4
   updateNavForGrade(grade);
-  const cats = ALGEBRA_CATS.filter(c => !grade || grade >= (c.minGrade || 1));
-  if(!cats.length) { grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Формули алгебри з\'являться у 7 класі</p>'; return; }
+  // Filter by exact grade range
+  const cats = ALGEBRA_CATS.filter(c =>
+    !grade || (grade >= (c.minGrade || 1) && grade <= (c.maxGrade || 11))
+  );
+  if(!cats.length) {
+    grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Формули для цього класу незабаром!</p>';
+    return;
+  }
   grid.innerHTML = cats.map(cat => `
     <div class="alg-cat-btn" onclick="openAlgebraModal(${ALGEBRA_CATS.indexOf(cat)})">
       <div class="alg-cat-name">${cat.name}</div>
-      <div class="alg-cat-count">${cat.formulas.length} формул</div>
+      <div class="alg-cat-count">${cat.formulas.length} карток</div>
     </div>
   `).join('');
 }
@@ -476,12 +482,26 @@ function buildAlgebraTab(){
 function openAlgebraModal(idx){
   const cat = ALGEBRA_CATS[idx];
   document.getElementById('alg-modal-title').textContent = cat.name;
-  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map(f => `
-    <div class="alg-modal-row">
-      <span class="alg-modal-name">${f.name}</span>
-      <span class="alg-modal-expr">${f.expr}</span>
-    </div>
-  `).join('');
+  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map(f => {
+    if (f.v && f.m) {
+      // Card with two panels: visual (emoji) | math (formula)
+      return `
+        <div class="alg-formula-card">
+          <div class="alg-card-name">${f.name}</div>
+          <div class="alg-card-split">
+            <div class="alg-card-visual">${f.v}</div>
+            <div class="alg-card-divider">=</div>
+            <div class="alg-card-math">${f.m}</div>
+          </div>
+        </div>`;
+    }
+    // Fallback: plain row
+    return `
+      <div class="alg-modal-row">
+        <span class="alg-modal-name">${f.name}</span>
+        <span class="alg-modal-expr">${f.expr || ''}</span>
+      </div>`;
+  }).join('');
   document.getElementById('algebra-modal').classList.add('active');
 }
 
@@ -489,10 +509,14 @@ function closeAlgebraModal(){
   document.getElementById('algebra-modal').classList.remove('active');
 }
 
-// Build geometry tab — clean text buttons that open original SVG modal
+// Build geometry tab — only for grades 5+
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
-  if(grid.children.length > 0) return;
+  const grade = getUserGrade();
+  if (grade && grade <= 4) {
+    grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center;grid-column:1/-1">Геометрія фігур вивчається з 5 класу.<br>Зараз відкрий <strong>🔢 Алгебра</strong> — там є формули для твого класу!</p>';
+    return;
+  }
   const order = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle','cube','parallelepiped','cylinder','cone','pyramid'];
   grid.innerHTML = order.map(cat => `
     <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
@@ -1615,18 +1639,19 @@ function getGradeTasks() {
 
 function updateNavForGrade(grade) {
   if (!grade) return;
-  // Hide trig/tables formula tabs for young grades
+  // Formula tabs visibility
   const trigTab = document.getElementById('ftab-btn-trigonometry');
   const tablesTab = document.getElementById('ftab-btn-tables');
-  if (trigTab) trigTab.style.display = grade <= 4 ? 'none' : '';
+  const geoTab = document.getElementById('ftab-btn-geometry');
+  if (trigTab) trigTab.style.display = grade <= 8 ? 'none' : '';
   if (tablesTab) tablesTab.style.display = grade <= 3 ? 'none' : '';
-  // Rename "Робочий стіл" nav button for grades 1-4
+  if (geoTab) geoTab.style.display = grade <= 4 ? 'none' : '';
+  // Hide workspace from nav for grades 1-4
   const graphBtn = document.querySelector('nav button[onclick="showGraph()"]');
   if (graphBtn) graphBtn.style.display = grade <= 4 ? 'none' : '';
-  // Update page title label in tasks section
-  const gradeNames = {1:'1 клас — додавання та віднімання',2:'2 клас — числа до 100',3:'3 клас — множення та ділення',4:'4 клас — ділення + геометрія',5:'5 клас — дроби та відсотки'};
-  const label = document.getElementById('tasks-grade-label');
-  if (label && gradeNames[grade]) label.textContent = gradeNames[grade];
+  // Rebuild algebra tab when grade changes
+  const grid = document.getElementById('algebra-cats-grid');
+  if (grid) grid.innerHTML = '';
 }
 
 function safeNew() {
@@ -1797,23 +1822,97 @@ function buildTrigTable(){
 }
 
 // ===== QUIZ =====
-const quizQuestions=[
+// Quiz questions by grade group
+const QUIZ_BY_GRADE = {
+  1: [ // Grade 1 — addition/subtraction, numbers
+    {q:'🍎🍎🍎 + 🍎🍎 = ?',opts:['4','5','6','7'],ans:1},
+    {q:'Скільки буде 3 + 4?',opts:['6','7','8','5'],ans:1},
+    {q:'🍇🍇🍇🍇🍇 − 🍇🍇 = ?',opts:['2','3','4','5'],ans:1},
+    {q:'Скільки буде 8 − 3?',opts:['4','6','5','3'],ans:2},
+    {q:'Яке число більше: 7 чи 5?',opts:['5','7','однакові','не знаю'],ans:1},
+    {q:'5 + 0 = ?',opts:['0','1','4','5'],ans:3},
+    {q:'Скільки буде 6 + 2?',opts:['7','8','9','6'],ans:1},
+    {q:'7 − 7 = ?',opts:['1','7','0','14'],ans:2},
+    {q:'🐣🐣🐣🐣 + 🐣🐣🐣 = ?',opts:['6','7','8','5'],ans:1},
+    {q:'Скільки: 4 + 5?',opts:['8','10','9','7'],ans:2},
+    {q:'10 − 3 = ?',opts:['6','7','8','13'],ans:1},
+    {q:'Яке число: 2 + 2 + 2?',opts:['4','5','6','8'],ans:2},
+  ],
+  2: [ // Grade 2 — numbers to 100
+    {q:'23 + 14 = ?',opts:['36','37','38','27'],ans:1},
+    {q:'50 − 20 = ?',opts:['20','30','70','80'],ans:1},
+    {q:'45 + 30 = ?',opts:['65','70','75','85'],ans:2},
+    {q:'80 − 35 = ?',opts:['40','45','55','35'],ans:1},
+    {q:'Яке число: десятків 6, одиниць 3?',opts:['36','63','360','306'],ans:1},
+    {q:'17 + 23 = ?',opts:['30','40','50','39'],ans:1},
+    {q:'100 − 40 = ?',opts:['50','60','70','140'],ans:1},
+    {q:'Сусід числа 29 (більший):',opts:['28','30','31','27'],ans:1},
+    {q:'2+8, 3+7, 4+? = 10',opts:['5','6','7','8'],ans:1},
+    {q:'Парне чи непарне число 14?',opts:['Непарне','Парне','Не знаю','Обидва'],ans:1},
+  ],
+  3: [ // Grade 3 — multiplication/division
+    {q:'6 × 7 = ?',opts:['36','42','48','54'],ans:1},
+    {q:'8 × 4 = ?',opts:['24','28','32','36'],ans:2},
+    {q:'36 ÷ 6 = ?',opts:['5','6','7','8'],ans:1},
+    {q:'9 × 9 = ?',opts:['72','81','90','99'],ans:1},
+    {q:'24 ÷ 8 = ?',opts:['2','3','4','6'],ans:1},
+    {q:'5 × 8 = ?',opts:['35','40','45','50'],ans:1},
+    {q:'42 ÷ 7 = ?',opts:['5','6','7','8'],ans:1},
+    {q:'3 × 9 = ?',opts:['18','24','27','30'],ans:2},
+    {q:'56 ÷ 8 = ?',opts:['6','7','8','9'],ans:1},
+    {q:'7 × 6 = ?',opts:['36','40','42','48'],ans:2},
+  ],
+  4: [ // Grade 4 — geometry basics + math
+    {q:'Периметр квадрата зі стороною 5 см:',opts:['15 см','20 см','25 см','10 см'],ans:1},
+    {q:'Площа прямокутника 4×6 см:',opts:['20 см²','24 см²','10 см²','48 см²'],ans:1},
+    {q:'64 ÷ 8 = ?',opts:['6','7','8','9'],ans:2},
+    {q:'7 × 7 = ?',opts:['42','49','56','63'],ans:1},
+    {q:'Периметр прямокутника 3×5 (P=2(a+b)):',opts:['15','16','18','8'],ans:1},
+    {q:'Площа квадрата зі стороною 6 см:',opts:['24 см²','30 см²','36 см²','12 см²'],ans:2},
+    {q:'81 ÷ 9 = ?',opts:['8','9','7','6'],ans:1},
+    {q:'8 × 9 = ?',opts:['63','70','72','81'],ans:2},
+    {q:'Яка фігура має всі 4 сторони рівні?',opts:['Прямокутник','Трапеція','Квадрат','Трикутник'],ans:2},
+    {q:'Скільки кутів у трикутника?',opts:['2','3','4','6'],ans:1},
+  ],
+  5: [ // Grade 5+ — fractions, percentages, geometry
+    {q:'50% від 80 = ?',opts:['30','40','50','60'],ans:1},
+    {q:'1/2 + 1/4 = ?',opts:['1/6','2/6','3/4','2/4'],ans:2},
+    {q:'Площа трикутника (a=8, h=6): S = ?',opts:['48','24','14','42'],ans:1},
+    {q:'25% від 100 = ?',opts:['20','25','30','75'],ans:1},
+    {q:'Яка формула площі прямокутника?',opts:['S=a+b','S=a×b','S=2(a+b)','S=a²'],ans:1},
+    {q:'10% від 200 = ?',opts:['10','20','25','200'],ans:1},
+    {q:'Скільки градусів у сумі кутів трикутника?',opts:['90°','180°','270°','360°'],ans:1},
+    {q:'3/4 − 1/4 = ?',opts:['2/8','1/2','2/4','1/4'],ans:1},
+    {q:'Площа квадрата зі стороною 7: S = ?',opts:['28','42','49','56'],ans:2},
+    {q:'75% від 40 = ?',opts:['25','30','35','40'],ans:1},
+  ],
+};
+
+// Upper-grade quiz (6-11)
+const QUIZ_UPPER = [
   {q:'Яка формула площі прямокутника?',opts:['S = a + b','S = a × b','S = 2(a + b)','S = a²'],ans:1},
-  {q:'Яка формула периметру кола (довжина кола)?',opts:['C = π × r²','C = 2 × π × r','C = π × d²','C = π / r'],ans:1},
   {q:'Яка формула площі кола?',opts:['S = π × r','S = 2πr','S = π × r²','S = πd'],ans:2},
   {q:'Чому дорівнює sin 30°?',opts:['√3/2','1/2','√2/2','1'],ans:1},
-  {q:'Чому дорівнює cos 60°?',opts:['√3/2','√2/2','1/2','0'],ans:2},
   {q:'Яка формула об\'єму куба?',opts:['V = a²','V = 6a²','V = a³','V = 3a'],ans:2},
-  {q:'Яка формула площі трикутника через основу і висоту?',opts:['S = a × h','S = (a × h) / 2','S = a + h','S = 2(a + h)'],ans:1},
+  {q:'Яка формула площі трикутника?',opts:['S = a × h','S = (a × h) / 2','S = a + h','S = 2(a + h)'],ans:1},
   {q:'Чому дорівнює tan 45°?',opts:['√3','√2/2','0','1'],ans:3},
-  {q:'Яка формула діагоналі прямокутника?',opts:['d = a + b','d = √(a + b)','d = √(a² + b²)','d = 2(a² + b²)'],ans:2},
   {q:'Скільки градусів у прямому куті?',opts:['45°','180°','90°','60°'],ans:2},
   {q:'Яка формула площі поверхні куба?',opts:['S = a²','S = 4a²','S = 6a²','S = 3a²'],ans:2},
   {q:'Чому дорівнює sin 90°?',opts:['0','√2/2','1/2','1'],ans:3},
-  {q:'Яка формула об\'єму циліндра?',opts:['V = π × r × h','V = π × r² × h','V = 2πr × h','V = πr²'],ans:1},
-  {q:'Чому дорівнює cos 0°?',opts:['0','1/2','√2/2','1'],ans:3},
   {q:'Яка формула площі ромба через діагоналі?',opts:['S = d₁ × d₂','S = (d₁ × d₂) / 2','S = d₁ + d₂','S = 4 × d'],ans:1},
+  {q:'Дискримінант: D = ?',opts:['b² + 4ac','b² − 4ac','2b − ac','4b² − ac'],ans:1},
+  {q:'Яка формула довжини кола?',opts:['C = π×r²','C = 2πr','C = πd²','C = πr'],ans:1},
+  {q:'Чому дорівнює cos 0°?',opts:['0','1/2','√2/2','1'],ans:3},
+  {q:'Формула об\'єму циліндра:',opts:['V = πrh','V = πr²h','V = 2πrh','V = πr²'],ans:1},
+  {q:'sin²α + cos²α = ?',opts:['0','2','1','π'],ans:2},
 ];
+
+function getQuizQuestions() {
+  const g = getUserGrade();
+  if (!g || g >= 6) return QUIZ_UPPER;
+  const pool = QUIZ_BY_GRADE[Math.min(g, 5)] || QUIZ_UPPER;
+  return pool;
+}
 
 let quizCurrent=0;
 let quizScore=0;
@@ -1821,7 +1920,8 @@ let quizOrder=[];
 let quizAnswered=false;
 
 function startQuiz(){
-  quizOrder=[...quizQuestions].sort(()=>Math.random()-0.5).slice(0,10);
+  const questions = getQuizQuestions();
+  quizOrder=[...questions].sort(()=>Math.random()-0.5).slice(0,Math.min(10, questions.length));
   quizCurrent=0;quizScore=0;
   renderQuizQuestion();
 }
