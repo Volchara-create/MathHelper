@@ -118,6 +118,53 @@ app.delete('/notes/:id', authMiddleware, async (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /auth/google/callback — redirect flow (Google posts credential here)
+app.post('/auth/google/callback', express.urlencoded({ extended: true }), async (req, res) => {
+  const credential = req.body.credential;
+  if (!credential) return res.redirect('/?google_error=no_token');
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // New user — redirect to grade picker page
+      const tempToken = jwt.sign({ googleId, email, name, needsGrade: true }, process.env.JWT_SECRET, { expiresIn: '10m' });
+      return res.redirect(`/?google_grade=${encodeURIComponent(tempToken)}`);
+    }
+    const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
+    res.redirect(`/?google_token=${encodeURIComponent(token)}`);
+  } catch (e) {
+    console.error('Google callback error:', e.message);
+    res.redirect('/?google_error=invalid_token');
+  }
+});
+
+// POST /auth/google/grade — complete registration after grade selection
+app.post('/auth/google/grade', async (req, res) => {
+  const { tempToken, grade } = req.body;
+  if (!grade || grade < 4 || grade > 11) return res.status(400).json({ error: 'Вибери клас' });
+  try {
+    const payload = jwt.verify(tempToken, process.env.JWT_SECRET);
+    if (!payload.needsGrade) return res.status(400).json({ error: 'Невірний токен' });
+    const { googleId, email, name } = payload;
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: { name, email, password: googleId, grade: parseInt(grade) }
+      });
+    }
+    const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
+    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+  } catch {
+    res.status(400).json({ error: 'Токен застарів, спробуй ще раз' });
+  }
+});
+
 // POST /auth/google — sign in with Google
 app.post('/auth/google', async (req, res) => {
   const { credential, grade } = req.body;

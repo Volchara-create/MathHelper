@@ -146,7 +146,7 @@ function closeGoogleGradeModal() {
   document.getElementById('auth-register-form').style.display = 'none';
 }
 
-function confirmGoogleGrade(credential) {
+async function confirmGoogleGrade(tempToken) {
   const picker = document.getElementById('google-grade-picker');
   const selected = picker.querySelector('.grade-btn-g.selected');
   if (!selected) {
@@ -154,21 +154,39 @@ function confirmGoogleGrade(credential) {
     return;
   }
   const grade = parseInt(selected.dataset.grade);
-  _googleSignIn(credential, grade);
+  try {
+    const res = await fetch(`${API}/auth/google/grade`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tempToken, grade })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      document.getElementById('google-grade-error').textContent = data.error;
+      return;
+    }
+    localStorage.setItem('mh_token', data.token);
+    localStorage.setItem('mh_user', JSON.stringify(data.user));
+    authShowUser(data.user);
+    authClose();
+    closeGoogleGradeModal();
+    show('dashboard');
+  } catch {
+    document.getElementById('google-grade-error').textContent = 'Помилка сервера';
+  }
 }
 
 function initGoogleAuth() {
-  if (!window.google) return; // GSI not loaded yet
+  if (!window.google) return;
   const clientId = document.querySelector('meta[name="google-client-id"]')?.content;
-  if (!clientId || clientId === 'YOUR_GOOGLE_CLIENT_ID') return; // Not configured
+  if (!clientId || clientId === 'YOUR_GOOGLE_CLIENT_ID') return;
 
   google.accounts.id.initialize({
     client_id: clientId,
-    callback: handleGoogleCredential,
-    auto_select: false,
+    ux_mode: 'redirect',
+    login_uri: `${window.location.origin}/auth/google/callback`,
   });
 
-  // Render button in login form
   const loginBtn = document.getElementById('google-login-btn');
   if (loginBtn) {
     google.accounts.id.renderButton(loginBtn, {
@@ -176,12 +194,46 @@ function initGoogleAuth() {
     });
   }
 
-  // Render button in register form
   const regBtn = document.getElementById('google-reg-btn');
   if (regBtn) {
     google.accounts.id.renderButton(regBtn, {
       theme: 'outline', size: 'large', width: '100%', text: 'signup_with'
     });
+  }
+}
+
+// Handle redirect back from Google
+function handleGoogleRedirect() {
+  const params = new URLSearchParams(window.location.search);
+
+  // Successful login
+  const token = params.get('google_token');
+  if (token) {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const user = { id: payload.id, name: payload.name, grade: payload.grade };
+    localStorage.setItem('mh_token', token);
+    localStorage.setItem('mh_user', JSON.stringify(user));
+    window.history.replaceState({}, '', '/');
+    authShowUser(user);
+    show('dashboard');
+    return;
+  }
+
+  // New Google user — needs grade
+  const gradeToken = params.get('google_grade');
+  if (gradeToken) {
+    window.history.replaceState({}, '', '/');
+    const payload = JSON.parse(atob(gradeToken.split('.')[1]));
+    showGoogleGradeModal(gradeToken, payload.name);
+    return;
+  }
+
+  // Error
+  const error = params.get('google_error');
+  if (error) {
+    window.history.replaceState({}, '', '/');
+    authOpen('login');
+    document.getElementById('login-error').textContent = 'Помилка входу через Google, спробуй ще раз';
   }
 }
 
@@ -201,6 +253,9 @@ window.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('selected');
     });
   });
+
+  // Handle redirect back from Google
+  handleGoogleRedirect();
 
   // Init Google after GSI loads
   if (window.google) {
