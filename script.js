@@ -70,23 +70,171 @@ function show(sec){
   document.getElementById('category-row').style.display='none';
   if(sec==='tasks') loadRandomTask();
   if(sec==='trig') buildTrigTable();
-  if(sec==='formulas') { buildTrigTable2(); }
+  if(sec==='formulas') { buildAlgebraTab(); buildTrigTable2(); }
   if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function showFormulas(){ show('formulas'); }
+
+// ===== ALGEBRA DATA =====
+const ALGEBRA_CATS = [
+  { name:'Степені та корені', icon:'⚡', formulas:[
+    {name:'Множення степенів',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ'},
+    {name:'Ділення степенів',expr:'aⁿ / aᵐ = aⁿ⁻ᵐ'},
+    {name:'Степінь степеня',expr:'(aⁿ)ᵐ = aⁿ·ᵐ'},
+    {name:'Степінь добутку',expr:'(a·b)ⁿ = aⁿ · bⁿ'},
+    {name:'Нульовий степінь',expr:'a⁰ = 1'},
+    {name:'Від\'ємний степінь',expr:'a⁻ⁿ = 1/aⁿ'},
+    {name:'Корінь',expr:'√(a·b) = √a · √b'},
+    {name:'Частковий корінь',expr:'√(a/b) = √a / √b'},
+  ]},
+  { name:'Скорочене множення', icon:'✖️', formulas:[
+    {name:'Квадрат суми',expr:'(a+b)² = a² + 2ab + b²'},
+    {name:'Квадрат різниці',expr:'(a−b)² = a² − 2ab + b²'},
+    {name:'Різниця квадратів',expr:'a² − b² = (a+b)(a−b)'},
+    {name:'Куб суми',expr:'(a+b)³ = a³ + 3a²b + 3ab² + b³'},
+    {name:'Куб різниці',expr:'(a−b)³ = a³ − 3a²b + 3ab² − b³'},
+    {name:'Сума кубів',expr:'a³ + b³ = (a+b)(a²−ab+b²)'},
+    {name:'Різниця кубів',expr:'a³ − b³ = (a−b)(a²+ab+b²)'},
+  ]},
+  { name:'Квадратне рівняння', icon:'📐', formulas:[
+    {name:'Загальний вигляд',expr:'ax² + bx + c = 0'},
+    {name:'Дискримінант',expr:'D = b² − 4ac'},
+    {name:'Корені (D > 0)',expr:'x = (−b ± √D) / 2a'},
+    {name:'Один корінь (D=0)',expr:'x = −b / 2a'},
+    {name:'D < 0',expr:'коренів немає'},
+    {name:'Теорема Вієта',expr:'x₁+x₂ = −b/a,  x₁·x₂ = c/a'},
+  ]},
+  { name:'Функції та графіки', icon:'📈', formulas:[
+    {name:'Лінійна',expr:'y = kx + b'},
+    {name:'k > 0',expr:'функція зростає'},
+    {name:'k < 0',expr:'функція спадає'},
+    {name:'Квадратична',expr:'y = ax² + bx + c'},
+    {name:'Вершина параболи',expr:'x₀ = −b/(2a)'},
+    {name:'Обернена пропорц.',expr:'y = k/x (гіпербола)'},
+  ]},
+  { name:'Прогресії', icon:'🔢', formulas:[
+    {name:'Арифм. n-й член',expr:'aₙ = a₁ + (n−1)·d'},
+    {name:'Різниця',expr:'d = aₙ − aₙ₋₁'},
+    {name:'Сума арифм.',expr:'Sₙ = n·(a₁ + aₙ) / 2'},
+    {name:'Геом. n-й член',expr:'bₙ = b₁ · qⁿ⁻¹'},
+    {name:'Знаменник',expr:'q = bₙ / bₙ₋₁'},
+    {name:'Сума геом.',expr:'Sₙ = b₁·(qⁿ − 1) / (q − 1)'},
+  ]},
+  { name:'Логарифми', icon:'🔬', formulas:[
+    {name:'Означення',expr:'logₐb = x  ↔  aˣ = b'},
+    {name:'Добуток',expr:'logₐ(xy) = logₐx + logₐy'},
+    {name:'Частка',expr:'logₐ(x/y) = logₐx − logₐy'},
+    {name:'Степінь',expr:'logₐ(xⁿ) = n · logₐx'},
+    {name:'Зміна основи',expr:'logₐb = log b / log a'},
+    {name:'Натуральний',expr:'ln x = logₑ x'},
+    {name:'Десятковий',expr:'lg x = log₁₀ x'},
+  ]},
+  { name:'Похідна (10-11 кл.)', icon:'📉', formulas:[
+    {name:'Константа',expr:"(C)' = 0"},
+    {name:'Степінь',expr:"(xⁿ)' = n · xⁿ⁻¹"},
+    {name:'Сума',expr:"(u+v)' = u' + v'"},
+    {name:'Добуток',expr:"(uv)' = u'v + uv'"},
+    {name:'Частка',expr:"(u/v)' = (u'v − uv') / v²"},
+    {name:'sin',expr:"(sin x)' = cos x"},
+    {name:'cos',expr:"(cos x)' = −sin x"},
+    {name:'eˣ',expr:"(eˣ)' = eˣ"},
+    {name:'ln x',expr:"(ln x)' = 1/x"},
+  ]},
+  { name:'Інтеграл (11 кл.)', icon:'∫', formulas:[
+    {name:'Степінь',expr:'∫xⁿ dx = xⁿ⁺¹/(n+1) + C'},
+    {name:'sin',expr:'∫sin x dx = −cos x + C'},
+    {name:'cos',expr:'∫cos x dx = sin x + C'},
+    {name:'1/x',expr:'∫(1/x) dx = ln|x| + C'},
+    {name:'eˣ',expr:'∫eˣ dx = eˣ + C'},
+    {name:'Формула Ньютона-Лейбніца',expr:'∫ₐᵇf(x)dx = F(b) − F(a)'},
+  ]},
+];
+
+// Build algebra tab (category buttons)
+function buildAlgebraTab(){
+  const grid = document.getElementById('algebra-cats-grid');
+  if(grid.innerHTML !== '') return;
+  grid.innerHTML = ALGEBRA_CATS.map((cat,i) => `
+    <div class="alg-cat-btn" onclick="openAlgebraModal(${i})">
+      <div class="alg-cat-icon">${cat.icon}</div>
+      <div class="alg-cat-name">${cat.name}</div>
+      <div class="alg-cat-count">${cat.formulas.length} формул</div>
+    </div>
+  `).join('');
+}
+
+function openAlgebraModal(idx){
+  const cat = ALGEBRA_CATS[idx];
+  document.getElementById('alg-modal-title').textContent = cat.icon + ' ' + cat.name;
+  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map(f => `
+    <div class="alg-modal-row">
+      <span class="alg-modal-name">${f.name}</span>
+      <span class="alg-modal-expr">${f.expr}</span>
+    </div>
+  `).join('');
+  document.getElementById('algebra-modal').classList.add('active');
+}
+
+function closeAlgebraModal(){
+  document.getElementById('algebra-modal').classList.remove('active');
+}
+
+// Build geometry tab — cards from data object, no SVG
+const GEO_ICONS = {rectangle:'▭',rhombus:'🔷',parallelogram:'▱',trapezoid:'🔻',circle:'⭕',triangle:'🔺',cube:'📦',parallelepiped:'🧱',cylinder:'🥫',cone:'🍦',pyramid:'🔼'};
+
+function buildGeoTab(){
+  const grid = document.getElementById('geo-cards-grid');
+  if(grid.innerHTML !== '') return;
+  const order = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle','cube','parallelepiped','cylinder','cone','pyramid'];
+  grid.innerHTML = order.map(cat => {
+    const formulas = data[cat] || [];
+    const rows = formulas.map(f => `
+      <div class="alg-row">
+        <span class="alg-name">${f.title}</span>
+        <span class="alg-expr">${f.formula}</span>
+      </div>`).join('');
+    return `<div class="alg-card">
+      <div class="alg-card-title">${GEO_ICONS[cat] || ''} ${categoryNames[cat]}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+// Build multiplication table
+function buildMultTable(){
+  const wrap = document.getElementById('mult-table-wrap');
+  if(wrap.innerHTML !== '') return;
+  let html = '<div class="mult-wrap"><h3 class="mult-title">✖️ Таблиця множення</h3><div class="mult-grid">';
+  // Header row
+  html += '<div class="mult-cell mult-header">×</div>';
+  for(let i=1;i<=10;i++) html += `<div class="mult-cell mult-header">${i}</div>`;
+  // Rows
+  for(let i=1;i<=10;i++){
+    html += `<div class="mult-cell mult-header">${i}</div>`;
+    for(let j=1;j<=10;j++){
+      const val = i*j;
+      const highlight = (i===j) ? ' mult-diagonal' : '';
+      html += `<div class="mult-cell${highlight}">${val}</div>`;
+    }
+  }
+  html += '</div></div>';
+  wrap.innerHTML = html;
+}
 
 // ===== FORMULA TABS =====
 function showFormulaTab(tab){
   document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.ftab-content').forEach(t=>t.classList.remove('active'));
   document.getElementById('ftab-'+tab).classList.add('active');
-  // Highlight correct tab button
-  document.querySelectorAll('.ftab').forEach(t=>{
-    if(t.getAttribute('onclick')===`showFormulaTab('${tab}')`) t.classList.add('active');
-  });
+  const btn = document.getElementById('ftab-btn-'+tab);
+  if(btn) btn.classList.add('active');
   if(tab==='trigonometry') buildTrigTable2();
+  if(tab==='algebra') buildAlgebraTab();
+  if(tab==='geometry') buildGeoTab();
+  if(tab==='mult') buildMultTable();
 }
+
 
 // Build trig table for the new formulas section
 function buildTrigTable2(){

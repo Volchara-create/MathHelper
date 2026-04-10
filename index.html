@@ -166,13 +166,28 @@
 
         <!-- Tabs -->
         <div class="ftabs">
-          <button class="ftab active" onclick="showFormulaTab('algebra')">🔢 Алгебра</button>
-          <button class="ftab" onclick="showFormulaTab('geometry')">📐 Геометрія</button>
-          <button class="ftab" onclick="showFormulaTab('trigonometry')">📏 Тригонометрія</button>
+          <button class="ftab active" id="ftab-btn-algebra" onclick="showFormulaTab('algebra')">🔢 Алгебра</button>
+          <button class="ftab" id="ftab-btn-geometry" onclick="showFormulaTab('geometry')">📐 Геометрія</button>
+          <button class="ftab" id="ftab-btn-trigonometry" onclick="showFormulaTab('trigonometry')">📏 Тригонометрія</button>
+          <button class="ftab" id="ftab-btn-mult" onclick="showFormulaTab('mult')">✖️ Таблиця</button>
         </div>
 
-        <!-- ALGEBRA TAB -->
+        <!-- ALGEBRA TAB — category buttons, filled by JS -->
         <div class="ftab-content active" id="ftab-algebra">
+          <div class="algebra-cats-grid" id="algebra-cats-grid">
+            <!-- JS fills this -->
+          </div>
+        </div>
+
+        <!-- GEOMETRY TAB — formula cards, filled by JS -->
+        <div class="ftab-content" id="ftab-geometry">
+          <div class="algebra-grid" id="geo-cards-grid">
+            <!-- JS fills this -->
+          </div>
+        </div>
+
+        <!-- OLD ALGEBRA STATIC (hidden, kept for reference, not shown) -->
+        <div style="display:none">
           <div class="algebra-grid">
 
             <div class="alg-card">
@@ -253,34 +268,9 @@
           </div>
         </div>
 
-        <!-- GEOMETRY TAB -->
-        <div class="ftab-content" id="ftab-geometry">
-          <p class="ftab-hint">Натисни на фігуру щоб побачити всі формули</p>
-          <div class="fgeo-grid">
-            <div class="fgeo-card" onclick="showCategory('rectangle')">▭<span>Прямокутник</span></div>
-            <div class="fgeo-card" onclick="showCategory('rhombus')">🔷<span>Ромб</span></div>
-            <div class="fgeo-card" onclick="showCategory('parallelogram')">▱<span>Паралелограм</span></div>
-            <div class="fgeo-card" onclick="showCategory('trapezoid')">🔻<span>Трапеція</span></div>
-            <div class="fgeo-card" onclick="showCategory('circle')">⭕<span>Коло</span></div>
-            <div class="fgeo-card" onclick="showCategory('triangle')">🔺<span>Трикутник</span></div>
-            <div class="fgeo-card" onclick="showCategory('cube')">📦<span>Куб</span></div>
-            <div class="fgeo-card" onclick="showCategory('parallelepiped')">🧱<span>Паралелепіпед</span></div>
-            <div class="fgeo-card" onclick="showCategory('cylinder')">🥫<span>Циліндр</span></div>
-            <div class="fgeo-card" onclick="showCategory('cone')">🍦<span>Конус</span></div>
-            <div class="fgeo-card" onclick="showCategory('pyramid')">🔼<span>Піраміда</span></div>
-          </div>
-
-          <!-- Geometry quick reference -->
-          <div class="alg-card" style="margin-top:24px;">
-            <div class="alg-card-title">Ключові формули геометрії</div>
-            <div class="alg-row"><span class="alg-name">Теорема Піфагора</span><span class="alg-expr">a² + b² = c²</span></div>
-            <div class="alg-row"><span class="alg-name">Площа трикутника</span><span class="alg-expr">S = (a·h)/2</span></div>
-            <div class="alg-row"><span class="alg-name">Площа кола</span><span class="alg-expr">S = π·r²</span></div>
-            <div class="alg-row"><span class="alg-name">Довжина кола</span><span class="alg-expr">C = 2·π·r</span></div>
-            <div class="alg-row"><span class="alg-name">Об'єм кулі</span><span class="alg-expr">V = (4/3)·π·r³</span></div>
-            <div class="alg-row"><span class="alg-name">Об'єм циліндра</span><span class="alg-expr">V = π·r²·h</span></div>
-            <div class="alg-row"><span class="alg-name">Об'єм конуса</span><span class="alg-expr">V = (1/3)·π·r²·h</span></div>
-          </div>
+        <!-- MULTIPLICATION TABLE TAB -->
+        <div class="ftab-content" id="ftab-mult">
+          <div id="mult-table-wrap"></div>
         </div>
 
         <!-- TRIGONOMETRY TAB -->
@@ -724,7 +714,7 @@
 
   </main>
 
-  <!-- Category modal -->
+  <!-- Category modal (geometry) -->
   <div id="category-modal" class="category-modal">
     <div class="category-modal-content">
       <div class="category-modal-header">
@@ -732,6 +722,17 @@
         <button class="category-modal-close" onclick="closeCategoryModal()">×</button>
       </div>
       <div id="modal-formulas" class="formulas-in-modal"></div>
+    </div>
+  </div>
+
+  <!-- Algebra big modal -->
+  <div id="algebra-modal" class="category-modal">
+    <div class="category-modal-content alg-modal-content">
+      <div class="category-modal-header">
+        <h2 id="alg-modal-title"></h2>
+        <button class="category-modal-close" onclick="closeAlgebraModal()">×</button>
+      </div>
+      <div id="alg-modal-body" class="alg-modal-body"></div>
     </div>
   </div>
 

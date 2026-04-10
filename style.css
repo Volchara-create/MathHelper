@@ -514,3 +514,30 @@ header{flex-wrap:nowrap;gap:12px;}
 .dark .fgeo-card{background:#1e293b;border-color:#334155;}
 .fgeo-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 6px 16px rgba(26,62,124,.12);}
 .fgeo-card span{font-size:0.85rem;font-weight:700;color:var(--text);}
+
+/* Algebra category buttons */
+.algebra-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+.alg-cat-btn{background:#fff;border:1.5px solid var(--blue-light);border-radius:14px;padding:20px 16px;cursor:pointer;transition:.2s;text-align:center;}
+.dark .alg-cat-btn{background:#1e293b;border-color:#334155;}
+.alg-cat-btn:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 6px 16px rgba(26,62,124,.12);}
+.alg-cat-icon{font-size:2.2rem;margin-bottom:8px;}
+.alg-cat-name{font-weight:700;font-size:0.95rem;color:var(--blue);margin-bottom:4px;}
+.alg-cat-count{font-size:0.78rem;color:#aaa;}
+
+/* Algebra big modal */
+.alg-modal-content{max-width:560px;}
+.alg-modal-body{display:flex;flex-direction:column;gap:2px;}
+.alg-modal-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f1f5f9;}
+.dark .alg-modal-row{border-color:#334155;}
+.alg-modal-row:last-child{border-bottom:none;}
+.alg-modal-name{font-size:1rem;color:#666;flex-shrink:0;}
+.alg-modal-expr{font-family:'Fira Code',monospace;font-size:1.2rem;font-weight:700;color:var(--blue);text-align:right;}
+
+/* Multiplication table */
+.mult-wrap{overflow-x:auto;}
+.mult-title{font-size:1.2rem;color:var(--blue);margin-bottom:16px;}
+.mult-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;min-width:440px;}
+.mult-cell{padding:8px 4px;text-align:center;border-radius:6px;font-size:0.9rem;background:#fff;border:1px solid #e8f0fe;}
+.dark .mult-cell{background:#1e293b;border-color:#334155;}
+.mult-header{background:var(--blue);color:#fff;font-weight:700;border:none;}
+.mult-diagonal{background:#dbeafe;font-weight:700;color:var(--blue);}
