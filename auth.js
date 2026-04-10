@@ -117,7 +117,7 @@ function showGoogleGradeModal(credential, name) {
     picker = document.createElement('div');
     picker.id = 'google-grade-picker';
     picker.style.cssText = 'padding:24px 0;text-align:center;';
-    modal.querySelector('.auth-box').appendChild(picker);
+    modal.querySelector('.auth-modal-content').appendChild(picker);
   }
 
   picker.innerHTML = `
