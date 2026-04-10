@@ -268,53 +268,82 @@
     <section id="pricing">
       <div class="pricing-wrap">
         <h2 class="pricing-title">Обери свій план</h2>
-        <p class="pricing-sub">7 днів Pro безкоштовно — без карти</p>
+        <p class="pricing-sub">Чесно про те, що входить у кожен план — без дрібного шрифту</p>
+
+        <!-- Comparison table -->
+        <div class="pricing-compare">
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Функція</th>
+                <th>Безкоштовно</th>
+                <th class="th-pro">Pro</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Всі формули по класу</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Таблиці (множення, квадрати, тrig)</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Геометрія з SVG-фігурами</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Підручники МОН (1–11 кл.)</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Графіки функцій</td><td>до 3</td><td>Необмежено</td></tr>
+              <tr><td>Конспекти (нотатки)</td><td>до 5</td><td>Необмежено</td></tr>
+              <tr><td>Завантаження конспекту як PDF</td><td>❌</td><td>✅ (в розробці)</td></tr>
+              <tr><td>AI-помічник (розв'язок задач)</td><td>❌</td><td>✅ (в розробці)</td></tr>
+              <tr><td>Статистика прогресу</td><td>❌</td><td>✅ (в розробці)</td></tr>
+              <tr><td>Без реклами</td><td>❌</td><td>✅</td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <div class="pricing-cards">
 
           <div class="pricing-card">
             <div class="pricing-card-name">Безкоштовно</div>
             <div class="pricing-card-price">0 ₴<span>/назавжди</span></div>
             <ul class="pricing-features">
-              <li>✅ Формули свого класу</li>
-              <li>✅ Графік функцій</li>
-              <li>✅ Калькулятор</li>
-              <li>✅ 5 питань квізу на день</li>
-              <li class="disabled">❌ Конспект</li>
-              <li class="disabled">❌ Необмежений квіз</li>
-              <li class="disabled">❌ Підготовка до НМТ</li>
-              <li class="disabled">❌ Формули наступного класу</li>
+              <li>✅ Всі формули свого класу</li>
+              <li>✅ Таблиці та геометрія</li>
+              <li>✅ Підручники МОН 1–11 кл.</li>
+              <li>✅ До 3 графіків функцій</li>
+              <li>✅ До 5 конспектів</li>
+              <li class="disabled">❌ Завантаження PDF</li>
+              <li class="disabled">❌ AI-помічник</li>
+              <li class="disabled">❌ Необмежені нотатки</li>
             </ul>
             <button class="pricing-btn pricing-btn--free" onclick="authOpen('register')">Почати безкоштовно</button>
           </div>
 
           <div class="pricing-card pricing-card--pro">
-            <div class="pricing-card-badge">⭐ Популярне</div>
+            <div class="pricing-card-badge">⭐ Скоро</div>
             <div class="pricing-card-name">Pro — Місяць</div>
             <div class="pricing-card-price">99 ₴<span>/місяць</span></div>
             <ul class="pricing-features">
               <li>✅ Все з безкоштовного</li>
-              <li>✅ Конспект</li>
-              <li>✅ Необмежений квіз</li>
-              <li>✅ Підготовка до НМТ</li>
-              <li>✅ Формули наступного класу</li>
+              <li>✅ Необмежені конспекти</li>
+              <li>✅ Необмежені графіки</li>
+              <li>✅ Завантаження PDF (в розробці)</li>
+              <li>✅ AI-помічник з задачами (в розробці)</li>
+              <li>✅ Статистика прогресу (в розробці)</li>
               <li>✅ Без реклами</li>
             </ul>
-            <button class="pricing-btn pricing-btn--pro" onclick="startTrial()">7 днів безкоштовно</button>
+            <button class="pricing-btn pricing-btn--pro" onclick="startTrial()">Сповістити мене</button>
           </div>
 
           <div class="pricing-card pricing-card--year">
-            <div class="pricing-card-badge">🔥 Вигідно −40%</div>
+            <div class="pricing-card-badge">🔥 Вигідно −33%</div>
             <div class="pricing-card-name">Pro — Рік</div>
-            <div class="pricing-card-price">699 ₴<span>/рік</span></div>
+            <div class="pricing-card-price">799 ₴<span>/рік</span></div>
             <ul class="pricing-features">
               <li>✅ Все з Pro місяць</li>
+              <li>✅ ~66 ₴/місяць замість 99 ₴</li>
               <li>✅ Пріоритетна підтримка</li>
               <li>✅ Ранній доступ до нових функцій</li>
             </ul>
-            <button class="pricing-btn pricing-btn--pro" onclick="startTrial()">7 днів безкоштовно</button>
+            <button class="pricing-btn pricing-btn--pro" onclick="startTrial()">Сповістити мене</button>
           </div>
 
         </div>
+        <p class="pricing-note">Оплата поки недоступна — сайт в активній розробці. Натисни "Сповістити мене" щоб дізнатись першим коли Pro з'явиться.</p>
       </div>
     </section>
 

@@ -549,6 +549,16 @@ function noteOpen(id) {
 function noteNew() {
   const token = localStorage.getItem('mh_token');
   if (!token) { authOpen('login'); return; }
+
+  // Free limit: max 5 notes
+  const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
+  if (!user.isPro && allNotes.length >= 5) {
+    if (confirm('У безкоштовній версії максимум 5 конспектів.\n\nПерейди на Pro щоб зберігати необмежено!\n\nПереглянути плани?')) {
+      show('pricing');
+    }
+    return;
+  }
+
   currentNoteId = null;
   document.getElementById('note-title-input').value = '';
   document.getElementById('note-content-input').value = '';
