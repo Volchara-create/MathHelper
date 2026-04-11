@@ -709,8 +709,8 @@ async function notesDrawerOpen() {
   const drawer  = document.getElementById('notes-drawer');
   if (!overlay || !drawer) return; // not on this page
   const token = localStorage.getItem('mh_token');
-  overlay.classList.add('open');
   drawer.classList.add('open');
+  document.body.classList.add('drawer-active');
   document.getElementById('drawer-editor').style.display = 'none';
   drawerNoteId = null;
 
@@ -730,8 +730,8 @@ async function notesDrawerOpen() {
 }
 
 function notesDrawerClose() {
-  document.getElementById('notes-drawer-overlay').classList.remove('open');
   document.getElementById('notes-drawer').classList.remove('open');
+  document.body.classList.remove('drawer-active');
 }
 
 function drawerRenderList() {

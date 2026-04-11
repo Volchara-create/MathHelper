@@ -816,10 +816,15 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .hero-nmt-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2);}
 
 /* ===== FLOATING NOTES DRAWER ===== */
-.notes-drawer-overlay{position:fixed;inset:0;background:transparent;z-index:600;pointer-events:none;display:none;}
-.notes-drawer-overlay.open{display:block;}
-.notes-drawer{position:fixed;top:0;right:0;bottom:0;width:min(400px,100vw);background:#fff;z-index:601;box-shadow:-4px 0 24px rgba(0,0,0,.15);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
+.notes-drawer-overlay{display:none;}
+.notes-drawer{position:fixed;top:0;right:0;bottom:0;width:360px;background:#fff;z-index:601;box-shadow:-4px 0 24px rgba(0,0,0,.15);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
 .notes-drawer.open{transform:translateX(0);}
+/* Push page content left when drawer is open */
+body.drawer-active main,body.drawer-active .container,body.drawer-active section.active{padding-right:370px;transition:padding-right .3s;}
+@media(max-width:700px){
+  .notes-drawer{width:100vw;}
+  body.drawer-active main,body.drawer-active .container,body.drawer-active section.active{padding-right:0;}
+}
 .notes-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1.5px solid #e0eaff;flex-shrink:0;}
 .notes-drawer-title{font-size:1.1rem;font-weight:700;color:var(--blue);}
 .notes-drawer-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;line-height:1;}
