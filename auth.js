@@ -2,6 +2,12 @@ const API = window.location.hostname === 'volchara-create.github.io'
   ? 'https://rostyslavv.vibe.brobots.org.ua'
   : '';
 
+function getSimulatorUrl() {
+  return window.location.hostname === 'volchara-create.github.io'
+    ? '/MathHelper/simulator.html'
+    : '/simulator.html';
+}
+
 // Grade-specific formula data for dashboard (grades 7-11 only)
 const GRADE_FORMULAS = {
   7: [
@@ -390,25 +396,57 @@ function authLogout() {
   show('home');
 }
 
-function openChangeGrade() {
+function openSettings() {
   const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
-  const current = user.grade;
-  const grade = prompt(`Твій поточний клас: ${current}\nВведи новий клас (7-11):`);
-  if (!grade) return;
-  const g = parseInt(grade);
-  if (isNaN(g) || g < 7 || g > 11) { alert('Клас має бути від 7 до 11'); return; }
+  document.getElementById('settings-name').textContent = user.name || '—';
+  document.getElementById('settings-email').textContent = user.email || '—';
+  // Grade buttons
+  const btns = document.getElementById('settings-grade-btns');
+  btns.innerHTML = [7,8,9,10,11].map(g =>
+    `<button class="grade-btn-s${g === user.grade ? ' active' : ''}" onclick="settingsSelectGrade(${g},this)">${g}</button>`
+  ).join('');
+  document.getElementById('settings-overlay').classList.add('open');
+  document.getElementById('settings-modal').classList.add('open');
+  checkPushStatus();
+}
+
+function closeSettings() {
+  document.getElementById('settings-overlay').classList.remove('open');
+  document.getElementById('settings-modal').classList.remove('open');
+}
+
+let settingsSelectedGrade = null;
+function settingsSelectGrade(g, btn) {
+  settingsSelectedGrade = g;
+  document.querySelectorAll('.grade-btn-s').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function settingsSaveGrade() {
+  if (!settingsSelectedGrade) return;
+  const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
+  if (settingsSelectedGrade === user.grade) { closeSettings(); return; }
   const token = localStorage.getItem('mh_token');
-  fetch(`${API}/me/grade`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ grade: g })
-  }).then(r => r.json()).then(data => {
-    if (data.error) { alert(data.error); return; }
+  const btn = document.getElementById('settings-grade-save');
+  btn.textContent = 'Збереження...';
+  try {
+    const res = await fetch(`${API}/me/grade`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ grade: settingsSelectedGrade })
+    });
+    const data = await res.json();
+    if (data.error) { btn.textContent = data.error; return; }
     localStorage.setItem('mh_token', data.token);
     localStorage.setItem('mh_user', JSON.stringify(data.user));
     authShowUser(data.user);
-    alert(`Клас змінено на ${g}! Онови сторінку щоб побачити нові формули.`);
-  });
+    closeSettings();
+    if (typeof show === 'function') show('dashboard');
+  } catch {
+    btn.textContent = 'Помилка';
+  } finally {
+    setTimeout(() => { btn.textContent = 'Зберегти клас'; }, 2000);
+  }
 }
 
 async function deleteAccount() {
@@ -890,7 +928,7 @@ function renderDailyGoal(p) {
         </div>
         <div class="daily-goal-item ${nmtPct>=100?'done':''}">
           ${nmtPct>=100?'✅':'⬜'} НМТ симулятор <b>${p.nmtDone}/${DAILY_GOAL.nmt}</b>
-          <button onclick="window.location.href='simulator.html'" class="daily-goal-go">Йти →</button>
+          <button onclick="window.location.href=getSimulatorUrl()" class="daily-goal-go">Йти →</button>
         </div>
       </div>
       ${!done ? `<p class="daily-goal-hint">⏰ Нагадування о 18:00 якщо не виконаєш</p>` : ''}

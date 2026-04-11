@@ -64,8 +64,8 @@
           <span id="user-greeting"></span>
           <span id="user-badge"></span>
         </div>
-        <button class="auth-nav-btn" onclick="show('dashboard')">🏠</button>
-        <button class="auth-nav-btn" onclick="openChangeGrade()" title="Змінити клас">⚙️</button>
+        <button class="auth-nav-btn" onclick="show('dashboard')">🏠 Головна</button>
+        <button class="auth-nav-btn" onclick="openSettings()">⚙️</button>
         <button class="auth-nav-btn" onclick="authLogout()">Вийти</button>
       </div>
     </div>
@@ -291,7 +291,7 @@
               <div class="hero-nmt-title">Симулятор НМТ з математики</div>
               <div class="hero-nmt-desc">30 питань · Таймер · Покроковий розбір помилок · 7–11 клас</div>
             </div>
-            <a href="/simulator.html" class="hero-nmt-btn">Почати тест →</a>
+            <a href="simulator.html" class="hero-nmt-btn">Почати тест →</a>
           </div>
         </div>
       </div>
@@ -411,7 +411,7 @@
             <span class="hub-title">Графіки</span>
             <span class="hub-desc">Будуй функції на координатній площині</span>
           </button>
-          <a href="/simulator.html" class="hub-card hub-card--nmt">
+          <a href="simulator.html" class="hub-card hub-card--nmt">
             <span class="hub-icon">🎯</span>
             <span class="hub-title">НМТ Симулятор</span>
             <span class="hub-desc">30 питань · таймер · розбір помилок</span>
@@ -825,7 +825,7 @@
     <button class="qm-btn" onclick="notesDrawerOpen()">
       <span class="qm-icon">📓</span><span class="qm-label">Конспект</span>
     </button>
-    <a href="/simulator.html" class="qm-btn">
+    <a href="simulator.html" class="qm-btn">
       <span class="qm-icon">🎯</span><span class="qm-label">НМТ</span>
     </a>
     <button class="qm-btn qm-pro" onclick="show('pricing')">
@@ -860,6 +860,55 @@
           <button class="note-delete-btn" onclick="noteDrawerDelete()">🗑</button>
           <button style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.85rem;" onclick="noteDrawerBack()">← Список</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+  <div class="settings-modal" id="settings-modal">
+    <div class="settings-header">
+      <span>⚙️ Налаштування</span>
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+      <!-- Profile block -->
+      <div class="settings-block">
+        <div class="settings-block-title">👤 Профіль</div>
+        <div class="settings-row">
+          <span class="settings-label">Ім'я</span>
+          <span id="settings-name" class="settings-value">—</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Email</span>
+          <span id="settings-email" class="settings-value">—</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Клас</span>
+          <div class="settings-grade-btns" id="settings-grade-btns"></div>
+        </div>
+        <button class="settings-save-btn" id="settings-grade-save" onclick="settingsSaveGrade()">Зберегти клас</button>
+      </div>
+      <!-- Notifications block -->
+      <div class="settings-block">
+        <div class="settings-block-title">🔔 Нагадування</div>
+        <div class="settings-row">
+          <span class="settings-label">Push о 18:00</span>
+          <button id="push-toggle-btn" class="push-toggle-btn" onclick="pushSubscribe()">🔕 Увімкнути</button>
+        </div>
+      </div>
+      <!-- Language block (placeholder) -->
+      <div class="settings-block settings-block--disabled">
+        <div class="settings-block-title">🌐 Мова <span class="settings-soon">скоро</span></div>
+        <div class="settings-row">
+          <span class="settings-label">Інтерфейс</span>
+          <span class="settings-value">🇺🇦 Українська</span>
+        </div>
+      </div>
+      <!-- Danger zone -->
+      <div class="settings-block settings-block--danger">
+        <div class="settings-block-title">⚠️ Небезпечна зона</div>
+        <button class="settings-danger-btn" onclick="authLogout();closeSettings()">Вийти з акаунту</button>
       </div>
     </div>
   </div>

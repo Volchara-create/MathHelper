@@ -894,3 +894,36 @@ body.dark .daily-goal-bar-wrap{background:#334155;}
 body.dark .daily-goal-go{background:#1e3a5f;border-color:#1e40af;color:#93c5fd;}
 body.dark .push-toggle-btn{background:#1e293b;border-color:#334155;color:#94a3b8;}
 body.dark .push-toggle-btn.active{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd;}
+
+/* ===== SETTINGS MODAL ===== */
+.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;display:none;}
+.settings-overlay.open{display:block;}
+.settings-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.95);width:min(460px,95vw);background:#fff;border-radius:20px;z-index:2001;box-shadow:0 20px 60px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:.2s;}
+.settings-modal.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);}
+.settings-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px 12px;font-size:1.1rem;font-weight:700;color:#1e293b;border-bottom:1.5px solid #f1f5f9;}
+.settings-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;line-height:1;}
+.settings-body{padding:16px 20px;display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow-y:auto;}
+.settings-block{background:#f8fafc;border-radius:14px;padding:14px 16px;}
+.settings-block--disabled{opacity:.6;}
+.settings-block--danger{background:#fff5f5;}
+.settings-block-title{font-size:.85rem;font-weight:700;color:#64748b;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em;}
+.settings-soon{background:#e0f2fe;color:#0284c7;border-radius:6px;padding:1px 7px;font-size:.72rem;font-weight:600;margin-left:6px;text-transform:none;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.settings-label{font-size:.9rem;color:#475569;}
+.settings-value{font-size:.9rem;font-weight:600;color:#1e293b;}
+.settings-grade-btns{display:flex;gap:6px;}
+.grade-btn-s{width:36px;height:36px;border:2px solid #cbd5e1;border-radius:10px;background:#fff;font-size:.9rem;font-weight:700;cursor:pointer;color:#475569;transition:.15s;}
+.grade-btn-s.active{border-color:#3b82f6;background:#3b82f6;color:#fff;}
+.settings-save-btn{margin-top:6px;background:#3b82f6;color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:.9rem;font-weight:600;cursor:pointer;width:100%;}
+.settings-save-btn:hover{background:#2563eb;}
+.settings-danger-btn{background:#fee2e2;color:#dc2626;border:1.5px solid #fecaca;border-radius:10px;padding:8px 20px;font-size:.9rem;font-weight:600;cursor:pointer;width:100%;}
+/* Dark mode */
+body.dark .settings-modal{background:#0f172a;}
+body.dark .settings-header{color:#f1f5f9;border-color:#1e293b;}
+body.dark .settings-block{background:#1e293b;}
+body.dark .settings-block--danger{background:#1a0a0a;}
+body.dark .settings-block-title{color:#94a3b8;}
+body.dark .settings-label{color:#94a3b8;}
+body.dark .settings-value{color:#f1f5f9;}
+body.dark .grade-btn-s{background:#0f172a;border-color:#334155;color:#94a3b8;}
+body.dark .grade-btn-s.active{border-color:#3b82f6;background:#3b82f6;color:#fff;}
