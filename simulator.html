@@ -8,6 +8,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ===== DARK THEME (default) ===== */
     :root {
       --bg: #0f172a;
       --card: #1e293b;
@@ -21,6 +22,22 @@
       --text: #f1f5f9;
       --muted: #94a3b8;
       --radius: 12px;
+      --header-btn-bg: rgba(255,255,255,.1);
+      --header-btn-border: rgba(255,255,255,.2);
+      --header-btn-color: #fff;
+    }
+
+    /* ===== LIGHT THEME ===== */
+    body.light {
+      --bg: #f0f4ff;
+      --card: #ffffff;
+      --card2: #f1f5f9;
+      --border: #cbd5e1;
+      --text: #1e293b;
+      --muted: #64748b;
+      --header-btn-bg: rgba(0,0,0,.06);
+      --header-btn-border: rgba(0,0,0,.12);
+      --header-btn-color: #1e293b;
     }
 
     body {
@@ -28,6 +45,7 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      transition: background .3s, color .3s;
     }
 
     /* ===== SCREENS ===== */
@@ -38,83 +56,94 @@
     #screen-start {
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
+    }
+    .start-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+    }
+    .start-back-btn {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      background: var(--header-btn-bg);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      transition: background .2s;
+    }
+    .start-back-btn:hover { background: var(--card2); }
+    .theme-toggle-btn {
+      background: var(--header-btn-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .theme-toggle-btn:hover { background: var(--card2); }
+
+    .start-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
       padding: 2rem;
       text-align: center;
+      gap: 1.4rem;
     }
-    #screen-start h1 {
+    .start-logo {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2.2rem;
+      font-size: 1.8rem;
+      font-weight: 700;
       color: var(--accent);
-      margin-bottom: .5rem;
     }
-    #screen-start p.sub {
+    .start-hint {
       color: var(--muted);
-      font-size: 1.05rem;
-      margin-bottom: 2.5rem;
-    }
-    .grade-select-wrap {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2rem;
-      max-width: 480px;
-      width: 100%;
-      margin-bottom: 2rem;
-    }
-    .grade-select-wrap h2 {
-      font-size: 1.1rem;
-      margin-bottom: 1.2rem;
-      color: var(--muted);
+      font-size: 1rem;
+      margin-top: -.8rem;
     }
     .grade-btns {
       display: flex;
-      flex-wrap: wrap;
-      gap: .6rem;
+      gap: .8rem;
       justify-content: center;
-      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
     }
     .grade-btn {
-      padding: .55rem 1.1rem;
-      border-radius: 8px;
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
       border: 2px solid var(--border);
-      background: var(--card2);
+      background: var(--card);
       color: var(--text);
-      font-size: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all .2s;
     }
-    .grade-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .grade-btn.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .grade-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .grade-btn.selected { border-color: var(--accent); background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(59,130,246,.4); }
 
     .info-row {
       display: flex;
-      gap: 1rem;
+      gap: .8rem;
       justify-content: center;
-      margin-bottom: 1.5rem;
       flex-wrap: wrap;
     }
     .info-chip {
-      background: var(--card2);
+      background: var(--card);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: .4rem 1rem;
+      padding: .35rem .9rem;
       font-size: .9rem;
       color: var(--muted);
     }
     .info-chip span { color: var(--accent); font-weight: 700; }
-
-    .rules-list {
-      text-align: left;
-      color: var(--muted);
-      font-size: .9rem;
-      line-height: 1.8;
-      margin-bottom: 1.5rem;
-      padding-left: 1.2rem;
-    }
-    .rules-list li { margin-bottom: .3rem; }
 
     .btn-start {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -292,10 +321,11 @@
     .q-tag.type-open { background: rgba(245,158,11,.15); color: var(--yellow); }
 
     .q-text {
-      font-size: 1.1rem;
-      line-height: 1.7;
+      font-size: 1.25rem;
+      line-height: 1.75;
       margin-bottom: 1.8rem;
       color: var(--text);
+      font-weight: 500;
     }
 
     /* MCQ options */
@@ -331,7 +361,7 @@
       transition: all .15s;
     }
     .mcq-opt.selected .mcq-letter { border-color: var(--accent); background: var(--accent); color: #fff; }
-    .mcq-text { font-size: 1rem; }
+    .mcq-text { font-size: 1.1rem; line-height: 1.5; }
 
     /* Open answer */
     .open-answer-wrap {
@@ -702,36 +732,30 @@
      SCREEN 1: START
 ============================= -->
 <div id="screen-start" class="screen active">
-  <a href="/" style="position:absolute;top:1.2rem;left:1.5rem;color:var(--muted);text-decoration:none;font-size:.95rem;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid var(--border);padding:6px 14px;border-radius:20px;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">← На головну</a>
-  <h1>МатТест</h1>
-  <p class="sub">Симулятор НМТ з математики — як справжній іспит</p>
+  <div class="start-topbar">
+    <a href="/" class="start-back-btn">← На головну</a>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Змінити тему">🌙</button>
+  </div>
 
-  <div class="grade-select-wrap">
-    <h2>Обери свій клас:</h2>
+  <div class="start-center">
+    <div class="start-logo">🎯 НМТ Симулятор</div>
+    <p class="start-hint">Обери клас і розпочни</p>
+
     <div class="grade-btns">
-      <button class="grade-btn" onclick="selectGrade(7)">7 клас</button>
-      <button class="grade-btn" onclick="selectGrade(8)">8 клас</button>
-      <button class="grade-btn" onclick="selectGrade(9)">9 клас</button>
-      <button class="grade-btn" onclick="selectGrade(10)">10 клас</button>
-      <button class="grade-btn" onclick="selectGrade(11)">11 клас</button>
+      <button class="grade-btn" onclick="selectGrade(7)">7</button>
+      <button class="grade-btn" onclick="selectGrade(8)">8</button>
+      <button class="grade-btn" onclick="selectGrade(9)">9</button>
+      <button class="grade-btn" onclick="selectGrade(10)">10</button>
+      <button class="grade-btn" onclick="selectGrade(11)">11</button>
     </div>
 
-    <div class="info-row" id="test-info" style="display:none;">
+    <div class="info-row" id="test-info" style="visibility:hidden;">
       <div class="info-chip">📝 <span id="info-q">—</span> питань</div>
       <div class="info-chip">⏱ <span id="info-t">—</span> хвилин</div>
-      <div class="info-chip">🎯 Змішаний формат</div>
     </div>
 
-    <ul class="rules-list">
-      <li>⚠️ Під час тесту не можна відкривати інші вкладки</li>
-      <li>📵 Перехід з вкладки фіксується як порушення</li>
-      <li>⏳ Таймер не зупиняється</li>
-      <li>✏️ Можна переходити між питаннями</li>
-      <li>✅ Після здачі — детальний розбір кожного завдання</li>
-    </ul>
-
     <button class="btn-start" id="btn-start" onclick="startExam()" disabled>
-      Розпочати тест →
+      Розпочати →
     </button>
   </div>
 </div>
@@ -742,11 +766,12 @@
 <div id="screen-exam" class="screen">
   <!-- Header -->
   <div class="exam-header">
-    <div class="exam-title">МатТест — <span id="exam-grade-label"></span></div>
+    <div class="exam-title">🎯 <span id="exam-grade-label"></span> клас</div>
     <div class="timer" id="timer">00:00</div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button onclick="toggleFullscreen()" id="btn-fullscreen" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.85rem;">⛶ Fullscreen</button>
-      <div class="violation-badge" id="viol-badge">⚠️ Порушень: <span id="viol-count">0</span></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button onclick="toggleTheme()" id="theme-btn-exam" class="theme-toggle-btn" style="padding:5px 10px;font-size:.85rem;">🌙</button>
+      <button onclick="toggleFullscreen()" id="btn-fullscreen" class="theme-toggle-btn" style="padding:5px 10px;font-size:.85rem;">⛶</button>
+      <div class="violation-badge" id="viol-badge">⚠️ <span id="viol-count">0</span></div>
     </div>
   </div>
 
@@ -786,7 +811,6 @@
 ============================= -->
 <div id="screen-results" class="screen">
   <div class="results-hero">
-    <h1>Результат тесту</h1>
     <div class="results-score-big" id="res-score">0/0</div>
     <div class="results-nmt-score">Орієнтовний бал НМТ: <span id="res-nmt">—</span></div>
   </div>
@@ -1933,7 +1957,7 @@ function selectGrade(g) {
 
   document.getElementById('info-q').textContent = qCount;
   document.getElementById('info-t').textContent = minutes;
-  document.getElementById('test-info').style.display = 'flex';
+  document.getElementById('test-info').style.visibility = 'visible';
   document.getElementById('btn-start').disabled = false;
 }
 
@@ -2318,6 +2342,26 @@ function retryExam() {
   });
   showScreen('screen-start');
 }
+
+// ============================================================
+//  THEME TOGGLE
+// ============================================================
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('sim_theme', isLight ? 'light' : 'dark');
+  const icon = isLight ? '☀️' : '🌙';
+  document.querySelectorAll('#theme-btn, #theme-btn-exam').forEach(b => { if(b) b.textContent = icon; });
+}
+
+// Apply saved theme on load
+(function() {
+  const saved = localStorage.getItem('sim_theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (saved === 'light' || (!saved && !prefersDark)) {
+    document.body.classList.add('light');
+    document.querySelectorAll('#theme-btn, #theme-btn-exam').forEach(b => { if(b) b.textContent = '☀️'; });
+  }
+})();
 
 // ============================================================
 //  FULLSCREEN
