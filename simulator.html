@@ -746,11 +746,11 @@
     <p class="start-hint">Обери клас і розпочни</p>
 
     <div class="grade-btns">
-      <button class="grade-btn" onclick="selectGrade(7)">7</button>
-      <button class="grade-btn" onclick="selectGrade(8)">8</button>
-      <button class="grade-btn" onclick="selectGrade(9)">9</button>
-      <button class="grade-btn" onclick="selectGrade(10)">10</button>
-      <button class="grade-btn" onclick="selectGrade(11)">11</button>
+      <button class="grade-btn" onclick="selectGrade(7,this)">7</button>
+      <button class="grade-btn" onclick="selectGrade(8,this)">8</button>
+      <button class="grade-btn" onclick="selectGrade(9,this)">9</button>
+      <button class="grade-btn" onclick="selectGrade(10,this)">10</button>
+      <button class="grade-btn" onclick="selectGrade(11,this)">11</button>
     </div>
 
     <div class="info-row" id="test-info" style="visibility:hidden;">
@@ -1950,10 +1950,10 @@ let state = {
 // ============================================================
 //  GRADE / START
 // ============================================================
-function selectGrade(g) {
+function selectGrade(g, btn) {
   state.grade = g;
   document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('selected'));
-  event.target.classList.add('selected');
+  if (btn) btn.classList.add('selected');
 
   const isSenior = g >= 9;
   const qCount = isSenior ? 30 : 15;
@@ -2166,9 +2166,11 @@ function closeConfirmModal() {
 }
 
 function submitExam() {
-  closeConfirmModal();
+  if (state.finished) return; // guard against double-call
   state.finished = true;
   clearInterval(state.timerInterval);
+  state.timerInterval = null;
+  closeConfirmModal();
   document.removeEventListener('visibilitychange', onVisibilityChange);
   window.removeEventListener('blur', onWindowBlur);
   showResults();
@@ -2340,10 +2342,16 @@ function showScreen(id) {
 }
 
 function retryExam() {
-  state = { grade: state.grade, questions: [], answers: [], current: 0, timeLeft: 0, timerInterval: null, violations: 0, started: false, finished: false };
+  const prevGrade = state.grade;
+  // Clear old timer just in case
+  if (state.timerInterval) { clearInterval(state.timerInterval); }
+  state = { grade: prevGrade, questions: [], answers: [], current: 0, timeLeft: 0, timerInterval: null, violations: 0, started: false, finished: false };
   document.querySelectorAll('.grade-btn').forEach(b => {
-    if (b.textContent.includes(state.grade)) b.classList.add('selected');
+    b.classList.remove('selected');
+    if (b.textContent.trim() == prevGrade) b.classList.add('selected');
   });
+  document.getElementById('btn-start').disabled = false;
+  document.getElementById('test-info').style.visibility = 'visible';
   showScreen('screen-start');
 }
 

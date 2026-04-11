@@ -344,7 +344,7 @@ async function doRegister() {
   const name = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
-  const gradeBtn = document.querySelector('.grade-btn.selected');
+  const gradeBtn = document.querySelector('#auth-modal .grade-btn.selected');
   const errEl = document.getElementById('reg-error');
 
   if (!name || !email || !password) { errEl.textContent = 'Заповни всі поля'; return; }
@@ -430,7 +430,6 @@ function authShowUser(user) {
   // Show quick action menu for logged-in users
   const qm = document.getElementById('quick-menu');
   if (qm) qm.style.display = 'flex';
-  dashLoad(user);
   checkDailyReward(user);
 }
 
@@ -698,9 +697,12 @@ async function noteDelete() {
 let drawerNoteId = null;
 
 async function notesDrawerOpen() {
+  const overlay = document.getElementById('notes-drawer-overlay');
+  const drawer  = document.getElementById('notes-drawer');
+  if (!overlay || !drawer) return; // not on this page
   const token = localStorage.getItem('mh_token');
-  document.getElementById('notes-drawer-overlay').classList.add('open');
-  document.getElementById('notes-drawer').classList.add('open');
+  overlay.classList.add('open');
+  drawer.classList.add('open');
   document.getElementById('drawer-editor').style.display = 'none';
   drawerNoteId = null;
 

@@ -104,7 +104,7 @@ function show(sec){
   if(sec==='textbooks') buildTextbooks();
   if(sec==='trig') buildTrigTable();
   if(sec==='formulas') buildAlgebraTab();
-  if(sec==='quiz') startQuiz();
+  if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
   updateNavForGrade(grade);
 }
@@ -524,6 +524,7 @@ function closeAlgebraModal(){
 // 10 кл: + стереометрія
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
+  if (grid && grid.children.length > 0) return; // already built
   const grade = getUserGrade();
 
   // Which shapes appear at which grade
@@ -557,54 +558,7 @@ function buildGeoTab(){
   grid.innerHTML = html || '<p style="color:#888;padding:20px;text-align:center">Для твого класу немає даних</p>';
 }
 
-// Build all tables tab (mult + squares + sin/cos)
-function buildTablesTab(){
-  const wrap = document.getElementById('tables-wrap');
-  if(wrap.children.length > 0) return;
-
-  // 1. Multiplication table
-  let html = '<div class="tables-section"><h3 class="mult-title">✖️ Таблиця множення</h3><div class="mult-grid">';
-  html += '<div class="mult-cell mult-header">×</div>';
-  for(let i=1;i<=10;i++) html += `<div class="mult-cell mult-header">${i}</div>`;
-  for(let i=1;i<=10;i++){
-    html += `<div class="mult-cell mult-header">${i}</div>`;
-    for(let j=1;j<=10;j++){
-      html += `<div class="mult-cell${i===j?' mult-diagonal':''}">${i*j}</div>`;
-    }
-  }
-  html += '</div></div>';
-
-  // 2. Squares table
-  html += '<div class="tables-section"><h3 class="mult-title">² Таблиця квадратів (1–25)</h3><div class="sq-grid">';
-  html += '<div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div><div class="mult-cell mult-header">n</div><div class="mult-cell mult-header">n²</div>';
-  // 3 columns of n | n²
-  for(let i=1;i<=25;i++){
-    if(i<=9 || (i>=10&&i<=17) || i>=18){
-      html += `<div class="mult-cell sq-n">${i}</div><div class="mult-cell sq-val">${i*i}</div>`;
-    }
-  }
-  html += '</div></div>';
-
-  // 3. Sin/Cos table
-  const trigRows = [
-    [0,'0','0','1','0','—'],
-    [30,'π/6','1/2','√3/2','√3/3','√3'],
-    [45,'π/4','√2/2','√2/2','1','1'],
-    [60,'π/3','√3/2','1/2','√3','√3/3'],
-    [90,'π/2','1','0','—','0'],
-    [120,'2π/3','√3/2','−1/2','−√3','−√3/3'],
-    [135,'3π/4','√2/2','−√2/2','−1','−1'],
-    [150,'5π/6','1/2','−√3/2','−√3/3','−√3'],
-    [180,'π','0','−1','0','—'],
-    [270,'3π/2','−1','0','—','0'],
-    [360,'2π','0','1','0','—'],
-  ];
-  html += '<div class="tables-section"><h3 class="mult-title">📐 Таблиця sin, cos, tan, ctg</h3><div class="trig-tbl-wrap"><table class="trig-table"><thead><tr><th>Кут °</th><th>Рад</th><th>sin</th><th>cos</th><th>tan</th><th>ctg</th></tr></thead><tbody>';
-  html += trigRows.map(r=>`<tr><td><b>${r[0]}°</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
-  html += '</tbody></table></div></div>';
-
-  wrap.innerHTML = html;
-}
+// buildTablesTab removed — dead code (used buildTablesButtons instead)
 
 // ===== FORMULA TABS =====
 function showFormulaTab(tab){
@@ -679,23 +633,7 @@ function flipAllCard(innerId) {
 }
 
 
-// Build trig table for the new formulas section
-function buildTrigTable2(){
-  const tbody=document.getElementById('trig-tbody-2');
-  if(!tbody || tbody.innerHTML!=='') return; // already built
-  const rows=[
-    [0,'0',0,1,'0','—'],
-    [30,'π/6','1/2','√3/2','√3/3','√3'],
-    [45,'π/4','√2/2','√2/2','1','1'],
-    [60,'π/3','√3/2','1/2','√3','√3/3'],
-    [90,'π/2','1','0','—','0'],
-    [120,'2π/3','√3/2','-1/2','-√3','-√3/3'],
-    [135,'3π/4','√2/2','-√2/2','-1','-1'],
-    [150,'5π/6','1/2','-√3/2','-√3/3','-√3'],
-    [180,'π','0','-1','0','—'],
-  ];
-  tbody.innerHTML=rows.map(r=>`<tr><td>${r[0]}°</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
-}
+// buildTrigTable2 removed — dead code (referenced non-existent #trig-tbody-2)
 function showGraph(){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById('graph').classList.add('active');
