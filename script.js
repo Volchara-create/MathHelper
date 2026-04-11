@@ -113,24 +113,22 @@ function showFormulas(){ show('formulas'); }
 // ===== ALGEBRA DATA =====
 // v = visual (emoji side), m = math side, expr = text-only fallback
 const ALGEBRA_CATS = [
-  { name:'💯 Відсотки', minGrade:7, maxGrade:9, formulas:[
+  // === 7 КЛАС ===
+  { name:'💯 Відсотки', minGrade:7, maxGrade:8, formulas:[
     {name:'Що таке відсоток?',expr:'% = частина від 100\n50% = половина, 25% = чверть'},
     {name:'Знайти % від числа',expr:'20% від 50 = 50 × 20 ÷ 100 = 10'},
     {name:'Знайти який %',expr:'10 з 50 = 10 ÷ 50 × 100 = 20%'},
     {name:'Знижка',expr:'Ціна 200грн, знижка 10% → 200 × 0.1 = 20грн знижки'},
-    {name:'Приклад',expr:'У класі 30 учнів, 6 відсутні → 6÷30×100 = 20% відсутніх'},
   ]},
-  { name:'Степені та корені', icon:'⚡', minGrade:7, formulas:[
-    {name:'Множення степенів',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ'},
-    {name:'Ділення степенів',expr:'aⁿ / aᵐ = aⁿ⁻ᵐ'},
+  { name:'⚡ Степені (цілі)', minGrade:7, maxGrade:7, formulas:[
+    {name:'Множення',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ'},
+    {name:'Ділення',expr:'aⁿ ÷ aᵐ = aⁿ⁻ᵐ'},
     {name:'Степінь степеня',expr:'(aⁿ)ᵐ = aⁿ·ᵐ'},
     {name:'Степінь добутку',expr:'(a·b)ⁿ = aⁿ · bⁿ'},
-    {name:'Нульовий степінь',expr:'a⁰ = 1'},
+    {name:'Нульовий степінь',expr:'a⁰ = 1  (a ≠ 0)'},
     {name:'Від\'ємний степінь',expr:'a⁻ⁿ = 1/aⁿ'},
-    {name:'Корінь',expr:'√(a·b) = √a · √b'},
-    {name:'Частковий корінь',expr:'√(a/b) = √a / √b'},
   ]},
-  { name:'Скорочене множення', icon:'✖️', minGrade:7, formulas:[
+  { name:'✖️ Скорочене множення', minGrade:7, maxGrade:8, formulas:[
     {name:'Квадрат суми',expr:'(a+b)² = a² + 2ab + b²'},
     {name:'Квадрат різниці',expr:'(a−b)² = a² − 2ab + b²'},
     {name:'Різниця квадратів',expr:'a² − b² = (a+b)(a−b)'},
@@ -139,40 +137,78 @@ const ALGEBRA_CATS = [
     {name:'Сума кубів',expr:'a³ + b³ = (a+b)(a²−ab+b²)'},
     {name:'Різниця кубів',expr:'a³ − b³ = (a−b)(a²+ab+b²)'},
   ]},
-  { name:'Квадратне рівняння', icon:'📐', minGrade:8, formulas:[
+  { name:'📈 Лінійна функція', minGrade:7, maxGrade:7, formulas:[
+    {name:'Формула',expr:'y = kx + b'},
+    {name:'Кутовий коефіцієнт',expr:'k > 0 → зростає;  k < 0 → спадає'},
+    {name:'b — де перетинає OY',expr:'при x=0:  y = b'},
+    {name:'Пряма пропорційність',expr:'y = kx  (b = 0)'},
+  ]},
+
+  // === 8 КЛАС ===
+  { name:'√ Ірраціональні вирази', minGrade:8, maxGrade:9, formulas:[
+    {name:'Корінь добутку',expr:'√(a·b) = √a · √b'},
+    {name:'Корінь частки',expr:'√(a/b) = √a / √b'},
+    {name:'Квадрат кореня',expr:'(√a)² = a  (a ≥ 0)'},
+    {name:'Корінь квадрату',expr:'√(a²) = |a|'},
+    {name:'Винесення з-під кореня',expr:'√(a²b) = a√b  (a ≥ 0)'},
+    {name:'Раціоналізація',expr:'1/√a = √a/a'},
+  ]},
+  { name:'📐 Квадратне рівняння', minGrade:8, formulas:[
     {name:'Загальний вигляд',expr:'ax² + bx + c = 0'},
     {name:'Дискримінант',expr:'D = b² − 4ac'},
     {name:'Корені (D > 0)',expr:'x = (−b ± √D) / 2a'},
     {name:'Один корінь (D=0)',expr:'x = −b / 2a'},
-    {name:'D < 0',expr:'коренів немає'},
-    {name:'Теорема Вієта',expr:'x₁+x₂ = −b/a,  x₁·x₂ = c/a'},
+    {name:'D < 0 — коренів немає',expr:'якщо D < 0, рівняння не має розв\'язків'},
+    {name:'Теорема Вієта',expr:'x₁+x₂ = −b/a;   x₁·x₂ = c/a'},
   ]},
-  { name:'Функції та графіки', icon:'📈', minGrade:7, formulas:[
-    {name:'Лінійна',expr:'y = kx + b'},
-    {name:'k > 0',expr:'функція зростає'},
-    {name:'k < 0',expr:'функція спадає'},
-    {name:'Квадратична',expr:'y = ax² + bx + c'},
-    {name:'Вершина параболи',expr:'x₀ = −b/(2a)'},
-    {name:'Обернена пропорц.',expr:'y = k/x (гіпербола)'},
+  { name:'🔁 Квадратична функція', minGrade:8, maxGrade:9, formulas:[
+    {name:'Формула',expr:'y = ax² + bx + c'},
+    {name:'Вершина параболи',expr:'x₀ = −b/(2a);   y₀ = f(x₀)'},
+    {name:'a > 0 — гілки вгору',expr:'мінімум у вершині'},
+    {name:'a < 0 — гілки вниз',expr:'максимум у вершині'},
+    {name:'Нулі функції',expr:'ax² + bx + c = 0 (дискримінант)'},
+    {name:'Обернена пропорц.',expr:'y = k/x  (гіпербола)'},
   ]},
-  { name:'Прогресії', icon:'🔢', minGrade:9, formulas:[
+
+  // === 9 КЛАС ===
+  { name:'📊 Нерівності', minGrade:9, maxGrade:10, formulas:[
+    {name:'Квадратна нерівність',expr:'ax² + bx + c > 0  або  < 0'},
+    {name:'D > 0: коріння x₁ < x₂',expr:'ax²+bx+c > 0: x < x₁ або x > x₂ (якщо a>0)'},
+    {name:'D > 0, a < 0',expr:'розв\'язок: x₁ < x < x₂'},
+    {name:'D < 0, a > 0',expr:'розв\'язок: x ∈ ℝ (уся числова вісь)'},
+    {name:'Модуль',expr:'|x| < a  ↔  −a < x < a'},
+    {name:'Модуль (більше)',expr:'|x| > a  ↔  x < −a або x > a'},
+  ]},
+  { name:'🔢 Прогресії', minGrade:9, formulas:[
     {name:'Арифм. n-й член',expr:'aₙ = a₁ + (n−1)·d'},
     {name:'Різниця',expr:'d = aₙ − aₙ₋₁'},
     {name:'Сума арифм.',expr:'Sₙ = n·(a₁ + aₙ) / 2'},
     {name:'Геом. n-й член',expr:'bₙ = b₁ · qⁿ⁻¹'},
     {name:'Знаменник',expr:'q = bₙ / bₙ₋₁'},
     {name:'Сума геом.',expr:'Sₙ = b₁·(qⁿ − 1) / (q − 1)'},
+    {name:'Нескінченна геом.',expr:'S∞ = b₁ / (1 − q),  |q| < 1'},
   ]},
-  { name:'Логарифми', icon:'🔬', minGrade:10, formulas:[
+
+  // === 10 КЛАС ===
+  { name:'📈 Показникова функція', minGrade:10, maxGrade:10, formulas:[
+    {name:'Формула',expr:'y = aˣ  (a > 0, a ≠ 1)'},
+    {name:'a > 1 — зростає',expr:'lim = +∞ при x→+∞'},
+    {name:'0 < a < 1 — спадає',expr:'lim = +∞ при x→−∞'},
+    {name:'Показникове рівняння',expr:'aˣ = aʸ  ↔  x = y'},
+    {name:'Особливе значення',expr:'a⁰ = 1  для будь-якого a'},
+    {name:'Число e',expr:'e ≈ 2.718  (натуральна основа)'},
+  ]},
+  { name:'🔬 Логарифми', minGrade:10, formulas:[
     {name:'Означення',expr:'logₐb = x  ↔  aˣ = b'},
     {name:'Добуток',expr:'logₐ(xy) = logₐx + logₐy'},
     {name:'Частка',expr:'logₐ(x/y) = logₐx − logₐy'},
     {name:'Степінь',expr:'logₐ(xⁿ) = n · logₐx'},
     {name:'Зміна основи',expr:'logₐb = log b / log a'},
-    {name:'Натуральний',expr:'ln x = logₑ x'},
-    {name:'Десятковий',expr:'lg x = log₁₀ x'},
+    {name:'Натуральний ln',expr:'ln x = logₑ x;   ln e = 1'},
+    {name:'Десятковий lg',expr:'lg x = log₁₀ x;   lg 10 = 1'},
+    {name:'Логарифмічне рівняння',expr:'logₐx = b  →  x = aᵇ'},
   ]},
-  { name:'Похідна (10-11 кл.)', icon:'📉', minGrade:10, formulas:[
+  { name:'📉 Похідна', minGrade:10, formulas:[
     {name:'Константа',expr:"(C)' = 0"},
     {name:'Степінь',expr:"(xⁿ)' = n · xⁿ⁻¹"},
     {name:'Сума',expr:"(u+v)' = u' + v'"},
@@ -182,14 +218,25 @@ const ALGEBRA_CATS = [
     {name:'cos',expr:"(cos x)' = −sin x"},
     {name:'eˣ',expr:"(eˣ)' = eˣ"},
     {name:'ln x',expr:"(ln x)' = 1/x"},
+    {name:'Зростання/спадання',expr:"f'(x) > 0 → зростає;  f'(x) < 0 → спадає"},
   ]},
-  { name:'Інтеграл (11 кл.)', icon:'∫', minGrade:11, formulas:[
+
+  // === 11 КЛАС ===
+  { name:'∫ Інтеграл', minGrade:11, formulas:[
     {name:'Степінь',expr:'∫xⁿ dx = xⁿ⁺¹/(n+1) + C'},
     {name:'sin',expr:'∫sin x dx = −cos x + C'},
     {name:'cos',expr:'∫cos x dx = sin x + C'},
     {name:'1/x',expr:'∫(1/x) dx = ln|x| + C'},
     {name:'eˣ',expr:'∫eˣ dx = eˣ + C'},
-    {name:'Формула Ньютона-Лейбніца',expr:'∫ₐᵇf(x)dx = F(b) − F(a)'},
+    {name:'Формула Ньютона–Лейбніца',expr:'∫ₐᵇf(x)dx = F(b) − F(a)'},
+    {name:'Площа під графіком',expr:'S = |∫ₐᵇf(x)dx|'},
+  ]},
+  { name:'📊 Комбінаторика і теорвер', minGrade:11, formulas:[
+    {name:'Перестановки',expr:'Pₙ = n!'},
+    {name:'Розміщення',expr:'Aₙᵏ = n! / (n−k)!'},
+    {name:'Комбінації',expr:'Cₙᵏ = n! / (k!·(n−k)!)'},
+    {name:'Ймовірність',expr:'P(A) = m / n'},
+    {name:'Сума ймовірностей',expr:'P(A) + P(Ā) = 1'},
   ]},
 ];
 
@@ -471,35 +518,43 @@ function closeAlgebraModal(){
   document.getElementById('algebra-modal').classList.remove('active');
 }
 
-// Build geometry tab — планіметрія 7-9, стереометрія від 10 класу
+// Build geometry tab — по класах згідно програми України
+// 7 кл: прямокутник, трикутник, коло
+// 8 кл: + паралелограм, ромб, трапеція
+// 10 кл: + стереометрія
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
   const grade = getUserGrade();
-  const plane = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle'];
-  const solid = ['cube','parallelepiped','cylinder','cone','pyramid'];
-  // Show 3D figures only for grade 10+ (or not logged in — show all)
-  const order = (!grade || grade >= 10) ? [...plane, ...solid] : plane;
+
+  // Which shapes appear at which grade
+  const base7   = ['rectangle','triangle','circle'];           // 7 кл
+  const extra8  = ['parallelogram','rhombus','trapezoid'];     // 8 кл
+  const extra10 = ['cube','parallelepiped','cylinder','cone','pyramid']; // 10 кл
+
+  let plane7  = grade ? (grade >= 7  ? base7  : []) : base7;
+  let plane8  = grade ? (grade >= 8  ? extra8 : []) : extra8;
+  let solid10 = grade ? (grade >= 10 ? extra10: []) : extra10;
+
+  const makeCard = cat => `
+    <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
+      <div class="alg-cat-name">${categoryNames[cat]}</div>
+      <div class="alg-cat-count">${(data[cat]||[]).length} формул</div>
+    </div>`;
 
   let html = '';
-  if(order.includes('rectangle')) {
+  if(plane7.length || plane8.length){
     html += '<div class="geo-group-label">📐 Планіметрія (плоскі фігури)</div>';
-    html += plane.filter(c => order.includes(c)).map(cat => `
-      <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
-        <div class="alg-cat-name">${categoryNames[cat]}</div>
-        <div class="alg-cat-count">${(data[cat]||[]).length} формул</div>
-      </div>
-    `).join('');
+    if(plane7.length) html += plane7.map(makeCard).join('');
+    if(plane8.length){
+      html += '<div class="geo-group-label" style="margin-top:12px;font-size:.78rem;">8 клас і вище</div>';
+      html += plane8.map(makeCard).join('');
+    }
   }
-  if(order.some(c => solid.includes(c))) {
-    html += '<div class="geo-group-label" style="margin-top:16px">📦 Стереометрія (тіла) — 10-11 клас</div>';
-    html += solid.filter(c => order.includes(c)).map(cat => `
-      <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
-        <div class="alg-cat-name">${categoryNames[cat]}</div>
-        <div class="alg-cat-count">${(data[cat]||[]).length} формул</div>
-      </div>
-    `).join('');
+  if(solid10.length){
+    html += '<div class="geo-group-label" style="margin-top:16px">📦 Стереометрія — 10-11 клас</div>';
+    html += solid10.map(makeCard).join('');
   }
-  grid.innerHTML = html;
+  grid.innerHTML = html || '<p style="color:#888;padding:20px;text-align:center">Для твого класу немає даних</p>';
 }
 
 // Build all tables tab (mult + squares + sin/cos)
