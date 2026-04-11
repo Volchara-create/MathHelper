@@ -55,7 +55,6 @@
 
     /* ===== START SCREEN ===== */
     #screen-start {
-      display: flex;
       flex-direction: column;
       min-height: 100vh;
     }
@@ -2364,6 +2363,17 @@ function toggleTheme() {
   const icon = isLight ? '☀️' : '🌙';
   document.querySelectorAll('#theme-btn, #theme-btn-exam').forEach(b => { if(b) b.textContent = icon; });
 }
+
+// Auto-select grade from user profile
+(function() {
+  try {
+    const user = JSON.parse(localStorage.getItem('mh_user') || 'null');
+    if (user && user.grade) {
+      const btn = document.querySelector(`.grade-btn[onclick="selectGrade(${user.grade},this)"]`);
+      if (btn) selectGrade(user.grade, btn);
+    }
+  } catch(e) {}
+})();
 
 // Apply saved theme on load
 (function() {
