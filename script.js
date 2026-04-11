@@ -65,12 +65,6 @@ const categoryNames={rectangle:'Прямокутник',rhombus:'Ромб',paral
 
 // ===== НАВ (оригінал) =====
 const TEXTBOOKS = [
-  { grades:1, title:'Математика 1 клас', author:'Скворцова', url:'https://pidruchnyk.com.ua/1klas/matematyka1/' },
-  { grades:2, title:'Математика 2 клас', author:'Скворцова', url:'https://pidruchnyk.com.ua/2klas/matematyka2/' },
-  { grades:3, title:'Математика 3 клас', author:'Богданович', url:'https://pidruchnyk.com.ua/3klas/matematyka3/' },
-  { grades:4, title:'Математика 4 клас', author:'Богданович', url:'https://pidruchnyk.com.ua/4klas/matematyka4/' },
-  { grades:5, title:'Математика 5 клас', author:'Мерзляк', url:'https://pidruchnyk.com.ua/5klas/matematyka5/' },
-  { grades:6, title:'Математика 6 клас', author:'Мерзляк', url:'https://pidruchnyk.com.ua/6klas/matematyka6/' },
   { grades:7, title:'Алгебра 7 клас', author:'Прокопенко 2024', url:'https://pidruchnyk.com.ua/2894-algebra-prokopenko-7-klas-2024.html' },
   { grades:7, title:'Геометрія 7 клас', author:'Бевз 2024', url:'https://pidruchnyk.com.ua/2880-geometriia-bevz-7-klas-2024.html' },
   { grades:8, title:'Математика 8 клас', author:'Істер 2025', url:'https://pidruchnyk.com.ua/2932-matematyka-ister-8-klas-2025.html' },
@@ -103,16 +97,6 @@ function buildTextbooks() {
 
 function show(sec){
   const grade = getUserGrade();
-  // Block trig for grades 1-4
-  if(sec==='trig' && grade && grade<=4){
-    show('formulas');
-    return;
-  }
-  // For grades 1-4, workspace shows a friendly notice instead of graphs
-  if(sec==='graph' && grade && grade<=4){
-    showKidWorkspace(grade);
-    return;
-  }
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(sec).classList.add('active');
   document.getElementById('category-row').style.display='none';
@@ -124,69 +108,12 @@ function show(sec){
   window.scrollTo({top:0,behavior:'smooth'});
   updateNavForGrade(grade);
 }
-
-// Kid-friendly workspace for grades 1-4
-function showKidWorkspace(grade) {
-  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('tasks').classList.add('active');
-  tasksInit();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
 function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====
 // v = visual (emoji side), m = math side, expr = text-only fallback
 const ALGEBRA_CATS = [
-  { name:'🐱 Додавання', minGrade:1, maxGrade:2, formulas:[
-    {name:'Кошенята прийшли!', v:'🐱🐱 + 🐱🐱🐱 = 🐱🐱🐱🐱🐱', m:'2 + 3 = 5'},
-    {name:'Можна міняти місцями', v:'🐶🐶🐶 + 🐶🐶🐶🐶🐶 = 🐶🐶🐶🐶🐶🐶🐶🐶', m:'3 + 5 = 5 + 3 = 8'},
-    {name:'Плюс нуль = те саме', v:'🐸🐸🐸 + (нікого немає) = 🐸🐸🐸', m:'3 + 0 = 3'},
-    {name:'Склад числа 10', v:'🐣🐣🐣🐣🐣🐣🐣🐣🐣🐣 = 10 пташенят', m:'1+9 · 2+8 · 3+7 · 4+6 · 5+5'},
-    {name:'Приклад з зайчиками', v:'🐰🐰🐰🐰 + 🐰🐰🐰🐰🐰🐰 = ?', m:'4 + 6 = 10'},
-  ]},
-  { name:'🦊 Віднімання', minGrade:1, maxGrade:2, formulas:[
-    {name:'Лисенята пішли', v:'🦊🦊🦊🦊🦊 − 🦊🦊 = 🦊🦊🦊', m:'5 − 2 = 3'},
-    {name:'Перевірка', v:'❓ + 🐮🐮 = 🐮🐮🐮🐮🐮', m:'5 − 2 = 3  →  3 + 2 = 5 ✓'},
-    {name:'Мінус нуль = те саме', v:'🐼🐼🐼🐼🐼 − (нікого) = 🐼🐼🐼🐼🐼', m:'5 − 0 = 5'},
-    {name:'Всі пішли', v:'🐨🐨🐨 − 🐨🐨🐨 = (порожньо!)', m:'3 − 3 = 0'},
-    {name:'Приклад з пташками', v:'🐦🐦🐦🐦🐦🐦🐦🐦 → полетіли 🐦🐦🐦', m:'8 − 3 = 5'},
-  ]},
-  { name:'🔢 Числа до 100', minGrade:2, maxGrade:3, formulas:[
-    {name:'Десятки', v:'🔵×10 🔵×20 🔵×30 ... 🔵×100', m:'10, 20, 30, 40, 50, 60, 70, 80, 90, 100'},
-    {name:'Склад числа', v:'🟦🟦🟦🟦 і 🟨🟨🟨🟨🟨🟨🟨 = 47', m:'47 = 4 десятки + 7 одиниць'},
-    {name:'Порівняння', v:'🔵🔵🔵🔵🟡 (47) > 🔵🔵🟡🟡🟡🟡🟡🟡🟡 (29)', m:'47 > 29'},
-    {name:'Сусіди числа', v:'14 ← 15 → 16', m:'число −1 і число +1'},
-    {name:'Парні / непарні', v:'🔵🔵 🔵🔵 🔵🔵 (парні)', m:'2,4,6,8... діляться на 2\n1,3,5,7... не діляться'},
-  ]},
-  { name:'✖️ Множення', minGrade:3, maxGrade:5, formulas:[
-    {name:'Що таке множення?', v:'🍊🍊🍊🍊 | 🍊🍊🍊🍊 | 🍊🍊🍊🍊\n(3 рядки по 4)', m:'3 × 4 = 12\n= 4 + 4 + 4'},
-    {name:'Можна міняти місцями', v:'🟦🟦🟦 / 🟦🟦🟦 = 🟦🟦 / 🟦🟦 / 🟦🟦 / 🟦🟦', m:'2 × 4 = 4 × 2 = 8'},
-    {name:'На 0', v:'🍬 × (порожньо) = (порожньо)', m:'будь-яке × 0 = 0'},
-    {name:'На 1', v:'🐱🐱🐱 × 1 = 🐱🐱🐱', m:'будь-яке × 1 = те саме число'},
-    {name:'Приклад', v:'🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋 / 🍋🍋🍋🍋🍋🍋\n(5 рядків по 6)', m:'5 × 6 = 30'},
-  ]},
-  { name:'➗ Ділення', minGrade:3, maxGrade:5, formulas:[
-    {name:'Що таке ділення?', v:'🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬 → 4 друзі', m:'12 ÷ 4 = 3  (по 3 кожному)'},
-    {name:'Зв\'язок з множенням', v:'✅ перевірка завжди', m:'12 ÷ 4 = 3  →  3 × 4 = 12 ✓'},
-    {name:'Ділення на 1', v:'🐣🐣🐣🐣🐣🐣🐣 → 1 кошик', m:'7 ÷ 1 = 7'},
-    {name:'Ділення на себе', v:'🐣🐣🐣🐣🐣🐣🐣 → 7 кошиків', m:'7 ÷ 7 = 1'},
-    {name:'З остачею', v:'🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬 → 4 друзі + 1 залишок', m:'13 ÷ 4 = 3 і остача 1'},
-  ]},
-  { name:'📐 Геометрія (3-4 кл)', minGrade:3, maxGrade:4, formulas:[
-    {name:'Периметр прямокутника', v:'📏 Обійди навколо!', m:'P = 2×(a+b)'},
-    {name:'Площа прямокутника', v:'🔲 Скільки клітинок всередині?', m:'S = a × b'},
-    {name:'Квадрат', v:'◼ всі 4 сторони рівні', m:'P = 4×a,  S = a²'},
-    {name:'Трикутник', v:'🔺 3 сторони', m:'P = a + b + c'},
-    {name:'Відрізок', v:'•———————————•', m:'Пряма між двома точками. Вимірюй лінійкою!'},
-  ]},
-  { name:'🍕 Дроби (1/2, 1/4)', minGrade:3, maxGrade:5, formulas:[
-    {name:'Що таке дріб?',expr:'🍕 розрізали на 4 частини → кожна 1/4'},
-    {name:'Половина',expr:'1/2 — це одна з двох рівних частин\n🍎 розрізали → 🍎|🍎'},
-    {name:'Четвертина',expr:'1/4 — це одна з чотирьох частин'},
-    {name:'Порівняння',expr:'1/2 > 1/4  (більша частина = більший дріб)'},
-    {name:'Приклад',expr:'З\'їв 3/4 піци — лишилась 1/4 піци 🍕'},
-  ]},
-  { name:'💯 Відсотки', minGrade:5, maxGrade:7, formulas:[
+  { name:'💯 Відсотки', minGrade:7, maxGrade:9, formulas:[
     {name:'Що таке відсоток?',expr:'% = частина від 100\n50% = половина, 25% = чверть'},
     {name:'Знайти % від числа',expr:'20% від 50 = 50 × 20 ÷ 100 = 10'},
     {name:'Знайти який %',expr:'10 з 50 = 10 ÷ 50 × 100 = 20%'},
@@ -544,14 +471,9 @@ function closeAlgebraModal(){
   document.getElementById('algebra-modal').classList.remove('active');
 }
 
-// Build geometry tab — only for grades 5+
+// Build geometry tab
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
-  const grade = getUserGrade();
-  if (grade && grade <= 4) {
-    grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center;grid-column:1/-1">Геометрія фігур вивчається з 5 класу.<br>Зараз відкрий <strong>🔢 Алгебра</strong> — там є формули для твого класу!</p>';
-    return;
-  }
   const order = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle','cube','parallelepiped','cylinder','cone','pyramid'];
   grid.innerHTML = order.map(cat => `
     <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
@@ -701,8 +623,6 @@ function buildTrigTable2(){
   tbody.innerHTML=rows.map(r=>`<tr><td>${r[0]}°</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');
 }
 function showGraph(){
-  const grade = getUserGrade();
-  if(grade && grade <= 4){ showKidWorkspace(grade); return; }
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById('graph').classList.add('active');
   document.getElementById('category-row').style.display='none';
@@ -1688,29 +1608,17 @@ let safeTotalStars = parseInt(localStorage.getItem('mh_stars') || '0');
 
 function tasksInit() {
   const grade = getUserGrade();
-  const gradeNames = {1:'🍎 1 клас — Додавання та Віднімання',2:'🔢 2 клас — Числа до 100',3:'✖️ 3 клас — Множення та Ділення',4:'📐 4 клас — Ділення + Геометрія',5:'💯 5 клас — Дроби та Відсотки'};
   const label = document.getElementById('tasks-grade-label');
-  if (label) label.textContent = gradeNames[grade] || `${grade} клас`;
+  if (label) label.textContent = `${grade} клас`;
 
   const modeBar = document.querySelector('.tasks-mode-bar');
   const visualWrap = document.getElementById('tasks-visual-wrap');
 
-  if (grade && grade <= 5) {
-    // Young grades: show animated card + safe, hide regular, hide mode-bar
-    if (modeBar) modeBar.style.display = 'none';
-    if (visualWrap) visualWrap.style.display = '';
-    tasksSetMode('safe');
-    safeNew();
-    const starsEl = document.getElementById('safe-stars');
-    if (starsEl) starsEl.innerHTML = '⭐'.repeat(Math.min(safeTotalStars, 15));
-    vtaskNext();
-  } else {
-    // Older grades: hide animated card, show mode bar + regular tasks
-    if (modeBar) modeBar.style.display = '';
-    if (visualWrap) visualWrap.style.display = 'none';
-    tasksSetMode('regular');
-    loadRandomTask();
-  }
+  // All grades 7-11: show mode bar + regular tasks
+  if (modeBar) modeBar.style.display = '';
+  if (visualWrap) visualWrap.style.display = 'none';
+  tasksSetMode('regular');
+  loadRandomTask();
 }
 
 function tasksSetMode(mode) {
@@ -1724,47 +1632,22 @@ function tasksSetMode(mode) {
 
 function getGradeTasks() {
   const g = getUserGrade();
-  if (g <= 1) return GRADE_TASKS[1];
-  if (g <= 2) return GRADE_TASKS[2];
-  if (g <= 3) return GRADE_TASKS[3];
-  if (g <= 4) return GRADE_TASKS[4];
-  return GRADE_TASKS[5];
+  return GRADE_TASKS[g] || GRADE_TASKS[7];
 }
 
 function updateNavForGrade(grade) {
   if (!grade) return;
-  // Formula tabs visibility
+  // Formula tabs visibility — all visible for grades 7-11
   const trigTab = document.getElementById('ftab-btn-trigonometry');
-  const tablesTab = document.getElementById('ftab-btn-tables');
-  const geoTab = document.getElementById('ftab-btn-geometry');
   if (trigTab) trigTab.style.display = grade <= 8 ? 'none' : '';
-  if (tablesTab) tablesTab.style.display = grade <= 3 ? 'none' : '';
-  if (geoTab) geoTab.style.display = grade <= 4 ? 'none' : '';
-  // Hide workspace + formulas from nav for grades 1-4
-  const graphBtn = document.querySelector('nav button[onclick="showGraph()"]');
-  if (graphBtn) graphBtn.style.display = grade <= 4 ? 'none' : '';
-  // For grades 1-4: show "Картки" instead of "Формули"
-  const formulasBtn = document.querySelector('nav button[onclick="show(\'formulas\')"]');
-  if (formulasBtn) {
-    formulasBtn.style.display = ''; // always visible
-    formulasBtn.textContent = grade <= 4 ? '🃏 Картки' : 'Формули';
-  }
-  // Dark mode: auto-enable for grades 6-11, hide toggle for 1-5
+  // Auto-enable dark mode for all users
   const darkBtn = document.getElementById('dark-toggle');
   if (darkBtn) {
-    if (grade <= 5) {
-      // Kids: force light mode, hide toggle
-      document.body.classList.remove('dark');
-      darkBtn.style.display = 'none';
-      localStorage.setItem('mathhelper-dark', '0');
-    } else {
-      // Older grades: show toggle, auto-enable dark if not set yet
-      darkBtn.style.display = '';
-      if (localStorage.getItem('mathhelper-dark') === null) {
-        document.body.classList.add('dark');
-        darkBtn.textContent = '☀️ Світла';
-        localStorage.setItem('mathhelper-dark', '1');
-      }
+    darkBtn.style.display = '';
+    if (localStorage.getItem('mathhelper-dark') === null) {
+      document.body.classList.add('dark');
+      darkBtn.textContent = '☀️ Світла';
+      localStorage.setItem('mathhelper-dark', '1');
     }
   }
   // Rebuild algebra tab when grade changes

@@ -615,9 +615,9 @@ function dashLoad(user) {
     `).join('');
   }
 
-  // Show NMT section for grades 9-11
+  // Show NMT section for all grades 7-11
   const nmtSection = document.getElementById('dash-nmt');
-  if (grade >= 9) {
+  if (grade >= 7) {
     nmtSection.style.display = '';
     document.getElementById('dash-nmt-topics').innerHTML = NMT_TOPICS.map(t =>
       `<span class="dash-nmt-topic">${t}</span>`
