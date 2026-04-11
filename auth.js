@@ -1,4 +1,6 @@
-const API = '';
+const API = window.location.hostname === 'volchara-create.github.io'
+  ? 'https://rostyslavv.vibe.brobots.org.ua'
+  : '';
 
 // Grade-specific formula data for dashboard (grades 7-11 only)
 const GRADE_FORMULAS = {
