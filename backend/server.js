@@ -36,8 +36,8 @@ app.post('/register', async (req, res) => {
   if (!name || !email || !password || !grade) {
     return res.status(400).json({ error: 'Всі поля обовʼязкові' });
   }
-  if (grade < 1 || grade > 11) {
-    return res.status(400).json({ error: 'Клас має бути від 1 до 11' });
+  if (grade < 7 || grade > 11) {
+    return res.status(400).json({ error: 'Клас має бути від 7 до 11' });
   }
   try {
     const hashed = await bcrypt.hash(password, 10);
@@ -201,7 +201,7 @@ app.get('/auth/google/callback', async (req, res) => {
 // POST /auth/google/grade — complete registration after grade selection
 app.post('/auth/google/grade', async (req, res) => {
   const { tempToken, grade } = req.body;
-  if (!grade || grade < 4 || grade > 11) return res.status(400).json({ error: 'Вибери клас' });
+  if (!grade || grade < 7 || grade > 11) return res.status(400).json({ error: 'Вибери клас (7-11)' });
   try {
     const payload = jwt.verify(tempToken, process.env.JWT_SECRET);
     if (!payload.needsGrade) return res.status(400).json({ error: 'Невірний токен' });
@@ -222,7 +222,7 @@ app.post('/auth/google/grade', async (req, res) => {
 // PUT /me/grade — change user grade
 app.put('/me/grade', authMiddleware, async (req, res) => {
   const { grade } = req.body;
-  if (!grade || grade < 1 || grade > 11) return res.status(400).json({ error: 'Клас від 1 до 11' });
+  if (!grade || grade < 7 || grade > 11) return res.status(400).json({ error: 'Клас від 7 до 11' });
   const user = await prisma.user.update({
     where: { id: req.user.id },
     data: { grade: parseInt(grade) }

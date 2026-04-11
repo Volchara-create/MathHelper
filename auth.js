@@ -1,43 +1,7 @@
 const API = '';
 
-// Grade-specific formula data for dashboard
+// Grade-specific formula data for dashboard (grades 7-11 only)
 const GRADE_FORMULAS = {
-  1: [
-    { topic: 'Арифметика', title: 'Додавання', expr: 'a + b = b + a' },
-    { topic: 'Арифметика', title: 'Віднімання', expr: 'a − b = ?  →  ? + b = a' },
-    { topic: 'Арифметика', title: 'Нуль', expr: 'a + 0 = a' },
-    { topic: 'Арифметика', title: 'Порівняння', expr: '> більше,  < менше,  = рівно' },
-  ],
-  2: [
-    { topic: 'Арифметика', title: 'Таблиця додавання', expr: '7 + 8 = 15,  9 + 6 = 15' },
-    { topic: 'Арифметика', title: 'Різниця', expr: 'a − b = c  →  a = b + c' },
-    { topic: 'Геометрія', title: 'Відрізок', expr: 'виміряй лінійкою в см' },
-    { topic: 'Арифметика', title: 'Круглі числа', expr: '10, 20, 30 ... 100' },
-  ],
-  3: [
-    { topic: 'Множення', title: 'Таблиця множення', expr: 'a × b = b × a' },
-    { topic: 'Ділення', title: 'Ділення', expr: 'a ÷ b = c  →  c × b = a' },
-    { topic: 'Геометрія', title: 'Периметр', expr: 'P = сума всіх сторін' },
-    { topic: 'Арифметика', title: 'Порядок дій', expr: '× і ÷ виконуються раніше + і −' },
-  ],
-  4: [
-    { topic: 'Арифметика', title: 'Периметр прямокутника', expr: 'P = 2·(a + b)' },
-    { topic: 'Арифметика', title: 'Площа прямокутника', expr: 'S = a · b' },
-    { topic: 'Арифметика', title: 'Площа квадрата', expr: 'S = a²' },
-    { topic: 'Арифметика', title: 'Периметр квадрата', expr: 'P = 4 · a' },
-  ],
-  5: [
-    { topic: 'Дроби', title: 'Додавання дробів', expr: 'a/b + c/d = (ad + bc)/(bd)' },
-    { topic: 'Дроби', title: 'Множення дробів', expr: '(a/b)·(c/d) = ac/bd' },
-    { topic: 'Відсотки', title: 'Відсоток від числа', expr: 'X% від N = N·X/100' },
-    { topic: 'Площі', title: 'Площа трикутника', expr: 'S = (a·h) / 2' },
-  ],
-  6: [
-    { topic: 'Відсотки', title: 'Знайти відсоток', expr: 'X% = (частина/ціле)·100' },
-    { topic: "Від'ємні числа", title: 'Модуль числа', expr: '|a| = a, якщо a ≥ 0' },
-    { topic: 'Координати', title: 'Точка на площині', expr: 'A(x; y)' },
-    { topic: 'Рівняння', title: 'Просте рівняння', expr: 'x + a = b → x = b − a' },
-  ],
   7: [
     { topic: 'Алгебра', title: 'Лінійна функція', expr: 'y = kx + b' },
     { topic: 'Алгебра', title: 'Степінь числа', expr: 'aⁿ · aᵐ = aⁿ⁺ᵐ' },
@@ -142,7 +106,7 @@ function showGoogleGradeModal(credential, name) {
     <h3 style="margin-bottom:8px;">Привіт, ${name}!</h3>
     <p style="color:#666;margin-bottom:20px;">Вибери свій клас щоб продовжити</p>
     <div class="grade-picker-row" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;">
-      ${[4,5,6,7,8,9,10,11].map(g =>
+      ${[7,8,9,10,11].map(g =>
         `<button class="grade-btn-g" data-grade="${g}" onclick="selectGoogleGrade(this)">${g}</button>`
       ).join('')}
     </div>
@@ -397,10 +361,10 @@ function authLogout() {
 function openChangeGrade() {
   const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
   const current = user.grade;
-  const grade = prompt(`Твій поточний клас: ${current}\nВведи новий клас (1-11):`);
+  const grade = prompt(`Твій поточний клас: ${current}\nВведи новий клас (7-11):`);
   if (!grade) return;
   const g = parseInt(grade);
-  if (isNaN(g) || g < 1 || g > 11) { alert('Клас має бути від 1 до 11'); return; }
+  if (isNaN(g) || g < 7 || g > 11) { alert('Клас має бути від 7 до 11'); return; }
   const token = localStorage.getItem('mh_token');
   fetch(`${API}/me/grade`, {
     method: 'PUT',
@@ -442,16 +406,8 @@ function authShowUser(user) {
   if (homeBtn) homeBtn.style.display = 'none';
   // Apply grade-based nav restrictions
   if (typeof updateNavForGrade === 'function') updateNavForGrade(user.grade);
-  // Hide graph button from dashboard for grades 1-4
-  const dashGraphBtn = document.getElementById('dash-graph-btn');
-  if (dashGraphBtn) dashGraphBtn.style.display = user.grade <= 4 ? 'none' : '';
-  // Hide notes for grades 1-2 (they can't write yet)
   const notesBtn = document.getElementById('nav-notes-btn');
   const dashNotesBtn = document.getElementById('dash-notes-btn');
-  const dashNotesSection = document.getElementById('dash-notes-section');
-  const showNotes = user.grade >= 3;
-  if (notesBtn) notesBtn.style.display = showNotes ? '' : 'none';
-  if (dashNotesBtn) dashNotesBtn.style.display = showNotes ? '' : 'none';
   if (dashNotesSection) dashNotesSection.style.display = showNotes ? '' : 'none';
   dashLoad(user);
   checkDailyReward(user);
@@ -543,96 +499,33 @@ function closeDailyReward() {
 
 // ===== DASHBOARD =====
 
-// Game configs per grade for the game dashboard (grades 1-4)
-const GRADE_GAMES = {
-  1: [
-    { emoji:'🐱🐶🐸', title:'Картки з тваринами', desc:'Порахуй звірят!', color:'#dbeafe', border:'#93c5fd', action:`show('formulas')` },
-    { emoji:'🦊🐨🐼', title:'Квіз', desc:'Скільки тваринок?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
-    { emoji:'🔐', title:'Таємний сейф', desc:'Розв\'яжи і відкрий скарб!', color:'#fef9c3', border:'#fde047', action:`show('tasks')` },
-    { emoji:'📚', title:'Підручник', desc:'1 клас онлайн', color:'#f3e8ff', border:'#c084fc', action:`show('textbooks')` },
-  ],
-  2: [
-    { emoji:'📖', title:'Задачі', desc:'Було 5, дали ще 3...', color:'#dbeafe', border:'#93c5fd', action:`show('tasks')` },
-    { emoji:'⚡', title:'Квіз', desc:'Хто швидший?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
-    { emoji:'🃏', title:'Картки', desc:'Числа до 100', color:'#fef9c3', border:'#fde047', action:`show('formulas')` },
-    { emoji:'🔐', title:'Таємний сейф', desc:'Відкрий скарб!', color:'#ffe4e6', border:'#fca5a5', action:`show('tasks')` },
-  ],
-  3: [
-    { emoji:'✖️', title:'Множення', desc:'3 ряди по 4 = ?', color:'#dbeafe', border:'#93c5fd', action:`show('tasks')` },
-    { emoji:'⚡', title:'Швидкий квіз', desc:'Хто встигне?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
-    { emoji:'🃏', title:'Картки', desc:'Ділення і множення', color:'#fef9c3', border:'#fde047', action:`show('formulas')` },
-    { emoji:'🏆', title:'Мій прогрес', desc:'Мої зірочки', color:'#f3e8ff', border:'#c084fc', action:`showProgress()` },
-  ],
-  4: [
-    { emoji:'⚔️', title:'Битва множення', desc:'Атакуй правильною відповіддю!', color:'#fee2e2', border:'#fca5a5', action:`startBattle()` },
-    { emoji:'⚡', title:'Швидкий квіз', desc:'7 × 8 = ?', color:'#dcfce7', border:'#86efac', action:`show('quiz')` },
-    { emoji:'🃏', title:'Картки', desc:'Таблиця множення', color:'#dbeafe', border:'#93c5fd', action:`show('formulas')` },
-    { emoji:'🔐', title:'Таємний сейф', desc:'Відкрий скарб!', color:'#fef9c3', border:'#fde047', action:`show('tasks')` },
-  ],
-};
-
 function dashLoad(user) {
   const grade = user.grade;
   document.getElementById('dash-title').textContent = `Привіт, ${user.name}! 👋`;
   document.getElementById('dash-grade-badge').textContent = `${grade} клас`;
 
-  const gamesSection = document.getElementById('dash-games-section');
-  const formulasSection = document.getElementById('dash-formulas-section');
-  const formulasBtn = document.getElementById('dash-formulas-btn');
+  // Show formulas for this grade
+  const formulas = GRADE_FORMULAS[grade] || GRADE_FORMULAS[11];
+  const grid = document.getElementById('dash-formulas-grid');
+  if (grid) grid.innerHTML = formulas.map(f => `
+    <div class="dash-formula-card">
+      <div class="dash-formula-topic">${f.topic}</div>
+      <div class="dash-formula-title">${f.title}</div>
+      <div class="dash-formula-expr">${f.expr}</div>
+    </div>
+  `).join('');
 
-  if (grade <= 4) {
-    // Show games instead of formulas for grades 1-4
-    if (gamesSection) gamesSection.style.display = '';
-    if (formulasSection) formulasSection.style.display = 'none';
-    if (formulasBtn) { formulasBtn.style.display = ''; formulasBtn.textContent = '🃏 Картки'; }
-
-    const games = GRADE_GAMES[grade] || GRADE_GAMES[1];
-    const gamesGrid = document.getElementById('dash-games-grid');
-    if (gamesGrid) {
-      gamesGrid.innerHTML = games.map(g => `
-        <div class="dash-game-card" style="background:${g.color};border:2px solid ${g.border};" onclick="${g.action}">
-          <div class="dash-game-emoji">${g.emoji}</div>
-          <div class="dash-game-title">${g.title}</div>
-          <div class="dash-game-desc">${g.desc}</div>
-        </div>
-      `).join('');
-    }
-  } else {
-    // Grades 5+: show formulas
-    if (gamesSection) gamesSection.style.display = 'none';
-    if (formulasSection) formulasSection.style.display = '';
-    if (formulasBtn) formulasBtn.style.display = '';
-
-    const formulas = GRADE_FORMULAS[grade] || GRADE_FORMULAS[11];
-    const grid = document.getElementById('dash-formulas-grid');
-    if (grid) grid.innerHTML = formulas.map(f => `
-      <div class="dash-formula-card">
-        <div class="dash-formula-topic">${f.topic}</div>
-        <div class="dash-formula-title">${f.title}</div>
-        <div class="dash-formula-expr">${f.expr}</div>
-      </div>
-    `).join('');
-  }
-
-  // Show NMT section for all grades 7-11
+  // NMT topics
   const nmtSection = document.getElementById('dash-nmt');
-  if (grade >= 7) {
+  if (nmtSection) {
     nmtSection.style.display = '';
     document.getElementById('dash-nmt-topics').innerHTML = NMT_TOPICS.map(t =>
       `<span class="dash-nmt-topic">${t}</span>`
     ).join('');
-  } else {
-    nmtSection.style.display = 'none';
   }
 
   // Load recent notes
   dashLoadRecentNotes();
-}
-
-function showProgress() {
-  const stars = parseInt(localStorage.getItem('mh_stars') || '0');
-  const streak = parseInt(localStorage.getItem('mh_streak') || '0');
-  alert(`⭐ Зірочок: ${stars}\n🔥 Серія: ${streak} днів\n\nТак тримати! Продовжуй навчатись!`);
 }
 
 async function dashLoadRecentNotes() {

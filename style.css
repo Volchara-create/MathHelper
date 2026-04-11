@@ -727,3 +727,11 @@ header{flex-wrap:nowrap;gap:12px;}
 .flip-hint{font-size:0.78rem;color:#60a5fa;margin-top:4px;}
 .flip-card-back .flip-hint{color:#93c5fd;}
 
+
+.hero-nmt-banner{background:linear-gradient(135deg,#1a3e7c 0%,#2563eb 60%,#7c3aed 100%);border-radius:16px;padding:28px 32px;margin:24px 0 8px;box-shadow:0 8px 32px rgba(37,99,235,.3);}
+.hero-nmt-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.hero-nmt-label{font-size:.9rem;font-weight:700;color:#93c5fd;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.hero-nmt-title{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:6px;}
+.hero-nmt-desc{font-size:.95rem;color:#bfdbfe;}
+.hero-nmt-btn{display:inline-block;background:#fff;color:#1a3e7c;font-weight:700;font-size:1rem;padding:14px 28px;border-radius:10px;text-decoration:none;white-space:nowrap;transition:.2s;box-shadow:0 4px 12px rgba(0,0,0,.15);}
+.hero-nmt-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2);}
