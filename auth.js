@@ -118,10 +118,15 @@ function showGoogleGradeModal(credential, name) {
         `<button class="grade-btn-g" data-grade="${g}" onclick="selectGoogleGrade(this)">${g}</button>`
       ).join('')}
     </div>
-    <button class="btn-primary" onclick="confirmGoogleGrade('${credential}')">Продовжити</button>
+    <button class="btn-primary" id="google-confirm-btn">Продовжити</button>
     <p id="google-grade-error" style="color:#e53935;margin-top:8px;font-size:13px;"></p>
   `;
   picker.style.display = '';
+  // Store token securely in data attribute (avoids XSS in onclick)
+  document.getElementById('google-confirm-btn').dataset.token = credential;
+  document.getElementById('google-confirm-btn').onclick = function() {
+    confirmGoogleGrade(this.dataset.token);
+  };
 }
 
 function selectGoogleGrade(btn) {
@@ -358,8 +363,10 @@ async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const errEl = document.getElementById('login-error');
+  const btn = document.querySelector('#auth-login-form button[onclick="doLogin()"]');
 
   if (!email || !password) { errEl.textContent = 'Заповни всі поля'; return; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Входжу...'; }
 
   try {
     const res = await fetch(`${API}/login`, {
@@ -377,6 +384,8 @@ async function doLogin() {
     show('dashboard');
   } catch {
     errEl.textContent = 'Помилка підключення до сервера';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Увійти'; }
   }
 }
 
@@ -386,12 +395,14 @@ async function doRegister() {
   const password = document.getElementById('reg-password').value;
   const gradeBtn = document.querySelector('#auth-modal .grade-btn.selected');
   const errEl = document.getElementById('reg-error');
+  const btn = document.querySelector('#auth-register-form button[onclick="doRegister()"]');
 
   if (!name || !email || !password) { errEl.textContent = 'Заповни всі поля'; return; }
   if (!gradeBtn) { errEl.textContent = 'Вибери свій клас'; return; }
   if (password.length < 6) { errEl.textContent = 'Пароль мінімум 6 символів'; return; }
 
   const grade = parseInt(gradeBtn.dataset.grade);
+  if (btn) { btn.disabled = true; btn.textContent = 'Реєструю...'; }
 
   try {
     const res = await fetch(`${API}/register`, {
@@ -409,6 +420,8 @@ async function doRegister() {
     show('dashboard');
   } catch {
     errEl.textContent = 'Помилка підключення до сервера';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Зареєструватись'; }
   }
 }
 

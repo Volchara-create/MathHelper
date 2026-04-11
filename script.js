@@ -524,8 +524,8 @@ function closeAlgebraModal(){
 // 10 кл: + стереометрія
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
-  if (grid && grid.children.length > 0) return; // already built
   const grade = getUserGrade();
+  if (grid && grid.children.length > 0 && grid.dataset.builtForGrade === String(grade)) return; // already built for this grade
 
   // Which shapes appear at which grade
   const base7   = ['rectangle','triangle','circle'];           // 7 кл
@@ -556,6 +556,7 @@ function buildGeoTab(){
     html += solid10.map(makeCard).join('');
   }
   grid.innerHTML = html || '<p style="color:#888;padding:20px;text-align:center">Для твого класу немає даних</p>';
+  grid.dataset.builtForGrade = String(grade);
 }
 
 // buildTablesTab removed — dead code (used buildTablesButtons instead)
@@ -2042,7 +2043,7 @@ async function nbSaveAsNote() {
 
   const content = body.innerHTML; // preserve formatting
   try {
-    const res = await fetch('/notes', {
+    const res = await fetch(`${typeof API !== 'undefined' ? API : ''}/notes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ title, content })
