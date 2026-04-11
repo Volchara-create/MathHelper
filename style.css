@@ -929,5 +929,5 @@ body.dark .grade-btn-s{background:#0f172a;border-color:#334155;color:#94a3b8;}
 body.dark .grade-btn-s.active{border-color:#3b82f6;background:#3b82f6;color:#fff;}
 
 /* ===== GLOBAL BACK BUTTON ===== */
-.global-back-btn{display:none;background:none;border:none;color:var(--blue);font-size:.9rem;font-weight:600;cursor:pointer;padding:8px 0 4px;margin-bottom:4px;}
-.global-back-btn:hover{text-decoration:underline;}
+.global-back-btn{display:none;background:none;border:1.5px solid var(--blue);border-radius:8px;color:var(--blue);font-size:.85rem;font-weight:600;cursor:pointer;padding:5px 12px;transition:.15s;}
+.global-back-btn:hover{background:var(--blue);color:#fff;}

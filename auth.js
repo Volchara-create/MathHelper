@@ -312,18 +312,10 @@ window.addEventListener('DOMContentLoaded', () => {
       const user = JSON.parse(localStorage.getItem('mh_user') || 'null');
       if (user) dashLoad(user);
     }
-    // Show/hide back button
+    // Show/hide back button in header
     const token = localStorage.getItem('mh_token');
-    let backBtn = document.getElementById('global-back-btn');
-    if (!backBtn) {
-      backBtn = document.createElement('button');
-      backBtn.id = 'global-back-btn';
-      backBtn.className = 'global-back-btn';
-      backBtn.onclick = () => window.show('dashboard');
-      document.querySelector('main').prepend(backBtn);
-    }
-    backBtn.textContent = '← Головна';
-    backBtn.style.display = (token && !NO_BACK.has(sec)) ? '' : 'none';
+    const backBtn = document.getElementById('global-back-btn');
+    if (backBtn) backBtn.style.display = (token && !NO_BACK.has(sec)) ? '' : 'none';
   };
 });
 
