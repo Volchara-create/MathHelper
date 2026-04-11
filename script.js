@@ -2033,6 +2033,33 @@ function nbLoad(){
   nbSetStyle(style);
 }
 
+// Save workspace notebook content as a server note
+async function nbSaveAsNote() {
+  const token = localStorage.getItem('mh_token');
+  if (!token) { authOpen('login'); return; }
+
+  const body = document.getElementById('ws-notebook-body');
+  const text = body.innerText.trim();
+  if (!text) { alert('Зошит порожній — нічого зберігати'); return; }
+
+  const today = new Date().toLocaleDateString('uk-UA');
+  const title = prompt('Назва конспекту:', `Зошит ${today}`);
+  if (!title) return;
+
+  const content = body.innerHTML; // preserve formatting
+  try {
+    const res = await fetch('/notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ title, content })
+    });
+    const note = await res.json();
+    if (!res.ok) { alert(note.error); return; }
+    if (typeof allNotes !== 'undefined') allNotes.unshift(note);
+    alert('✅ Збережено в конспекти!');
+  } catch { alert('Помилка збереження'); }
+}
+
 // Drag & Drop — перетягування функції у зошит
 function nbOnDragOver(e){
   e.preventDefault();

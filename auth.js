@@ -693,3 +693,129 @@ async function noteDelete() {
     alert('Помилка видалення');
   }
 }
+
+// ===== FLOATING NOTES DRAWER =====
+let drawerNoteId = null;
+
+async function notesDrawerOpen() {
+  const token = localStorage.getItem('mh_token');
+  document.getElementById('notes-drawer-overlay').classList.add('open');
+  document.getElementById('notes-drawer').classList.add('open');
+  document.getElementById('drawer-editor').style.display = 'none';
+  drawerNoteId = null;
+
+  const listEl = document.getElementById('drawer-notes-list');
+  if (!token) {
+    listEl.innerHTML = '<p class="drawer-empty">Увійди щоб бачити конспекти</p>';
+    return;
+  }
+  listEl.innerHTML = '<p class="drawer-empty">Завантаження...</p>';
+  try {
+    const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
+    allNotes = await res.json();
+    drawerRenderList();
+  } catch {
+    listEl.innerHTML = '<p class="drawer-empty">Помилка завантаження</p>';
+  }
+}
+
+function notesDrawerClose() {
+  document.getElementById('notes-drawer-overlay').classList.remove('open');
+  document.getElementById('notes-drawer').classList.remove('open');
+}
+
+function drawerRenderList() {
+  const listEl = document.getElementById('drawer-notes-list');
+  document.getElementById('drawer-editor').style.display = 'none';
+  drawerNoteId = null;
+  if (!allNotes.length) {
+    listEl.innerHTML = '<p class="drawer-empty">Немає конспектів — створи перший!</p>';
+    return;
+  }
+  listEl.innerHTML = allNotes.map(n => `
+    <div class="drawer-note-item" onclick="drawerOpenNote(${n.id})">
+      <div class="drawer-note-item-title">${n.title}</div>
+      <div class="drawer-note-item-date">${new Date(n.updatedAt).toLocaleDateString('uk-UA')}</div>
+    </div>
+  `).join('');
+  listEl.style.display = '';
+}
+
+function drawerOpenNote(id) {
+  const note = allNotes.find(n => n.id === id);
+  if (!note) return;
+  drawerNoteId = id;
+  document.getElementById('drawer-title-input').value = note.title;
+  document.getElementById('drawer-content-input').value = note.content;
+  document.getElementById('drawer-notes-list').style.display = 'none';
+  document.getElementById('drawer-editor').style.display = 'flex';
+  document.getElementById('drawer-editor').style.flexDirection = 'column';
+}
+
+function noteDrawerNew() {
+  const token = localStorage.getItem('mh_token');
+  if (!token) { notesDrawerClose(); authOpen('login'); return; }
+  const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
+  if (!user.isPro && allNotes.length >= 5) {
+    if (confirm('Максимум 5 конспектів у безкоштовній версії.\nПереглянути Pro?')) { notesDrawerClose(); show('pricing'); }
+    return;
+  }
+  drawerNoteId = null;
+  document.getElementById('drawer-title-input').value = '';
+  document.getElementById('drawer-content-input').value = '';
+  document.getElementById('drawer-notes-list').style.display = 'none';
+  document.getElementById('drawer-editor').style.display = 'flex';
+  document.getElementById('drawer-editor').style.flexDirection = 'column';
+  document.getElementById('drawer-title-input').focus();
+}
+
+function noteDrawerBack() {
+  drawerRenderList();
+}
+
+async function noteDrawerSave() {
+  const token = localStorage.getItem('mh_token');
+  const title = document.getElementById('drawer-title-input').value.trim();
+  const content = document.getElementById('drawer-content-input').value;
+  if (!title) { alert('Введи назву'); return; }
+  try {
+    let res, note;
+    if (drawerNoteId) {
+      res = await fetch(`${API}/notes/${drawerNoteId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title, content })
+      });
+    } else {
+      res = await fetch(`${API}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title, content })
+      });
+    }
+    note = await res.json();
+    if (!res.ok) { alert(note.error); return; }
+    if (drawerNoteId) {
+      allNotes = allNotes.map(n => n.id === drawerNoteId ? note : n);
+    } else {
+      allNotes.unshift(note);
+      drawerNoteId = note.id;
+    }
+    // Flash saved feedback
+    const btn = document.querySelector('.notes-drawer-actions .note-save-btn');
+    if (btn) { btn.textContent = '✅ Збережено'; setTimeout(() => btn.textContent = '💾 Зберегти', 1500); }
+  } catch { alert('Помилка збереження'); }
+}
+
+async function noteDrawerDelete() {
+  if (!drawerNoteId) return;
+  if (!confirm('Видалити конспект?')) return;
+  const token = localStorage.getItem('mh_token');
+  try {
+    await fetch(`${API}/notes/${drawerNoteId}`, {
+      method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+    });
+    allNotes = allNotes.filter(n => n.id !== drawerNoteId);
+    drawerRenderList();
+  } catch { alert('Помилка видалення'); }
+}

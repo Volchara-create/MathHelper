@@ -319,7 +319,7 @@
               <li class="disabled">❌ AI-помічник</li>
               <li class="disabled">❌ Необмежені нотатки</li>
             </ul>
-            <button class="pricing-btn pricing-btn--free" onclick="authOpen('register')">Почати безкоштовно</button>
+            <button class="pricing-btn pricing-btn--free" onclick="localStorage.getItem('mh_token') ? show('dashboard') : authOpen('register')">Почати безкоштовно</button>
           </div>
 
           <div class="pricing-card pricing-card--pro">
@@ -626,6 +626,7 @@
               <div class="ws-notebook-controls">
                 <button class="nb-style-btn active" id="nb-lined" onclick="nbSetStyle('lined')" title="Лінійка">≡</button>
                 <button class="nb-style-btn" id="nb-grid" onclick="nbSetStyle('grid')" title="Клітинки">⊞</button>
+                <button class="nb-save-note-btn" onclick="nbSaveAsNote()" title="Зберегти в конспекти">↗ Зберегти</button>
                 <button class="nb-clear-btn" onclick="nbClear()" title="Очистити">🗑</button>
                 <button class="nb-close-btn" onclick="wsToggleNotebook()" title="Закрити">✕</button>
               </div>
@@ -816,7 +817,7 @@
     <button class="qm-btn" onclick="show('dashboard')">
       <span class="qm-icon">🏠</span><span class="qm-label">Хаб</span>
     </button>
-    <button class="qm-btn" onclick="show('notes')">
+    <button class="qm-btn" onclick="notesDrawerOpen()">
       <span class="qm-icon">📓</span><span class="qm-label">Конспект</span>
     </button>
     <a href="/simulator.html" class="qm-btn">
@@ -825,6 +826,32 @@
     <button class="qm-btn qm-pro" onclick="show('pricing')">
       <span class="qm-icon">⭐</span><span class="qm-label">Pro</span>
     </button>
+  </div>
+
+  <!-- Floating Notes Drawer (works on top of any section) -->
+  <div class="notes-drawer-overlay" id="notes-drawer-overlay" onclick="notesDrawerClose()"></div>
+  <div class="notes-drawer" id="notes-drawer">
+    <div class="notes-drawer-header">
+      <span class="notes-drawer-title">📓 Конспекти</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="notes-new-btn" onclick="noteDrawerNew()">+ Новий</button>
+        <button class="notes-drawer-close" onclick="notesDrawerClose()">✕</button>
+      </div>
+    </div>
+    <div class="notes-drawer-body">
+      <!-- List -->
+      <div class="notes-drawer-list" id="drawer-notes-list"></div>
+      <!-- Editor -->
+      <div class="notes-drawer-editor" id="drawer-editor" style="display:none;">
+        <input class="notes-title-input" id="drawer-title-input" placeholder="Назва конспекту..." maxlength="80">
+        <textarea class="notes-content-area notes-drawer-textarea" id="drawer-content-input" placeholder="Пиши свої нотатки..."></textarea>
+        <div class="notes-drawer-actions">
+          <button class="note-save-btn" onclick="noteDrawerSave()">💾 Зберегти</button>
+          <button class="note-delete-btn" onclick="noteDrawerDelete()">🗑</button>
+          <button style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.85rem;" onclick="noteDrawerBack()">← Список</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
