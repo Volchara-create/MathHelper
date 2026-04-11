@@ -281,8 +281,8 @@ function openTrigModal(idx){
 
 // ===== TABLES DATA =====
 const TABLES_LIST = [
-  { id:'mult',  name:'Таблиця множення', sub:'від 1 до 10',  minGrade:4, maxGrade:8 },
-  { id:'sq',    name:'Квадрати чисел',   sub:'від 1 до 49',  minGrade:5, maxGrade:9 },
+  { id:'mult',  name:'Таблиця множення', sub:'від 1 до 10',  minGrade:4 },
+  { id:'sq',    name:'Квадрати чисел',   sub:'від 1 до 49',  minGrade:5 },
   { id:'trig',  name:'sin, cos, tan, ctg', sub:'основні кути', minGrade:9 },
 ];
 
@@ -471,16 +471,35 @@ function closeAlgebraModal(){
   document.getElementById('algebra-modal').classList.remove('active');
 }
 
-// Build geometry tab
+// Build geometry tab — планіметрія 7-9, стереометрія від 10 класу
 function buildGeoTab(){
   const grid = document.getElementById('geo-cards-grid');
-  const order = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle','cube','parallelepiped','cylinder','cone','pyramid'];
-  grid.innerHTML = order.map(cat => `
-    <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
-      <div class="alg-cat-name">${categoryNames[cat]}</div>
-      <div class="alg-cat-count">${(data[cat]||[]).length} формули</div>
-    </div>
-  `).join('');
+  const grade = getUserGrade();
+  const plane = ['rectangle','rhombus','parallelogram','trapezoid','circle','triangle'];
+  const solid = ['cube','parallelepiped','cylinder','cone','pyramid'];
+  // Show 3D figures only for grade 10+ (or not logged in — show all)
+  const order = (!grade || grade >= 10) ? [...plane, ...solid] : plane;
+
+  let html = '';
+  if(order.includes('rectangle')) {
+    html += '<div class="geo-group-label">📐 Планіметрія (плоскі фігури)</div>';
+    html += plane.filter(c => order.includes(c)).map(cat => `
+      <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
+        <div class="alg-cat-name">${categoryNames[cat]}</div>
+        <div class="alg-cat-count">${(data[cat]||[]).length} формул</div>
+      </div>
+    `).join('');
+  }
+  if(order.some(c => solid.includes(c))) {
+    html += '<div class="geo-group-label" style="margin-top:16px">📦 Стереометрія (тіла) — 10-11 клас</div>';
+    html += solid.filter(c => order.includes(c)).map(cat => `
+      <div class="alg-cat-btn geo-cat-btn" onclick="showCategory('${cat}')">
+        <div class="alg-cat-name">${categoryNames[cat]}</div>
+        <div class="alg-cat-count">${(data[cat]||[]).length} формул</div>
+      </div>
+    `).join('');
+  }
+  grid.innerHTML = html;
 }
 
 // Build all tables tab (mult + squares + sin/cos)
@@ -541,7 +560,7 @@ function showFormulaTab(tab){
   const btn = document.getElementById('ftab-btn-'+tab);
   if(btn) btn.classList.add('active');
   if(tab==='algebra') buildAlgebraTab();
-  if(tab==='all') buildAllTab();
+  // 'all' tab removed
   if(tab==='geometry') buildGeoTab();
   if(tab==='trigonometry') buildTrigTab();
   if(tab==='tables') buildTablesButtons();
