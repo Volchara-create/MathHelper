@@ -271,13 +271,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
     authShowUser(user);
     if (typeof show === 'function') show('dashboard');
-    // Refresh user data from server to fix stale grade/name
+    // Refresh user data from server — fix stale grade/name/daily goal
     fetch(`${API}/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : null)
       .then(fresh => {
         if (!fresh) return;
         localStorage.setItem('mh_user', JSON.stringify(fresh));
         document.getElementById('user-greeting').textContent = `${fresh.name} · ${fresh.grade} кл.`;
+        // Re-render dashboard with fresh data
+        dashLoad(fresh);
       })
       .catch(() => {});
   }
@@ -300,8 +302,9 @@ window.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('load', initGoogleAuth);
   }
 
-  // Wrap show() to handle dashboard/notes loading
+  // Wrap show() to handle dashboard/notes loading + back button
   const _origShow = window.show;
+  const NO_BACK = new Set(['home', 'dashboard']);
   window.show = function(sec) {
     _origShow(sec);
     if (sec === 'notes') notesInit();
@@ -309,6 +312,18 @@ window.addEventListener('DOMContentLoaded', () => {
       const user = JSON.parse(localStorage.getItem('mh_user') || 'null');
       if (user) dashLoad(user);
     }
+    // Show/hide back button
+    const token = localStorage.getItem('mh_token');
+    let backBtn = document.getElementById('global-back-btn');
+    if (!backBtn) {
+      backBtn = document.createElement('button');
+      backBtn.id = 'global-back-btn';
+      backBtn.className = 'global-back-btn';
+      backBtn.onclick = () => window.show('dashboard');
+      document.querySelector('main').prepend(backBtn);
+    }
+    backBtn.textContent = '← Головна';
+    backBtn.style.display = (token && !NO_BACK.has(sec)) ? '' : 'none';
   };
 });
 
