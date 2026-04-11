@@ -527,17 +527,6 @@ function dashLoad(user) {
   document.getElementById('dash-title').textContent = `Привіт, ${user.name}! 👋`;
   document.getElementById('dash-grade-badge').textContent = `${grade} клас`;
 
-  // Show formulas for this grade
-  const formulas = GRADE_FORMULAS[grade] || GRADE_FORMULAS[11];
-  const grid = document.getElementById('dash-formulas-grid');
-  if (grid) grid.innerHTML = formulas.map(f => `
-    <div class="dash-formula-card">
-      <div class="dash-formula-topic">${f.topic}</div>
-      <div class="dash-formula-title">${f.title}</div>
-      <div class="dash-formula-expr">${f.expr}</div>
-    </div>
-  `).join('');
-
   // NMT topics
   const nmtSection = document.getElementById('dash-nmt');
   if (nmtSection) {

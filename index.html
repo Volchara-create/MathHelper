@@ -29,7 +29,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">
+    <div class="logo" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="cursor:pointer;">
       <svg class="logo-icon" viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
         <!-- Ruler: rotated 45, shorter -->
         <g transform="rotate(45 25 25)">
@@ -51,16 +51,9 @@
       MathHelper
     </div>
 
-    <!-- Main navigation -->
+    <!-- Main navigation — мінімалістична -->
     <nav>
-      <button onclick="show('home')">Головна</button>
-      <button onclick="show('tasks')">Задачі</button>
-      <button onclick="show('quiz')">Квіз</button>
-      <button onclick="show('formulas')">Формули</button>
-      <button onclick="show('textbooks')">Підручники</button>
-      <button onclick="showGraph()">Робочий стіл</button>
-      <a href="/simulator.html" class="nav-simulator-btn">🎯 Симулятор НМТ</a>
-      <button id="dark-toggle" onclick="toggleDark()">🌙 Темна</button>
+      <button id="dark-toggle" onclick="toggleDark()">🌙</button>
     </nav>
 
     <!-- Auth block — top right corner -->
@@ -70,13 +63,12 @@
         <button class="auth-nav-btn auth-nav-btn--accent" onclick="authOpen('register')">Реєстрація</button>
       </div>
       <div id="user-nav" style="display:none;">
-        <button class="auth-nav-btn auth-nav-btn--dash" onclick="show('dashboard')">🏠 Кабінет</button>
-        <button class="auth-nav-btn auth-nav-btn--notes" id="nav-notes-btn" onclick="show('notes')">📓 Конспекти</button>
         <div class="user-info">
           <span id="user-greeting"></span>
           <span id="user-badge"></span>
         </div>
-        <button class="auth-nav-btn" onclick="openChangeGrade()">Змінити клас</button>
+        <button class="auth-nav-btn" onclick="show('dashboard')">🏠</button>
+        <button class="auth-nav-btn" onclick="openChangeGrade()" title="Змінити клас">⚙️</button>
         <button class="auth-nav-btn" onclick="authLogout()">Вийти</button>
       </div>
     </div>
@@ -316,33 +308,7 @@
 
     <section id="pricing">
       <div class="pricing-wrap">
-        <h2 class="pricing-title">Обери свій план</h2>
-        <p class="pricing-sub">Чесно про те, що входить у кожен план — без дрібного шрифту</p>
-
-        <!-- Comparison table -->
-        <div class="pricing-compare">
-          <table class="pricing-table">
-            <thead>
-              <tr>
-                <th>Функція</th>
-                <th>Безкоштовно</th>
-                <th class="th-pro">Pro</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Всі формули по класу</td><td>✅</td><td>✅</td></tr>
-              <tr><td>Таблиці (множення, квадрати, тrig)</td><td>✅</td><td>✅</td></tr>
-              <tr><td>Геометрія з SVG-фігурами</td><td>✅</td><td>✅</td></tr>
-              <tr><td>Підручники МОН (1–11 кл.)</td><td>✅</td><td>✅</td></tr>
-              <tr><td>Графіки функцій</td><td>до 3</td><td>Необмежено</td></tr>
-              <tr><td>Конспекти (нотатки)</td><td>до 5</td><td>Необмежено</td></tr>
-              <tr><td>Завантаження конспекту як PDF</td><td>❌</td><td>✅ (в розробці)</td></tr>
-              <tr><td>AI-помічник (розв'язок задач)</td><td>❌</td><td>✅ (в розробці)</td></tr>
-              <tr><td>Статистика прогресу</td><td>❌</td><td>✅ (в розробці)</td></tr>
-              <tr><td>Без реклами</td><td>❌</td><td>✅</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <h2 class="pricing-title">⭐ Обери свій план</h2>
 
         <div class="pricing-cards">
 
@@ -442,26 +408,41 @@
           </div>
         </div>
 
-        <!-- Quick actions -->
-        <div class="dash-quick" id="dash-quick-btns">
-          <button class="dash-q-btn" id="dash-formulas-btn" onclick="show('formulas')">📚 Формули</button>
-          <button class="dash-q-btn" id="dash-graph-btn" onclick="showGraph()">📈 Графіки</button>
-          <button class="dash-q-btn" onclick="show('quiz')">🎮 Квіз</button>
-          <button class="dash-q-btn" onclick="show('tasks')">🎯 Задачі</button>
-          <button class="dash-q-btn" id="dash-notes-btn" onclick="show('notes')">📓 Конспекти</button>
-          <button class="dash-q-btn" onclick="show('about')" style="color:#6b7280;">ℹ️ Про нас</button>
-          <button class="dash-q-btn" onclick="show('pricing')" style="color:#d97706;font-weight:700;">⭐ Отримати Pro</button>
+        <!-- Hub — картки розділів -->
+        <div class="hub-grid" id="dash-quick-btns">
+          <button class="hub-card" onclick="show('formulas')">
+            <span class="hub-icon">📚</span>
+            <span class="hub-title">Формули</span>
+            <span class="hub-desc">Алгебра, геометрія, тригонометрія</span>
+          </button>
+          <button class="hub-card" onclick="showGraph()">
+            <span class="hub-icon">📈</span>
+            <span class="hub-title">Графіки</span>
+            <span class="hub-desc">Будуй функції на координатній площині</span>
+          </button>
+          <a href="/simulator.html" class="hub-card hub-card--nmt">
+            <span class="hub-icon">🎯</span>
+            <span class="hub-title">НМТ Симулятор</span>
+            <span class="hub-desc">30 питань · таймер · розбір помилок</span>
+          </a>
+          <button class="hub-card" onclick="show('notes')">
+            <span class="hub-icon">📓</span>
+            <span class="hub-title">Конспекти</span>
+            <span class="hub-desc">Твої особисті нотатки та записи</span>
+          </button>
+          <button class="hub-card" onclick="show('quiz')">
+            <span class="hub-icon">🎮</span>
+            <span class="hub-title">Квіз</span>
+            <span class="hub-desc">Перевір знання в ігровому форматі</span>
+          </button>
+          <button class="hub-card hub-card--pro" onclick="show('pricing')">
+            <span class="hub-icon">⭐</span>
+            <span class="hub-title">Pro доступ</span>
+            <span class="hub-desc">AI-помічник, PDF, необмежені нотатки</span>
+          </button>
         </div>
 
-        <!-- Grade formulas -->
-        <div class="dash-section" id="dash-formulas-section">
-          <h2 class="dash-section-title">📚 Формули мого класу</h2>
-          <div class="dash-formulas-grid" id="dash-formulas-grid">
-            <!-- filled by JS -->
-          </div>
-        </div>
-
-        <!-- Recent notes (grades 3+) -->
+        <!-- Recent notes -->
         <div class="dash-section" id="dash-notes-section">
           <h2 class="dash-section-title">📓 Останні конспекти <button class="dash-new-note-btn" onclick="show('notes')">+ Новий</button></h2>
           <div id="dash-recent-notes" class="dash-recent-notes">
@@ -838,17 +819,17 @@
 
   <!-- Quick Action Menu (bottom bar) -->
   <div class="quick-menu" id="quick-menu" style="display:none;">
-    <button class="qm-btn" onclick="show('notes');quickMenuActive('notes')">
+    <button class="qm-btn" onclick="show('dashboard')">
+      <span class="qm-icon">🏠</span><span class="qm-label">Хаб</span>
+    </button>
+    <button class="qm-btn" onclick="show('notes')">
       <span class="qm-icon">📓</span><span class="qm-label">Конспект</span>
     </button>
-    <button class="qm-btn" onclick="showGraph();setTimeout(wsCalcOpen,400);quickMenuActive('calc')">
-      <span class="qm-icon">🧮</span><span class="qm-label">Калькулятор</span>
-    </button>
     <a href="/simulator.html" class="qm-btn">
-      <span class="qm-icon">🎯</span><span class="qm-label">НМТ тест</span>
+      <span class="qm-icon">🎯</span><span class="qm-label">НМТ</span>
     </a>
-    <button class="qm-btn qm-pro" title="Скоро в Pro версії" onclick="show('pricing')">
-      <span class="qm-icon">🤖</span><span class="qm-label">AI <span class="qm-pro-tag">PRO</span></span>
+    <button class="qm-btn qm-pro" onclick="show('pricing')">
+      <span class="qm-icon">⭐</span><span class="qm-label">Pro</span>
     </button>
   </div>
 

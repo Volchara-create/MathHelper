@@ -702,6 +702,7 @@
      SCREEN 1: START
 ============================= -->
 <div id="screen-start" class="screen active">
+  <a href="/" style="position:absolute;top:1.2rem;left:1.5rem;color:var(--muted);text-decoration:none;font-size:.95rem;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid var(--border);padding:6px 14px;border-radius:20px;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">← На головну</a>
   <h1>МатТест</h1>
   <p class="sub">Симулятор НМТ з математики — як справжній іспит</p>
 
@@ -796,6 +797,7 @@
     <button class="btn-review btn-review-errors" onclick="showReview('errors')">🔍 Розібрати помилки</button>
     <button class="btn-review btn-review-all" onclick="showReview('all')">📖 Розібрати все</button>
     <button class="btn-review btn-retry" onclick="retryExam()">🔄 Пройти ще раз</button>
+    <a href="/" class="btn-review" style="background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">← На головну</a>
   </div>
 
   <div class="topic-analysis">
@@ -1951,6 +1953,7 @@ function startExam() {
   state.timeLeft = (isSenior ? 180 : 45) * 60;
 
   showScreen('screen-exam');
+  window.scrollTo(0, 0);
   document.getElementById('exam-grade-label').textContent = g + ' клас';
   document.getElementById('total-count').textContent = state.questions.length;
 

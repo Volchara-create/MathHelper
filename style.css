@@ -576,6 +576,28 @@ header{flex-wrap:nowrap;gap:12px;}
 .dash-quick{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
 .dash-q-btn{padding:10px 18px;border:none;background:var(--blue-light);color:var(--blue);border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:.2s;}
 .dash-q-btn:hover{background:var(--blue);color:#fff;}
+
+/* ===== HUB GRID ===== */
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:32px;}
+.hub-card{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:20px 22px;border:1.5px solid var(--blue-light);border-radius:18px;background:#fff;cursor:pointer;text-align:left;transition:box-shadow .2s,border-color .2s,transform .15s;text-decoration:none;color:inherit;}
+.hub-card:hover{border-color:var(--blue);box-shadow:0 6px 24px rgba(37,99,235,.13);transform:translateY(-2px);}
+.hub-icon{font-size:2rem;line-height:1;margin-bottom:4px;}
+.hub-title{font-size:1.05rem;font-weight:700;color:var(--blue);}
+.hub-desc{font-size:0.8rem;color:#888;line-height:1.4;}
+.hub-card--nmt{border-color:#f97316;background:linear-gradient(135deg,#fff7ed,#fff);}
+.hub-card--nmt:hover{border-color:#ea580c;box-shadow:0 6px 24px rgba(249,115,22,.18);}
+.hub-card--nmt .hub-title{color:#ea580c;}
+.hub-card--pro{border-color:#d97706;background:linear-gradient(135deg,#fffbeb,#fff);}
+.hub-card--pro:hover{border-color:#b45309;box-shadow:0 6px 24px rgba(217,119,6,.18);}
+.hub-card--pro .hub-title{color:#d97706;}
+body.dark .hub-card{background:#1a2535;border-color:#1e3050;color:#e2e8f0;}
+body.dark .hub-card:hover{border-color:#3b82f6;box-shadow:0 6px 24px rgba(59,130,246,.2);}
+body.dark .hub-title{color:#60a5fa;}
+body.dark .hub-desc{color:#64748b;}
+body.dark .hub-card--nmt{background:linear-gradient(135deg,#2a1f0e,#1a2535);border-color:#92400e;}
+body.dark .hub-card--nmt .hub-title{color:#fb923c;}
+body.dark .hub-card--pro{background:linear-gradient(135deg,#1f1a00,#1a2535);border-color:#92400e;}
+body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .dash-section{margin-bottom:32px;}
 .dash-section-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
 .dash-new-note-btn{font-size:0.8rem;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:4px 12px;cursor:pointer;}
