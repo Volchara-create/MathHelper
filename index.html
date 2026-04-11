@@ -24,6 +24,17 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
+<script>
+  // Instantly redirect logged-in users to dashboard (prevents landing page flash)
+  if (localStorage.getItem('mh_token')) {
+    document.addEventListener('DOMContentLoaded', function() {
+      var home = document.getElementById('home');
+      var dash = document.getElementById('dashboard');
+      if (home) home.classList.remove('active');
+      if (dash) dash.classList.add('active');
+    }, { once: true });
+  }
+</script>
 <body>
   <header>
     <div class="logo" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="cursor:pointer;">
