@@ -262,8 +262,16 @@ window.addEventListener('DOMContentLoaded', () => {
   if (token) {
     const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
     authShowUser(user);
-    // Logged-in users go straight to dashboard, not home
     if (typeof show === 'function') show('dashboard');
+    // Refresh user data from server to fix stale grade/name
+    fetch(`${API}/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(fresh => {
+        if (!fresh) return;
+        localStorage.setItem('mh_user', JSON.stringify(fresh));
+        document.getElementById('user-greeting').textContent = `${fresh.name} · ${fresh.grade} кл.`;
+      })
+      .catch(() => {});
   }
 
   // Grade picker click handler
