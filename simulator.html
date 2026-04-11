@@ -179,29 +179,21 @@
     .exam-body {
       flex: 1;
       display: flex;
-      max-width: 860px;
+      flex-direction: column;
+      max-width: 800px;
       margin: 0 auto;
       width: 100%;
-      padding: 1.5rem;
-      gap: 1.5rem;
+      padding: 1.5rem 1.5rem 0;
+      gap: 0;
     }
 
-    /* Question navigator */
-    .q-nav {
-      width: 200px;
-      flex-shrink: 0;
-    }
-    .q-nav-title {
-      font-size: .8rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: .8rem;
-    }
+    /* Question navigator — now hidden sidebar (moved to footer) */
+    .q-nav { display: none; }
+    .q-nav-title { display: none; }
     .q-nav-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: .4rem;
+      display: flex;
+      flex-direction: row;
+      gap: .35rem;
     }
     .q-dot {
       aspect-ratio: 1;
@@ -244,12 +236,42 @@
 
     /* Question card */
     .q-card {
-      flex: 1;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 2rem;
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 2rem 2.5rem;
+      min-height: 340px;
     }
+
+    /* Bottom navigation footer */
+    .exam-footer {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: .9rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+    }
+    .exam-dots-scroll {
+      flex: 1;
+      overflow-x: auto;
+      padding: .2rem 0;
+      scrollbar-width: thin;
+    }
+    .exam-progress-bar-wrap {
+      max-width: 800px;
+      margin: .6rem auto 1.2rem;
+      width: calc(100% - 3rem);
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+    .exam-progress-bar { flex:1; background:var(--border); border-radius:4px; height:5px; }
+    .exam-progress-fill { height:100%; background:var(--green); border-radius:4px; transition:width .3s; }
     .q-meta {
       display: flex;
       gap: .6rem;
@@ -729,17 +751,7 @@
 
   <!-- Body -->
   <div class="exam-body">
-    <!-- Left nav -->
-    <div class="q-nav">
-      <div class="q-nav-title">Питання</div>
-      <div class="q-nav-grid" id="q-nav-grid"></div>
-      <div class="q-progress-wrap">
-        <div class="q-progress-label">Відповіді: <span id="answered-count">0</span> / <span id="total-count">0</span></div>
-        <div class="q-progress-bar"><div class="q-progress-fill" id="progress-fill" style="width:0%"></div></div>
-      </div>
-    </div>
-
-    <!-- Question card -->
+    <!-- Question card — FULL WIDTH at top -->
     <div class="q-card">
       <div class="q-meta">
         <span class="q-tag num" id="q-num-tag"></span>
@@ -748,12 +760,23 @@
       </div>
       <div class="q-text" id="q-text"></div>
       <div id="q-answer-area"></div>
-      <div class="q-nav-btns">
-        <button class="btn-nav" id="btn-prev" onclick="goPrev()">← Назад</button>
-        <button class="btn-finish" onclick="confirmFinish()">Здати тест</button>
-        <button class="btn-nav" id="btn-next" onclick="goNext()">Далі →</button>
-      </div>
     </div>
+
+    <!-- Footer: prev | dots | next | submit -->
+    <div class="exam-footer">
+      <button class="btn-nav" id="btn-prev" onclick="goPrev()">←</button>
+      <div class="exam-dots-scroll">
+        <div class="q-nav-grid" id="q-nav-grid"></div>
+      </div>
+      <button class="btn-nav" id="btn-next" onclick="goNext()">→</button>
+      <button class="btn-finish" onclick="confirmFinish()">Здати</button>
+    </div>
+  </div>
+
+  <!-- Progress strip below -->
+  <div class="exam-progress-bar-wrap">
+    <span>Відповіді: <span id="answered-count">0</span>/<span id="total-count">0</span></span>
+    <div class="exam-progress-bar"><div class="exam-progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
 </div>
 

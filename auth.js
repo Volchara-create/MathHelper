@@ -159,9 +159,21 @@ async function confirmGoogleGrade(tempToken) {
 }
 
 function initGoogleAuth() {
-  if (!window.google) return;
   const clientId = document.querySelector('meta[name="google-client-id"]')?.content;
   if (!clientId || clientId === 'YOUR_GOOGLE_CLIENT_ID') return;
+
+  // Fallback button renderer if GSI not loaded
+  function renderFallback(el, label) {
+    if (!el || el.innerHTML.trim()) return;
+    el.innerHTML = `<button onclick="handleGoogleFallback()" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 16px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;font-weight:500;color:#333;">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">${label}</button>`;
+  }
+
+  if (!window.google) {
+    renderFallback(document.getElementById('google-login-btn'), 'Увійти через Google');
+    renderFallback(document.getElementById('google-reg-btn'), 'Зареєструватись через Google');
+    return;
+  }
 
   google.accounts.id.initialize({
     client_id: clientId,
@@ -180,6 +192,16 @@ function initGoogleAuth() {
     google.accounts.id.renderButton(regBtn, {
       theme: 'outline', size: 'large', width: '100%', text: 'signup_with'
     });
+  }
+}
+
+function handleGoogleFallback() {
+  // Manual popup trigger when GSI button didn't render
+  const clientId = document.querySelector('meta[name="google-client-id"]')?.content;
+  if (window.google && clientId) {
+    google.accounts.id.prompt();
+  } else {
+    alert('Google авторизація тимчасово недоступна. Використай email/пароль або спробуй оновити сторінку.');
   }
 }
 
@@ -404,14 +426,15 @@ function authShowUser(user) {
   // Hide "Головна" from nav — logged-in users have dashboard instead
   const homeBtn = document.querySelector('nav button[onclick="show(\'home\')"]');
   if (homeBtn) homeBtn.style.display = 'none';
-  // Apply grade-based nav restrictions
   if (typeof updateNavForGrade === 'function') updateNavForGrade(user.grade);
-  const notesBtn = document.getElementById('nav-notes-btn');
-  const dashNotesBtn = document.getElementById('dash-notes-btn');
-  if (dashNotesSection) dashNotesSection.style.display = showNotes ? '' : 'none';
+  // Show quick action menu for logged-in users
+  const qm = document.getElementById('quick-menu');
+  if (qm) qm.style.display = 'flex';
   dashLoad(user);
   checkDailyReward(user);
 }
+
+function quickMenuActive(id) { /* visual feedback if needed */ }
 
 // ===== DAILY REWARD + STREAK =====
 function checkDailyReward(user) {

@@ -785,9 +785,7 @@
         <div id="login-error" class="auth-error"></div>
         <button class="auth-btn" onclick="doLogin()">Увійти</button>
         <div class="auth-divider"><span>або</span></div>
-        <button class="google-btn" onclick="window.location.href='/auth/google/start'">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Увійти через Google
-        </button>
+        <div id="google-login-btn" class="google-btn-wrap"></div>
         <p class="auth-switch">Немає акаунту? <a href="#" onclick="authSwitch('register')">Зареєструватись</a></p>
       </div>
 
@@ -820,9 +818,7 @@
         <div id="reg-error" class="auth-error"></div>
         <button class="auth-btn" onclick="doRegister()">Зареєструватись</button>
         <div class="auth-divider"><span>або</span></div>
-        <button class="google-btn" onclick="window.location.href='/auth/google/start'">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Зареєструватись через Google
-        </button>
+        <div id="google-reg-btn" class="google-btn-wrap"></div>
         <p class="auth-switch">Вже є акаунт? <a href="#" onclick="authSwitch('login')">Увійти</a></p>
       </div>
 
@@ -838,6 +834,22 @@
       </div>
       <div class="table-fs-body" id="table-fs-body"></div>
     </div>
+  </div>
+
+  <!-- Quick Action Menu (bottom bar) -->
+  <div class="quick-menu" id="quick-menu" style="display:none;">
+    <button class="qm-btn" onclick="show('notes');quickMenuActive('notes')">
+      <span class="qm-icon">📓</span><span class="qm-label">Конспект</span>
+    </button>
+    <button class="qm-btn" onclick="showGraph();setTimeout(wsCalcOpen,400);quickMenuActive('calc')">
+      <span class="qm-icon">🧮</span><span class="qm-label">Калькулятор</span>
+    </button>
+    <a href="/simulator.html" class="qm-btn">
+      <span class="qm-icon">🎯</span><span class="qm-label">НМТ тест</span>
+    </a>
+    <button class="qm-btn qm-pro" title="Скоро в Pro версії" onclick="show('pricing')">
+      <span class="qm-icon">🤖</span><span class="qm-label">AI <span class="qm-pro-tag">PRO</span></span>
+    </button>
   </div>
 
   <script src="script.js"></script>
