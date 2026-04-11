@@ -4,7 +4,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const { OAuth2Client } = require('google-auth-library');
+const webpush = require('web-push');
+const cron = require('node-cron');
 require('dotenv').config();
+
+webpush.setVapidDetails(
+  'mailto:mathhelper@brobots.org.ua',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -241,6 +249,101 @@ app.delete('/me', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Помилка видалення' });
   }
 });
+
+// ===== PUSH NOTIFICATIONS =====
+
+// GET /vapid-public-key — frontend needs this to subscribe
+app.get('/vapid-public-key', (req, res) => {
+  res.json({ key: process.env.VAPID_PUBLIC_KEY });
+});
+
+// POST /push/subscribe — save user's push subscription
+app.post('/push/subscribe', authMiddleware, async (req, res) => {
+  const { endpoint, keys } = req.body;
+  if (!endpoint || !keys?.p256dh || !keys?.auth) {
+    return res.status(400).json({ error: 'Invalid subscription' });
+  }
+  try {
+    await prisma.pushSubscription.upsert({
+      where: { endpoint },
+      update: { p256dh: keys.p256dh, auth: keys.auth },
+      create: { userId: req.user.id, endpoint, p256dh: keys.p256dh, auth: keys.auth }
+    });
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ error: 'Помилка збереження підписки' });
+  }
+});
+
+// POST /push/unsubscribe
+app.post('/push/unsubscribe', authMiddleware, async (req, res) => {
+  const { endpoint } = req.body;
+  await prisma.pushSubscription.deleteMany({ where: { endpoint, userId: req.user.id } });
+  res.json({ ok: true });
+});
+
+// ===== DAILY PROGRESS =====
+
+// GET /daily — get today's progress
+app.get('/daily', authMiddleware, async (req, res) => {
+  const date = new Date().toISOString().slice(0, 10);
+  const progress = await prisma.dailyProgress.findUnique({
+    where: { userId_date: { userId: req.user.id, date } }
+  });
+  res.json(progress || { quizDone: 0, nmtDone: 0 });
+});
+
+// POST /daily/track — track quiz or nmt completion
+app.post('/daily/track', authMiddleware, async (req, res) => {
+  const { type } = req.body; // 'quiz' or 'nmt'
+  const date = new Date().toISOString().slice(0, 10);
+  const data = type === 'nmt' ? { nmtDone: { increment: 1 } } : { quizDone: { increment: 1 } };
+  const progress = await prisma.dailyProgress.upsert({
+    where: { userId_date: { userId: req.user.id, date } },
+    update: data,
+    create: { userId: req.user.id, date, quizDone: type === 'quiz' ? 1 : 0, nmtDone: type === 'nmt' ? 1 : 0 }
+  });
+  res.json(progress);
+});
+
+// ===== CRON: daily reminder at 18:00 Kyiv time =====
+cron.schedule('0 18 * * *', async () => {
+  const date = new Date().toISOString().slice(0, 10);
+  // Find users who haven't completed daily goals today
+  const allUsers = await prisma.user.findMany({ include: { pushSubs: true } });
+  for (const user of allUsers) {
+    if (!user.pushSubs.length) continue;
+    const progress = await prisma.dailyProgress.findUnique({
+      where: { userId_date: { userId: user.id, date } }
+    });
+    const quizDone = progress?.quizDone || 0;
+    const nmtDone = progress?.nmtDone || 0;
+    if (quizDone >= 3 && nmtDone >= 1) continue; // goal completed — no reminder
+
+    const remaining = [];
+    if (quizDone < 3) remaining.push(`${3 - quizDone} квіз${3 - quizDone > 1 ? 'и' : ''}`);
+    if (nmtDone < 1) remaining.push('НМТ симулятор');
+
+    const payload = JSON.stringify({
+      title: '📚 MathHelper — час вчитися!',
+      body: `Залишилось: ${remaining.join(' та ')}. НМТ не чекає! 💪`,
+      url: 'https://rostyslavv.vibe.brobots.org.ua'
+    });
+
+    for (const sub of user.pushSubs) {
+      try {
+        await webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+          payload
+        );
+      } catch (e) {
+        if (e.statusCode === 410) {
+          await prisma.pushSubscription.delete({ where: { id: sub.id } });
+        }
+      }
+    }
+  }
+}, { timezone: 'Europe/Kyiv' });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '::', () => console.log(`Server running on port ${PORT}`));

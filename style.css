@@ -864,3 +864,33 @@ body.dark .notes-drawer-textarea{background:#1a2535;border-color:#1e3050;color:#
 .qm-pro-tag{font-size:.6rem;background:#9333ea;color:#fff;padding:1px 4px;border-radius:4px;margin-left:2px;vertical-align:middle;}
 /* push body content above quick-menu */
 body:has(.quick-menu[style*="flex"]) main{padding-bottom:72px;}
+
+/* ===== DAILY GOAL ===== */
+.daily-goal-card{background:#fff;border:2px solid #3b82f6;border-radius:16px;padding:18px 20px;}
+.daily-goal-card.done{border-color:#22c55e;background:#f0fdf4;}
+.daily-goal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.daily-goal-title{font-size:1.05rem;font-weight:700;color:#1e293b;}
+.daily-goal-pct{font-size:1.3rem;font-weight:800;color:#3b82f6;}
+.daily-goal-card.done .daily-goal-pct{color:#22c55e;}
+.daily-goal-bar-wrap{background:#e2e8f0;border-radius:99px;height:10px;margin-bottom:14px;overflow:hidden;}
+.daily-goal-bar{height:10px;background:linear-gradient(90deg,#3b82f6,#6366f1);border-radius:99px;transition:width .5s;}
+.daily-goal-card.done .daily-goal-bar{background:linear-gradient(90deg,#22c55e,#16a34a);}
+.daily-goal-items{display:flex;flex-direction:column;gap:8px;}
+.daily-goal-item{display:flex;align-items:center;gap:8px;font-size:.9rem;color:#334155;}
+.daily-goal-item.done{color:#16a34a;}
+.daily-goal-item b{margin-left:auto;}
+.daily-goal-go{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:3px 10px;font-size:.8rem;color:#2563eb;cursor:pointer;margin-left:8px;}
+.daily-goal-hint{margin-top:10px;font-size:.78rem;color:#94a3b8;text-align:center;}
+/* Push button */
+.push-toggle-btn{background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:10px;padding:8px 18px;font-size:.88rem;cursor:pointer;color:#475569;transition:.2s;}
+.push-toggle-btn.active{background:#eff6ff;border-color:#3b82f6;color:#2563eb;}
+/* Dark mode */
+body.dark .daily-goal-card{background:#1e293b;border-color:#3b82f6;}
+body.dark .daily-goal-card.done{background:#052e16;border-color:#22c55e;}
+body.dark .daily-goal-title{color:#f1f5f9;}
+body.dark .daily-goal-item{color:#cbd5e1;}
+body.dark .daily-goal-item.done{color:#4ade80;}
+body.dark .daily-goal-bar-wrap{background:#334155;}
+body.dark .daily-goal-go{background:#1e3a5f;border-color:#1e40af;color:#93c5fd;}
+body.dark .push-toggle-btn{background:#1e293b;border-color:#334155;color:#94a3b8;}
+body.dark .push-toggle-btn.active{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd;}

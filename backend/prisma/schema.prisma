@@ -14,13 +14,35 @@ datasource db {
 }
 
 model User {
+  id            Int               @id @default(autoincrement())
+  name          String
+  email         String            @unique
+  password      String
+  grade         Int
+  createdAt     DateTime          @default(now())
+  notes         Note[]
+  pushSubs      PushSubscription[]
+  dailyProgress DailyProgress[]
+}
+
+model PushSubscription {
   id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  grade     Int      // class: 4-11
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
   createdAt DateTime @default(now())
-  notes     Note[]
+}
+
+model DailyProgress {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       String   // YYYY-MM-DD
+  quizDone   Int      @default(0)
+  nmtDone    Int      @default(0)
+  @@unique([userId, date])
 }
 
 model Note {

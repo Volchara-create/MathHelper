@@ -2174,6 +2174,17 @@ function submitExam() {
   closeConfirmModal();
   document.removeEventListener('visibilitychange', onVisibilityChange);
   window.removeEventListener('blur', onWindowBlur);
+  // Track NMT completion for daily goal
+  const token = localStorage.getItem('mh_token');
+  const apiBase = window.location.hostname === 'volchara-create.github.io'
+    ? 'https://rostyslavv.vibe.brobots.org.ua' : '';
+  if (token) {
+    fetch(`${apiBase}/daily/track`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'nmt' })
+    }).catch(() => {});
+  }
   showResults();
 }
 

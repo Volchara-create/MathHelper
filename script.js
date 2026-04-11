@@ -1949,6 +1949,7 @@ function renderQuizQuestion(){
       <div class="quiz-result-msg">${pct}% правильних<br>${msg}</div>
       <button class="quiz-restart-btn" onclick="startQuiz()">🔄 Спробувати ще раз</button>
     </div>`;
+    if(typeof trackDaily==='function') trackDaily('quiz');
     return;
   }
   const q=quizOrder[quizCurrent];

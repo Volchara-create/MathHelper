@@ -22,6 +22,8 @@ services:
       - PORT=3001
       - GOOGLE_CLIENT_ID=1004475773858-nondip8br7f0imavgej0vpm4gn6ld5pn.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - VAPID_PUBLIC_KEY=BM8GWvox2a8ttm4QE0l-RVECH6mxsX-5PojWYvhK1WUBHSZwgZhpIa2CcltWTP9-DRABSo_RT-NmcydKKK1iP7A
+      - VAPID_PRIVATE_KEY=oNfGzAdTjMYj1GsO8OIpddJV6ZpozQDGZBPlQK0XLnY
 
 volumes:
   pgdata:

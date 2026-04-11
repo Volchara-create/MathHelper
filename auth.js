@@ -547,6 +547,8 @@ function dashLoad(user) {
 
   // Load recent notes
   dashLoadRecentNotes();
+  // Load daily goal progress
+  dashLoadDailyGoal();
 }
 
 async function dashLoadRecentNotes() {
@@ -846,4 +848,150 @@ async function noteDrawerDelete() {
     allNotes = allNotes.filter(n => n.id !== drawerNoteId);
     drawerRenderList();
   } catch { alert('Помилка видалення'); }
+}
+
+// ===== DAILY GOAL =====
+
+const DAILY_GOAL = { quiz: 3, nmt: 1 };
+
+async function dashLoadDailyGoal() {
+  const token = localStorage.getItem('mh_token');
+  const el = document.getElementById('daily-goal-section');
+  if (!el) return;
+  if (!token) { el.style.display = 'none'; return; }
+  el.style.display = '';
+  try {
+    const res = await fetch(`${API}/daily`, { headers: { Authorization: `Bearer ${token}` } });
+    const p = res.ok ? await res.json() : { quizDone: 0, nmtDone: 0 };
+    renderDailyGoal(p);
+  } catch { renderDailyGoal({ quizDone: 0, nmtDone: 0 }); }
+}
+
+function renderDailyGoal(p) {
+  const quizPct  = Math.min(100, Math.round((p.quizDone  / DAILY_GOAL.quiz) * 100));
+  const nmtPct   = Math.min(100, Math.round((p.nmtDone   / DAILY_GOAL.nmt)  * 100));
+  const totalPct = Math.round((quizPct + nmtPct) / 2);
+  const done = quizPct === 100 && nmtPct === 100;
+
+  const el = document.getElementById('daily-goal-section');
+  el.innerHTML = `
+    <div class="daily-goal-card ${done ? 'done' : ''}">
+      <div class="daily-goal-header">
+        <span class="daily-goal-title">${done ? '🎉 Ціль виконана!' : '🎯 Щоденна ціль'}</span>
+        <span class="daily-goal-pct">${totalPct}%</span>
+      </div>
+      <div class="daily-goal-bar-wrap">
+        <div class="daily-goal-bar" style="width:${totalPct}%"></div>
+      </div>
+      <div class="daily-goal-items">
+        <div class="daily-goal-item ${quizPct>=100?'done':''}">
+          ${quizPct>=100?'✅':'⬜'} Квіз <b>${p.quizDone}/${DAILY_GOAL.quiz}</b>
+          <button onclick="show('quiz')" class="daily-goal-go">Йти →</button>
+        </div>
+        <div class="daily-goal-item ${nmtPct>=100?'done':''}">
+          ${nmtPct>=100?'✅':'⬜'} НМТ симулятор <b>${p.nmtDone}/${DAILY_GOAL.nmt}</b>
+          <button onclick="window.location.href='simulator.html'" class="daily-goal-go">Йти →</button>
+        </div>
+      </div>
+      ${!done ? `<p class="daily-goal-hint">⏰ Нагадування о 18:00 якщо не виконаєш</p>` : ''}
+    </div>`;
+}
+
+async function trackDaily(type) {
+  const token = localStorage.getItem('mh_token');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API}/daily/track`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type })
+    });
+    if (res.ok) {
+      const p = await res.json();
+      renderDailyGoal(p);
+    }
+  } catch {}
+}
+
+// ===== PUSH NOTIFICATIONS =====
+
+async function pushSubscribe() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('Твій браузер не підтримує push-сповіщення');
+    return;
+  }
+  const token = localStorage.getItem('mh_token');
+  if (!token) { authOpen('login'); return; }
+
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') {
+    alert('Дозвіл на сповіщення відхилено. Дозволь в налаштуваннях браузера.');
+    return;
+  }
+
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const keyRes = await fetch(`${API}/vapid-public-key`);
+    const { key } = await keyRes.json();
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(key)
+    });
+
+    await fetch(`${API}/push/subscribe`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(sub)
+    });
+
+    updatePushBtn(true);
+    alert('✅ Нагадування увімкнено! Щодня о 18:00 нагадаємо якщо не виконаєш ціль.');
+  } catch (e) {
+    alert('Помилка підключення: ' + e.message);
+  }
+}
+
+async function pushUnsubscribe() {
+  const token = localStorage.getItem('mh_token');
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      await fetch(`${API}/push/unsubscribe`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: sub.endpoint })
+      });
+      await sub.unsubscribe();
+    }
+    updatePushBtn(false);
+  } catch {}
+}
+
+async function checkPushStatus() {
+  if (!('serviceWorker' in navigator)) return;
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  updatePushBtn(!!sub);
+}
+
+function updatePushBtn(active) {
+  const btn = document.getElementById('push-toggle-btn');
+  if (!btn) return;
+  btn.textContent = active ? '🔔 Нагадування увімкнено' : '🔕 Увімкнути нагадування';
+  btn.onclick = active ? pushUnsubscribe : pushSubscribe;
+  btn.classList.toggle('active', active);
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+// Register service worker on load
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(() => checkPushStatus()).catch(() => {});
 }

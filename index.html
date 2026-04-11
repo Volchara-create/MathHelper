@@ -433,6 +433,9 @@
           </button>
         </div>
 
+        <!-- Daily Goal -->
+        <div id="daily-goal-section" style="display:none;margin-bottom:24px;"></div>
+
         <!-- Recent notes -->
         <div class="dash-section" id="dash-notes-section">
           <h2 class="dash-section-title">📓 Останні конспекти <button class="dash-new-note-btn" onclick="show('notes')">+ Новий</button></h2>
@@ -446,6 +449,11 @@
           <h2 class="dash-section-title">🎯 Підготовка до НМТ</h2>
           <p>Тренуйся щодня — і НМТ не буде страшним!</p>
           <div class="dash-nmt-topics" id="dash-nmt-topics"></div>
+        </div>
+
+        <!-- Push notifications toggle -->
+        <div style="margin-top:8px;">
+          <button id="push-toggle-btn" class="push-toggle-btn" onclick="pushSubscribe()">🔕 Увімкнути нагадування</button>
         </div>
       </div>
     </section>
