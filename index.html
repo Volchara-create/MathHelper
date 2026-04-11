@@ -831,8 +831,11 @@
 
   <!-- Quick Action Menu (bottom bar) -->
   <div class="quick-menu" id="quick-menu" style="display:none;">
+    <button class="qm-btn" id="qm-back-btn" onclick="qmGoBack()" style="display:none;">
+      <span class="qm-icon">←</span><span class="qm-label">Назад</span>
+    </button>
     <button class="qm-btn" onclick="show('dashboard')">
-      <span class="qm-icon">🏠</span><span class="qm-label">Хаб</span>
+      <span class="qm-icon">🏠</span><span class="qm-label">Головна</span>
     </button>
     <button class="qm-btn" onclick="notesDrawerOpen()">
       <span class="qm-icon">📓</span><span class="qm-label">Конспект</span>

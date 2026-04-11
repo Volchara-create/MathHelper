@@ -305,19 +305,36 @@ window.addEventListener('DOMContentLoaded', () => {
   // Wrap show() to handle dashboard/notes loading + back button
   const _origShow = window.show;
   const NO_BACK = new Set(['home', 'dashboard']);
+  window._prevSection = null;
+
   window.show = function(sec) {
+    const token = localStorage.getItem('mh_token');
+    // Track previous section for "back" button
+    const active = document.querySelector('section.active');
+    if (active && active.id !== sec) window._prevSection = active.id;
+
     _origShow(sec);
     if (sec === 'notes') notesInit();
     if (sec === 'dashboard') {
       const user = JSON.parse(localStorage.getItem('mh_user') || 'null');
       if (user) dashLoad(user);
     }
-    // Show/hide back button in header
-    const token = localStorage.getItem('mh_token');
+
+    // Header back button
     const backBtn = document.getElementById('global-back-btn');
     if (backBtn) backBtn.style.display = (token && !NO_BACK.has(sec)) ? '' : 'none';
+
+    // Quick menu back button
+    const qmBack = document.getElementById('qm-back-btn');
+    if (qmBack) qmBack.style.display = (token && !NO_BACK.has(sec) && window._prevSection) ? '' : 'none';
   };
 });
+
+function qmGoBack() {
+  const prev = window._prevSection;
+  if (prev) show(prev);
+  else show('dashboard');
+}
 
 // ===== AUTH =====
 
