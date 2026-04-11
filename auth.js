@@ -736,6 +736,17 @@ function notesDrawerClose() {
   document.body.classList.remove('drawer-active');
 }
 
+function drawerSetStyle(style) {
+  const ta = document.getElementById('drawer-content-input');
+  ta.classList.remove('lined', 'grid', 'plain');
+  if (style !== 'plain') ta.classList.add(style);
+  ['lined','grid','plain'].forEach(s => {
+    const btn = document.getElementById('drawer-nb-' + s);
+    if (btn) btn.classList.toggle('active', s === style);
+  });
+  localStorage.setItem('mh_drawer_style', style);
+}
+
 function drawerRenderList() {
   const listEl = document.getElementById('drawer-notes-list');
   document.getElementById('drawer-editor').style.display = 'none';
@@ -762,6 +773,9 @@ function drawerOpenNote(id) {
   document.getElementById('drawer-notes-list').style.display = 'none';
   document.getElementById('drawer-editor').style.display = 'flex';
   document.getElementById('drawer-editor').style.flexDirection = 'column';
+  // Restore saved paper style
+  const style = localStorage.getItem('mh_drawer_style') || 'lined';
+  drawerSetStyle(style);
 }
 
 function noteDrawerNew() {

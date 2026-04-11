@@ -841,7 +841,12 @@
       <!-- Editor -->
       <div class="notes-drawer-editor" id="drawer-editor" style="display:none;">
         <input class="notes-title-input" id="drawer-title-input" placeholder="Назва конспекту..." maxlength="80">
-        <textarea class="notes-content-area notes-drawer-textarea" id="drawer-content-input" placeholder="Пиши свої нотатки..."></textarea>
+        <div class="drawer-style-row">
+          <button class="nb-style-btn active" id="drawer-nb-lined" onclick="drawerSetStyle('lined')" title="Лінійка">≡ Лінійка</button>
+          <button class="nb-style-btn" id="drawer-nb-grid" onclick="drawerSetStyle('grid')" title="Клітинки">⊞ Клітинка</button>
+          <button class="nb-style-btn" id="drawer-nb-plain" onclick="drawerSetStyle('plain')" title="Чистий">☐ Чистий</button>
+        </div>
+        <textarea class="notes-content-area notes-drawer-textarea lined" id="drawer-content-input" placeholder="Пиши свої нотатки..."></textarea>
         <div class="notes-drawer-actions">
           <button class="note-save-btn" onclick="noteDrawerSave()">💾 Зберегти</button>
           <button class="note-delete-btn" onclick="noteDrawerDelete()">🗑</button>
