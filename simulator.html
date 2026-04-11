@@ -1,0 +1,2316 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>МатТест — Симулятор НМТ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card2: #273449;
+      --border: #334155;
+      --accent: #3b82f6;
+      --accent2: #6366f1;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== SCREENS ===== */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ===== START SCREEN ===== */
+    #screen-start {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      text-align: center;
+    }
+    #screen-start h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+    #screen-start p.sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 2.5rem;
+    }
+    .grade-select-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 480px;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    .grade-select-wrap h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+      color: var(--muted);
+    }
+    .grade-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .grade-btn {
+      padding: .55rem 1.1rem;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--card2);
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .grade-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .grade-btn.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+
+    .info-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .info-chip {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: .4rem 1rem;
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    .info-chip span { color: var(--accent); font-weight: 700; }
+
+    .rules-list {
+      text-align: left;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      padding-left: 1.2rem;
+    }
+    .rules-list li { margin-bottom: .3rem; }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: .9rem 3rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      letter-spacing: .5px;
+    }
+    .btn-start:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-start:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+    /* ===== EXAM SCREEN ===== */
+    #screen-exam {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exam-header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: .8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .exam-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .95rem;
+      color: var(--accent);
+    }
+    .timer {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--green);
+      transition: color .3s;
+    }
+    .timer.warn { color: var(--yellow); }
+    .timer.danger { color: var(--red); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    .violation-badge {
+      background: var(--red);
+      color: #fff;
+      border-radius: 20px;
+      padding: .25rem .8rem;
+      font-size: .85rem;
+      font-weight: 700;
+      display: none;
+    }
+    .violation-badge.show { display: inline-block; }
+
+    .exam-body {
+      flex: 1;
+      display: flex;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 1.5rem;
+      gap: 1.5rem;
+    }
+
+    /* Question navigator */
+    .q-nav {
+      width: 200px;
+      flex-shrink: 0;
+    }
+    .q-nav-title {
+      font-size: .8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: .8rem;
+    }
+    .q-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: .4rem;
+    }
+    .q-dot {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--card2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      cursor: pointer;
+      transition: all .15s;
+      color: var(--muted);
+    }
+    .q-dot:hover { border-color: var(--accent); color: var(--accent); }
+    .q-dot.current { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .q-dot.answered { border-color: var(--green); background: rgba(34,197,94,.15); color: var(--green); }
+    .q-dot.answered.current { background: var(--green); color: #fff; }
+
+    .q-progress-wrap {
+      margin-top: 1.2rem;
+    }
+    .q-progress-label {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+    .q-progress-bar {
+      background: var(--border);
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .q-progress-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 4px;
+      transition: width .3s;
+    }
+
+    /* Question card */
+    .q-card {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+    .q-meta {
+      display: flex;
+      gap: .6rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .q-tag {
+      font-size: .75rem;
+      padding: .25rem .7rem;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .q-tag.num { background: rgba(59,130,246,.2); color: var(--accent); }
+    .q-tag.topic { background: rgba(99,102,241,.2); color: #a5b4fc; }
+    .q-tag.type-mcq { background: rgba(34,197,94,.15); color: var(--green); }
+    .q-tag.type-open { background: rgba(245,158,11,.15); color: var(--yellow); }
+
+    .q-text {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin-bottom: 1.8rem;
+      color: var(--text);
+    }
+
+    /* MCQ options */
+    .mcq-options {
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+    }
+    .mcq-opt {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .9rem 1.2rem;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--card2);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .mcq-opt:hover { border-color: var(--accent); background: rgba(59,130,246,.08); }
+    .mcq-opt.selected { border-color: var(--accent); background: rgba(59,130,246,.15); }
+    .mcq-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .9rem;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+    .mcq-opt.selected .mcq-letter { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .mcq-text { font-size: 1rem; }
+
+    /* Open answer */
+    .open-answer-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+    .open-answer-wrap label {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .open-input {
+      background: var(--card2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: .9rem 1.2rem;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-family: 'Roboto', sans-serif;
+      transition: border-color .15s;
+      max-width: 300px;
+    }
+    .open-input:focus { outline: none; border-color: var(--accent); }
+    .open-input::placeholder { color: var(--border); }
+
+    /* Nav buttons */
+    .q-nav-btns {
+      display: flex;
+      gap: .8rem;
+      margin-top: 2rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-nav {
+      padding: .65rem 1.5rem;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--card2);
+      color: var(--text);
+      font-size: .95rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-nav:disabled { opacity: .3; cursor: not-allowed; }
+    .btn-finish {
+      background: linear-gradient(135deg, var(--red), #dc2626);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .65rem 1.5rem;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-finish:hover { opacity: .85; }
+
+    /* ===== VIOLATION MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+      display: none;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: var(--card);
+      border: 2px solid var(--red);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+    }
+    .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .modal-box h2 { color: var(--red); margin-bottom: .8rem; }
+    .modal-box p { color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .btn-modal-ok {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .7rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ===== CONFIRM FINISH MODAL ===== */
+    .modal-confirm { border-color: var(--yellow); }
+    .modal-confirm h2 { color: var(--yellow); }
+    .modal-actions { display: flex; gap: 1rem; justify-content: center; }
+    .btn-modal-cancel {
+      background: var(--card2);
+      border: 2px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: .7rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn-modal-confirm {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .7rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ===== RESULTS SCREEN ===== */
+    #screen-results {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .results-hero {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .results-hero h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: .5rem;
+    }
+    .results-score-big {
+      font-size: 5rem;
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin: .5rem 0;
+    }
+    .results-nmt-score {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .results-nmt-score span { color: var(--yellow); font-weight: 700; font-size: 1.4rem; }
+
+    .results-stats {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .stat-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      min-width: 120px;
+    }
+    .stat-chip .stat-val {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: block;
+    }
+    .stat-chip .stat-label { font-size: .8rem; color: var(--muted); }
+    .stat-correct .stat-val { color: var(--green); }
+    .stat-wrong .stat-val { color: var(--red); }
+    .stat-skip .stat-val { color: var(--muted); }
+    .stat-viol .stat-val { color: var(--yellow); }
+
+    .results-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .btn-review {
+      padding: .8rem 1.8rem;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .btn-review-errors {
+      background: rgba(239,68,68,.15);
+      border: 2px solid var(--red);
+      color: var(--red);
+    }
+    .btn-review-errors:hover { background: var(--red); color: #fff; }
+    .btn-review-all {
+      background: rgba(59,130,246,.15);
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+    .btn-review-all:hover { background: var(--accent); color: #fff; }
+    .btn-retry {
+      background: var(--card2);
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+    .btn-retry:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Topic analysis */
+    .topic-analysis {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .topic-analysis h3 { margin-bottom: 1.2rem; font-size: 1.1rem; }
+    .topic-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: .8rem;
+    }
+    .topic-name { width: 160px; font-size: .9rem; color: var(--muted); flex-shrink: 0; }
+    .topic-bar-wrap { flex: 1; background: var(--border); border-radius: 4px; height: 8px; }
+    .topic-bar-fill { height: 100%; border-radius: 4px; transition: width .5s; }
+    .topic-score { font-size: .85rem; font-weight: 700; width: 40px; text-align: right; flex-shrink: 0; }
+
+    /* ===== REVIEW SCREEN ===== */
+    #screen-review {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .btn-back {
+      background: var(--card2);
+      border: 2px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: .5rem 1rem;
+      cursor: pointer;
+      font-size: .9rem;
+      transition: all .15s;
+    }
+    .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+    .review-header h2 { font-size: 1.3rem; }
+
+    .review-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      margin-bottom: 1.2rem;
+    }
+    .review-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+    .review-status-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: .1rem;
+    }
+    .review-status-icon.correct { background: rgba(34,197,94,.2); }
+    .review-status-icon.wrong { background: rgba(239,68,68,.2); }
+    .review-status-icon.skipped { background: rgba(148,163,184,.15); }
+    .review-q-num { color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+    .review-q-text { font-size: 1rem; line-height: 1.6; }
+
+    .review-answers {
+      margin: 1.2rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .review-ans-row {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      padding: .6rem 1rem;
+      border-radius: 8px;
+      font-size: .95rem;
+    }
+    .review-ans-row.user-wrong { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); }
+    .review-ans-row.user-correct { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); }
+    .review-ans-row.correct-ans { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2); }
+    .review-ans-label { font-size: .8rem; padding: .2rem .6rem; border-radius: 4px; flex-shrink: 0; }
+    .label-you-wrong { background: rgba(239,68,68,.2); color: var(--red); }
+    .label-you-ok { background: rgba(34,197,94,.2); color: var(--green); }
+    .label-correct { background: rgba(34,197,94,.2); color: var(--green); }
+    .label-skipped { background: rgba(148,163,184,.15); color: var(--muted); }
+
+    .review-solution {
+      background: var(--card2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 1.2rem;
+      margin-top: 1rem;
+    }
+    .review-solution h4 {
+      font-size: .85rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: .8rem;
+    }
+    .solution-steps {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .solution-step {
+      display: flex;
+      gap: .8rem;
+      align-items: flex-start;
+      font-size: .95rem;
+      line-height: 1.5;
+    }
+    .step-num {
+      background: rgba(59,130,246,.2);
+      color: var(--accent);
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: .1rem;
+    }
+    .review-rule {
+      margin-top: .8rem;
+      padding: .6rem 1rem;
+      background: rgba(99,102,241,.1);
+      border: 1px solid rgba(99,102,241,.3);
+      border-radius: 8px;
+      font-size: .88rem;
+      color: #a5b4fc;
+    }
+    .review-rule strong { color: #c7d2fe; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .exam-body { flex-direction: column; padding: 1rem; }
+      .q-nav { width: 100%; }
+      .q-nav-grid { grid-template-columns: repeat(10, 1fr); }
+      .results-score-big { font-size: 3.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================
+     SCREEN 1: START
+============================= -->
+<div id="screen-start" class="screen active">
+  <h1>МатТест</h1>
+  <p class="sub">Симулятор НМТ з математики — як справжній іспит</p>
+
+  <div class="grade-select-wrap">
+    <h2>Обери свій клас:</h2>
+    <div class="grade-btns">
+      <button class="grade-btn" onclick="selectGrade(7)">7 клас</button>
+      <button class="grade-btn" onclick="selectGrade(8)">8 клас</button>
+      <button class="grade-btn" onclick="selectGrade(9)">9 клас</button>
+      <button class="grade-btn" onclick="selectGrade(10)">10 клас</button>
+      <button class="grade-btn" onclick="selectGrade(11)">11 клас</button>
+    </div>
+
+    <div class="info-row" id="test-info" style="display:none;">
+      <div class="info-chip">📝 <span id="info-q">—</span> питань</div>
+      <div class="info-chip">⏱ <span id="info-t">—</span> хвилин</div>
+      <div class="info-chip">🎯 Змішаний формат</div>
+    </div>
+
+    <ul class="rules-list">
+      <li>⚠️ Під час тесту не можна відкривати інші вкладки</li>
+      <li>📵 Перехід з вкладки фіксується як порушення</li>
+      <li>⏳ Таймер не зупиняється</li>
+      <li>✏️ Можна переходити між питаннями</li>
+      <li>✅ Після здачі — детальний розбір кожного завдання</li>
+    </ul>
+
+    <button class="btn-start" id="btn-start" onclick="startExam()" disabled>
+      Розпочати тест →
+    </button>
+  </div>
+</div>
+
+<!-- ============================
+     SCREEN 2: EXAM
+============================= -->
+<div id="screen-exam" class="screen">
+  <!-- Header -->
+  <div class="exam-header">
+    <div class="exam-title">МатТест — <span id="exam-grade-label"></span></div>
+    <div class="timer" id="timer">00:00</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button onclick="toggleFullscreen()" id="btn-fullscreen" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.85rem;">⛶ Fullscreen</button>
+      <div class="violation-badge" id="viol-badge">⚠️ Порушень: <span id="viol-count">0</span></div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="exam-body">
+    <!-- Left nav -->
+    <div class="q-nav">
+      <div class="q-nav-title">Питання</div>
+      <div class="q-nav-grid" id="q-nav-grid"></div>
+      <div class="q-progress-wrap">
+        <div class="q-progress-label">Відповіді: <span id="answered-count">0</span> / <span id="total-count">0</span></div>
+        <div class="q-progress-bar"><div class="q-progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Question card -->
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-tag num" id="q-num-tag"></span>
+        <span class="q-tag topic" id="q-topic-tag"></span>
+        <span class="q-tag" id="q-type-tag"></span>
+      </div>
+      <div class="q-text" id="q-text"></div>
+      <div id="q-answer-area"></div>
+      <div class="q-nav-btns">
+        <button class="btn-nav" id="btn-prev" onclick="goPrev()">← Назад</button>
+        <button class="btn-finish" onclick="confirmFinish()">Здати тест</button>
+        <button class="btn-nav" id="btn-next" onclick="goNext()">Далі →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     SCREEN 3: RESULTS
+============================= -->
+<div id="screen-results" class="screen">
+  <div class="results-hero">
+    <h1>Результат тесту</h1>
+    <div class="results-score-big" id="res-score">0/0</div>
+    <div class="results-nmt-score">Орієнтовний бал НМТ: <span id="res-nmt">—</span></div>
+  </div>
+
+  <div class="results-stats" id="results-stats"></div>
+
+  <div class="results-actions">
+    <button class="btn-review btn-review-errors" onclick="showReview('errors')">🔍 Розібрати помилки</button>
+    <button class="btn-review btn-review-all" onclick="showReview('all')">📖 Розібрати все</button>
+    <button class="btn-review btn-retry" onclick="retryExam()">🔄 Пройти ще раз</button>
+  </div>
+
+  <div class="topic-analysis">
+    <h3>📊 Аналіз по темах</h3>
+    <div id="topic-bars"></div>
+  </div>
+</div>
+
+<!-- ============================
+     SCREEN 4: REVIEW
+============================= -->
+<div id="screen-review" class="screen">
+  <div class="review-header">
+    <button class="btn-back" onclick="showScreen('screen-results')">← Назад</button>
+    <h2 id="review-title">Розбір завдань</h2>
+  </div>
+  <div id="review-list"></div>
+</div>
+
+<!-- ============================
+     MODALS
+============================= -->
+<!-- Violation modal -->
+<div class="modal-overlay" id="modal-violation">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <h2>Порушення!</h2>
+    <p id="modal-viol-text">Ти покинув вкладку з тестом. Це фіксується як порушення академічної доброчесності.<br><br>Повернись до тесту і продовжуй.</p>
+    <button class="btn-modal-ok" onclick="closeViolModal()">Повернутися до тесту</button>
+  </div>
+</div>
+
+<!-- Confirm finish modal -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal-box modal-confirm">
+    <div class="modal-icon">📋</div>
+    <h2>Здати тест?</h2>
+    <p id="modal-confirm-text">Ти відповів на <strong id="conf-answered">0</strong> з <strong id="conf-total">0</strong> питань.<br>Пропущені питання будуть вважатися без відповіді.</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeConfirmModal()">Продовжити тест</button>
+      <button class="btn-modal-confirm" onclick="submitExam()">Здати</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  QUESTION BANK
+// ============================================================
+
+const QUESTIONS = {
+  7: [
+    {
+      topic: "Алгебра", subtopic: "Відсотки",
+      type: "open",
+      text: "Від числа 80 знайдіть 25%.",
+      correct: "20",
+      solution: ["25% = 25/100 = 0.25", "80 × 0.25 = 20"],
+      rule: "p% від числа N = N × p / 100"
+    },
+    {
+      topic: "Алгебра", subtopic: "Рівняння",
+      type: "mcq",
+      text: "Розв'яжіть рівняння: 3x + 6 = 21",
+      options: ["3", "5", "7", "9"],
+      correct: 1,
+      solution: ["3x = 21 − 6", "3x = 15", "x = 15 ÷ 3 = 5"],
+      rule: "Щоб розв'язати рівняння ax + b = c, перенеси b в праву частину і поділи на a"
+    },
+    {
+      topic: "Геометрія", subtopic: "Площа прямокутника",
+      type: "open",
+      text: "Знайдіть площу прямокутника зі сторонами 7 см і 4 см.",
+      correct: "28",
+      solution: ["S = a × b", "S = 7 × 4 = 28 см²"],
+      rule: "Площа прямокутника: S = a × b"
+    },
+    {
+      topic: "Алгебра", subtopic: "Степені",
+      type: "mcq",
+      text: "Чому дорівнює 2⁵?",
+      options: ["16", "25", "32", "64"],
+      correct: 2,
+      solution: ["2⁵ = 2 × 2 × 2 × 2 × 2", "= 4 × 4 × 2 = 32"],
+      rule: "aⁿ = a множимо само на себе n разів"
+    },
+    {
+      topic: "Алгебра", subtopic: "Нерівності",
+      type: "mcq",
+      text: "Яке число є розв'язком нерівності 2x < 10?",
+      options: ["6", "5", "4", "10"],
+      correct: 2,
+      solution: ["2x < 10", "x < 5", "Зі запропонованих: 4 < 5 ✓"],
+      rule: "При діленні нерівності на додатнє число знак нерівності не змінюється"
+    },
+    {
+      topic: "Геометрія", subtopic: "Периметр",
+      type: "open",
+      text: "Периметр квадрата дорівнює 36 см. Знайдіть його сторону.",
+      correct: "9",
+      solution: ["P = 4a", "a = P ÷ 4 = 36 ÷ 4 = 9 см"],
+      rule: "Периметр квадрата: P = 4a, звідси a = P/4"
+    },
+    {
+      topic: "Алгебра", subtopic: "Дроби",
+      type: "mcq",
+      text: "Спростіть дріб: 24/36",
+      options: ["2/3", "3/4", "4/6", "6/9"],
+      correct: 0,
+      solution: ["НСД(24, 36) = 12", "24 ÷ 12 = 2, 36 ÷ 12 = 3", "Результат: 2/3"],
+      rule: "Для скорочення дробу ділимо чисельник і знаменник на НСД"
+    },
+    {
+      topic: "Геометрія", subtopic: "Трикутник",
+      type: "open",
+      text: "Площа трикутника з основою 10 см і висотою 6 см.",
+      correct: "30",
+      solution: ["S = ½ × a × h", "S = ½ × 10 × 6 = 30 см²"],
+      rule: "Площа трикутника: S = ½ × основа × висота"
+    },
+    {
+      topic: "Алгебра", subtopic: "Відсотки",
+      type: "mcq",
+      text: "Скільки відсотків становить 15 від 60?",
+      options: ["20%", "25%", "30%", "15%"],
+      correct: 1,
+      solution: ["15 / 60 × 100%", "= 0.25 × 100% = 25%"],
+      rule: "Відсоток = частина / ціле × 100%"
+    },
+    {
+      topic: "Алгебра", subtopic: "Вираз",
+      type: "open",
+      text: "Обчисліть: 4² + 3²",
+      correct: "25",
+      solution: ["4² = 16", "3² = 9", "16 + 9 = 25"],
+      rule: "Спочатку рахуємо степені, потім додаємо"
+    },
+    {
+      topic: "Геометрія", subtopic: "Кола",
+      type: "mcq",
+      text: "Радіус кола 5 см. Чому дорівнює діаметр?",
+      options: ["5 см", "10 см", "15 см", "25 см"],
+      correct: 1,
+      solution: ["d = 2r", "d = 2 × 5 = 10 см"],
+      rule: "Діаметр = 2 × радіус"
+    },
+    {
+      topic: "Алгебра", subtopic: "Рівняння",
+      type: "open",
+      text: "Знайдіть x: 5x − 3 = 22",
+      correct: "5",
+      solution: ["5x = 22 + 3 = 25", "x = 25 ÷ 5 = 5"],
+      rule: "Переносимо вільний член в праву частину, потім ділимо"
+    },
+    {
+      topic: "Геометрія", subtopic: "Об'єм",
+      type: "mcq",
+      text: "Об'єм куба зі стороною 3 см:",
+      options: ["9 см³", "18 см³", "27 см³", "36 см³"],
+      correct: 2,
+      solution: ["V = a³", "V = 3³ = 27 см³"],
+      rule: "Об'єм куба: V = a³"
+    },
+    {
+      topic: "Алгебра", subtopic: "Числова вісь",
+      type: "mcq",
+      text: "Яке число протилежне до −7?",
+      options: ["7", "−7", "1/7", "−1/7"],
+      correct: 0,
+      solution: ["Протилежне число має той самий модуль але інший знак", "Протилежне до −7 є 7"],
+      rule: "Протилежні числа: a і −a. Їх сума = 0"
+    },
+    {
+      topic: "Геометрія", subtopic: "Кути",
+      type: "open",
+      text: "Сума кутів трикутника — 180°. Два кути: 70° і 50°. Знайдіть третій.",
+      correct: "60",
+      solution: ["∠C = 180° − 70° − 50°", "∠C = 60°"],
+      rule: "Сума кутів трикутника = 180°"
+    }
+  ],
+
+  8: [
+    {
+      topic: "Алгебра", subtopic: "Квадратні рівняння",
+      type: "mcq",
+      text: "Розв'яжіть рівняння: x² − 5x + 6 = 0",
+      options: ["x = 2 і x = 3", "x = 1 і x = 6", "x = −2 і x = −3", "x = 0 і x = 5"],
+      correct: 0,
+      solution: ["D = 25 − 24 = 1", "x₁ = (5+1)/2 = 3", "x₂ = (5−1)/2 = 2"],
+      rule: "Дискримінант: D = b² − 4ac; x = (−b ± √D) / 2a"
+    },
+    {
+      topic: "Геометрія", subtopic: "Теорема Піфагора",
+      type: "open",
+      text: "У прямокутному трикутнику катети 6 і 8. Знайдіть гіпотенузу.",
+      correct: "10",
+      solution: ["c² = a² + b²", "c² = 36 + 64 = 100", "c = √100 = 10"],
+      rule: "Теорема Піфагора: c² = a² + b², де c — гіпотенуза"
+    },
+    {
+      topic: "Алгебра", subtopic: "Функція",
+      type: "mcq",
+      text: "Яке значення функції y = 2x − 3 при x = 4?",
+      options: ["3", "5", "8", "11"],
+      correct: 1,
+      solution: ["y = 2 × 4 − 3", "y = 8 − 3 = 5"],
+      rule: "Підстав значення x у формулу функції"
+    },
+    {
+      topic: "Геометрія", subtopic: "Коло",
+      type: "open",
+      text: "Знайдіть площу кола з радіусом 7 см. Відповідь округліть до цілого (π ≈ 3.14).",
+      correct: "154",
+      solution: ["S = π × r²", "S = 3.14 × 49 ≈ 153.86 ≈ 154 см²"],
+      rule: "Площа кола: S = πr²"
+    },
+    {
+      topic: "Алгебра", subtopic: "Квадратні рівняння",
+      type: "open",
+      text: "Дискримінант рівняння x² − 4x + 4 = 0. Знайдіть D.",
+      correct: "0",
+      solution: ["D = b² − 4ac = (−4)² − 4×1×4", "D = 16 − 16 = 0"],
+      rule: "D = b² − 4ac. При D = 0 рівняння має один корінь"
+    },
+    {
+      topic: "Алгебра", subtopic: "Нерівності",
+      type: "mcq",
+      text: "Розв'яжіть нерівність: −2x > 8",
+      options: ["x > −4", "x < −4", "x > 4", "x < 4"],
+      correct: 1,
+      solution: ["Ділимо на −2 (знак міняється!)", "x < 8 ÷ (−2)", "x < −4"],
+      rule: "При множенні/діленні нерівності на від'ємне число — знак нерівності міняється!"
+    },
+    {
+      topic: "Геометрія", subtopic: "Трапеція",
+      type: "open",
+      text: "Площа трапеції з основами 5 і 9 та висотою 4.",
+      correct: "28",
+      solution: ["S = ½ × (a + b) × h", "S = ½ × (5 + 9) × 4 = ½ × 14 × 4 = 28"],
+      rule: "Площа трапеції: S = ½(a + b) × h"
+    },
+    {
+      topic: "Алгебра", subtopic: "Степені",
+      type: "mcq",
+      text: "Спростіть: a³ × a⁴",
+      options: ["a⁷", "a¹²", "a", "a⁴³"],
+      correct: 0,
+      solution: ["При множенні степенів з однаковою основою показники додаються", "a³ × a⁴ = a^(3+4) = a⁷"],
+      rule: "aᵐ × aⁿ = aᵐ⁺ⁿ"
+    },
+    {
+      topic: "Геометрія", subtopic: "Подібність",
+      type: "mcq",
+      text: "Трикутники подібні з коефіцієнтом 3. Сторона меншого — 4. Відповідна сторона більшого:",
+      options: ["7", "12", "9", "16"],
+      correct: 1,
+      solution: ["k = 3 (коефіцієнт подібності)", "Сторона = 4 × 3 = 12"],
+      rule: "Подібні фігури: відповідні сторони пропорційні з коефіцієнтом k"
+    },
+    {
+      topic: "Алгебра", subtopic: "Формули скорочення",
+      type: "open",
+      text: "Обчисліть (a + b)² якщо a = 3, b = 2.",
+      correct: "25",
+      solution: ["(a+b)² = a² + 2ab + b²", "= 9 + 12 + 4 = 25", "Або: (3+2)² = 5² = 25"],
+      rule: "(a+b)² = a² + 2ab + b²"
+    },
+    {
+      topic: "Геометрія", subtopic: "Теорема Піфагора",
+      type: "mcq",
+      text: "Чи є трикутник зі сторонами 5, 12, 13 прямокутним?",
+      options: ["Так", "Ні", "Неможливо визначити", "Лише якщо є прямий кут"],
+      correct: 0,
+      solution: ["Перевіримо: 13² = 5² + 12²?", "169 = 25 + 144 = 169 ✓", "Так, прямокутний!"],
+      rule: "Якщо c² = a² + b², то трикутник прямокутний (обернена теорема Піфагора)"
+    },
+    {
+      topic: "Алгебра", subtopic: "Системи",
+      type: "mcq",
+      text: "Розв'яжіть систему: x + y = 7, x − y = 3. Знайдіть x.",
+      options: ["2", "4", "5", "6"],
+      correct: 2,
+      solution: ["Додаємо рівняння: 2x = 10", "x = 5", "y = 7 − 5 = 2"],
+      rule: "Метод додавання: складаємо рівняння щоб одна змінна скоротилась"
+    },
+    {
+      topic: "Геометрія", subtopic: "Кола",
+      type: "open",
+      text: "Довжина кола з радіусом 10. Відповідь округліть до цілого (π ≈ 3.14).",
+      correct: "63",
+      solution: ["C = 2πr", "C = 2 × 3.14 × 10 = 62.8 ≈ 63"],
+      rule: "Довжина кола: C = 2πr = πd"
+    },
+    {
+      topic: "Алгебра", subtopic: "Функція",
+      type: "mcq",
+      text: "Графік y = kx проходить через точку (2, 6). Знайдіть k.",
+      options: ["2", "3", "4", "12"],
+      correct: 1,
+      solution: ["6 = k × 2", "k = 6 ÷ 2 = 3"],
+      rule: "Пряма пропорційність: y = kx, k = y/x"
+    },
+    {
+      topic: "Геометрія", subtopic: "Об'єм циліндра",
+      type: "mcq",
+      text: "Об'єм циліндра з радіусом 3 і висотою 5 (π ≈ 3):",
+      options: ["90", "135", "45", "270"],
+      correct: 1,
+      solution: ["V = π × r² × h", "V = 3 × 9 × 5 = 135"],
+      rule: "Об'єм циліндра: V = πr²h"
+    }
+  ],
+
+  9: [
+    // --- Algebra ---
+    {
+      topic: "Алгебра", subtopic: "Квадратна функція",
+      type: "mcq",
+      text: "Знайдіть вершину параболи y = x² − 4x + 3.",
+      options: ["(2; −1)", "(−2; 1)", "(4; 3)", "(2; 1)"],
+      correct: 0,
+      solution: ["x₀ = −b/(2a) = 4/2 = 2", "y₀ = 4 − 8 + 3 = −1", "Вершина: (2; −1)"],
+      rule: "Вершина параболи: x₀ = −b/2a, y₀ = підставити x₀"
+    },
+    {
+      topic: "Алгебра", subtopic: "Прогресії",
+      type: "open",
+      text: "Перший член арифметичної прогресії a₁ = 3, різниця d = 4. Знайдіть a₅.",
+      correct: "19",
+      solution: ["aₙ = a₁ + (n−1)d", "a₅ = 3 + 4×4 = 3 + 16 = 19"],
+      rule: "n-й член арифметичної прогресії: aₙ = a₁ + (n−1)d"
+    },
+    {
+      topic: "Геометрія", subtopic: "Вектори",
+      type: "mcq",
+      text: "Вектор AB⃗ = (3; 4). Знайдіть його довжину.",
+      options: ["5", "7", "√7", "12"],
+      correct: 0,
+      solution: ["|AB| = √(x² + y²)", "|AB| = √(9 + 16) = √25 = 5"],
+      rule: "Довжина вектора (x; y): |v| = √(x² + y²)"
+    },
+    {
+      topic: "Алгебра", subtopic: "Логарифми",
+      type: "open",
+      text: "Обчисліть: log₂(32)",
+      correct: "5",
+      solution: ["log₂(32) = x, де 2ˣ = 32", "2⁵ = 32", "Відповідь: 5"],
+      rule: "logₐ(b) = x ⟺ aˣ = b"
+    },
+    {
+      topic: "Тригонометрія", subtopic: "Основне тотожність",
+      type: "mcq",
+      text: "sin²α + cos²α =",
+      options: ["0", "1", "2", "sin(2α)"],
+      correct: 1,
+      solution: ["Це основне тригонометричне тотожність", "sin²α + cos²α = 1 (завжди)"],
+      rule: "Основна тригонометрична тотожність: sin²α + cos²α = 1"
+    },
+    {
+      topic: "Алгебра", subtopic: "Квадратне рівняння",
+      type: "open",
+      text: "x² − 7x + 12 = 0. Знайдіть більший корінь.",
+      correct: "4",
+      solution: ["D = 49 − 48 = 1", "x₁ = (7+1)/2 = 4", "x₂ = (7−1)/2 = 3", "Більший: 4"],
+      rule: "x = (−b ± √D) / 2a, де D = b² − 4ac"
+    },
+    {
+      topic: "Геометрія", subtopic: "Теорема косинусів",
+      type: "mcq",
+      text: "Сторони трикутника: a=5, b=7, кут між ними C=60°. Знайдіть c².",
+      options: ["39", "49", "29", "74"],
+      correct: 0,
+      solution: ["c² = a² + b² − 2ab·cos(C)", "c² = 25 + 49 − 2×5×7×0.5", "c² = 74 − 35 = 39"],
+      rule: "Теорема косинусів: c² = a² + b² − 2ab·cos(C)"
+    },
+    {
+      topic: "Алгебра", subtopic: "Нерівності",
+      type: "mcq",
+      text: "Розв'яжіть нерівність: x² − x − 6 > 0",
+      options: ["x ∈ (−2; 3)", "x < −2 або x > 3", "x < −3 або x > 2", "x ∈ (−3; 2)"],
+      correct: 1,
+      solution: ["x² − x − 6 = (x+2)(x−3)", "Нулі: x = −2 і x = 3", "Парабола ∪-форми: > 0 поза коренями", "x < −2 або x > 3"],
+      rule: "Квадратна нерівність > 0 (вітки вгору): x < x₁ або x > x₂"
+    },
+    {
+      topic: "Тригонометрія", subtopic: "Значення",
+      type: "open",
+      text: "Знайдіть tg(45°).",
+      correct: "1",
+      solution: ["tg(45°) = sin(45°)/cos(45°)", "= (√2/2)/(√2/2) = 1"],
+      rule: "tg(45°) = 1 — важливо знати напам'ять"
+    },
+    {
+      topic: "Геометрія", subtopic: "Координати",
+      type: "mcq",
+      text: "Відстань між точками A(1; 2) і B(4; 6):",
+      options: ["5", "7", "4", "3"],
+      correct: 0,
+      solution: ["d = √((x₂−x₁)² + (y₂−y₁)²)", "d = √((4−1)² + (6−2)²)", "d = √(9 + 16) = √25 = 5"],
+      rule: "Формула відстані: d = √((Δx)² + (Δy)²)"
+    },
+    {
+      topic: "Алгебра", subtopic: "Прогресії",
+      type: "mcq",
+      text: "Геометрична прогресія: b₁ = 2, q = 3. Знайдіть b₄.",
+      options: ["18", "54", "162", "24"],
+      correct: 1,
+      solution: ["bₙ = b₁ × q^(n−1)", "b₄ = 2 × 3³ = 2 × 27 = 54"],
+      rule: "n-й член геометричної прогресії: bₙ = b₁ × qⁿ⁻¹"
+    },
+    {
+      topic: "Геометрія", subtopic: "Ромб",
+      type: "open",
+      text: "Діагоналі ромба 6 і 8. Знайдіть його площу.",
+      correct: "24",
+      solution: ["S = ½ × d₁ × d₂", "S = ½ × 6 × 8 = 24"],
+      rule: "Площа ромба через діагоналі: S = ½ × d₁ × d₂"
+    },
+    {
+      topic: "Алгебра", subtopic: "Рівняння",
+      type: "mcq",
+      text: "Розв'яжіть: |2x − 4| = 6",
+      options: ["x = 5 і x = −1", "x = 5 і x = 1", "x = 4 і x = −4", "x = 3"],
+      correct: 0,
+      solution: ["2x − 4 = 6 → x = 5", "2x − 4 = −6 → 2x = −2 → x = −1"],
+      rule: "|A| = B → A = B або A = −B"
+    },
+    {
+      topic: "Тригонометрія", subtopic: "Формули",
+      type: "mcq",
+      text: "sin(2α) = ?",
+      options: ["2sin(α)", "2sin(α)cos(α)", "sin²(α)−cos²(α)", "cos²(α)"],
+      correct: 1,
+      solution: ["Формула подвійного кута:", "sin(2α) = 2sin(α)cos(α)"],
+      rule: "sin(2α) = 2 sin(α) cos(α)"
+    },
+    {
+      topic: "Геометрія", subtopic: "Теорема синусів",
+      type: "open",
+      text: "У трикутнику a = 6, кут A = 30°. Знайдіть радіус описаного кола R (2R = a/sin(A)).",
+      correct: "6",
+      solution: ["2R = a / sin(A)", "2R = 6 / sin(30°) = 6 / 0.5 = 12", "R = 6"],
+      rule: "Теорема синусів: a/sin(A) = 2R"
+    },
+    {
+      topic: "Алгебра", subtopic: "Функції",
+      type: "mcq",
+      text: "Область визначення функції y = √(x − 3):",
+      options: ["x > 3", "x ≥ 3", "x ≤ 3", "x ∈ ℝ"],
+      correct: 1,
+      solution: ["Під коренем має бути ≥ 0", "x − 3 ≥ 0", "x ≥ 3"],
+      rule: "Для √(f(x)) потрібно f(x) ≥ 0"
+    },
+    {
+      topic: "Геометрія", subtopic: "Координати",
+      type: "open",
+      text: "Знайдіть координату середини відрізка AB, де A(2; 0) і B(8; 0). Знайдіть x-координату середини.",
+      correct: "5",
+      solution: ["x_м = (x₁ + x₂) / 2", "x_м = (2 + 8) / 2 = 5"],
+      rule: "Середина відрізка: M = ((x₁+x₂)/2 ; (y₁+y₂)/2)"
+    },
+    {
+      topic: "Алгебра", subtopic: "Показникова функція",
+      type: "mcq",
+      text: "Розв'яжіть: 2ˣ = 16",
+      options: ["x = 2", "x = 4", "x = 8", "x = 3"],
+      correct: 1,
+      solution: ["2ˣ = 16 = 2⁴", "Отже x = 4"],
+      rule: "Показникове рівняння: aˣ = aⁿ → x = n"
+    },
+    {
+      topic: "Тригонометрія", subtopic: "Кола",
+      type: "mcq",
+      text: "cos(0°) = ?",
+      options: ["0", "1", "−1", "√2/2"],
+      correct: 1,
+      solution: ["На одиничному колі, кут 0° — точка (1; 0)", "cos(0°) = 1"],
+      rule: "cos(0°) = 1, sin(0°) = 0 — важливо знати"
+    },
+    {
+      topic: "Геометрія", subtopic: "Паралелограм",
+      type: "open",
+      text: "Площа паралелограма з основою 8 і висотою 5.",
+      correct: "40",
+      solution: ["S = a × h", "S = 8 × 5 = 40"],
+      rule: "Площа паралелограма: S = основа × висота"
+    },
+    {
+      topic: "Алгебра", subtopic: "Система",
+      type: "mcq",
+      text: "x + 2y = 10, 2x − y = 5. Знайдіть y.",
+      options: ["3", "4", "2", "5"],
+      correct: 0,
+      solution: ["З першого: x = 10 − 2y", "2(10−2y) − y = 5", "20 − 4y − y = 5", "5y = 15, y = 3"],
+      rule: "Метод підстановки: виразити одну змінну через іншу"
+    },
+    {
+      topic: "Геометрія", subtopic: "Піраміда",
+      type: "open",
+      text: "Об'єм правильної піраміди з квадратною основою 6×6 і висотою 4.",
+      correct: "48",
+      solution: ["V = ⅓ × S_основи × h", "S = 6 × 6 = 36", "V = ⅓ × 36 × 4 = 48"],
+      rule: "Об'єм піраміди: V = ⅓Sh"
+    },
+    {
+      topic: "Алгебра", subtopic: "Прогресії",
+      type: "mcq",
+      text: "Сума перших 4 членів арифметичної прогресії: 2, 5, 8, 11, ...",
+      options: ["24", "26", "28", "30"],
+      correct: 1,
+      solution: ["S₄ = 2 + 5 + 8 + 11 = 26", "Або: S = n/2 × (a₁ + aₙ) = 4/2 × (2+11) = 26"],
+      rule: "Сума n членів: Sₙ = n/2 × (a₁ + aₙ)"
+    },
+    {
+      topic: "Тригонометрія", subtopic: "Рівняння",
+      type: "mcq",
+      text: "sin(x) = ½. Один з коренів:",
+      options: ["x = 30°", "x = 60°", "x = 45°", "x = 90°"],
+      correct: 0,
+      solution: ["sin(30°) = ½", "x = 30° + 360°n або x = 150° + 360°n"],
+      rule: "sin(x) = ½ → x = 30° або x = 150° (на відрізку [0°; 360°])"
+    },
+    {
+      topic: "Геометрія", subtopic: "Куля",
+      type: "mcq",
+      text: "Площа поверхні кулі з радіусом 3 (π ≈ 3):",
+      options: ["108", "27", "54", "81"],
+      correct: 0,
+      solution: ["S = 4πr²", "S = 4 × 3 × 9 = 108"],
+      rule: "Площа поверхні кулі: S = 4πr²"
+    },
+    {
+      topic: "Алгебра", subtopic: "Нерівності",
+      type: "open",
+      text: "При яких x виконується нерівність |x| < 5? Введіть більшу межу.",
+      correct: "5",
+      solution: ["|x| < 5 означає −5 < x < 5", "Більша межа: 5"],
+      rule: "|x| < a → −a < x < a (при a > 0)"
+    },
+    {
+      topic: "Геометрія", subtopic: "Вектори",
+      type: "mcq",
+      text: "a⃗ = (2; 3), b⃗ = (1; 4). Знайдіть a⃗ + b⃗.",
+      options: ["(3; 7)", "(1; 1)", "(2; 12)", "(3; 1)"],
+      correct: 0,
+      solution: ["a⃗ + b⃗ = (2+1; 3+4) = (3; 7)"],
+      rule: "Додавання векторів: (x₁+x₂; y₁+y₂)"
+    },
+    {
+      topic: "Алгебра", subtopic: "Корені",
+      type: "open",
+      text: "Обчисліть: √144",
+      correct: "12",
+      solution: ["√144 = 12, бо 12² = 144"],
+      rule: "√a = b ⟺ b² = a і b ≥ 0"
+    },
+    {
+      topic: "Тригонометрія", subtopic: "Значення",
+      type: "mcq",
+      text: "Обчисліть: sin(90°) + cos(180°)",
+      options: ["0", "2", "1", "−1"],
+      correct: 0,
+      solution: ["sin(90°) = 1, cos(180°) = −1", "1 + (−1) = 0"],
+      rule: "sin(90°) = 1; cos(180°) = −1"
+    },
+    {
+      topic: "Геометрія", subtopic: "Площа трикутника",
+      type: "open",
+      text: "Площа трикутника зі сторонами a=5, b=6 і кутом між ними C=90°.",
+      correct: "15",
+      solution: ["S = ½ × a × b × sin(C)", "S = ½ × 5 × 6 × sin(90°)", "S = ½ × 5 × 6 × 1 = 15"],
+      rule: "Площа через дві сторони і кут: S = ½ab·sin(C)"
+    }
+  ]
+};
+
+// Grade 10: exponentials, logarithms, advanced trig, 3D geometry, inequalities
+QUESTIONS[10] = [
+  {
+    topic: "Алгебра", subtopic: "Показникові рівняння",
+    type: "mcq",
+    text: "Розв'яжіть рівняння: 4ˣ = 64",
+    options: ["x = 2", "x = 3", "x = 2.5", "x = 4"],
+    correct: 1,
+    solution: ["4ˣ = 64", "2²ˣ = 2⁶", "2x = 6", "x = 3"],
+    rule: "Зводимо до однакових основ: aᵐ = aⁿ → m = n"
+  },
+  {
+    topic: "Алгебра", subtopic: "Логарифми",
+    type: "open",
+    text: "Обчисліть: log₂(8) + log₂(4)",
+    correct: "5",
+    solution: ["log₂(8) = 3  (бо 2³ = 8)", "log₂(4) = 2  (бо 2² = 4)", "3 + 2 = 5"],
+    rule: "logₐ(m) + logₐ(n) = logₐ(m·n)"
+  },
+  {
+    topic: "Тригонометрія", subtopic: "Формули відновлення",
+    type: "mcq",
+    text: "sin(180° − α) = ?",
+    options: ["−sin(α)", "sin(α)", "cos(α)", "−cos(α)"],
+    correct: 1,
+    solution: ["Формула відновлення для 2-ї чверті:", "sin(180° − α) = sin(α)"],
+    rule: "sin(180° − α) = sin α (кут у 2-й чверті)"
+  },
+  {
+    topic: "Геометрія", subtopic: "Конус",
+    type: "open",
+    text: "Знайдіть об'єм конуса: радіус 3, висота 4. (π ≈ 3, відповідь ціле число)",
+    correct: "36",
+    solution: ["V = ⅓ × π × r² × h", "V = ⅓ × 3 × 9 × 4 = 36"],
+    rule: "Об'єм конуса: V = ⅓πr²h"
+  },
+  {
+    topic: "Алгебра", subtopic: "Квадратна нерівність",
+    type: "mcq",
+    text: "Розв'яжіть: x² − 5x + 6 < 0",
+    options: ["x < 2 або x > 3", "2 < x < 3", "x ∈ ℝ", "x ≤ 2 або x ≥ 3"],
+    correct: 1,
+    solution: ["x² − 5x + 6 = (x−2)(x−3)", "Нулі: 2 і 3. Парабола ∪. < 0 між коренями:", "2 < x < 3"],
+    rule: "Квадратна нерівність < 0: розв'язок — між коренями"
+  },
+  {
+    topic: "Алгебра", subtopic: "Логарифмічне рівняння",
+    type: "mcq",
+    text: "Розв'яжіть: log₂(x) = 4",
+    options: ["x = 8", "x = 16", "x = 2", "x = 6"],
+    correct: 1,
+    solution: ["log₂(x) = 4", "x = 2⁴ = 16"],
+    rule: "logₐ(x) = n ⟺ x = aⁿ"
+  },
+  {
+    topic: "Геометрія", subtopic: "Куля",
+    type: "open",
+    text: "Об'єм кулі з радіусом 3 (π ≈ 3, 4/3×3×27 = ?)",
+    correct: "108",
+    solution: ["V = 4/3 × π × r³", "V = 4/3 × 3 × 27 = 4 × 27 = 108"],
+    rule: "Об'єм кулі: V = 4/3 πr³"
+  },
+  {
+    topic: "Тригонометрія", subtopic: "Рівняння",
+    type: "mcq",
+    text: "cos(x) = 0, x ∈ [0°; 360°]. Знайдіть усі розв'язки.",
+    options: ["x = 90°", "x = 90° і x = 270°", "x = 0° і x = 180°", "x = 45° і x = 135°"],
+    correct: 1,
+    solution: ["cos(90°) = 0 ✓", "cos(270°) = 0 ✓", "На [0°;360°]: x = 90° і x = 270°"],
+    rule: "cos(x) = 0 → x = 90° + 180°·n"
+  },
+  {
+    topic: "Алгебра", subtopic: "Сума прогресії",
+    type: "open",
+    text: "Знайдіть суму 5 членів арифм. прогресії: a₁=1, d=2",
+    correct: "25",
+    solution: ["a₅ = 1 + 4×2 = 9", "S₅ = 5/2 × (a₁ + a₅) = 5/2 × 10 = 25"],
+    rule: "Sₙ = n/2 × (a₁ + aₙ)"
+  },
+  {
+    topic: "Алгебра", subtopic: "Показникова нерівність",
+    type: "mcq",
+    text: "Розв'яжіть: 2ˣ > 8",
+    options: ["x > 2", "x > 3", "x ≥ 3", "x < 3"],
+    correct: 1,
+    solution: ["2ˣ > 8 = 2³", "Основа 2 > 1, знак зберігається:", "x > 3"],
+    rule: "При основі > 1: aˣ > aⁿ → x > n"
+  },
+  {
+    topic: "Геометрія", subtopic: "Піраміда",
+    type: "open",
+    text: "Об'єм правильної піраміди з основою 4×4 і висотою 6.",
+    correct: "32",
+    solution: ["V = ⅓ × S_основи × h", "S = 4×4 = 16", "V = ⅓ × 16 × 6 = 32"],
+    rule: "Об'єм піраміди: V = ⅓ × S_основи × h"
+  },
+  {
+    topic: "Тригонометрія", subtopic: "Подвійний кут",
+    type: "mcq",
+    text: "cos(2α) = ? (через sin та cos)",
+    options: ["2sin(α)cos(α)", "cos²(α) − sin²(α)", "1 − sin²(α)", "2cos²(α)"],
+    correct: 1,
+    solution: ["cos(2α) = cos²(α) − sin²(α)", "Також: = 2cos²α − 1 = 1 − 2sin²α"],
+    rule: "cos(2α) = cos²α − sin²α = 2cos²α − 1 = 1 − 2sin²α"
+  },
+  {
+    topic: "Алгебра", subtopic: "Абсолютне значення",
+    type: "mcq",
+    text: "Розв'яжіть: |3x − 6| = 9",
+    options: ["x = 5", "x = −1", "x = 5 і x = −1", "x = 3"],
+    correct: 2,
+    solution: ["3x − 6 = 9 → x = 5", "3x − 6 = −9 → x = −1", "Відповідь: x = 5 і x = −1"],
+    rule: "|A| = b → A = b або A = −b"
+  },
+  {
+    topic: "Алгебра", subtopic: "Функція",
+    type: "mcq",
+    text: "Знайдіть максимум функції y = −x² + 4x − 1",
+    options: ["y = 1 при x = 4", "y = 3 при x = 2", "y = 2 при x = 3", "y = 4 при x = 1"],
+    correct: 1,
+    solution: ["x₀ = −b/2a = −4/(2×(−1)) = 2", "y₀ = −4 + 8 − 1 = 3", "Максимум: (2; 3)"],
+    rule: "Вершина параболи: x₀ = −b/2a. При a<0 — це максимум."
+  },
+  {
+    topic: "Алгебра", subtopic: "Логарифми",
+    type: "mcq",
+    text: "Спростіть: log₃(27/9)",
+    options: ["3", "1", "2", "0"],
+    correct: 1,
+    solution: ["27/9 = 3", "log₃(3) = 1"],
+    rule: "log₃(27/9) = log₃(27) − log₃(9) = 3 − 2 = 1"
+  },
+  {
+    topic: "Геометрія", subtopic: "Вектори (скалярний добуток)",
+    type: "mcq",
+    text: "a⃗=(3;4), b⃗=(1;0). Знайдіть a⃗·b⃗.",
+    options: ["3", "7", "4", "0"],
+    correct: 0,
+    solution: ["a⃗·b⃗ = 3×1 + 4×0 = 3"],
+    rule: "Скалярний добуток: a⃗·b⃗ = x₁x₂ + y₁y₂"
+  },
+  {
+    topic: "Тригонометрія", subtopic: "Значення",
+    type: "open",
+    text: "Обчисліть: tg(30°) × √3. Відповідь — ціле число.",
+    correct: "1",
+    solution: ["tg(30°) = 1/√3", "1/√3 × √3 = 1"],
+    rule: "tg(30°) = 1/√3 = √3/3"
+  },
+  {
+    topic: "Алгебра", subtopic: "Степені",
+    type: "mcq",
+    text: "Обчисліть: (1/2)⁻³",
+    options: ["−8", "1/8", "8", "−1/8"],
+    correct: 2,
+    solution: ["(1/2)⁻³ = (2/1)³ = 2³ = 8"],
+    rule: "(a/b)⁻ⁿ = (b/a)ⁿ"
+  },
+  {
+    topic: "Геометрія", subtopic: "Правильний многокутник",
+    type: "open",
+    text: "Сума кутів правильного шестикутника (градуси).",
+    correct: "720",
+    solution: ["S = (n − 2) × 180°", "S = (6 − 2) × 180° = 4 × 180° = 720°"],
+    rule: "Сума кутів n-кутника: (n − 2) × 180°"
+  },
+  {
+    topic: "Алгебра", subtopic: "Геометрична прогресія",
+    type: "open",
+    text: "Сума перших 4 членів: b₁=1, q=2. Знайдіть S₄.",
+    correct: "15",
+    solution: ["S₄ = b₁ × (qⁿ − 1)/(q − 1)", "S₄ = 1 × (2⁴ − 1)/(2 − 1) = 15"],
+    rule: "Sₙ = b₁ × (qⁿ − 1)/(q − 1) при q ≠ 1"
+  },
+  {
+    topic: "Тригонометрія", subtopic: "Рівняння",
+    type: "mcq",
+    text: "sin(x) = −1. Знайдіть x ∈ [0°; 360°].",
+    options: ["x = 90°", "x = 180°", "x = 270°", "x = 360°"],
+    correct: 2,
+    solution: ["sin(270°) = −1", "Це єдиний розв'язок на [0°;360°]"],
+    rule: "sin(x) = −1 → x = 270° + 360°n"
+  },
+  {
+    topic: "Алгебра", subtopic: "Область визначення",
+    type: "mcq",
+    text: "Область визначення y = log(x − 2):",
+    options: ["x ≥ 2", "x > 2", "x ≠ 2", "x ∈ ℝ"],
+    correct: 1,
+    solution: ["Аргумент логарифма > 0:", "x − 2 > 0", "x > 2"],
+    rule: "Область визначення log(f(x)): f(x) > 0"
+  },
+  {
+    topic: "Геометрія", subtopic: "Циліндр",
+    type: "open",
+    text: "Повна поверхня циліндра: r=3, h=4. (S = 2πr(r+h), π≈3)",
+    correct: "126",
+    solution: ["S = 2πr(r + h)", "S = 2 × 3 × 3 × (3 + 4) = 6 × 3 × 7 = 126"],
+    rule: "Повна поверхня циліндра: S = 2πr(r + h)"
+  },
+  {
+    topic: "Алгебра", subtopic: "Логарифмічне рівняння",
+    type: "mcq",
+    text: "Розв'яжіть: log₃(x²) = 4",
+    options: ["x = 3", "x = ±9", "x = 9", "x = ±3"],
+    correct: 1,
+    solution: ["x² = 3⁴ = 81", "x = ±9"],
+    rule: "log рівняння → показниковий запис → знайти x"
+  },
+  {
+    topic: "Тригонометрія", subtopic: "Теорема синусів",
+    type: "mcq",
+    text: "a/sin(A) = b/sin(B). Якщо a=4, sin(A)=0.5, sin(B)=1, знайдіть b.",
+    options: ["2", "4", "8", "1"],
+    correct: 2,
+    solution: ["b = a × sin(B) / sin(A)", "b = 4 × 1 / 0.5 = 8"],
+    rule: "Теорема синусів: a/sin A = b/sin B = 2R"
+  },
+  {
+    topic: "Алгебра", subtopic: "Нерівності",
+    type: "mcq",
+    text: "Розв'яжіть: (1/2)ˣ < 1/8",
+    options: ["x > 3", "x < 3", "x < −3", "x > −3"],
+    correct: 0,
+    solution: ["(1/2)ˣ < (1/2)³", "Основа 1/2 < 1, знак змінюється:", "x > 3"],
+    rule: "При основі 0 < a < 1: aˣ < aⁿ → x > n"
+  },
+  {
+    topic: "Геометрія", subtopic: "Вектори 3D",
+    type: "mcq",
+    text: "Знайдіть |a⃗|, де a⃗ = (2; 2; 1)",
+    options: ["3", "5", "√5", "9"],
+    correct: 0,
+    solution: ["|a⃗| = √(2² + 2² + 1²)", "= √(4 + 4 + 1) = √9 = 3"],
+    rule: "Довжина вектора в 3D: |a⃗| = √(x² + y² + z²)"
+  },
+  {
+    topic: "Алгебра", subtopic: "Функція",
+    type: "open",
+    text: "f(x) = 3x² − 1. Обчисліть f(2).",
+    correct: "11",
+    solution: ["f(2) = 3 × 4 − 1 = 12 − 1 = 11"],
+    rule: "Підставляємо x у формулу функції"
+  },
+  {
+    topic: "Тригонометрія", subtopic: "Рівняння",
+    type: "mcq",
+    text: "tg(x) = 1, x ∈ [0°; 180°]. Розв'язок:",
+    options: ["x = 30°", "x = 45°", "x = 60°", "x = 135°"],
+    correct: 1,
+    solution: ["tg(45°) = 1", "На [0°;180°] є лише один розв'язок: x = 45°"],
+    rule: "tg(x) = 1 → x = 45° + 180°n"
+  },
+  {
+    topic: "Алгебра", subtopic: "Показникове рівняння",
+    type: "open",
+    text: "Розв'яжіть: 5ˣ = 125. Знайдіть x.",
+    correct: "3",
+    solution: ["125 = 5³", "5ˣ = 5³ → x = 3"],
+    rule: "aˣ = aⁿ → x = n (при однакових основах)"
+  }
+];
+
+// Grade 11: derivatives, integrals, limits, probability, combinatorics
+QUESTIONS[11] = [
+  {
+    topic: "Похідна", subtopic: "Правило",
+    type: "mcq",
+    text: "(xⁿ)' = ?",
+    options: ["xⁿ⁻¹", "n·xⁿ⁻¹", "n·xⁿ", "xⁿ⁺¹"],
+    correct: 1,
+    solution: ["Правило похідної степені:", "(xⁿ)' = n·xⁿ⁻¹"],
+    rule: "(xⁿ)' = n·xⁿ⁻¹ — основне правило диференціювання"
+  },
+  {
+    topic: "Похідна", subtopic: "Обчислення",
+    type: "open",
+    text: "f(x) = x³ − 3x. Знайдіть f'(x) при x = 2.",
+    correct: "9",
+    solution: ["f'(x) = 3x² − 3", "f'(2) = 3×4 − 3 = 12 − 3 = 9"],
+    rule: "(x³)' = 3x², (3x)' = 3 → f'(x) = 3x² − 3"
+  },
+  {
+    topic: "Похідна", subtopic: "Застосування",
+    type: "mcq",
+    text: "Знайдіть точку мінімуму f(x) = x² − 4x + 3.",
+    options: ["x = 2", "x = 1", "x = 3", "x = −2"],
+    correct: 0,
+    solution: ["f'(x) = 2x − 4", "f'(x) = 0 → x = 2", "f''(x) = 2 > 0 → мінімум при x = 2"],
+    rule: "Мінімум: f'(x)=0, f''(x)>0. Або x₀ = −b/2a"
+  },
+  {
+    topic: "Інтеграл", subtopic: "Антипохідна",
+    type: "mcq",
+    text: "∫x² dx = ?",
+    options: ["x³", "x³/3 + C", "2x", "x³/2 + C"],
+    correct: 1,
+    solution: ["∫xⁿ dx = xⁿ⁺¹/(n+1) + C", "∫x² dx = x³/3 + C"],
+    rule: "∫xⁿ dx = xⁿ⁺¹/(n+1) + C"
+  },
+  {
+    topic: "Ймовірність", subtopic: "Класична",
+    type: "mcq",
+    text: "Кидають кубик. Яка ймовірність випасти парне число?",
+    options: ["1/3", "1/2", "2/3", "1/6"],
+    correct: 1,
+    solution: ["Парні: 2, 4, 6 — три варіанти", "Всього: 6", "P = 3/6 = 1/2"],
+    rule: "P = (число сприятливих) / (загальне число)"
+  },
+  {
+    topic: "Комбінаторика", subtopic: "Комбінації",
+    type: "open",
+    text: "C(5;2) = 5!/(2!×3!) = ?",
+    correct: "10",
+    solution: ["C(5;2) = 5×4 / (2×1) = 20/2 = 10"],
+    rule: "C(n;k) = n! / (k! × (n−k)!)"
+  },
+  {
+    topic: "Похідна", subtopic: "Правило добутку",
+    type: "mcq",
+    text: "(u·v)' = ?",
+    options: ["u'·v'", "u'·v + u·v'", "u·v + u·v'", "u'·v − u·v'"],
+    correct: 1,
+    solution: ["Правило Лейбніца:", "(u·v)' = u'·v + u·v'"],
+    rule: "Похідна добутку: (uv)' = u'v + uv'"
+  },
+  {
+    topic: "Границя", subtopic: "Обчислення",
+    type: "mcq",
+    text: "lim(x→2) (x² − 4)/(x − 2) = ?",
+    options: ["0", "2", "4", "∞"],
+    correct: 2,
+    solution: ["x² − 4 = (x−2)(x+2)", "(x² − 4)/(x−2) = x + 2", "lim → 2 + 2 = 4"],
+    rule: "Скорочуємо невизначеність 0/0 через розкладання"
+  },
+  {
+    topic: "Інтеграл", subtopic: "Визначений",
+    type: "open",
+    text: "Обчисліть: ∫₀² 2x dx",
+    correct: "4",
+    solution: ["∫2x dx = x²", "[x²]₀² = 2² − 0² = 4 − 0 = 4"],
+    rule: "∫ₐᵇ f(x) dx = F(b) − F(a), де F — антипохідна"
+  },
+  {
+    topic: "Похідна", subtopic: "Похідна складеної функції",
+    type: "mcq",
+    text: "(sin(2x))' = ?",
+    options: ["cos(2x)", "−cos(2x)", "2cos(2x)", "−2cos(2x)"],
+    correct: 2,
+    solution: ["(sin(u))' = cos(u)·u'", "u = 2x, u' = 2", "(sin(2x))' = 2cos(2x)"],
+    rule: "Правило ланцюжка: (f(g(x)))' = f'(g(x)) · g'(x)"
+  },
+  {
+    topic: "Ймовірність", subtopic: "Незалежні події",
+    type: "mcq",
+    text: "P(A) = 0.3, P(B) = 0.4, A і B незалежні. P(A∩B) = ?",
+    options: ["0.7", "0.12", "0.1", "0.58"],
+    correct: 1,
+    solution: ["P(A∩B) = P(A) × P(B)", "= 0.3 × 0.4 = 0.12"],
+    rule: "Незалежні події: P(A∩B) = P(A)·P(B)"
+  },
+  {
+    topic: "Похідна", subtopic: "Дотична",
+    type: "mcq",
+    text: "Рівняння дотичної до y=x² в точці (1;1):",
+    options: ["y = x", "y = 2x − 1", "y = x + 1", "y = 2x"],
+    correct: 1,
+    solution: ["y' = 2x, y'(1) = 2 — кутовий коефіцієнт", "y − 1 = 2(x − 1)", "y = 2x − 1"],
+    rule: "Дотична: y − y₀ = f'(x₀)(x − x₀)"
+  },
+  {
+    topic: "Інтеграл", subtopic: "Площа",
+    type: "open",
+    text: "Площа під графіком y=x від 0 до 4 (∫₀⁴ x dx = [x²/2]₀⁴).",
+    correct: "8",
+    solution: ["∫₀⁴ x dx = x²/2 |₀⁴", "= 16/2 − 0 = 8"],
+    rule: "Площа = ∫ₐᵇ f(x) dx (якщо f(x) ≥ 0)"
+  },
+  {
+    topic: "Комбінаторика", subtopic: "Перестановки",
+    type: "open",
+    text: "Скількома способами можна розставити 4 книги на полиці?",
+    correct: "24",
+    solution: ["P₄ = 4! = 4 × 3 × 2 × 1 = 24"],
+    rule: "Кількість перестановок n елементів: Pₙ = n!"
+  },
+  {
+    topic: "Границя", subtopic: "Нескінченність",
+    type: "mcq",
+    text: "lim(x→∞) (2x² + 1)/(x²) = ?",
+    options: ["0", "1", "2", "∞"],
+    correct: 2,
+    solution: ["Ділимо чисельник і знаменник на x²:", "(2 + 1/x²)/1 → 2 при x→∞"],
+    rule: "При x→∞ ділимо на найвищий степінь"
+  },
+  {
+    topic: "Похідна", subtopic: "Монотонність",
+    type: "mcq",
+    text: "f(x) = x³ − 3x. Функція зростає при:",
+    options: ["x ∈ (−1; 1)", "x < −1 або x > 1", "x > 0", "x < 0"],
+    correct: 1,
+    solution: ["f'(x) = 3x² − 3 = 3(x²−1)", "f'(x) > 0: x²>1 → x<−1 або x>1"],
+    rule: "Зростає там, де f'(x) > 0"
+  },
+  {
+    topic: "Інтеграл", subtopic: "Тригонометричний",
+    type: "mcq",
+    text: "∫cos(x) dx = ?",
+    options: ["−sin(x) + C", "sin(x) + C", "cos(x) + C", "−cos(x) + C"],
+    correct: 1,
+    solution: ["∫cos(x) dx = sin(x) + C", "(перевірка: (sin(x))' = cos(x) ✓)"],
+    rule: "∫cos(x) dx = sin(x) + C"
+  },
+  {
+    topic: "Ймовірність", subtopic: "Класична",
+    type: "mcq",
+    text: "У кошику 3 червоних і 2 білих кулі. Витягнули 1. P(червона) = ?",
+    options: ["2/5", "3/5", "1/3", "3/2"],
+    correct: 1,
+    solution: ["Сприятливі: 3 (червоних)", "Всього: 5", "P = 3/5"],
+    rule: "P = m/n, де m — сприятливі результати"
+  },
+  {
+    topic: "Похідна", subtopic: "Швидкість",
+    type: "mcq",
+    text: "s(t) = t² + 2t — шлях в метрах. Швидкість при t=3:",
+    options: ["11", "8", "15", "9"],
+    correct: 1,
+    solution: ["v(t) = s'(t) = 2t + 2", "v(3) = 2×3 + 2 = 6 + 2 = 8"],
+    rule: "Швидкість = похідна шляху: v = s'(t)"
+  },
+  {
+    topic: "Алгебра", subtopic: "Логарифмічне рівняння",
+    type: "open",
+    text: "log₂(x) + log₂(x−2) = 3. Знайдіть x.",
+    correct: "4",
+    solution: ["log₂(x(x−2)) = 3", "x(x−2) = 8 = 2³", "x²−2x−8=0", "(x−4)(x+2)=0", "x=4 (x=−2 не підходить)"],
+    rule: "logₐ m + logₐ n = logₐ(m·n)"
+  },
+  {
+    topic: "Геометрія", subtopic: "Піраміда (бічна поверхня)",
+    type: "mcq",
+    text: "Бічна поверхня правильної 4-кутної піраміди: основа 4, апофема 5.",
+    options: ["40", "80", "20", "60"],
+    correct: 0,
+    solution: ["S_бічна = ½ × P_основи × апофема", "P = 4 × 4 = 16", "S = ½ × 16 × 5 = 40"],
+    rule: "Бічна поверхня правильної піраміди: S = ½ × P × апофема"
+  },
+  {
+    topic: "Похідна", subtopic: "Друга похідна",
+    type: "mcq",
+    text: "f(x) = x³. Знайдіть f''(x).",
+    options: ["3x²", "6x", "x²", "6"],
+    correct: 1,
+    solution: ["f'(x) = 3x²", "f''(x) = 6x"],
+    rule: "f'' — похідна від f'. (x³)'' = (3x²)' = 6x"
+  },
+  {
+    topic: "Інтеграл", subtopic: "Властивості",
+    type: "mcq",
+    text: "∫ₐᵃ f(x) dx = ?",
+    options: ["f(a)", "2f(a)", "0", "1"],
+    correct: 2,
+    solution: ["Якщо межі однакові:", "∫ₐᵃ f(x) dx = F(a) − F(a) = 0"],
+    rule: "Визначений інтеграл з однаковими межами = 0"
+  },
+  {
+    topic: "Комбінаторика", subtopic: "Розміщення",
+    type: "mcq",
+    text: "A(5;2) = 5!/(5-2)! = ?",
+    options: ["10", "20", "25", "15"],
+    correct: 1,
+    solution: ["A(5;2) = 5 × 4 = 20"],
+    rule: "A(n;k) = n! / (n−k)! = n × (n−1) × ... × (n−k+1)"
+  },
+  {
+    topic: "Ймовірність", subtopic: "Повна ймовірність",
+    type: "mcq",
+    text: "P(A) = 0.6, P(Ā) = ?",
+    options: ["0.6", "0.4", "1.6", "0"],
+    correct: 1,
+    solution: ["P(Ā) = 1 − P(A) = 1 − 0.6 = 0.4"],
+    rule: "Ймовірність протилежної події: P(Ā) = 1 − P(A)"
+  },
+  {
+    topic: "Похідна", subtopic: "Правило частки",
+    type: "mcq",
+    text: "(u/v)' = ?",
+    options: ["u'/v'", "(u'v − uv')/v²", "(u'v + uv')/v", "u'/v − u/v'"],
+    correct: 1,
+    solution: ["Правило диференціювання частки:", "(u/v)' = (u'v − uv')/v²"],
+    rule: "(u/v)' = (u'v − uv')/v²"
+  },
+  {
+    topic: "Границя", subtopic: "Перший замечательний",
+    type: "mcq",
+    text: "lim(x→0) sin(x)/x = ?",
+    options: ["0", "∞", "1", "−1"],
+    correct: 2,
+    solution: ["Перша визначна границя:", "lim(x→0) sin(x)/x = 1"],
+    rule: "lim(x→0) sin(x)/x = 1 — перша визначна границя"
+  },
+  {
+    topic: "Інтеграл", subtopic: "Обчислення",
+    type: "open",
+    text: "∫₁³ (2x) dx = [x²]₁³ = ?",
+    correct: "8",
+    solution: ["∫2x dx = x²", "[x²]₁³ = 9 − 1 = 8"],
+    rule: "∫ₐᵇ 2x dx = [x²]ₐᵇ = b² − a²"
+  },
+  {
+    topic: "Ймовірність", subtopic: "Умовна",
+    type: "mcq",
+    text: "P(A|B) = P(A∩B)/P(B). Якщо P(A∩B)=0.1, P(B)=0.4, то P(A|B) = ?",
+    options: ["0.04", "0.25", "0.4", "4"],
+    correct: 1,
+    solution: ["P(A|B) = 0.1 / 0.4 = 0.25"],
+    rule: "Умовна ймовірність: P(A|B) = P(A∩B) / P(B)"
+  },
+  {
+    topic: "Похідна", subtopic: "Рівняння дотичної",
+    type: "open",
+    text: "Нахил дотичної до y = x² + 1 в точці x=3 дорівнює f'(3). Знайдіть f'(3).",
+    correct: "6",
+    solution: ["f'(x) = 2x", "f'(3) = 2 × 3 = 6"],
+    rule: "Кутовий коефіцієнт дотичної = f'(x₀)"
+  }
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let state = {
+  grade: null,
+  questions: [],
+  answers: [],       // null = без відповіді
+  current: 0,
+  timeLeft: 0,
+  timerInterval: null,
+  violations: 0,
+  started: false,
+  finished: false
+};
+
+// ============================================================
+//  GRADE / START
+// ============================================================
+function selectGrade(g) {
+  state.grade = g;
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('selected'));
+  event.target.classList.add('selected');
+
+  const isSenior = g >= 9;
+  const qCount = isSenior ? 30 : 15;
+  const minutes = isSenior ? 180 : 45;
+
+  document.getElementById('info-q').textContent = qCount;
+  document.getElementById('info-t').textContent = minutes;
+  document.getElementById('test-info').style.display = 'flex';
+  document.getElementById('btn-start').disabled = false;
+}
+
+function startExam() {
+  const g = state.grade;
+  const isSenior = g >= 9;
+  const pool = QUESTIONS[g] || QUESTIONS[9];
+  const count = isSenior ? 30 : 15;
+
+  // Shuffle and pick
+  const shuffled = [...pool].sort(() => Math.random() - .5);
+  state.questions = shuffled.slice(0, Math.min(count, shuffled.length));
+  state.answers = new Array(state.questions.length).fill(null);
+  state.current = 0;
+  state.violations = 0;
+  state.finished = false;
+  state.timeLeft = (isSenior ? 180 : 45) * 60;
+
+  showScreen('screen-exam');
+  document.getElementById('exam-grade-label').textContent = g + ' клас';
+  document.getElementById('total-count').textContent = state.questions.length;
+
+  buildNavGrid();
+  renderQuestion();
+  startTimer();
+  setupViolationDetection();
+}
+
+// ============================================================
+//  TIMER
+// ============================================================
+function startTimer() {
+  updateTimerDisplay();
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      submitExam();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer');
+  const h = Math.floor(state.timeLeft / 3600);
+  const m = Math.floor((state.timeLeft % 3600) / 60);
+  const s = state.timeLeft % 60;
+  const str = h > 0
+    ? `${pad(h)}:${pad(m)}:${pad(s)}`
+    : `${pad(m)}:${pad(s)}`;
+  el.textContent = str;
+  el.className = 'timer';
+  if (state.timeLeft < 300) el.classList.add('danger');
+  else if (state.timeLeft < 600) el.classList.add('warn');
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+// ============================================================
+//  VIOLATION DETECTION
+// ============================================================
+function setupViolationDetection() {
+  document.addEventListener('visibilitychange', onVisibilityChange);
+  window.addEventListener('blur', onWindowBlur);
+}
+
+function onVisibilityChange() {
+  if (document.hidden && state.started && !state.finished) {
+    recordViolation();
+  }
+}
+
+function onWindowBlur() {
+  if (state.started && !state.finished) {
+    // Mild blur (DevTools тощо) — не рахуємо
+  }
+}
+
+function recordViolation() {
+  state.violations++;
+  document.getElementById('viol-count').textContent = state.violations;
+  document.getElementById('viol-badge').classList.add('show');
+  document.getElementById('modal-viol-text').innerHTML =
+    `Ти покинув вкладку з тестом! Це порушення #${state.violations}.<br><br>
+     Повернись і продовжуй тест. Кількість порушень буде показана у результатах.`;
+  document.getElementById('modal-violation').classList.add('show');
+}
+
+function closeViolModal() {
+  document.getElementById('modal-violation').classList.remove('show');
+}
+
+// ============================================================
+//  QUESTION RENDERING
+// ============================================================
+function buildNavGrid() {
+  const grid = document.getElementById('q-nav-grid');
+  grid.innerHTML = '';
+  state.questions.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'q-dot' + (i === 0 ? ' current' : '');
+    d.textContent = i + 1;
+    d.onclick = () => goTo(i);
+    d.id = `qdot-${i}`;
+    grid.appendChild(d);
+  });
+}
+
+function updateNavGrid() {
+  state.questions.forEach((_, i) => {
+    const d = document.getElementById(`qdot-${i}`);
+    if (!d) return;
+    d.className = 'q-dot';
+    if (state.answers[i] !== null) d.classList.add('answered');
+    if (i === state.current) d.classList.add('current');
+  });
+  const answered = state.answers.filter(a => a !== null).length;
+  document.getElementById('answered-count').textContent = answered;
+  const pct = (answered / state.questions.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function renderQuestion() {
+  state.started = true;
+  const q = state.questions[state.current];
+  const i = state.current;
+  const total = state.questions.length;
+
+  document.getElementById('q-num-tag').textContent = `${i+1} / ${total}`;
+  document.getElementById('q-topic-tag').textContent = q.topic + ' · ' + q.subtopic;
+
+  const typeTag = document.getElementById('q-type-tag');
+  if (q.type === 'mcq') {
+    typeTag.textContent = 'Вибір відповіді';
+    typeTag.className = 'q-tag type-mcq';
+  } else {
+    typeTag.textContent = 'Відкрита відповідь';
+    typeTag.className = 'q-tag type-open';
+  }
+
+  document.getElementById('q-text').textContent = q.text;
+
+  const area = document.getElementById('q-answer-area');
+  area.innerHTML = '';
+
+  if (q.type === 'mcq') {
+    const wrap = document.createElement('div');
+    wrap.className = 'mcq-options';
+    const letters = ['A', 'B', 'C', 'D'];
+    q.options.forEach((opt, idx) => {
+      const div = document.createElement('div');
+      div.className = 'mcq-opt' + (state.answers[i] === idx ? ' selected' : '');
+      div.onclick = () => selectMCQ(idx);
+      div.innerHTML = `<div class="mcq-letter">${letters[idx]}</div><div class="mcq-text">${opt}</div>`;
+      wrap.appendChild(div);
+    });
+    area.appendChild(wrap);
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'open-answer-wrap';
+    wrap.innerHTML = `<label>Введіть відповідь (число):</label>
+      <input class="open-input" type="text" placeholder="Наприклад: 42"
+        value="${state.answers[i] !== null ? state.answers[i] : ''}"
+        oninput="saveOpenAnswer(this.value)" inputmode="decimal">`;
+    area.appendChild(wrap);
+  }
+
+  document.getElementById('btn-prev').disabled = i === 0;
+  document.getElementById('btn-next').disabled = i === total - 1;
+  updateNavGrid();
+}
+
+function selectMCQ(idx) {
+  state.answers[state.current] = idx;
+  renderQuestion();
+}
+
+function saveOpenAnswer(val) {
+  state.answers[state.current] = val.trim() === '' ? null : val.trim();
+  updateNavGrid();
+}
+
+function goTo(i) {
+  state.current = i;
+  renderQuestion();
+}
+function goNext() { if (state.current < state.questions.length - 1) goTo(state.current + 1); }
+function goPrev() { if (state.current > 0) goTo(state.current - 1); }
+
+// ============================================================
+//  FINISH
+// ============================================================
+function confirmFinish() {
+  const answered = state.answers.filter(a => a !== null).length;
+  document.getElementById('conf-answered').textContent = answered;
+  document.getElementById('conf-total').textContent = state.questions.length;
+  document.getElementById('modal-confirm').classList.add('show');
+}
+function closeConfirmModal() {
+  document.getElementById('modal-confirm').classList.remove('show');
+}
+
+function submitExam() {
+  closeConfirmModal();
+  state.finished = true;
+  clearInterval(state.timerInterval);
+  document.removeEventListener('visibilitychange', onVisibilityChange);
+  window.removeEventListener('blur', onWindowBlur);
+  showResults();
+}
+
+// ============================================================
+//  RESULTS
+// ============================================================
+function showResults() {
+  showScreen('screen-results');
+
+  const qs = state.questions;
+  const total = qs.length;
+  let correct = 0, wrong = 0, skipped = 0;
+  const topicStats = {};
+
+  qs.forEach((q, i) => {
+    const ans = state.answers[i];
+    const topic = q.topic;
+    if (!topicStats[topic]) topicStats[topic] = { correct: 0, total: 0 };
+    topicStats[topic].total++;
+
+    if (ans === null) {
+      skipped++;
+    } else {
+      const isCorrect = q.type === 'mcq'
+        ? ans === q.correct
+        : String(ans).trim() === String(q.correct).trim();
+      if (isCorrect) { correct++; topicStats[topic].correct++; }
+      else wrong++;
+    }
+  });
+
+  // NMT score (200 max, 100 min pass)
+  const pct = correct / total;
+  const nmtScore = Math.round(100 + pct * 100);
+
+  document.getElementById('res-score').textContent = `${correct}/${total}`;
+  document.getElementById('res-nmt').textContent = nmtScore;
+
+  // Stats chips
+  document.getElementById('results-stats').innerHTML = `
+    <div class="stat-chip stat-correct"><span class="stat-val">${correct}</span><span class="stat-label">Правильно</span></div>
+    <div class="stat-chip stat-wrong"><span class="stat-val">${wrong}</span><span class="stat-label">Помилки</span></div>
+    <div class="stat-chip stat-skip"><span class="stat-val">${skipped}</span><span class="stat-label">Пропущено</span></div>
+    <div class="stat-chip stat-viol"><span class="stat-val">${state.violations}</span><span class="stat-label">Порушень</span></div>
+  `;
+
+  // Topic bars
+  const barsEl = document.getElementById('topic-bars');
+  barsEl.innerHTML = '';
+  Object.entries(topicStats).forEach(([topic, s]) => {
+    const pct2 = s.total > 0 ? Math.round(s.correct / s.total * 100) : 0;
+    const color = pct2 >= 70 ? 'var(--green)' : pct2 >= 40 ? 'var(--yellow)' : 'var(--red)';
+    barsEl.innerHTML += `
+      <div class="topic-row">
+        <div class="topic-name">${topic}</div>
+        <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:${pct2}%;background:${color}"></div></div>
+        <div class="topic-score" style="color:${color}">${pct2}%</div>
+      </div>`;
+  });
+
+  // Hide errors button if no errors
+  if (wrong + skipped === 0) {
+    document.querySelector('.btn-review-errors').style.display = 'none';
+  }
+}
+
+// ============================================================
+//  REVIEW
+// ============================================================
+function showReview(mode) {
+  showScreen('screen-review');
+  document.getElementById('review-title').textContent =
+    mode === 'errors' ? '🔍 Розбір помилок' : '📖 Розбір усіх завдань';
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  state.questions.forEach((q, i) => {
+    const ans = state.answers[i];
+    const isSkipped = ans === null;
+    const isCorrect = !isSkipped && (
+      q.type === 'mcq'
+        ? ans === q.correct
+        : String(ans).trim() === String(q.correct).trim()
+    );
+
+    if (mode === 'errors' && isCorrect) return;
+
+    const statusClass = isSkipped ? 'skipped' : isCorrect ? 'correct' : 'wrong';
+    const statusIcon = isSkipped ? '➖' : isCorrect ? '✅' : '❌';
+
+    let answersHtml = '';
+    if (q.type === 'mcq') {
+      if (!isCorrect) {
+        const userText = ans !== null ? q.options[ans] : '(без відповіді)';
+        const correctText = q.options[q.correct];
+        answersHtml = `
+          <div class="review-answers">
+            ${ans !== null ? `<div class="review-ans-row user-wrong">
+              <span class="review-ans-label label-you-wrong">Твоя: ${letters[ans]}</span>${userText}</div>` : ''}
+            <div class="review-ans-row correct-ans">
+              <span class="review-ans-label label-correct">Правильно: ${letters[q.correct]}</span>${correctText}</div>
+          </div>`;
+      } else {
+        answersHtml = `
+          <div class="review-answers">
+            <div class="review-ans-row user-correct">
+              <span class="review-ans-label label-you-ok">Твоя відповідь: ${letters[ans]}</span>${q.options[ans]}</div>
+          </div>`;
+      }
+    } else {
+      const correctAnswer = q.correct;
+      const userAnswer = ans !== null ? ans : '(без відповіді)';
+      if (!isCorrect) {
+        answersHtml = `
+          <div class="review-answers">
+            <div class="review-ans-row ${ans !== null ? 'user-wrong' : ''}">
+              <span class="review-ans-label ${ans !== null ? 'label-you-wrong' : 'label-skipped'}">${ans !== null ? 'Твоя відповідь' : 'Пропущено'}</span>${userAnswer}</div>
+            <div class="review-ans-row correct-ans">
+              <span class="review-ans-label label-correct">Правильна відповідь</span>${correctAnswer}</div>
+          </div>`;
+      } else {
+        answersHtml = `
+          <div class="review-answers">
+            <div class="review-ans-row user-correct">
+              <span class="review-ans-label label-you-ok">Твоя відповідь</span>${ans}</div>
+          </div>`;
+      }
+    }
+
+    const stepsHtml = q.solution.map((s, idx) =>
+      `<div class="solution-step"><div class="step-num">${idx+1}</div><div>${s}</div></div>`
+    ).join('');
+
+    list.innerHTML += `
+      <div class="review-card">
+        <div class="review-card-header">
+          <div class="review-status-icon ${statusClass}">${statusIcon}</div>
+          <div>
+            <div class="review-q-num">Питання ${i+1} · ${q.topic} · ${q.subtopic}</div>
+            <div class="review-q-text">${q.text}</div>
+          </div>
+        </div>
+        ${answersHtml}
+        <div class="review-solution">
+          <h4>Покроковий розв'язок</h4>
+          <div class="solution-steps">${stepsHtml}</div>
+          <div class="review-rule"><strong>Правило:</strong> ${q.rule}</div>
+        </div>
+      </div>`;
+  });
+
+  if (list.innerHTML === '') {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:3rem">Всі відповіді правильні! 🎉</div>';
+  }
+}
+
+// ============================================================
+//  UTILS
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function retryExam() {
+  state = { grade: state.grade, questions: [], answers: [], current: 0, timeLeft: 0, timerInterval: null, violations: 0, started: false, finished: false };
+  document.querySelectorAll('.grade-btn').forEach(b => {
+    if (b.textContent.includes(state.grade)) b.classList.add('selected');
+  });
+  showScreen('screen-start');
+}
+
+// ============================================================
+//  FULLSCREEN
+// ============================================================
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+    document.getElementById('btn-fullscreen').textContent = '✕ Вийти';
+  } else {
+    document.exitFullscreen();
+    document.getElementById('btn-fullscreen').textContent = '⛶ Fullscreen';
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    const btn = document.getElementById('btn-fullscreen');
+    if (btn) btn.textContent = '⛶ Fullscreen';
+  }
+});
+</script>
+</body>
+</html>

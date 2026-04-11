@@ -118,6 +118,32 @@ app.delete('/notes/:id', authMiddleware, async (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /auth/google — verify Google ID token (GSI popup mode)
+app.post('/auth/google', async (req, res) => {
+  const { credential, grade } = req.body;
+  if (!credential) return res.status(400).json({ error: 'Немає токена' });
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // New user — need grade selection
+      const tempToken = jwt.sign({ googleId, email, name, needsGrade: true }, process.env.JWT_SECRET, { expiresIn: '10m' });
+      return res.json({ needsGrade: true, name, tempToken });
+    }
+    const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
+    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+  } catch (e) {
+    console.error('Google auth error:', e.message);
+    res.status(400).json({ error: 'Помилка Google входу' });
+  }
+});
+
 const GOOGLE_REDIRECT_URI = 'https://rostyslavv.vibe.brobots.org.ua/auth/google/callback';
 
 // GET /auth/google/start — redirect to Google login page

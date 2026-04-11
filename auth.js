@@ -98,8 +98,8 @@ async function _googleSignIn(credential, grade) {
     const data = await res.json();
 
     if (data.needsGrade) {
-      // New Google user — ask for grade
-      showGoogleGradeModal(credential, data.name);
+      // New Google user — ask for grade (pass tempToken, not raw credential)
+      showGoogleGradeModal(data.tempToken, data.name);
       return;
     }
 
@@ -201,8 +201,7 @@ function initGoogleAuth() {
 
   google.accounts.id.initialize({
     client_id: clientId,
-    ux_mode: 'redirect',
-    login_uri: `${window.location.origin}/auth/google/callback`,
+    callback: handleGoogleCredential,
   });
 
   const loginBtn = document.getElementById('google-login-btn');
