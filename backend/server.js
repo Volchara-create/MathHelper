@@ -45,7 +45,7 @@ app.post('/register', async (req, res) => {
       data: { name, email, password: hashed, grade: parseInt(grade) }
     });
     const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
-    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade, isPro: false } });
   } catch (e) {
     if (e.code === 'P2002') return res.status(400).json({ error: 'Email вже зареєстровано' });
     res.status(500).json({ error: 'Помилка сервера' });
@@ -61,7 +61,7 @@ app.post('/login', async (req, res) => {
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) return res.status(400).json({ error: 'Невірний пароль' });
     const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
-    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade, isPro: false } });
   } catch {
     res.status(500).json({ error: 'Помилка сервера' });
   }
@@ -73,7 +73,7 @@ app.get('/me', authMiddleware, async (req, res) => {
     where: { id: req.user.id },
     select: { id: true, name: true, email: true, grade: true }
   });
-  res.json(user);
+  res.json({ ...user, isPro: false });
 });
 
 // GET /notes — get all notes for current user
@@ -137,7 +137,7 @@ app.post('/auth/google', async (req, res) => {
       return res.json({ needsGrade: true, name, tempToken });
     }
     const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
-    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade, isPro: false } });
   } catch (e) {
     console.error('Google auth error:', e.message);
     res.status(400).json({ error: 'Помилка Google входу' });
@@ -213,7 +213,7 @@ app.post('/auth/google/grade', async (req, res) => {
       });
     }
     const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
-    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+    res.json({ token, user: { id: user.id, name: user.name, grade: user.grade, isPro: false } });
   } catch {
     res.status(400).json({ error: 'Токен застарів, спробуй ще раз' });
   }
@@ -228,7 +228,7 @@ app.put('/me/grade', authMiddleware, async (req, res) => {
     data: { grade: parseInt(grade) }
   });
   const token = jwt.sign({ id: user.id, grade: user.grade, name: user.name }, process.env.JWT_SECRET);
-  res.json({ token, user: { id: user.id, name: user.name, grade: user.grade } });
+  res.json({ token, user: { id: user.id, name: user.name, grade: user.grade, isPro: false } });
 });
 
 // DELETE /me — delete current user account

@@ -584,7 +584,9 @@ async function notesInit() {
   }
   try {
     const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error('server error');
     allNotes = await res.json();
+    if (!Array.isArray(allNotes)) allNotes = [];
     notesRender(null);
   } catch {
     document.getElementById('notes-list').innerHTML = `<p class="notes-empty">Помилка завантаження</p>`;
