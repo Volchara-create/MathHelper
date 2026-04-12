@@ -737,9 +737,12 @@
      SCREEN 1: START
 ============================= -->
 <div id="screen-start" class="screen active">
-  <div class="start-topbar">
-    <a href="/" class="start-back-btn">🏠 Головна</a>
-    <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Змінити тему">🌙</button>
+  <div class="start-topbar" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;">
+    <a href="/" class="start-back-btn">← Головна</a>
+    <span style="font-size:1.1rem;font-weight:700;color:var(--text);text-align:center;">🎯 НМТ Симулятор</span>
+    <div style="display:flex;justify-content:flex-end;">
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Змінити тему">🌙</button>
+    </div>
   </div>
 
   <div class="start-center">

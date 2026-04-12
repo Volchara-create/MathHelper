@@ -2084,6 +2084,41 @@ let quizCurrent = 0;
 let quizScore = 0;
 let quizOrder = [];
 let quizAnswered = false;
+let quizWrong = []; // stores wrong question objects for review
+
+// Save/restore quiz progress
+function quizSaveProgress() {
+  localStorage.setItem('mh_quiz_progress', JSON.stringify({
+    order: quizOrder.map(q => QUIZ_QUESTIONS.indexOf(q)),
+    current: quizCurrent,
+    score: quizScore,
+    wrong: quizWrong.map(q => QUIZ_QUESTIONS.indexOf(q))
+  }));
+}
+
+function quizClearProgress() {
+  localStorage.removeItem('mh_quiz_progress');
+}
+
+function quizHasSaved() {
+  const s = localStorage.getItem('mh_quiz_progress');
+  if (!s) return false;
+  try { const d = JSON.parse(s); return d.order && d.order.length > 0 && d.current < d.order.length; }
+  catch { return false; }
+}
+
+// Track daily activity for weekly analysis
+function quizTrackDay() {
+  const key = 'mh_quiz_week';
+  const today = new Date().toISOString().slice(0,10);
+  const data = JSON.parse(localStorage.getItem(key) || '{}');
+  data[today] = (data[today] || 0) + 1;
+  // Keep only last 7 days
+  const days = Object.keys(data).sort().slice(-7);
+  const trimmed = {};
+  days.forEach(d => trimmed[d] = data[d]);
+  localStorage.setItem(key, JSON.stringify(trimmed));
+}
 
 function startQuiz() {
   renderQuizHome();
@@ -2091,29 +2126,40 @@ function startQuiz() {
 
 function renderQuizHome() {
   const area = document.getElementById('quiz-area');
-  const mistakes = JSON.parse(localStorage.getItem('mh_quiz_mistakes') || '{}');
-  const weakTopics = QUIZ_TOPICS_META
-    .map(t => ({ ...t, count: mistakes[t.id] || 0 }))
-    .filter(t => t.count > 0)
-    .sort((a, b) => b.count - a.count);
 
-  const weakHtml = weakTopics.length > 0 ? `
-    <div class="quiz-weak-section">
-      <div class="quiz-home-title">📊 Твої слабкі теми:</div>
-      <div class="quiz-topics-grid">
-        ${weakTopics.map(t => `
-          <button class="quiz-topic-card quiz-topic-weak" onclick="startQuizTopic('${t.id}')">
-            <div class="quiz-topic-name">${t.name} <span class="quiz-weak-badge">${t.count} помилок</span></div>
-            <div class="quiz-topic-desc">Натисни, щоб потренуватися</div>
-          </button>
+  // Weekly analysis
+  const weekData = JSON.parse(localStorage.getItem('mh_quiz_week') || '{}');
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0,10);
+    const label = d.toLocaleDateString('uk-UA', {weekday:'short'});
+    days.push({ key, label, count: weekData[key] || 0 });
+  }
+  const maxCount = Math.max(...days.map(d => d.count), 1);
+  const weekHtml = `
+    <div class="quiz-week-section">
+      <div class="quiz-home-title">📅 Активність за тиждень:</div>
+      <div class="quiz-week-chart">
+        ${days.map(d => `
+          <div class="quiz-week-bar-wrap" title="${d.key}: ${d.count} питань">
+            <div class="quiz-week-bar" style="height:${Math.max(4, Math.round(d.count/maxCount*60))}px;background:${d.count>0?'var(--blue)':'var(--border)'}"></div>
+            <div class="quiz-week-label">${d.label}</div>
+          </div>
         `).join('')}
       </div>
     </div>
+  `;
+
+  // Continue button if saved progress
+  const continueHtml = quizHasSaved() ? `
+    <button class="quiz-continue-btn" onclick="quizResume()">▶️ Продовжити незавершений тест</button>
   ` : '';
 
   area.innerHTML = `
     <div class="quiz-home">
-      ${weakHtml}
+      ${weekHtml}
+      ${continueHtml}
       <div class="quiz-home-title">Обери тему:</div>
       <div class="quiz-topics-grid">
         ${QUIZ_TOPICS_META.map(t => `
@@ -2128,12 +2174,23 @@ function renderQuizHome() {
   `;
 }
 
+function quizResume() {
+  try {
+    const d = JSON.parse(localStorage.getItem('mh_quiz_progress'));
+    quizOrder = d.order.map(i => QUIZ_QUESTIONS[i]);
+    quizCurrent = d.current;
+    quizScore = d.score;
+    quizWrong = (d.wrong||[]).map(i => QUIZ_QUESTIONS[i]);
+    renderQuizQuestion();
+  } catch { renderQuizHome(); }
+}
+
 function startQuizTopic(topicId) {
   const grade = getUserGrade() || 9;
   const pool = QUIZ_QUESTIONS.filter(q => q.topic === topicId && (q.minGrade || 7) <= grade && (q.maxGrade || 11) >= grade);
   quizOrder = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(8, pool.length));
-  quizCurrent = 0;
-  quizScore = 0;
+  quizCurrent = 0; quizScore = 0; quizWrong = [];
+  quizClearProgress();
   renderQuizQuestion();
 }
 
@@ -2141,8 +2198,8 @@ function startQuizFull() {
   const grade = getUserGrade() || 9;
   const pool = QUIZ_QUESTIONS.filter(q => (q.minGrade || 7) <= grade && (q.maxGrade || 11) >= grade);
   quizOrder = [...pool].sort(() => Math.random() - 0.5).slice(0, 15);
-  quizCurrent = 0;
-  quizScore = 0;
+  quizCurrent = 0; quizScore = 0; quizWrong = [];
+  quizClearProgress();
   renderQuizQuestion();
 }
 
@@ -2207,15 +2264,17 @@ function quizAnswer(i) {
     fb.className = 'quiz-feedback show-correct';
     fb.innerHTML = `✅ Правильно!<div class="quiz-explanation">${q.explanation}</div>`;
   } else {
+    quizWrong.push(q);
     document.getElementById('qopt' + i).classList.add('wrong');
     document.getElementById('qopt' + q.ans).classList.add('correct');
     fb.className = 'quiz-feedback show-wrong';
     fb.innerHTML = `❌ Неправильно. Правильна відповідь: ${String.fromCharCode(65+q.ans)}) ${q.opts[q.ans]}<div class="quiz-explanation">${q.explanation}</div>`;
-    // Track mistake
     const m = JSON.parse(localStorage.getItem('mh_quiz_mistakes')||'{}');
     m[q.topic] = (m[q.topic]||0) + 1;
     localStorage.setItem('mh_quiz_mistakes', JSON.stringify(m));
   }
+  quizTrackDay();
+  quizSaveProgress();
   document.getElementById('quiz-next-btn').style.display = 'inline-block';
 }
 
@@ -2236,34 +2295,85 @@ function quizAnswerOpen() {
     fb.className = 'quiz-feedback show-correct';
     fb.innerHTML = `✅ Правильно! Відповідь: ${q.ans}<div class="quiz-explanation">${q.explanation}</div>`;
   } else {
+    quizWrong.push(q);
     fb.className = 'quiz-feedback show-wrong';
     fb.innerHTML = `❌ Неправильно. Правильна відповідь: ${q.ans}<div class="quiz-explanation">${q.explanation}</div>`;
-    // Track mistake
     const m = JSON.parse(localStorage.getItem('mh_quiz_mistakes')||'{}');
     m[q.topic] = (m[q.topic]||0) + 1;
     localStorage.setItem('mh_quiz_mistakes', JSON.stringify(m));
   }
+  quizTrackDay();
+  quizSaveProgress();
   document.getElementById('quiz-next-btn').style.display = 'inline-block';
 }
 
 function quizNext() { quizCurrent++; renderQuizQuestion(); }
 
 function renderQuizResults() {
+  quizClearProgress();
   const area = document.getElementById('quiz-area');
   const pct = Math.round(quizScore / quizOrder.length * 100);
   const msg = pct >= 80 ? 'Чудово! Ти добре знаєш матеріал! 🏆' : pct >= 60 ? 'Непогано! Ще трохи практики 💪' : 'Повтори теми і спробуй ще! 📚';
+  const reviewBtn = quizWrong.length > 0
+    ? `<button class="quiz-restart-btn quiz-review-btn" onclick="quizStartReview()">📋 Розібрати помилки (${quizWrong.length})</button>`
+    : `<div style="color:#22c55e;font-weight:600;padding:8px 0">🎉 Без помилок!</div>`;
   area.innerHTML = `
     <div class="quiz-card quiz-result">
+      <button class="quiz-result-home-btn" onclick="renderQuizHome()">🏠 Головна</button>
       <div class="quiz-result-score">${quizScore} / ${quizOrder.length}</div>
       <div class="quiz-result-pct">${pct}% правильних</div>
       <div class="quiz-result-msg">${msg}</div>
       <div class="quiz-result-actions">
-        <button class="quiz-restart-btn" onclick="quizCurrent=0;quizScore=0;quizOrder=[...quizOrder].sort(()=>Math.random()-.5);renderQuizQuestion()">🔄 Ще раз</button>
-        <button class="quiz-restart-btn quiz-home-btn" onclick="renderQuizHome()">🏠 Вибрати тему</button>
+        <button class="quiz-restart-btn" onclick="quizCurrent=0;quizScore=0;quizWrong=[];quizOrder=[...quizOrder].sort(()=>Math.random()-.5);renderQuizQuestion()">🔄 Ще раз</button>
+        ${reviewBtn}
+        <button class="quiz-restart-btn quiz-home-btn" onclick="renderQuizHome()">📚 Вибрати тему</button>
       </div>
     </div>
   `;
-  if (typeof trackDaily === 'function') trackDaily('quiz');
+}
+
+// Review only wrong answers with Prev/Next navigation
+let quizReviewIdx = 0;
+
+function quizStartReview() {
+  quizReviewIdx = 0;
+  renderQuizReview();
+}
+
+function renderQuizReview() {
+  const area = document.getElementById('quiz-area');
+  const total = quizWrong.length;
+  if (!total) { renderQuizResults(); return; }
+  const q = quizWrong[quizReviewIdx];
+  const topicMeta = QUIZ_TOPICS_META.find(t => t.id === q.topic);
+  const optsHtml = q.type === 'open'
+    ? `<div class="quiz-review-answer">Правильна відповідь: <strong>${q.ans}</strong></div>`
+    : `<div class="quiz-options">${q.opts.map((o,i) => `
+        <div class="quiz-opt ${i===q.ans?'correct':''}" style="cursor:default">
+          ${String.fromCharCode(65+i)}) ${o}
+        </div>`).join('')}
+      </div>`;
+
+  area.innerHTML = `
+    <div class="quiz-card">
+      <div class="quiz-meta-row">
+        <span class="quiz-topic-badge">${topicMeta ? topicMeta.name : ''}</span>
+        <span class="quiz-progress">Помилка ${quizReviewIdx+1} / ${total}</span>
+      </div>
+      <div class="quiz-question">${q.q}</div>
+      ${optsHtml}
+      <div class="quiz-feedback show-wrong" style="margin-top:12px">
+        <div class="quiz-explanation">${q.explanation}</div>
+      </div>
+      <div class="quiz-review-nav">
+        <button class="quiz-restart-btn" onclick="quizReviewIdx--;renderQuizReview()" ${quizReviewIdx===0?'disabled':''}>← Попереднє</button>
+        <span style="color:#888;font-size:.9rem">${quizReviewIdx+1} / ${total}</span>
+        ${quizReviewIdx < total-1
+          ? `<button class="quiz-restart-btn" onclick="quizReviewIdx++;renderQuizReview()">Наступне →</button>`
+          : `<button class="quiz-restart-btn quiz-home-btn" onclick="renderQuizHome()">🏠 Готово</button>`}
+      </div>
+    </div>
+  `;
 }
 
 // ===== ЗОШИТ (NOTEBOOK) =====
