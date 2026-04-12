@@ -325,10 +325,6 @@ window.addEventListener('DOMContentLoaded', () => {
       if (user) dashLoad(user);
     }
 
-    // Header back button
-    const backBtn = document.getElementById('global-back-btn');
-    if (backBtn) backBtn.style.display = (token && !NO_BACK.has(sec)) ? '' : 'none';
-
     // Quick menu back button
     const qmBack = document.getElementById('qm-back-btn');
     if (qmBack) qmBack.style.display = (token && !NO_BACK.has(sec) && window._prevSection) ? '' : 'none';
