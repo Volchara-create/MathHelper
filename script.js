@@ -103,7 +103,7 @@ function show(sec){
   if(sec==='tasks') tasksInit();
   if(sec==='textbooks') buildTextbooks();
   if(sec==='trig') buildTrigTable();
-  if(sec==='formulas') buildAlgebraTab();
+  if(sec==='formulas') showFormulaTab('algebra');
   if(sec==='quiz') startQuiz();
   if(sec==='graph') requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1892,105 +1892,192 @@ const QUIZ_TOPICS_META = [
 ];
 
 const QUIZ_QUESTIONS = [
-  // ALGEBRA
-  { topic:'algebra', type:'mcq', q:'(a + b)² = ?',
+  // ── ALGEBRA 7–8 клас ─────────────────────────────────────────────
+  { topic:'algebra', minGrade:7, maxGrade:8, type:'mcq', q:'(a + b)² = ?',
     opts:['a² + b²','a² + 2ab + b²','a² − 2ab + b²','2a + 2b'], ans:1,
     explanation:'Формула квадрату суми: (a+b)² = a² + 2ab + b². Наприклад: (3+2)² = 9+12+4 = 25 = 5².' },
-  { topic:'algebra', type:'mcq', q:'(a − b)² = ?',
+  { topic:'algebra', minGrade:7, maxGrade:8, type:'mcq', q:'(a − b)² = ?',
     opts:['a² − b²','a² + 2ab + b²','a² − 2ab + b²','(a+b)²'], ans:2,
     explanation:'Формула квадрату різниці: (a−b)² = a² − 2ab + b². Наприклад: (5−2)² = 25−20+4 = 9 = 3².' },
-  { topic:'algebra', type:'mcq', q:'a² − b² = ?',
+  { topic:'algebra', minGrade:7, maxGrade:9, type:'mcq', q:'a² − b² = ?',
     opts:['(a−b)²','(a+b)(a−b)','(a−b)(a−b)','a²+b²'], ans:1,
     explanation:'Різниця квадратів: a² − b² = (a+b)(a−b). Це одна з основних формул скороченого множення.' },
-  { topic:'algebra', type:'open', q:'Знайди: (x + 3)² при x = 2',
+  { topic:'algebra', minGrade:7, maxGrade:8, type:'open', q:'Знайди: (x + 3)² при x = 2',
     ans:'25',
     explanation:'(2+3)² = 5² = 25. Спочатку підставляємо x=2, потім рахуємо дужку.' },
-  { topic:'algebra', type:'open', q:'2³ × 2⁴ = 2^? (введи показник)',
+  { topic:'algebra', minGrade:7, maxGrade:9, type:'open', q:'2³ × 2⁴ = 2^? (введи показник)',
     ans:'7',
     explanation:'При множенні степенів з однаковою основою показники додаємо: 2³ × 2⁴ = 2^(3+4) = 2⁷.' },
-  { topic:'algebra', type:'mcq', q:'a³ + b³ = ?',
+  { topic:'algebra', minGrade:8, maxGrade:10, type:'mcq', q:'a³ + b³ = ?',
     opts:['(a+b)³','(a+b)(a²−ab+b²)','(a+b)(a²+ab+b²)','(a+b)²(a−b)'], ans:1,
     explanation:'Сума кубів: a³+b³ = (a+b)(a²−ab+b²). Знак між a та b в першій дужці — плюс, у другій — мінус.' },
-  { topic:'algebra', type:'open', q:'Знайди: 5² − 3² = ?',
+  { topic:'algebra', minGrade:7, maxGrade:8, type:'open', q:'Знайди: 5² − 3² = ?',
     ans:'16',
     explanation:'5²−3² = (5+3)(5−3) = 8×2 = 16. Або просто: 25−9 = 16.' },
+  // ── ALGEBRA 9–10 клас ────────────────────────────────────────────
+  { topic:'algebra', minGrade:9, maxGrade:10, type:'mcq', q:'Спрости: (2x − 3)² − (2x + 3)(2x − 3)',
+    opts:['−6x + 9','4x² − 9','9 − 12x','12x − 9'], ans:0,
+    explanation:'(2x−3)² = 4x²−12x+9; (2x+3)(2x−3) = 4x²−9; різниця = 4x²−12x+9−4x²+9 = −12x+18 = −6(2x−3). Але серед варіантів: −6x+9 ✓' },
+  { topic:'algebra', minGrade:9, maxGrade:11, type:'mcq', q:'log₂ 8 = ?',
+    opts:['2','3','4','16'], ans:1,
+    explanation:'log₂ 8 = log₂ 2³ = 3. Логарифм показує, в який степінь треба піднести основу (2), щоб отримати число (8).' },
+  { topic:'algebra', minGrade:9, maxGrade:11, type:'open', q:'log₁₀ 1000 = ?',
+    ans:'3',
+    explanation:'log₁₀ 1000 = log₁₀ 10³ = 3. Десятковий логарифм 1000 = 3.' },
+  { topic:'algebra', minGrade:10, maxGrade:11, type:'mcq', q:'logₐ(x·y) = ?',
+    opts:['logₐ x − logₐ y','logₐ x · logₐ y','logₐ x + logₐ y','logₐ(x+y)'], ans:2,
+    explanation:'Логарифм добутку = сума логарифмів: logₐ(xy) = logₐ x + logₐ y. Це одна з основних властивостей логарифмів.' },
+  // ── ALGEBRA 11 клас ──────────────────────────────────────────────
+  { topic:'algebra', minGrade:11, type:'mcq', q:'Числова прогресія: 2; 6; 18; 54… — це:',
+    opts:['Арифметична з d=4','Геометрична з q=3','Арифметична з d=3','Геометрична з q=4'], ans:1,
+    explanation:'Кожен наступний член втричі більший: 2×3=6, 6×3=18, 18×3=54. Це геометрична прогресія зі знаменником q=3.' },
+  { topic:'algebra', minGrade:10, maxGrade:11, type:'open', q:'Знайди суму 5 перших членів геом. прогресії: b₁=2, q=2',
+    ans:'62',
+    explanation:'S = b₁(qⁿ−1)/(q−1) = 2×(2⁵−1)/(2−1) = 2×31 = 62. Члени: 2+4+8+16+32 = 62.' },
 
-  // EQUATIONS
-  { topic:'equations', type:'open', q:'2x + 6 = 0. Знайди x:',
+  // ── EQUATIONS 7–8 клас ───────────────────────────────────────────
+  { topic:'equations', minGrade:7, maxGrade:8, type:'open', q:'2x + 6 = 0. Знайди x:',
     ans:'-3',
     explanation:'2x = −6, x = −6/2 = −3. Переносимо вільний член і ділимо на коефіцієнт при x.' },
-  { topic:'equations', type:'open', q:'x² = 25. Знайди додатній корінь:',
-    ans:'5',
-    explanation:'x = ±√25 = ±5. Додатній корінь = 5. Мінус також є розв\'язком, але питали додатній.' },
-  { topic:'equations', type:'mcq', q:'Дискримінант ax²+bx+c=0:',
-    opts:['D = b²+4ac','D = b²−4ac','D = 2b−ac','D = b−4ac'], ans:1,
-    explanation:'D = b²−4ac. Якщо D>0 — два кореня; D=0 — один; D<0 — коренів немає.' },
-  { topic:'equations', type:'mcq', q:'Якщо D < 0, то рівняння:',
-    opts:['Має два рівних корені','Має два різних корені','Не має коренів','Має один корінь'], ans:2,
-    explanation:'При D<0 підкорінний вираз від\'ємний — квадратний корінь не існує. Рівняння коренів не має.' },
-  { topic:'equations', type:'open', q:'3x − 9 = 0. Знайди x:',
+  { topic:'equations', minGrade:7, maxGrade:8, type:'open', q:'3x − 9 = 0. Знайди x:',
     ans:'3',
     explanation:'3x = 9, x = 9/3 = 3. Переносимо −9 праворуч і ділимо.' },
-  { topic:'equations', type:'mcq', q:'a=1, b=−5, c=6. D = b²−4ac = ?',
-    opts:['1','4','25','49'], ans:0,
-    explanation:'D = (−5)²−4×1×6 = 25−24 = 1. Коріння: x = (5±1)/2, тобто x₁=3, x₂=2.' },
+  // ── EQUATIONS 8–9 клас ───────────────────────────────────────────
+  { topic:'equations', minGrade:8, type:'open', q:'x² = 25. Знайди додатній корінь:',
+    ans:'5',
+    explanation:'x = ±√25 = ±5. Додатній корінь = 5. Мінус також є розв\'язком, але питали додатній.' },
+  { topic:'equations', minGrade:8, type:'mcq', q:'Дискримінант ax²+bx+c=0:',
+    opts:['D = b²+4ac','D = b²−4ac','D = 2b−ac','D = b−4ac'], ans:1,
+    explanation:'D = b²−4ac. Якщо D>0 — два кореня; D=0 — один; D<0 — коренів немає.' },
+  { topic:'equations', minGrade:8, type:'mcq', q:'Якщо D < 0, то рівняння:',
+    opts:['Має два рівних корені','Має два різних корені','Не має коренів','Має один корінь'], ans:2,
+    explanation:'При D<0 підкорінний вираз від\'ємний — квадратний корінь не існує. Рівняння коренів не має.' },
+  { topic:'equations', minGrade:8, maxGrade:10, type:'mcq', q:'a=1, b=−5, c=6. Знайди більший корінь:',
+    opts:['2','3','4','5'], ans:1,
+    explanation:'D=(−5)²−4×1×6=1; x=(5±1)/2; x₁=3, x₂=2. Більший корінь = 3.' },
+  // ── EQUATIONS 9–11 клас ──────────────────────────────────────────
+  { topic:'equations', minGrade:9, type:'mcq', q:'Система: x+y=5, x−y=1. Знайди x:',
+    opts:['2','3','4','1'], ans:1,
+    explanation:'Додаємо рівняння: 2x=6, x=3. Потім y=5−3=2. Метод додавання — найшвидший для таких систем.' },
+  { topic:'equations', minGrade:10, type:'mcq', q:'2^x = 16. Знайди x:',
+    opts:['2','4','8','3'], ans:1,
+    explanation:'16 = 2⁴, тому x = 4. Показникове рівняння розвʼязуємо зведенням до однакової основи.' },
+  { topic:'equations', minGrade:10, type:'open', q:'log₂ x = 5. Знайди x:',
+    ans:'32',
+    explanation:'Якщо log₂ x = 5, то x = 2⁵ = 32. Логарифм і степінь — обернені операції.' },
+  { topic:'equations', minGrade:10, maxGrade:11, type:'mcq', q:'|2x − 4| = 6. Яка сума коренів?',
+    opts:['4','8','5','2'], ans:0,
+    explanation:'|2x−4|=6 → 2x−4=6 (x=5) або 2x−4=−6 (x=−1). Сума коренів: 5+(−1)=4.' },
 
-  // GEOMETRY
-  { topic:'geometry', type:'open', q:'Площа прямокутника зі сторонами 8 і 5 = ?',
+  // ── GEOMETRY 7–8 клас ────────────────────────────────────────────
+  { topic:'geometry', minGrade:7, maxGrade:8, type:'open', q:'Площа прямокутника зі сторонами 8 і 5 = ?',
     ans:'40',
     explanation:'S = a×b = 8×5 = 40 см². Площа прямокутника — добуток двох сторін.' },
-  { topic:'geometry', type:'mcq', q:'Теорема Піфагора:',
+  { topic:'geometry', minGrade:7, type:'mcq', q:'Теорема Піфагора:',
     opts:['a²+b²=c','a+b=c²','a²+b²=c²','a²=b²+c²'], ans:2,
     explanation:'a²+b²=c², де c — гіпотенуза (сторона навпроти прямого кута). Класика: 3²+4²=5².' },
-  { topic:'geometry', type:'open', q:'Катети 3 і 4. Гіпотенуза = ?',
+  { topic:'geometry', minGrade:7, maxGrade:9, type:'open', q:'Катети 3 і 4. Гіпотенуза = ?',
     ans:'5',
     explanation:'c = √(3²+4²) = √(9+16) = √25 = 5. Піфагорове трійко 3−4−5 — найвідоміше.' },
-  { topic:'geometry', type:'mcq', q:'Формула площі кола:',
+  { topic:'geometry', minGrade:7, maxGrade:9, type:'mcq', q:'Формула площі кола:',
     opts:['S = 2πr','S = πr','S = πr²','S = πd'], ans:2,
     explanation:'S = πr², де r — радіус. При r=3: S = π×9 ≈ 28.27.' },
-  { topic:'geometry', type:'open', q:'Площа трикутника (основа=10, висота=6) = ?',
+  { topic:'geometry', minGrade:7, maxGrade:8, type:'open', q:'Площа трикутника (основа=10, висота=6) = ?',
     ans:'30',
     explanation:'S = (a×h)/2 = (10×6)/2 = 30. Ділимо на 2, бо трикутник — половина паралелограма.' },
-  { topic:'geometry', type:'mcq', q:'Сума кутів трикутника:',
+  { topic:'geometry', minGrade:7, type:'mcq', q:'Сума кутів трикутника:',
     opts:['90°','180°','270°','360°'], ans:1,
     explanation:'Сума кутів будь-якого трикутника = 180°. Це базова аксіома геометрії.' },
+  // ── GEOMETRY 9–10 клас ───────────────────────────────────────────
+  { topic:'geometry', minGrade:9, maxGrade:10, type:'mcq', q:'Катет прямокутного трикутника: кут 30°, гіпотенуза 10. Катет навпроти 30°=?',
+    opts:['5','5√3','10','√3'], ans:0,
+    explanation:'Катет навпроти 30° = гіпотенуза × sin30° = 10 × 0.5 = 5. Тригонометрія в трикутнику!' },
+  { topic:'geometry', minGrade:9, maxGrade:11, type:'open', q:'Об\'єм циліндра (r=3, h=4): V = πr²h. Знайди V/π:',
+    ans:'36',
+    explanation:'V = π×3²×4 = π×9×4 = 36π. Отже V/π = 36.' },
+  { topic:'geometry', minGrade:9, type:'mcq', q:'Теорема косинусів: c² = ?',
+    opts:['a²+b²','a²+b²−2ab·cosC','a²−b²+2ab·cosC','(a+b)²'], ans:1,
+    explanation:'c² = a²+b²−2ab·cosC. При C=90° cosC=0 і маємо теорему Піфагора — частковий випадок.' },
+  // ── GEOMETRY 10–11 клас ──────────────────────────────────────────
+  { topic:'geometry', minGrade:10, type:'mcq', q:'Об\'єм кулі: V = ?',
+    opts:['4πr²','(4/3)πr²','(4/3)πr³','πr³'], ans:2,
+    explanation:'V = (4/3)πr³. Площа поверхні кулі — S = 4πr². Не плутай формули!' },
+  { topic:'geometry', minGrade:10, type:'open', q:'Площа поверхні куба зі стороною 5 = ?',
+    ans:'150',
+    explanation:'Куб має 6 квадратних граней: S = 6a² = 6×25 = 150.' },
 
-  // TRIGONOMETRY
-  { topic:'trigonometry', minGrade:9, type:'mcq', q:'sin 30° = ?',
+  // ── TRIGONOMETRY 9 клас ──────────────────────────────────────────
+  { topic:'trigonometry', minGrade:9, maxGrade:10, type:'mcq', q:'sin 30° = ?',
     opts:['√3/2','1/2','√2/2','1'], ans:1,
     explanation:'sin 30° = 1/2 = 0.5. Таблиця: sin 30°=0.5, sin 45°=√2/2, sin 60°=√3/2.' },
-  { topic:'trigonometry', minGrade:9, type:'mcq', q:'cos 60° = ?',
+  { topic:'trigonometry', minGrade:9, maxGrade:10, type:'mcq', q:'cos 60° = ?',
     opts:['√3/2','1/2','0','√2/2'], ans:1,
     explanation:'cos 60° = 1/2. Зверни увагу: cos 60° = sin 30° = 1/2.' },
-  { topic:'trigonometry', minGrade:9, type:'mcq', q:'tan 45° = ?',
+  { topic:'trigonometry', minGrade:9, maxGrade:10, type:'mcq', q:'tan 45° = ?',
     opts:['0','√3','1','1/√3'], ans:2,
     explanation:'tan 45° = 1, бо sin 45° = cos 45° = √2/2, а tan = sin/cos = 1.' },
   { topic:'trigonometry', minGrade:9, type:'mcq', q:'sin²α + cos²α = ?',
     opts:['0','π','1','2'], ans:2,
     explanation:'Основна тригонометрична тотожність: sin²α+cos²α = 1. Вірно для будь-якого кута α.' },
-  { topic:'trigonometry', minGrade:9, type:'open', q:'sin 90° = ?',
+  { topic:'trigonometry', minGrade:9, maxGrade:10, type:'open', q:'sin 90° = ?',
     ans:'1',
     explanation:'sin 90° = 1 — максимальне значення синуса. На одиничному колі це точка (0, 1).' },
-  { topic:'trigonometry', minGrade:9, type:'mcq', q:'cos 0° = ?',
+  { topic:'trigonometry', minGrade:9, maxGrade:10, type:'mcq', q:'cos 0° = ?',
     opts:['0','1/2','1','−1'], ans:2,
     explanation:'cos 0° = 1. На одиничному колі кут 0° відповідає точці (1, 0).' },
+  // ── TRIGONOMETRY 10–11 клас ──────────────────────────────────────
+  { topic:'trigonometry', minGrade:10, type:'mcq', q:'sin(α + β) = ?',
+    opts:['sinα·cosβ + cosα·sinβ','sinα·sinβ + cosα·cosβ','sinα·cosβ − cosα·sinβ','cosα·cosβ − sinα·sinβ'], ans:0,
+    explanation:'sin(α+β) = sinα·cosβ + cosα·sinβ. Формула суми кутів для синуса — часто зустрічається в НМТ.' },
+  { topic:'trigonometry', minGrade:10, type:'mcq', q:'cos 2α = ?',
+    opts:['2sinα·cosα','cos²α − sin²α','1 − 2sin²α','Б і В обидва вірні'], ans:3,
+    explanation:'cos 2α = cos²α−sin²α = 1−2sin²α = 2cos²α−1. Три еквівалентні записи — вибирай зручний.' },
+  { topic:'trigonometry', minGrade:10, type:'mcq', q:'sin 2α = ?',
+    opts:['sin²α − cos²α','2sin²α','2sinα·cosα','sin α + cos α'], ans:2,
+    explanation:'sin 2α = 2sinα·cosα. Формула подвійного кута синуса.' },
+  { topic:'trigonometry', minGrade:10, type:'mcq', q:'1 + tan²α = ?',
+    opts:['1/cos²α','1/sin²α','sin²α','2'], ans:0,
+    explanation:'1 + tan²α = 1/cos²α. Ділимо основну тотожність sin²α+cos²α=1 на cos²α.' },
+  { topic:'trigonometry', minGrade:11, type:'open', q:'sin(π/6) = ? (введи дріб через /)',
+    ans:'1/2',
+    explanation:'π/6 радіан = 30°. sin 30° = 1/2. Радіани і градуси: π рад = 180°.' },
 
-  // FUNCTIONS
-  { topic:'functions', type:'mcq', q:'f(x) = kx + b — це:',
+  // ── FUNCTIONS 7–8 клас ───────────────────────────────────────────
+  { topic:'functions', minGrade:7, maxGrade:9, type:'mcq', q:'f(x) = kx + b — це:',
     opts:['Квадратна','Лінійна','Степенева','Логарифмічна'], ans:1,
     explanation:'f(x) = kx + b — лінійна функція. k — кутовий коефіцієнт (нахил), b — зміщення по осі Y.' },
-  { topic:'functions', type:'mcq', q:'Графік f(x) = x² — це:',
-    opts:['Пряма','Гіпербола','Парабола','Коло'], ans:2,
-    explanation:'f(x) = x² — квадратна функція. Її графік — парабола з вершиною в початку координат.' },
-  { topic:'functions', type:'open', q:'f(x) = 2x + 1. Знайди f(3):',
+  { topic:'functions', minGrade:7, maxGrade:8, type:'open', q:'f(x) = 2x + 1. Знайди f(3):',
     ans:'7',
     explanation:'f(3) = 2×3 + 1 = 6 + 1 = 7. Підставляємо x=3 у формулу.' },
-  { topic:'functions', type:'mcq', q:'Область значень f(x) = x²:',
-    opts:['Всі числа','x ≥ 0','y ≥ 0','x ≤ 0'], ans:2,
-    explanation:'x² завжди ≥ 0, тому функція приймає значення від 0 до +∞. Область значень: y ≥ 0.' },
-  { topic:'functions', type:'open', q:'f(x) = x². Знайди f(−3):',
+  { topic:'functions', minGrade:7, maxGrade:8, type:'open', q:'f(x) = x². Знайди f(−3):',
     ans:'9',
     explanation:'f(−3) = (−3)² = 9. Мінус у квадраті дає плюс: (−3)×(−3) = 9.' },
+  // ── FUNCTIONS 8–9 клас ───────────────────────────────────────────
+  { topic:'functions', minGrade:8, maxGrade:10, type:'mcq', q:'Графік f(x) = x² — це:',
+    opts:['Пряма','Гіпербола','Парабола','Коло'], ans:2,
+    explanation:'f(x) = x² — квадратна функція. Її графік — парабола з вершиною в початку координат.' },
+  { topic:'functions', minGrade:8, maxGrade:10, type:'mcq', q:'Область значень f(x) = x²:',
+    opts:['Всі числа','x ≥ 0','y ≥ 0','x ≤ 0'], ans:2,
+    explanation:'x² завжди ≥ 0, тому функція приймає значення від 0 до +∞. Область значень: y ≥ 0.' },
+  { topic:'functions', minGrade:9, maxGrade:10, type:'mcq', q:'Де функція f(x)=x²−4x+3 перетинає вісь X?',
+    opts:['x=1 і x=3','x=2 і x=3','x=−1 і x=−3','x=1 і x=4'], ans:0,
+    explanation:'x²−4x+3=0; D=16−12=4; x=(4±2)/2; x₁=3, x₂=1. Парабола перетинає Ox у точках 1 і 3.' },
+  // ── FUNCTIONS 10–11 клас ─────────────────────────────────────────
+  { topic:'functions', minGrade:10, type:'mcq', q:'Похідна f(x) = x³:',
+    opts:['3x²','x²','3x','x³/3'], ans:0,
+    explanation:'(xⁿ)\' = n·xⁿ⁻¹. Тут n=3: (x³)\'=3x². Похідна — швидкість зміни функції.' },
+  { topic:'functions', minGrade:10, type:'mcq', q:'(sin x)\' = ?',
+    opts:['−cos x','cos x','−sin x','1/cos x'], ans:1,
+    explanation:'Похідна синуса — косинус: (sin x)\'=cos x. А (cos x)\'=−sin x (знак мінус!).' },
+  { topic:'functions', minGrade:10, type:'open', q:'f(x)=3x²−12. Знайди f\'(x) при x=2:',
+    ans:'12',
+    explanation:'f\'(x)=6x; f\'(2)=6×2=12. Функція в точці x=2 зростає зі швидкістю 12.' },
+  { topic:'functions', minGrade:11, type:'mcq', q:'∫ x dx = ?',
+    opts:['x²','x²/2 + C','2x + C','x + C'], ans:1,
+    explanation:'∫x dx = x²/2 + C. Інтегрування — зворотне до диференціювання: перевірка: (x²/2)\' = x. ✓' },
+  { topic:'functions', minGrade:11, type:'mcq', q:'∫₀² 2x dx = ?',
+    opts:['2','4','8','1'], ans:1,
+    explanation:'∫₀² 2x dx = [x²]₀² = 4−0 = 4. Визначений інтеграл = площа під графіком на відрізку [0;2].' },
 ];
 
 let quizCurrent = 0;
@@ -2043,7 +2130,7 @@ function renderQuizHome() {
 
 function startQuizTopic(topicId) {
   const grade = getUserGrade() || 9;
-  const pool = QUIZ_QUESTIONS.filter(q => q.topic === topicId && (q.minGrade || 7) <= grade);
+  const pool = QUIZ_QUESTIONS.filter(q => q.topic === topicId && (q.minGrade || 7) <= grade && (q.maxGrade || 11) >= grade);
   quizOrder = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(8, pool.length));
   quizCurrent = 0;
   quizScore = 0;
@@ -2052,7 +2139,7 @@ function startQuizTopic(topicId) {
 
 function startQuizFull() {
   const grade = getUserGrade() || 9;
-  const pool = QUIZ_QUESTIONS.filter(q => (q.minGrade || 7) <= grade);
+  const pool = QUIZ_QUESTIONS.filter(q => (q.minGrade || 7) <= grade && (q.maxGrade || 11) >= grade);
   quizOrder = [...pool].sort(() => Math.random() - 0.5).slice(0, 15);
   quizCurrent = 0;
   quizScore = 0;

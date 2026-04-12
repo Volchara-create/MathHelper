@@ -2125,9 +2125,14 @@ function renderQuestion() {
     const wrap = document.createElement('div');
     wrap.className = 'open-answer-wrap';
     wrap.innerHTML = `<label>Введіть відповідь (число):</label>
-      <input class="open-input" type="text" placeholder="Наприклад: 42"
-        value="${state.answers[i] !== null ? state.answers[i] : ''}"
-        oninput="saveOpenAnswer(this.value)" inputmode="decimal">`;
+      <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+        <input class="open-input" id="open-inp-current" type="text" placeholder="Наприклад: 42"
+          value="${state.answers[i] !== null ? state.answers[i] : ''}"
+          oninput="saveOpenAnswer(this.value)" inputmode="decimal"
+          onkeydown="if(event.key==='Enter')confirmOpenAnswer()">
+        <button onclick="confirmOpenAnswer()" style="padding:.7rem 1.2rem;background:var(--accent);color:#0d2340;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:1rem;">Записати ✓</button>
+        <span id="open-saved-hint" style="color:#22c55e;font-weight:600;display:none;">Збережено!</span>
+      </div>`;
     area.appendChild(wrap);
   }
 
@@ -2144,6 +2149,13 @@ function selectMCQ(idx) {
 function saveOpenAnswer(val) {
   state.answers[state.current] = val.trim() === '' ? null : val.trim();
   updateNavGrid();
+}
+
+function confirmOpenAnswer() {
+  const inp = document.getElementById('open-inp-current');
+  if (inp) saveOpenAnswer(inp.value);
+  const hint = document.getElementById('open-saved-hint');
+  if (hint) { hint.style.display = 'inline'; setTimeout(() => hint.style.display = 'none', 1500); }
 }
 
 function goTo(i) {
