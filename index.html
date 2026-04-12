@@ -438,6 +438,11 @@
             <span class="hub-title">Квіз</span>
             <span class="hub-desc">Перевір знання в ігровому форматі</span>
           </button>
+          <button class="hub-card" onclick="toggleFloatCalc()">
+            <span class="hub-icon">🧮</span>
+            <span class="hub-title">Калькулятор</span>
+            <span class="hub-desc">Науковий калькулятор — відкривається поверх будь-якого розділу</span>
+          </button>
           <button class="hub-card hub-card--pro" onclick="show('pricing')">
             <span class="hub-icon">⭐</span>
             <span class="hub-title">Pro доступ</span>
@@ -643,7 +648,7 @@
           <!-- NOTEBOOK PANEL -->
           <div class="ws-r-panel" id="ws-notebook">
             <div class="ws-r-panel-head">
-              <span>📓 Конспект</span>
+              <span>📓 Зошит</span>
               <div style="display:flex;gap:3px;align-items:center;">
                 <button class="nb-style-btn active" id="nb-lined" onclick="nbSetStyle('lined')" title="Лінійка">≡</button>
                 <button class="nb-style-btn" id="nb-grid" onclick="nbSetStyle('grid')" title="Клітинки">⊞</button>
@@ -846,8 +851,8 @@
     <button class="qm-btn" onclick="show('dashboard')">
       <span class="qm-icon">🏠</span><span class="qm-label">Головна</span>
     </button>
-    <button class="qm-btn" onclick="toggleFloatCalc()">
-      <span class="qm-icon">🧮</span><span class="qm-label">Калькулятор</span>
+    <button class="qm-btn" onclick="notesDrawerOpen()">
+      <span class="qm-icon">📓</span><span class="qm-label">Зошит</span>
     </button>
     <a href="simulator.html" class="qm-btn">
       <span class="qm-icon">🎯</span><span class="qm-label">НМТ</span>
@@ -865,7 +870,7 @@
   <div class="notes-drawer" id="notes-drawer">
     <div class="notes-resize-handle" id="notes-resize-handle"></div>
     <div class="notes-drawer-header">
-      <span class="notes-drawer-title">📓 Конспекти</span>
+      <span class="notes-drawer-title">📓 Зошит</span>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="notes-new-btn" onclick="noteDrawerNew()">+ Новий</button>
         <button class="notes-drawer-close" onclick="notesDrawerClose()">✕</button>
