@@ -104,7 +104,7 @@ function show(sec){
   if(sec==='textbooks') buildTextbooks();
   if(sec==='trig') buildTrigTable();
   if(sec==='formulas') buildAlgebraTab();
-  if(sec==='quiz' && document.getElementById('quiz-area').innerHTML==='') startQuiz();
+  if(sec==='quiz') startQuiz();
   window.scrollTo({top:0,behavior:'smooth'});
   updateNavForGrade(grade);
 }
@@ -1835,163 +1835,271 @@ function buildTrigTable(){
     </tr>`).join('');
 }
 
-// ===== QUIZ =====
-// Quiz questions by grade group
-const QUIZ_BY_GRADE = {
-  1: [ // Grade 1 — addition/subtraction, numbers
-    {q:'🍎🍎🍎 + 🍎🍎 = ?',opts:['4','5','6','7'],ans:1},
-    {q:'Скільки буде 3 + 4?',opts:['6','7','8','5'],ans:1},
-    {q:'🍇🍇🍇🍇🍇 − 🍇🍇 = ?',opts:['2','3','4','5'],ans:1},
-    {q:'Скільки буде 8 − 3?',opts:['4','6','5','3'],ans:2},
-    {q:'Яке число більше: 7 чи 5?',opts:['5','7','однакові','не знаю'],ans:1},
-    {q:'5 + 0 = ?',opts:['0','1','4','5'],ans:3},
-    {q:'Скільки буде 6 + 2?',opts:['7','8','9','6'],ans:1},
-    {q:'7 − 7 = ?',opts:['1','7','0','14'],ans:2},
-    {q:'🐣🐣🐣🐣 + 🐣🐣🐣 = ?',opts:['6','7','8','5'],ans:1},
-    {q:'Скільки: 4 + 5?',opts:['8','10','9','7'],ans:2},
-    {q:'10 − 3 = ?',opts:['6','7','8','13'],ans:1},
-    {q:'Яке число: 2 + 2 + 2?',opts:['4','5','6','8'],ans:2},
-  ],
-  2: [ // Grade 2 — numbers to 100
-    {q:'23 + 14 = ?',opts:['36','37','38','27'],ans:1},
-    {q:'50 − 20 = ?',opts:['20','30','70','80'],ans:1},
-    {q:'45 + 30 = ?',opts:['65','70','75','85'],ans:2},
-    {q:'80 − 35 = ?',opts:['40','45','55','35'],ans:1},
-    {q:'Яке число: десятків 6, одиниць 3?',opts:['36','63','360','306'],ans:1},
-    {q:'17 + 23 = ?',opts:['30','40','50','39'],ans:1},
-    {q:'100 − 40 = ?',opts:['50','60','70','140'],ans:1},
-    {q:'Сусід числа 29 (більший):',opts:['28','30','31','27'],ans:1},
-    {q:'2+8, 3+7, 4+? = 10',opts:['5','6','7','8'],ans:1},
-    {q:'Парне чи непарне число 14?',opts:['Непарне','Парне','Не знаю','Обидва'],ans:1},
-  ],
-  3: [ // Grade 3 — multiplication/division
-    {q:'6 × 7 = ?',opts:['36','42','48','54'],ans:1},
-    {q:'8 × 4 = ?',opts:['24','28','32','36'],ans:2},
-    {q:'36 ÷ 6 = ?',opts:['5','6','7','8'],ans:1},
-    {q:'9 × 9 = ?',opts:['72','81','90','99'],ans:1},
-    {q:'24 ÷ 8 = ?',opts:['2','3','4','6'],ans:1},
-    {q:'5 × 8 = ?',opts:['35','40','45','50'],ans:1},
-    {q:'42 ÷ 7 = ?',opts:['5','6','7','8'],ans:1},
-    {q:'3 × 9 = ?',opts:['18','24','27','30'],ans:2},
-    {q:'56 ÷ 8 = ?',opts:['6','7','8','9'],ans:1},
-    {q:'7 × 6 = ?',opts:['36','40','42','48'],ans:2},
-  ],
-  4: [ // Grade 4 — geometry basics + math
-    {q:'Периметр квадрата зі стороною 5 см:',opts:['15 см','20 см','25 см','10 см'],ans:1},
-    {q:'Площа прямокутника 4×6 см:',opts:['20 см²','24 см²','10 см²','48 см²'],ans:1},
-    {q:'64 ÷ 8 = ?',opts:['6','7','8','9'],ans:2},
-    {q:'7 × 7 = ?',opts:['42','49','56','63'],ans:1},
-    {q:'Периметр прямокутника 3×5 (P=2(a+b)):',opts:['15','16','18','8'],ans:1},
-    {q:'Площа квадрата зі стороною 6 см:',opts:['24 см²','30 см²','36 см²','12 см²'],ans:2},
-    {q:'81 ÷ 9 = ?',opts:['8','9','7','6'],ans:1},
-    {q:'8 × 9 = ?',opts:['63','70','72','81'],ans:2},
-    {q:'Яка фігура має всі 4 сторони рівні?',opts:['Прямокутник','Трапеція','Квадрат','Трикутник'],ans:2},
-    {q:'Скільки кутів у трикутника?',opts:['2','3','4','6'],ans:1},
-  ],
-  5: [ // Grade 5+ — fractions, percentages, geometry
-    {q:'50% від 80 = ?',opts:['30','40','50','60'],ans:1},
-    {q:'1/2 + 1/4 = ?',opts:['1/6','2/6','3/4','2/4'],ans:2},
-    {q:'Площа трикутника (a=8, h=6): S = ?',opts:['48','24','14','42'],ans:1},
-    {q:'25% від 100 = ?',opts:['20','25','30','75'],ans:1},
-    {q:'Яка формула площі прямокутника?',opts:['S=a+b','S=a×b','S=2(a+b)','S=a²'],ans:1},
-    {q:'10% від 200 = ?',opts:['10','20','25','200'],ans:1},
-    {q:'Скільки градусів у сумі кутів трикутника?',opts:['90°','180°','270°','360°'],ans:1},
-    {q:'3/4 − 1/4 = ?',opts:['2/8','1/2','2/4','1/4'],ans:1},
-    {q:'Площа квадрата зі стороною 7: S = ?',opts:['28','42','49','56'],ans:2},
-    {q:'75% від 40 = ?',opts:['25','30','35','40'],ans:1},
-  ],
-};
+// ===== QUIZ (NEW) =====
 
-// Upper-grade quiz (6-11)
-const QUIZ_UPPER = [
-  {q:'Яка формула площі прямокутника?',opts:['S = a + b','S = a × b','S = 2(a + b)','S = a²'],ans:1},
-  {q:'Яка формула площі кола?',opts:['S = π × r','S = 2πr','S = π × r²','S = πd'],ans:2},
-  {q:'Чому дорівнює sin 30°?',opts:['√3/2','1/2','√2/2','1'],ans:1},
-  {q:'Яка формула об\'єму куба?',opts:['V = a²','V = 6a²','V = a³','V = 3a'],ans:2},
-  {q:'Яка формула площі трикутника?',opts:['S = a × h','S = (a × h) / 2','S = a + h','S = 2(a + h)'],ans:1},
-  {q:'Чому дорівнює tan 45°?',opts:['√3','√2/2','0','1'],ans:3},
-  {q:'Скільки градусів у прямому куті?',opts:['45°','180°','90°','60°'],ans:2},
-  {q:'Яка формула площі поверхні куба?',opts:['S = a²','S = 4a²','S = 6a²','S = 3a²'],ans:2},
-  {q:'Чому дорівнює sin 90°?',opts:['0','√2/2','1/2','1'],ans:3},
-  {q:'Яка формула площі ромба через діагоналі?',opts:['S = d₁ × d₂','S = (d₁ × d₂) / 2','S = d₁ + d₂','S = 4 × d'],ans:1},
-  {q:'Дискримінант: D = ?',opts:['b² + 4ac','b² − 4ac','2b − ac','4b² − ac'],ans:1},
-  {q:'Яка формула довжини кола?',opts:['C = π×r²','C = 2πr','C = πd²','C = πr'],ans:1},
-  {q:'Чому дорівнює cos 0°?',opts:['0','1/2','√2/2','1'],ans:3},
-  {q:'Формула об\'єму циліндра:',opts:['V = πrh','V = πr²h','V = 2πrh','V = πr²'],ans:1},
-  {q:'sin²α + cos²α = ?',opts:['0','2','1','π'],ans:2},
+const QUIZ_TOPICS_META = [
+  { id: 'algebra',      name: '🔢 Алгебра',       desc: 'Формули скороченого множення, степені' },
+  { id: 'equations',   name: '⚖️ Рівняння',        desc: 'Лінійні, квадратні, системи' },
+  { id: 'geometry',    name: '📐 Геометрія',       desc: "Площі, об'єми, теорема Піфагора" },
+  { id: 'trigonometry',name: '📊 Тригонометрія',   desc: 'sin, cos, tan і тотожності' },
+  { id: 'functions',   name: '📈 Функції',         desc: 'Лінійна, квадратна, степенева' },
 ];
 
-function getQuizQuestions() {
-  const g = getUserGrade();
-  if (!g || g >= 6) return QUIZ_UPPER;
-  const pool = QUIZ_BY_GRADE[Math.min(g, 5)] || QUIZ_UPPER;
-  return pool;
+const QUIZ_QUESTIONS = [
+  // ALGEBRA
+  { topic:'algebra', type:'mcq', q:'(a + b)² = ?',
+    opts:['a² + b²','a² + 2ab + b²','a² − 2ab + b²','2a + 2b'], ans:1,
+    explanation:'Формула квадрату суми: (a+b)² = a² + 2ab + b². Наприклад: (3+2)² = 9+12+4 = 25 = 5².' },
+  { topic:'algebra', type:'mcq', q:'(a − b)² = ?',
+    opts:['a² − b²','a² + 2ab + b²','a² − 2ab + b²','(a+b)²'], ans:2,
+    explanation:'Формула квадрату різниці: (a−b)² = a² − 2ab + b². Наприклад: (5−2)² = 25−20+4 = 9 = 3².' },
+  { topic:'algebra', type:'mcq', q:'a² − b² = ?',
+    opts:['(a−b)²','(a+b)(a−b)','(a−b)(a−b)','a²+b²'], ans:1,
+    explanation:'Різниця квадратів: a² − b² = (a+b)(a−b). Це одна з основних формул скороченого множення.' },
+  { topic:'algebra', type:'open', q:'Знайди: (x + 3)² при x = 2',
+    ans:'25',
+    explanation:'(2+3)² = 5² = 25. Спочатку підставляємо x=2, потім рахуємо дужку.' },
+  { topic:'algebra', type:'open', q:'2³ × 2⁴ = 2^? (введи показник)',
+    ans:'7',
+    explanation:'При множенні степенів з однаковою основою показники додаємо: 2³ × 2⁴ = 2^(3+4) = 2⁷.' },
+  { topic:'algebra', type:'mcq', q:'a³ + b³ = ?',
+    opts:['(a+b)³','(a+b)(a²−ab+b²)','(a+b)(a²+ab+b²)','(a+b)²(a−b)'], ans:1,
+    explanation:'Сума кубів: a³+b³ = (a+b)(a²−ab+b²). Знак між a та b в першій дужці — плюс, у другій — мінус.' },
+  { topic:'algebra', type:'open', q:'Знайди: 5² − 3² = ?',
+    ans:'16',
+    explanation:'5²−3² = (5+3)(5−3) = 8×2 = 16. Або просто: 25−9 = 16.' },
+
+  // EQUATIONS
+  { topic:'equations', type:'open', q:'2x + 6 = 0. Знайди x:',
+    ans:'-3',
+    explanation:'2x = −6, x = −6/2 = −3. Переносимо вільний член і ділимо на коефіцієнт при x.' },
+  { topic:'equations', type:'open', q:'x² = 25. Знайди додатній корінь:',
+    ans:'5',
+    explanation:'x = ±√25 = ±5. Додатній корінь = 5. Мінус також є розв\'язком, але питали додатній.' },
+  { topic:'equations', type:'mcq', q:'Дискримінант ax²+bx+c=0:',
+    opts:['D = b²+4ac','D = b²−4ac','D = 2b−ac','D = b−4ac'], ans:1,
+    explanation:'D = b²−4ac. Якщо D>0 — два кореня; D=0 — один; D<0 — коренів немає.' },
+  { topic:'equations', type:'mcq', q:'Якщо D < 0, то рівняння:',
+    opts:['Має два рівних корені','Має два різних корені','Не має коренів','Має один корінь'], ans:2,
+    explanation:'При D<0 підкорінний вираз від\'ємний — квадратний корінь не існує. Рівняння коренів не має.' },
+  { topic:'equations', type:'open', q:'3x − 9 = 0. Знайди x:',
+    ans:'3',
+    explanation:'3x = 9, x = 9/3 = 3. Переносимо −9 праворуч і ділимо.' },
+  { topic:'equations', type:'mcq', q:'a=1, b=−5, c=6. D = b²−4ac = ?',
+    opts:['1','4','25','49'], ans:0,
+    explanation:'D = (−5)²−4×1×6 = 25−24 = 1. Коріння: x = (5±1)/2, тобто x₁=3, x₂=2.' },
+
+  // GEOMETRY
+  { topic:'geometry', type:'open', q:'Площа прямокутника зі сторонами 8 і 5 = ?',
+    ans:'40',
+    explanation:'S = a×b = 8×5 = 40 см². Площа прямокутника — добуток двох сторін.' },
+  { topic:'geometry', type:'mcq', q:'Теорема Піфагора:',
+    opts:['a²+b²=c','a+b=c²','a²+b²=c²','a²=b²+c²'], ans:2,
+    explanation:'a²+b²=c², де c — гіпотенуза (сторона навпроти прямого кута). Класика: 3²+4²=5².' },
+  { topic:'geometry', type:'open', q:'Катети 3 і 4. Гіпотенуза = ?',
+    ans:'5',
+    explanation:'c = √(3²+4²) = √(9+16) = √25 = 5. Піфагорове трійко 3−4−5 — найвідоміше.' },
+  { topic:'geometry', type:'mcq', q:'Формула площі кола:',
+    opts:['S = 2πr','S = πr','S = πr²','S = πd'], ans:2,
+    explanation:'S = πr², де r — радіус. При r=3: S = π×9 ≈ 28.27.' },
+  { topic:'geometry', type:'open', q:'Площа трикутника (основа=10, висота=6) = ?',
+    ans:'30',
+    explanation:'S = (a×h)/2 = (10×6)/2 = 30. Ділимо на 2, бо трикутник — половина паралелограма.' },
+  { topic:'geometry', type:'mcq', q:'Сума кутів трикутника:',
+    opts:['90°','180°','270°','360°'], ans:1,
+    explanation:'Сума кутів будь-якого трикутника = 180°. Це базова аксіома геометрії.' },
+
+  // TRIGONOMETRY
+  { topic:'trigonometry', type:'mcq', q:'sin 30° = ?',
+    opts:['√3/2','1/2','√2/2','1'], ans:1,
+    explanation:'sin 30° = 1/2 = 0.5. Таблиця: sin 30°=0.5, sin 45°=√2/2, sin 60°=√3/2.' },
+  { topic:'trigonometry', type:'mcq', q:'cos 60° = ?',
+    opts:['√3/2','1/2','0','√2/2'], ans:1,
+    explanation:'cos 60° = 1/2. Зверни увагу: cos 60° = sin 30° = 1/2.' },
+  { topic:'trigonometry', type:'mcq', q:'tan 45° = ?',
+    opts:['0','√3','1','1/√3'], ans:2,
+    explanation:'tan 45° = 1, бо sin 45° = cos 45° = √2/2, а tan = sin/cos = 1.' },
+  { topic:'trigonometry', type:'mcq', q:'sin²α + cos²α = ?',
+    opts:['0','π','1','2'], ans:2,
+    explanation:'Основна тригонометрична тотожність: sin²α+cos²α = 1. Вірно для будь-якого кута α.' },
+  { topic:'trigonometry', type:'open', q:'sin 90° = ?',
+    ans:'1',
+    explanation:'sin 90° = 1 — максимальне значення синуса. На одиничному колі це точка (0, 1).' },
+  { topic:'trigonometry', type:'mcq', q:'cos 0° = ?',
+    opts:['0','1/2','1','−1'], ans:2,
+    explanation:'cos 0° = 1. На одиничному колі кут 0° відповідає точці (1, 0).' },
+
+  // FUNCTIONS
+  { topic:'functions', type:'mcq', q:'f(x) = kx + b — це:',
+    opts:['Квадратна','Лінійна','Степенева','Логарифмічна'], ans:1,
+    explanation:'f(x) = kx + b — лінійна функція. k — кутовий коефіцієнт (нахил), b — зміщення по осі Y.' },
+  { topic:'functions', type:'mcq', q:'Графік f(x) = x² — це:',
+    opts:['Пряма','Гіпербола','Парабола','Коло'], ans:2,
+    explanation:'f(x) = x² — квадратна функція. Її графік — парабола з вершиною в початку координат.' },
+  { topic:'functions', type:'open', q:'f(x) = 2x + 1. Знайди f(3):',
+    ans:'7',
+    explanation:'f(3) = 2×3 + 1 = 6 + 1 = 7. Підставляємо x=3 у формулу.' },
+  { topic:'functions', type:'mcq', q:'Область значень f(x) = x²:',
+    opts:['Всі числа','x ≥ 0','y ≥ 0','x ≤ 0'], ans:2,
+    explanation:'x² завжди ≥ 0, тому функція приймає значення від 0 до +∞. Область значень: y ≥ 0.' },
+  { topic:'functions', type:'open', q:'f(x) = x². Знайди f(−3):',
+    ans:'9',
+    explanation:'f(−3) = (−3)² = 9. Мінус у квадраті дає плюс: (−3)×(−3) = 9.' },
+];
+
+let quizCurrent = 0;
+let quizScore = 0;
+let quizOrder = [];
+let quizAnswered = false;
+
+function startQuiz() {
+  renderQuizHome();
 }
 
-let quizCurrent=0;
-let quizScore=0;
-let quizOrder=[];
-let quizAnswered=false;
+function renderQuizHome() {
+  const area = document.getElementById('quiz-area');
+  area.innerHTML = `
+    <div class="quiz-home">
+      <div class="quiz-home-title">Обери тему:</div>
+      <div class="quiz-topics-grid">
+        ${QUIZ_TOPICS_META.map(t => `
+          <button class="quiz-topic-card" onclick="startQuizTopic('${t.id}')">
+            <div class="quiz-topic-name">${t.name}</div>
+            <div class="quiz-topic-desc">${t.desc}</div>
+          </button>
+        `).join('')}
+      </div>
+      <button class="quiz-full-btn" onclick="startQuizFull()">🎯 Повний тест — всі теми (15 питань)</button>
+    </div>
+  `;
+}
 
-function startQuiz(){
-  const questions = getQuizQuestions();
-  quizOrder=[...questions].sort(()=>Math.random()-0.5).slice(0,Math.min(10, questions.length));
-  quizCurrent=0;quizScore=0;
+function startQuizTopic(topicId) {
+  const pool = QUIZ_QUESTIONS.filter(q => q.topic === topicId);
+  quizOrder = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(8, pool.length));
+  quizCurrent = 0;
+  quizScore = 0;
   renderQuizQuestion();
 }
 
-function renderQuizQuestion(){
-  const area=document.getElementById('quiz-area');
-  if(quizCurrent>=quizOrder.length){
-    const pct=Math.round(quizScore/quizOrder.length*100);
-    const msg=pct>=80?'Відмінно! Ти справжній математик! 🏆':pct>=60?'Добре! Ще трохи практики 💪':'Не здавайся — повтори формули і спробуй ще! 📚';
-    area.innerHTML=`<div class="quiz-card quiz-result">
-      <div class="quiz-result-score">${quizScore}/${quizOrder.length}</div>
-      <div class="quiz-result-msg">${pct}% правильних<br>${msg}</div>
-      <button class="quiz-restart-btn" onclick="startQuiz()">🔄 Спробувати ще раз</button>
-    </div>`;
-    if(typeof trackDaily==='function') trackDaily('quiz');
+function startQuizFull() {
+  quizOrder = [...QUIZ_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 15);
+  quizCurrent = 0;
+  quizScore = 0;
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const area = document.getElementById('quiz-area');
+  if (quizCurrent >= quizOrder.length) {
+    renderQuizResults();
     return;
   }
-  const q=quizOrder[quizCurrent];
-  quizAnswered=false;
-  const prog=Math.round(quizCurrent/quizOrder.length*100);
-  area.innerHTML=`
+  const q = quizOrder[quizCurrent];
+  quizAnswered = false;
+  const prog = Math.round(quizCurrent / quizOrder.length * 100);
+  const topicMeta = QUIZ_TOPICS_META.find(t => t.id === q.topic);
+
+  let questionHTML = '';
+  if (q.type === 'open') {
+    questionHTML = `
+      <div class="quiz-open-area">
+        <input class="quiz-open-input" id="quiz-open-inp" type="text" placeholder="Введи відповідь..."
+          onkeydown="if(event.key==='Enter')quizAnswerOpen()">
+        <button class="quiz-opt quiz-submit-btn" onclick="quizAnswerOpen()">Перевірити ✓</button>
+      </div>
+    `;
+  } else {
+    questionHTML = `
+      <div class="quiz-options">
+        ${q.opts.map((o, i) => `<button class="quiz-opt" id="qopt${i}" onclick="quizAnswer(${i})">${String.fromCharCode(65+i)}) ${o}</button>`).join('')}
+      </div>
+    `;
+  }
+
+  area.innerHTML = `
     <div class="quiz-card">
-      <div class="quiz-progress">Питання ${quizCurrent+1} / ${quizOrder.length}</div>
+      <div class="quiz-meta-row">
+        <span class="quiz-topic-badge">${topicMeta ? topicMeta.name : ''}</span>
+        <span class="quiz-progress">Питання ${quizCurrent+1} / ${quizOrder.length}</span>
+      </div>
       <div class="quiz-score-bar"><div class="quiz-score-fill" style="width:${prog}%"></div></div>
       <div class="quiz-question">${q.q}</div>
-      <div class="quiz-options">
-        ${q.opts.map((o,i)=>`<button class="quiz-opt" id="qopt${i}" onclick="quizAnswer(${i})">${String.fromCharCode(65+i)}) ${o}</button>`).join('')}
-      </div>
+      ${questionHTML}
       <div class="quiz-feedback" id="quiz-feedback"></div>
       <button class="quiz-next-btn" id="quiz-next-btn" style="display:none" onclick="quizNext()">
-        ${quizCurrent+1<quizOrder.length?'Наступне питання →':'Переглянути результат'}
+        ${quizCurrent + 1 < quizOrder.length ? 'Наступне питання →' : 'Переглянути результат 🏁'}
       </button>
-    </div>`;
-}
+    </div>
+  `;
 
-function quizAnswer(i){
-  if(quizAnswered) return;
-  quizAnswered=true;
-  const q=quizOrder[quizCurrent];
-  const fb=document.getElementById('quiz-feedback');
-  document.querySelectorAll('.quiz-opt').forEach(b=>b.disabled=true);
-  if(i===q.ans){
-    quizScore++;
-    document.getElementById('qopt'+i).classList.add('correct');
-    fb.className='quiz-feedback show-correct';
-    fb.textContent='✅ Правильно! Молодець!';
-  } else {
-    document.getElementById('qopt'+i).classList.add('wrong');
-    document.getElementById('qopt'+q.ans).classList.add('correct');
-    fb.className='quiz-feedback show-wrong';
-    fb.textContent=`❌ Неправильно. Правильна відповідь: ${String.fromCharCode(65+q.ans)}) ${q.opts[q.ans]}`;
+  if (q.type === 'open') {
+    setTimeout(() => { const inp = document.getElementById('quiz-open-inp'); if (inp) inp.focus(); }, 80);
   }
-  document.getElementById('quiz-next-btn').style.display='inline-block';
 }
 
-function quizNext(){quizCurrent++;renderQuizQuestion();}
+function quizAnswer(i) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizOrder[quizCurrent];
+  const fb = document.getElementById('quiz-feedback');
+  document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+  if (i === q.ans) {
+    quizScore++;
+    document.getElementById('qopt' + i).classList.add('correct');
+    fb.className = 'quiz-feedback show-correct';
+    fb.innerHTML = `✅ Правильно!<div class="quiz-explanation">${q.explanation}</div>`;
+  } else {
+    document.getElementById('qopt' + i).classList.add('wrong');
+    document.getElementById('qopt' + q.ans).classList.add('correct');
+    fb.className = 'quiz-feedback show-wrong';
+    fb.innerHTML = `❌ Неправильно. Правильна відповідь: ${String.fromCharCode(65+q.ans)}) ${q.opts[q.ans]}<div class="quiz-explanation">${q.explanation}</div>`;
+  }
+  document.getElementById('quiz-next-btn').style.display = 'inline-block';
+}
+
+function quizAnswerOpen() {
+  if (quizAnswered) return;
+  const inp = document.getElementById('quiz-open-inp');
+  if (!inp) return;
+  const userAns = inp.value.trim().replace(',', '.');
+  const q = quizOrder[quizCurrent];
+  quizAnswered = true;
+  const submitBtn = document.querySelector('.quiz-submit-btn');
+  if (submitBtn) submitBtn.disabled = true;
+  inp.disabled = true;
+  const fb = document.getElementById('quiz-feedback');
+  const correct = userAns === String(q.ans).replace(',', '.');
+  if (correct) {
+    quizScore++;
+    fb.className = 'quiz-feedback show-correct';
+    fb.innerHTML = `✅ Правильно! Відповідь: ${q.ans}<div class="quiz-explanation">${q.explanation}</div>`;
+  } else {
+    fb.className = 'quiz-feedback show-wrong';
+    fb.innerHTML = `❌ Неправильно. Правильна відповідь: ${q.ans}<div class="quiz-explanation">${q.explanation}</div>`;
+  }
+  document.getElementById('quiz-next-btn').style.display = 'inline-block';
+}
+
+function quizNext() { quizCurrent++; renderQuizQuestion(); }
+
+function renderQuizResults() {
+  const area = document.getElementById('quiz-area');
+  const pct = Math.round(quizScore / quizOrder.length * 100);
+  const msg = pct >= 80 ? 'Чудово! Ти добре знаєш матеріал! 🏆' : pct >= 60 ? 'Непогано! Ще трохи практики 💪' : 'Повтори теми і спробуй ще! 📚';
+  area.innerHTML = `
+    <div class="quiz-card quiz-result">
+      <div class="quiz-result-score">${quizScore} / ${quizOrder.length}</div>
+      <div class="quiz-result-pct">${pct}% правильних</div>
+      <div class="quiz-result-msg">${msg}</div>
+      <div class="quiz-result-actions">
+        <button class="quiz-restart-btn" onclick="quizCurrent=0;quizScore=0;quizOrder=[...quizOrder].sort(()=>Math.random()-.5);renderQuizQuestion()">🔄 Ще раз</button>
+        <button class="quiz-restart-btn quiz-home-btn" onclick="renderQuizHome()">🏠 Вибрати тему</button>
+      </div>
+    </div>
+  `;
+  if (typeof trackDaily === 'function') trackDaily('quiz');
+}
 
 // ===== ЗОШИТ (NOTEBOOK) =====
 let nbStyleCurrent = 'lined';
