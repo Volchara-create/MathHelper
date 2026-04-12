@@ -328,6 +328,8 @@ window.addEventListener('DOMContentLoaded', () => {
     // Quick menu back button
     const qmBack = document.getElementById('qm-back-btn');
     if (qmBack) qmBack.style.display = (token && !NO_BACK.has(sec) && window._prevSection) ? '' : 'none';
+    const backBtn = document.getElementById('global-back-btn');
+    if (backBtn) backBtn.style.display = (!NO_BACK.has(sec)) ? '' : 'none';
   };
 });
 

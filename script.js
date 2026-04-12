@@ -105,6 +105,7 @@ function show(sec){
   if(sec==='trig') buildTrigTable();
   if(sec==='formulas') buildAlgebraTab();
   if(sec==='quiz') startQuiz();
+  if(sec==='graph') requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
   window.scrollTo({top:0,behavior:'smooth'});
   updateNavForGrade(grade);
 }
@@ -636,21 +637,66 @@ function flipAllCard(innerId) {
 
 // buildTrigTable2 removed — dead code (referenced non-existent #trig-tbody-2)
 function showGraph(){
-  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('graph').classList.add('active');
-  document.getElementById('category-row').style.display='none';
+  show('graph');
   // Open notebook by default
   const nb=document.getElementById('ws-notebook');
-  if(!nb.classList.contains('open')){nb.classList.add('open');const btn=document.getElementById('wt-notebook');if(btn)btn.classList.add('active');}
+  if(nb && !nb.classList.contains('open')){
+    nb.classList.add('open');
+    const btn=document.getElementById('wt-notebook');
+    if(btn)btn.classList.add('active');
+    wsUpdateRightCol();
+  }
   requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
 }
-function wsToggleNotebook(){
-  const nb=document.getElementById('ws-notebook');
-  nb.classList.toggle('open');
-  const btn=document.getElementById('wt-notebook');
-  if(btn) btn.classList.toggle('active',nb.classList.contains('open'));
-  // ResizeObserver handles canvas resize automatically
+function wsUpdateRightCol() {
+  const col = document.getElementById('ws-right-col');
+  if (!col) return;
+  const panels = col.querySelectorAll('.ws-r-panel.open');
+  col.classList.toggle('has-panel', panels.length > 0);
+  // Show resize handles only between two consecutive open panels
+  const allPanels = Array.from(col.querySelectorAll('.ws-r-panel'));
+  col.querySelectorAll('.ws-vpanel-resize').forEach(r => r.classList.remove('show'));
+  for (let i = 0; i < allPanels.length - 1; i++) {
+    if (allPanels[i].classList.contains('open') && allPanels[i+1].classList.contains('open')) {
+      const handle = allPanels[i].nextElementSibling;
+      if (handle && handle.classList.contains('ws-vpanel-resize')) handle.classList.add('show');
+    }
+  }
+  requestAnimationFrame(() => requestAnimationFrame(initOrResizeCanvas));
 }
+
+function wsOpenPanel(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('open');
+  wsUpdateRightCol();
+}
+
+function wsClosePanel(key) {
+  const map = { notebook: 'ws-notebook', calc: 'ws-calc', info: 'ws-props' };
+  const id = map[key] || key;
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+  // Update toolbar button active state
+  const btnMap = { 'ws-notebook': 'wt-notebook', 'ws-calc': 'wt-calc' };
+  const btnId = btnMap[id];
+  if (btnId) { const btn = document.getElementById(btnId); if (btn) btn.classList.remove('active'); }
+  wsUpdateRightCol();
+}
+
+function wsTogglePanel(key) {
+  const map = { notebook: 'ws-notebook', calc: 'ws-calc', info: 'ws-props' };
+  const id = map[key] || key;
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOpen = el.classList.toggle('open');
+  // Toggle toolbar button
+  const btnMap = { 'ws-notebook': 'wt-notebook', 'ws-calc': 'wt-calc' };
+  const btnId = btnMap[id];
+  if (btnId) { const btn = document.getElementById(btnId); if (btn) btn.classList.toggle('active', isOpen); }
+  wsUpdateRightCol();
+}
+
+function wsToggleNotebook() { wsTogglePanel('notebook'); }
 
 // ===== МОДАЛКИ ФОРМУЛ (оригінал) =====
 function showCategory(cat){
@@ -1117,11 +1163,11 @@ function wsInlineEdit(o,cx,cy){
 
 // ─── PROPS PANEL ───
 function wsCloseProps(){
-  document.getElementById('ws-props').classList.remove('open');
+  wsClosePanel('info');
   wsSelId=null;draw();
 }
 function wsShowProps(o){
-  document.getElementById('ws-props').classList.add('open');
+  wsOpenPanel('ws-props');
   document.getElementById('ws-props-title').textContent=wsShapeNames[o.type]||'Нотатка';
   const body=document.getElementById('ws-props-body');
   if(o.type==='note'){
@@ -1229,8 +1275,8 @@ function parseExpr(expr){
 let ccExpr='';
 let ccFreshResult=false; // after = next digit starts fresh
 
-function wsCalcOpen(){document.getElementById('ws-calc').classList.toggle('open');}
-function wsCalcClose(){document.getElementById('ws-calc').classList.remove('open');}
+function wsCalcOpen(){wsTogglePanel('calc');}
+function wsCalcClose(){wsClosePanel('calc');}
 
 function ccUpdateDisplay(){
   document.getElementById('cc-res').textContent=ccExpr||'0';
@@ -1910,22 +1956,22 @@ const QUIZ_QUESTIONS = [
     explanation:'Сума кутів будь-якого трикутника = 180°. Це базова аксіома геометрії.' },
 
   // TRIGONOMETRY
-  { topic:'trigonometry', type:'mcq', q:'sin 30° = ?',
+  { topic:'trigonometry', minGrade:9, type:'mcq', q:'sin 30° = ?',
     opts:['√3/2','1/2','√2/2','1'], ans:1,
     explanation:'sin 30° = 1/2 = 0.5. Таблиця: sin 30°=0.5, sin 45°=√2/2, sin 60°=√3/2.' },
-  { topic:'trigonometry', type:'mcq', q:'cos 60° = ?',
+  { topic:'trigonometry', minGrade:9, type:'mcq', q:'cos 60° = ?',
     opts:['√3/2','1/2','0','√2/2'], ans:1,
     explanation:'cos 60° = 1/2. Зверни увагу: cos 60° = sin 30° = 1/2.' },
-  { topic:'trigonometry', type:'mcq', q:'tan 45° = ?',
+  { topic:'trigonometry', minGrade:9, type:'mcq', q:'tan 45° = ?',
     opts:['0','√3','1','1/√3'], ans:2,
     explanation:'tan 45° = 1, бо sin 45° = cos 45° = √2/2, а tan = sin/cos = 1.' },
-  { topic:'trigonometry', type:'mcq', q:'sin²α + cos²α = ?',
+  { topic:'trigonometry', minGrade:9, type:'mcq', q:'sin²α + cos²α = ?',
     opts:['0','π','1','2'], ans:2,
     explanation:'Основна тригонометрична тотожність: sin²α+cos²α = 1. Вірно для будь-якого кута α.' },
-  { topic:'trigonometry', type:'open', q:'sin 90° = ?',
+  { topic:'trigonometry', minGrade:9, type:'open', q:'sin 90° = ?',
     ans:'1',
     explanation:'sin 90° = 1 — максимальне значення синуса. На одиничному колі це точка (0, 1).' },
-  { topic:'trigonometry', type:'mcq', q:'cos 0° = ?',
+  { topic:'trigonometry', minGrade:9, type:'mcq', q:'cos 0° = ?',
     opts:['0','1/2','1','−1'], ans:2,
     explanation:'cos 0° = 1. На одиничному колі кут 0° відповідає точці (1, 0).' },
 
@@ -1958,8 +2004,29 @@ function startQuiz() {
 
 function renderQuizHome() {
   const area = document.getElementById('quiz-area');
+  const mistakes = JSON.parse(localStorage.getItem('mh_quiz_mistakes') || '{}');
+  const weakTopics = QUIZ_TOPICS_META
+    .map(t => ({ ...t, count: mistakes[t.id] || 0 }))
+    .filter(t => t.count > 0)
+    .sort((a, b) => b.count - a.count);
+
+  const weakHtml = weakTopics.length > 0 ? `
+    <div class="quiz-weak-section">
+      <div class="quiz-home-title">📊 Твої слабкі теми:</div>
+      <div class="quiz-topics-grid">
+        ${weakTopics.map(t => `
+          <button class="quiz-topic-card quiz-topic-weak" onclick="startQuizTopic('${t.id}')">
+            <div class="quiz-topic-name">${t.name} <span class="quiz-weak-badge">${t.count} помилок</span></div>
+            <div class="quiz-topic-desc">Натисни, щоб потренуватися</div>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  ` : '';
+
   area.innerHTML = `
     <div class="quiz-home">
+      ${weakHtml}
       <div class="quiz-home-title">Обери тему:</div>
       <div class="quiz-topics-grid">
         ${QUIZ_TOPICS_META.map(t => `
@@ -1975,7 +2042,8 @@ function renderQuizHome() {
 }
 
 function startQuizTopic(topicId) {
-  const pool = QUIZ_QUESTIONS.filter(q => q.topic === topicId);
+  const grade = getUserGrade() || 9;
+  const pool = QUIZ_QUESTIONS.filter(q => q.topic === topicId && (q.minGrade || 7) <= grade);
   quizOrder = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(8, pool.length));
   quizCurrent = 0;
   quizScore = 0;
@@ -1983,7 +2051,9 @@ function startQuizTopic(topicId) {
 }
 
 function startQuizFull() {
-  quizOrder = [...QUIZ_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 15);
+  const grade = getUserGrade() || 9;
+  const pool = QUIZ_QUESTIONS.filter(q => (q.minGrade || 7) <= grade);
+  quizOrder = [...pool].sort(() => Math.random() - 0.5).slice(0, 15);
   quizCurrent = 0;
   quizScore = 0;
   renderQuizQuestion();
@@ -2054,6 +2124,10 @@ function quizAnswer(i) {
     document.getElementById('qopt' + q.ans).classList.add('correct');
     fb.className = 'quiz-feedback show-wrong';
     fb.innerHTML = `❌ Неправильно. Правильна відповідь: ${String.fromCharCode(65+q.ans)}) ${q.opts[q.ans]}<div class="quiz-explanation">${q.explanation}</div>`;
+    // Track mistake
+    const m = JSON.parse(localStorage.getItem('mh_quiz_mistakes')||'{}');
+    m[q.topic] = (m[q.topic]||0) + 1;
+    localStorage.setItem('mh_quiz_mistakes', JSON.stringify(m));
   }
   document.getElementById('quiz-next-btn').style.display = 'inline-block';
 }
@@ -2077,6 +2151,10 @@ function quizAnswerOpen() {
   } else {
     fb.className = 'quiz-feedback show-wrong';
     fb.innerHTML = `❌ Неправильно. Правильна відповідь: ${q.ans}<div class="quiz-explanation">${q.explanation}</div>`;
+    // Track mistake
+    const m = JSON.parse(localStorage.getItem('mh_quiz_mistakes')||'{}');
+    m[q.topic] = (m[q.topic]||0) + 1;
+    localStorage.setItem('mh_quiz_mistakes', JSON.stringify(m));
   }
   document.getElementById('quiz-next-btn').style.display = 'inline-block';
 }
@@ -2301,3 +2379,125 @@ function updateBattleUI() {
   if (hpBar) hpBar.style.background = hpColor;
   if (enemyBar) enemyBar.style.background = enemyColor;
 }
+
+// ===== PANEL RESIZE (vertical + horizontal) =====
+function wsInitPanelResize() {
+  document.querySelectorAll('.ws-vpanel-resize').forEach(handle => {
+    handle.addEventListener('mousedown', e => {
+      const aboveId = handle.dataset.above;
+      const belowId = handle.dataset.below;
+      const above = document.getElementById(aboveId);
+      const below = document.getElementById(belowId);
+      if (!above || !below) return;
+      handle.classList.add('active');
+      const startY = e.clientY;
+      const startH1 = above.offsetHeight;
+      const startH2 = below.offsetHeight;
+      const onMove = e => {
+        const dy = e.clientY - startY;
+        const newH1 = Math.max(60, startH1 + dy);
+        const newH2 = Math.max(60, startH2 - dy);
+        above.style.flex = `0 0 ${newH1}px`;
+        below.style.flex = `0 0 ${newH2}px`;
+      };
+      const onUp = () => {
+        handle.classList.remove('active');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  });
+  // Right column horizontal resize
+  const colHandle = document.getElementById('ws-col-resize');
+  const col = document.getElementById('ws-right-col');
+  if (colHandle && col) {
+    colHandle.addEventListener('mousedown', e => {
+      colHandle.classList.add('active');
+      const startX = e.clientX;
+      const startW = col.offsetWidth;
+      const onMove = e => {
+        const newW = Math.max(220, Math.min(window.innerWidth * 0.6, startW - (e.clientX - startX)));
+        col.style.flexBasis = newW + 'px';
+        requestAnimationFrame(initOrResizeCanvas);
+      };
+      const onUp = () => {
+        colHandle.classList.remove('active');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', wsInitPanelResize);
+
+// ===== GLOBAL FLOATING CALCULATOR =====
+let fcExpr = '';
+
+function toggleFloatCalc() {
+  const el = document.getElementById('float-calc');
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+  el.style.flexDirection = 'column';
+}
+
+function fcIn(v) { fcExpr += v; document.getElementById('fc-expr').textContent = fcExpr; }
+function fcFn(v) { fcExpr += v; document.getElementById('fc-expr').textContent = fcExpr; }
+function fcClear() { fcExpr = ''; document.getElementById('fc-expr').textContent = ''; document.getElementById('fc-res').textContent = '0'; }
+function fcBack() { fcExpr = fcExpr.slice(0, -1); document.getElementById('fc-expr').textContent = fcExpr; }
+function fcEval() {
+  try {
+    const res = Function('"use strict"; return (' + fcExpr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-') + ')')();
+    const rounded = typeof res === 'number' ? +res.toFixed(10) : res;
+    document.getElementById('fc-res').textContent = rounded;
+    fcExpr = String(rounded);
+    document.getElementById('fc-expr').textContent = '';
+  } catch(e) {
+    document.getElementById('fc-res').textContent = 'Помилка';
+    fcExpr = '';
+    document.getElementById('fc-expr').textContent = '';
+  }
+}
+
+function initFloatCalcDrag() {
+  const calc = document.getElementById('float-calc');
+  const head = document.getElementById('float-calc-drag');
+  const resizeHandle = document.getElementById('float-calc-resize');
+  if (!calc || !head) return;
+
+  head.addEventListener('mousedown', e => {
+    const sx = e.clientX - calc.offsetLeft;
+    const sy = e.clientY - calc.offsetTop;
+    const onMove = e => {
+      calc.style.left = (e.clientX - sx) + 'px';
+      calc.style.top = (e.clientY - sy) + 'px';
+      calc.style.right = 'auto';
+      calc.style.bottom = 'auto';
+    };
+    const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    e.preventDefault();
+  });
+
+  if (resizeHandle) {
+    resizeHandle.addEventListener('mousedown', e => {
+      const startX = e.clientX, startY = e.clientY;
+      const startW = calc.offsetWidth, startH = calc.offsetHeight;
+      const onMove = e => {
+        calc.style.width = Math.max(220, startW + (e.clientX - startX)) + 'px';
+        calc.style.height = Math.max(180, startH + (e.clientY - startY)) + 'px';
+      };
+      const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', initFloatCalcDrag);

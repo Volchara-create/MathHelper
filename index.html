@@ -61,6 +61,7 @@
 
     <!-- Main navigation — мінімалістична -->
     <nav>
+      <button id="global-back-btn" class="global-back-btn" onclick="qmGoBack()" style="display:none;">← Назад</button>
       <button id="dark-toggle" onclick="toggleDark()">🌙</button>
     </nav>
 
@@ -575,7 +576,9 @@
           <div class="ws-divider"></div>
           <button class="ws-tbtn" id="wt-del" data-tip="Видалити" onclick="wsDelete()" style="color:#ff4d6d;">🗑<span>Видал.</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-notebook" data-tip="Зошит" onclick="wsToggleNotebook()">📓<span>Зошит</span></button>
+          <button class="ws-tbtn" id="wt-notebook" data-tip="Зошит" onclick="wsTogglePanel('notebook')">📓<span>Зошит</span></button>
+          <div class="ws-divider"></div>
+          <button class="ws-tbtn" id="wt-calc" data-tip="Калькулятор" onclick="wsTogglePanel('calc')">🧮<span>Калк.</span></button>
           <div class="ws-divider"></div>
           <button class="ws-tbtn" data-tip="Скинути вигляд" onclick="resetView()">↺<span>Скинути</span></button>
         </div>
@@ -633,73 +636,81 @@
           <div class="graph-hint">🖱 Прокрутка — масштаб &nbsp;|&nbsp; Перетягування — переміщення &nbsp;|&nbsp; Клік на фігуру — властивості</div>
         </div>
 
-        <!-- Зошит (конспект) -->
-        <div class="ws-notebook" id="ws-notebook">
-          <div class="ws-notebook-inner">
-            <div class="ws-notebook-head">
+        <!-- Right panels column (vertical: notebook + calc + props) -->
+        <div class="ws-right-col" id="ws-right-col">
+          <div class="ws-col-resize" id="ws-col-resize"></div>
+
+          <!-- NOTEBOOK PANEL -->
+          <div class="ws-r-panel" id="ws-notebook">
+            <div class="ws-r-panel-head">
               <span>📓 Конспект</span>
-              <div class="ws-notebook-controls">
+              <div style="display:flex;gap:3px;align-items:center;">
                 <button class="nb-style-btn active" id="nb-lined" onclick="nbSetStyle('lined')" title="Лінійка">≡</button>
                 <button class="nb-style-btn" id="nb-grid" onclick="nbSetStyle('grid')" title="Клітинки">⊞</button>
-                <button class="nb-save-note-btn" onclick="nbSaveAsNote()" title="Зберегти в конспекти">↗ Зберегти</button>
-                <button class="nb-clear-btn" onclick="nbClear()" title="Очистити">🗑</button>
-                <button class="nb-close-btn" onclick="wsToggleNotebook()" title="Закрити">✕</button>
+                <button class="ws-r-head-btn" onclick="nbSaveAsNote()" title="Зберегти">↗</button>
+                <button class="ws-r-head-btn" onclick="nbClear()" title="Очистити">🗑</button>
+                <button class="ws-r-head-btn" onclick="wsClosePanel('notebook')">✕</button>
               </div>
             </div>
-            <div class="ws-notebook-drop-hint" id="nb-drop-hint">
-              ← Перетягни функцію сюди, щоб вставити у конспект
-            </div>
-            <div class="ws-notebook-body lined" id="ws-notebook-body" contenteditable="true" spellcheck="false"
-              ondrop="nbOnDrop(event)" ondragover="nbOnDragOver(event)" ondragleave="nbOnDragLeave(event)"
-              oninput="nbSave()">
+            <div class="ws-r-panel-body">
+              <div class="ws-notebook-drop-hint" id="nb-drop-hint">← Перетягни функцію сюди, щоб вставити у конспект</div>
+              <div class="ws-notebook-body lined" id="ws-notebook-body" contenteditable="true" spellcheck="false"
+                ondrop="nbOnDrop(event)" ondragover="nbOnDragOver(event)" ondragleave="nbOnDragLeave(event)"
+                oninput="nbSave()">
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Права панель властивостей -->
-        <div class="ws-props" id="ws-props">
-          <div class="ws-props-inner">
-            <div class="ws-props-head">
-              <span id="ws-props-title">Властивості</span>
-              <button onclick="wsCloseProps()">✕</button>
-            </div>
-            <div class="ws-props-body" id="ws-props-body"></div>
-          </div>
-        </div>
+          <div class="ws-vpanel-resize" data-above="ws-notebook" data-below="ws-calc"></div>
 
-        <!-- Калькулятор (бічна панель) -->
-        <div class="ws-calc-side" id="ws-calc">
-          <div class="ws-calc-side-inner">
-            <div class="ws-calc-side-head">
+          <!-- CALCULATOR PANEL -->
+          <div class="ws-r-panel" id="ws-calc">
+            <div class="ws-r-panel-head">
               <span>🧮 Калькулятор</span>
-              <button onclick="wsCalcClose()">✕</button>
+              <button class="ws-r-head-btn" onclick="wsClosePanel('calc')">✕</button>
             </div>
-            <div class="ws-calc-disp">
-              <div class="ws-calc-expr" id="cc-expr"></div>
-              <div class="ws-calc-res" id="cc-res">0</div>
-            </div>
-            <div class="ws-calc-grid" style="grid-template-columns:repeat(5,1fr);">
-              <button class="ccbtn fn" onclick="ccFn('Math.sin(')">sin</button>
-              <button class="ccbtn fn" onclick="ccFn('Math.cos(')">cos</button>
-              <button class="ccbtn fn" onclick="ccFn('Math.tan(')">tg</button>
-              <button class="ccbtn fn" onclick="ccFn('(1/Math.tan(')">ctg</button>
-              <button class="ccbtn fn" onclick="ccFn('Math.sqrt(')">√</button>
-              <button class="ccbtn fn" onclick="ccFn('Math.PI')">π</button>
-              <button class="ccbtn fn" onclick="ccFn('Math.E')">e</button>
-              <button class="ccbtn fn" onclick="ccFn('**2')">x²</button>
-              <button class="ccbtn fn" onclick="ccFn('**')">xⁿ</button>
-              <button class="ccbtn fn" onclick="ccFn('Math.abs(')">|x|</button>
-              <button class="ccbtn cl" style="grid-column:span 2;" onclick="ccClear()">C</button>
-              <button class="ccbtn cl" onclick="ccBack()">⌫</button>
-              <button class="ccbtn op" onclick="ccIn('(')">(</button>
-              <button class="ccbtn op" onclick="ccIn(')')">)</button>
-              <button class="ccbtn" onclick="ccIn('7')">7</button><button class="ccbtn" onclick="ccIn('8')">8</button><button class="ccbtn" onclick="ccIn('9')">9</button><button class="ccbtn op" onclick="ccIn('/')">÷</button><button class="ccbtn op" onclick="ccIn('%')">%</button>
-              <button class="ccbtn" onclick="ccIn('4')">4</button><button class="ccbtn" onclick="ccIn('5')">5</button><button class="ccbtn" onclick="ccIn('6')">6</button><button class="ccbtn op" onclick="ccIn('*')">×</button><button class="ccbtn op" onclick="ccIn('-')">−</button>
-              <button class="ccbtn" onclick="ccIn('1')">1</button><button class="ccbtn" onclick="ccIn('2')">2</button><button class="ccbtn" onclick="ccIn('3')">3</button><button class="ccbtn" onclick="ccIn('0')">0</button><button class="ccbtn" onclick="ccIn('.')">.</button>
-              <button class="ccbtn eq" style="grid-column:span 3;" onclick="ccEval()">=</button>
-              <button class="ccbtn op" style="grid-column:span 2;" onclick="ccIn('+')">+</button>
+            <div class="ws-r-panel-body" style="overflow-y:auto;padding:10px;gap:0;">
+              <div class="ws-calc-disp">
+                <div class="ws-calc-expr" id="cc-expr"></div>
+                <div class="ws-calc-res" id="cc-res">0</div>
+              </div>
+              <div class="ws-calc-grid" style="grid-template-columns:repeat(5,1fr);margin-top:8px;">
+                <button class="ccbtn fn" onclick="ccFn('Math.sin(')">sin</button>
+                <button class="ccbtn fn" onclick="ccFn('Math.cos(')">cos</button>
+                <button class="ccbtn fn" onclick="ccFn('Math.tan(')">tg</button>
+                <button class="ccbtn fn" onclick="ccFn('(1/Math.tan(')">ctg</button>
+                <button class="ccbtn fn" onclick="ccFn('Math.sqrt(')">√</button>
+                <button class="ccbtn fn" onclick="ccFn('Math.PI')">π</button>
+                <button class="ccbtn fn" onclick="ccFn('Math.E')">e</button>
+                <button class="ccbtn fn" onclick="ccFn('**2')">x²</button>
+                <button class="ccbtn fn" onclick="ccFn('**')">xⁿ</button>
+                <button class="ccbtn fn" onclick="ccFn('Math.abs(')">|x|</button>
+                <button class="ccbtn cl" style="grid-column:span 2;" onclick="ccClear()">C</button>
+                <button class="ccbtn cl" onclick="ccBack()">⌫</button>
+                <button class="ccbtn op" onclick="ccIn('(')">(</button>
+                <button class="ccbtn op" onclick="ccIn(')')">)</button>
+                <button class="ccbtn" onclick="ccIn('7')">7</button><button class="ccbtn" onclick="ccIn('8')">8</button><button class="ccbtn" onclick="ccIn('9')">9</button><button class="ccbtn op" onclick="ccIn('/')">÷</button><button class="ccbtn op" onclick="ccIn('%')">%</button>
+                <button class="ccbtn" onclick="ccIn('4')">4</button><button class="ccbtn" onclick="ccIn('5')">5</button><button class="ccbtn" onclick="ccIn('6')">6</button><button class="ccbtn op" onclick="ccIn('*')">×</button><button class="ccbtn op" onclick="ccIn('-')">−</button>
+                <button class="ccbtn" onclick="ccIn('1')">1</button><button class="ccbtn" onclick="ccIn('2')">2</button><button class="ccbtn" onclick="ccIn('3')">3</button><button class="ccbtn" onclick="ccIn('0')">0</button><button class="ccbtn" onclick="ccIn('.')">.</button>
+                <button class="ccbtn eq" style="grid-column:span 3;" onclick="ccEval()">=</button>
+                <button class="ccbtn op" style="grid-column:span 2;" onclick="ccIn('+')">+</button>
+              </div>
             </div>
           </div>
+
+          <div class="ws-vpanel-resize" data-above="ws-calc" data-below="ws-props"></div>
+
+          <!-- PROPERTIES PANEL -->
+          <div class="ws-r-panel" id="ws-props">
+            <div class="ws-r-panel-head">
+              <span id="ws-props-title">📐 Властивості</span>
+              <button class="ws-r-head-btn" onclick="wsClosePanel('info')">✕</button>
+            </div>
+            <div class="ws-r-panel-body" style="overflow-y:auto;">
+              <div class="ws-props-body" id="ws-props-body"></div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -835,8 +846,8 @@
     <button class="qm-btn" onclick="show('dashboard')">
       <span class="qm-icon">🏠</span><span class="qm-label">Головна</span>
     </button>
-    <button class="qm-btn" onclick="notesDrawerOpen()">
-      <span class="qm-icon">📓</span><span class="qm-label">Конспект</span>
+    <button class="qm-btn" onclick="toggleFloatCalc()">
+      <span class="qm-icon">🧮</span><span class="qm-label">Калькулятор</span>
     </button>
     <a href="simulator.html" class="qm-btn">
       <span class="qm-icon">🎯</span><span class="qm-label">НМТ</span>
@@ -928,6 +939,44 @@
         <button class="settings-danger-btn" onclick="authLogout();closeSettings()">Вийти з акаунту</button>
       </div>
     </div>
+  </div>
+
+  <!-- Global Floating Calculator -->
+  <div id="float-calc" class="float-calc" style="display:none;">
+    <div class="float-calc-head" id="float-calc-drag">
+      <span>🧮 Калькулятор</span>
+      <div style="display:flex;gap:4px;">
+        <button class="float-calc-btn-head" onclick="toggleFloatCalc()">✕</button>
+      </div>
+    </div>
+    <div class="float-calc-body">
+      <div class="ws-calc-disp">
+        <div class="ws-calc-expr" id="fc-expr"></div>
+        <div class="ws-calc-res" id="fc-res">0</div>
+      </div>
+      <div class="ws-calc-grid" style="grid-template-columns:repeat(5,1fr);margin-top:8px;">
+        <button class="ccbtn fn" onclick="fcFn('Math.sin(')">sin</button>
+        <button class="ccbtn fn" onclick="fcFn('Math.cos(')">cos</button>
+        <button class="ccbtn fn" onclick="fcFn('Math.tan(')">tg</button>
+        <button class="ccbtn fn" onclick="fcFn('(1/Math.tan(')">ctg</button>
+        <button class="ccbtn fn" onclick="fcFn('Math.sqrt(')">√</button>
+        <button class="ccbtn fn" onclick="fcFn('Math.PI')">π</button>
+        <button class="ccbtn fn" onclick="fcFn('Math.E')">e</button>
+        <button class="ccbtn fn" onclick="fcFn('**2')">x²</button>
+        <button class="ccbtn fn" onclick="fcFn('**')">xⁿ</button>
+        <button class="ccbtn fn" onclick="fcFn('Math.abs(')">|x|</button>
+        <button class="ccbtn cl" style="grid-column:span 2;" onclick="fcClear()">C</button>
+        <button class="ccbtn cl" onclick="fcBack()">⌫</button>
+        <button class="ccbtn op" onclick="fcIn('(')">(</button>
+        <button class="ccbtn op" onclick="fcIn(')')">)</button>
+        <button class="ccbtn" onclick="fcIn('7')">7</button><button class="ccbtn" onclick="fcIn('8')">8</button><button class="ccbtn" onclick="fcIn('9')">9</button><button class="ccbtn op" onclick="fcIn('/')">÷</button><button class="ccbtn op" onclick="fcIn('%')">%</button>
+        <button class="ccbtn" onclick="fcIn('4')">4</button><button class="ccbtn" onclick="fcIn('5')">5</button><button class="ccbtn" onclick="fcIn('6')">6</button><button class="ccbtn op" onclick="fcIn('*')">×</button><button class="ccbtn op" onclick="fcIn('-')">−</button>
+        <button class="ccbtn" onclick="fcIn('1')">1</button><button class="ccbtn" onclick="fcIn('2')">2</button><button class="ccbtn" onclick="fcIn('3')">3</button><button class="ccbtn" onclick="fcIn('0')">0</button><button class="ccbtn" onclick="fcIn('.')">.</button>
+        <button class="ccbtn eq" style="grid-column:span 3;" onclick="fcEval()">=</button>
+        <button class="ccbtn op" style="grid-column:span 2;" onclick="fcIn('+')">+</button>
+      </div>
+    </div>
+    <div class="float-calc-resize" id="float-calc-resize"></div>
   </div>
 
   <script src="script.js"></script>
