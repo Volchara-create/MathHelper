@@ -2501,3 +2501,178 @@ function initFloatCalcDrag() {
   }
 }
 document.addEventListener('DOMContentLoaded', initFloatCalcDrag);
+
+// ===== SIDE PANEL WORKSPACE =====
+let spCalcExpr = '';
+const SP_NB_KEY = 'mh_sp_notebook';
+
+function togglePanel(name) {
+  const panel = document.getElementById('panel-' + name);
+  if (!panel) return;
+  if (panel.classList.contains('open')) {
+    closePanel(name);
+  } else {
+    openPanel(name);
+  }
+}
+
+function openPanel(name) {
+  const panel = document.getElementById('panel-' + name);
+  if (!panel) return;
+  panel.classList.add('open');
+  const resize = document.getElementById('ph-resize-' + name);
+  if (resize) resize.style.display = '';
+  _updatePanelResizes();
+}
+
+function closePanel(name) {
+  const panel = document.getElementById('panel-' + name);
+  if (!panel) return;
+  panel.classList.remove('open');
+  const resize = document.getElementById('ph-resize-' + name);
+  if (resize) resize.style.display = 'none';
+  _updatePanelResizes();
+}
+
+function _updatePanelResizes() {
+  // Only show resize handle if the panel before it is open
+  ['notebook', 'calc'].forEach(name => {
+    const panel = document.getElementById('panel-' + name);
+    const resize = document.getElementById('ph-resize-' + name);
+    if (panel && resize) {
+      resize.style.display = panel.classList.contains('open') ? '' : 'none';
+    }
+  });
+}
+
+// Panel resize (horizontal)
+function initPanelResizes() {
+  ['notebook', 'calc'].forEach(name => {
+    const handle = document.getElementById('ph-resize-' + name);
+    const panel = document.getElementById('panel-' + name);
+    if (!handle || !panel) return;
+    handle.addEventListener('mousedown', e => {
+      handle.classList.add('active');
+      const startX = e.clientX;
+      const startW = panel.offsetWidth;
+      const onMove = e => {
+        const newW = Math.max(180, Math.min(window.innerWidth * 0.5, startW + (e.clientX - startX)));
+        panel.style.flexBasis = newW + 'px';
+        panel.style.width = newW + 'px';
+      };
+      const onUp = () => {
+        handle.classList.remove('active');
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  });
+}
+
+// Panel drag-to-reorder
+function initPanelDrag() {
+  const workspace = document.getElementById('app-workspace');
+  if (!workspace) return;
+  let dragging = null;
+
+  workspace.querySelectorAll('.side-panel-head').forEach(head => {
+    head.addEventListener('mousedown', e => {
+      // Only start drag if clicking the header itself (not buttons)
+      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+      const panel = head.closest('.side-panel');
+      if (!panel || !panel.classList.contains('open')) return;
+
+      dragging = panel;
+      dragging.style.opacity = '0.5';
+
+      const onMove = e => {
+        const els = Array.from(workspace.children).filter(c => c !== dragging && c.classList.contains('side-panel') && c.classList.contains('open'));
+        els.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          const mid = rect.left + rect.width / 2;
+          if (e.clientX < mid) {
+            workspace.insertBefore(dragging, el);
+          }
+        });
+      };
+      const onUp = () => {
+        if (dragging) dragging.style.opacity = '';
+        dragging = null;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  });
+}
+
+// Side panel notebook functions
+function spNbStyle(style) {
+  const body = document.getElementById('sp-nb-body');
+  if (!body) return;
+  body.classList.remove('lined', 'grid');
+  if (style !== 'plain') body.classList.add(style);
+  document.getElementById('sp-nb-lined')?.classList.toggle('active', style === 'lined');
+  document.getElementById('sp-nb-grid')?.classList.toggle('active', style === 'grid');
+  localStorage.setItem('mh_sp_nb_style', style);
+}
+
+function spNbSave() {
+  const body = document.getElementById('sp-nb-body');
+  if (body) localStorage.setItem(SP_NB_KEY, body.innerHTML);
+}
+
+function spNbLoad() {
+  const body = document.getElementById('sp-nb-body');
+  const saved = localStorage.getItem(SP_NB_KEY);
+  if (body && saved) body.innerHTML = saved;
+  const style = localStorage.getItem('mh_sp_nb_style') || 'lined';
+  spNbStyle(style);
+}
+
+// Side panel calculator functions
+function spCalc(v) {
+  spCalcExpr += v;
+  const el = document.getElementById('sp-calc-expr');
+  if (el) el.textContent = spCalcExpr;
+}
+function spCalcClear() {
+  spCalcExpr = '';
+  const expr = document.getElementById('sp-calc-expr');
+  const res = document.getElementById('sp-calc-res');
+  if (expr) expr.textContent = '';
+  if (res) res.textContent = '0';
+}
+function spCalcBack() {
+  spCalcExpr = spCalcExpr.slice(0, -1);
+  const el = document.getElementById('sp-calc-expr');
+  if (el) el.textContent = spCalcExpr;
+}
+function spCalcEval() {
+  try {
+    const result = Function('"use strict"; return (' + spCalcExpr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-') + ')')();
+    const rounded = typeof result === 'number' ? +result.toFixed(10) : result;
+    const res = document.getElementById('sp-calc-res');
+    if (res) res.textContent = rounded;
+    spCalcExpr = String(rounded);
+    const expr = document.getElementById('sp-calc-expr');
+    if (expr) expr.textContent = '';
+  } catch(e) {
+    const res = document.getElementById('sp-calc-res');
+    if (res) res.textContent = 'Помилка';
+    spCalcExpr = '';
+    const expr = document.getElementById('sp-calc-expr');
+    if (expr) expr.textContent = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initPanelResizes();
+  initPanelDrag();
+  spNbLoad();
+});

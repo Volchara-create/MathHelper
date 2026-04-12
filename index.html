@@ -84,6 +84,62 @@
     </div>
   </header>
 
+  <div id="app-workspace">
+    <!-- Notebook side panel -->
+    <div class="side-panel" id="panel-notebook">
+      <div class="side-panel-head" id="panel-notebook-drag">
+        <span>📓 Зошит</span>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <button class="sp-head-btn" id="sp-nb-lined" onclick="spNbStyle('lined')" title="Лінійка">≡</button>
+          <button class="sp-head-btn" id="sp-nb-grid" onclick="spNbStyle('grid')" title="Клітинки">⊞</button>
+          <button class="sp-head-btn" onclick="closePanel('notebook')">✕</button>
+        </div>
+      </div>
+      <div class="side-panel-body">
+        <div class="ws-notebook-drop-hint" style="padding:6px 12px;font-size:11px;color:#7aa0c8;text-align:center;border-bottom:1px solid #d0e8ff;">Зошит для нотаток</div>
+        <div class="sp-nb-body lined" id="sp-nb-body" contenteditable="true" spellcheck="false" oninput="spNbSave()"></div>
+      </div>
+    </div>
+
+    <div class="ph-resize" id="ph-resize-notebook" style="display:none;"></div>
+
+    <!-- Calculator side panel -->
+    <div class="side-panel" id="panel-calc">
+      <div class="side-panel-head" id="panel-calc-drag">
+        <span>🧮 Калькулятор</span>
+        <button class="sp-head-btn" onclick="closePanel('calc')">✕</button>
+      </div>
+      <div class="side-panel-body" style="overflow-y:auto;padding:10px;">
+        <div class="ws-calc-disp">
+          <div class="ws-calc-expr" id="sp-calc-expr"></div>
+          <div class="ws-calc-res" id="sp-calc-res">0</div>
+        </div>
+        <div class="ws-calc-grid" style="grid-template-columns:repeat(5,1fr);margin-top:8px;">
+          <button class="ccbtn fn" onclick="spCalc('Math.sin(')">sin</button>
+          <button class="ccbtn fn" onclick="spCalc('Math.cos(')">cos</button>
+          <button class="ccbtn fn" onclick="spCalc('Math.tan(')">tg</button>
+          <button class="ccbtn fn" onclick="spCalc('(1/Math.tan(')">ctg</button>
+          <button class="ccbtn fn" onclick="spCalc('Math.sqrt(')">√</button>
+          <button class="ccbtn fn" onclick="spCalc('Math.PI')">π</button>
+          <button class="ccbtn fn" onclick="spCalc('Math.E')">e</button>
+          <button class="ccbtn fn" onclick="spCalc('**2')">x²</button>
+          <button class="ccbtn fn" onclick="spCalc('**')">xⁿ</button>
+          <button class="ccbtn fn" onclick="spCalc('Math.abs(')">|x|</button>
+          <button class="ccbtn cl" style="grid-column:span 2;" onclick="spCalcClear()">C</button>
+          <button class="ccbtn cl" onclick="spCalcBack()">⌫</button>
+          <button class="ccbtn op" onclick="spCalc('(')">(</button>
+          <button class="ccbtn op" onclick="spCalc(')')">)</button>
+          <button class="ccbtn" onclick="spCalc('7')">7</button><button class="ccbtn" onclick="spCalc('8')">8</button><button class="ccbtn" onclick="spCalc('9')">9</button><button class="ccbtn op" onclick="spCalc('/')">÷</button><button class="ccbtn op" onclick="spCalc('%')">%</button>
+          <button class="ccbtn" onclick="spCalc('4')">4</button><button class="ccbtn" onclick="spCalc('5')">5</button><button class="ccbtn" onclick="spCalc('6')">6</button><button class="ccbtn op" onclick="spCalc('*')">×</button><button class="ccbtn op" onclick="spCalc('-')">−</button>
+          <button class="ccbtn" onclick="spCalc('1')">1</button><button class="ccbtn" onclick="spCalc('2')">2</button><button class="ccbtn" onclick="spCalc('3')">3</button><button class="ccbtn" onclick="spCalc('0')">0</button><button class="ccbtn" onclick="spCalc('.')">.</button>
+          <button class="ccbtn eq" style="grid-column:span 3;" onclick="spCalcEval()">=</button>
+          <button class="ccbtn op" style="grid-column:span 2;" onclick="spCalc('+')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ph-resize" id="ph-resize-calc" style="display:none;"></div>
+
   <main>
     <section id="trig">
       <div id="trig-content">
@@ -439,10 +495,10 @@
             <span class="hub-title">Квіз</span>
             <span class="hub-desc">Перевір знання в ігровому форматі</span>
           </button>
-          <button class="hub-card" onclick="toggleFloatCalc()">
+          <button class="hub-card" onclick="togglePanel('calc')">
             <span class="hub-icon">🧮</span>
             <span class="hub-title">Калькулятор</span>
-            <span class="hub-desc">Науковий калькулятор — відкривається поверх будь-якого розділу</span>
+            <span class="hub-desc">Науковий калькулятор — відкривається поруч з контентом</span>
           </button>
           <button class="hub-card hub-card--pro" onclick="show('pricing')">
             <span class="hub-icon">⭐</span>
@@ -724,6 +780,7 @@
     <!-- /РОБОЧИЙ СТІЛ -->
 
   </main>
+  </div><!-- /#app-workspace -->
 
   <!-- Category modal (geometry) -->
   <div id="category-modal" class="category-modal">
@@ -852,7 +909,7 @@
     <button class="qm-btn" onclick="show('dashboard')">
       <span class="qm-icon">🏠</span><span class="qm-label">Головна</span>
     </button>
-    <button class="qm-btn" onclick="notesDrawerOpen()">
+    <button class="qm-btn" onclick="togglePanel('notebook')">
       <span class="qm-icon">📓</span><span class="qm-label">Зошит</span>
     </button>
     <a href="simulator.html" class="qm-btn">
