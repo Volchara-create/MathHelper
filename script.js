@@ -2119,13 +2119,40 @@ function quizTrackDay() {
   localStorage.setItem(key, JSON.stringify(trimmed));
 }
 
-// Track per-topic stats: total answered and wrong count
+// Track per-topic stats with date for monthly/weekly reports
+// Format: { "2026-04-12": { algebra: {total:5, wrong:2}, ... }, ... }
 function quizTrackStat(topicId, isWrong) {
-  const data = JSON.parse(localStorage.getItem('mh_quiz_stats') || '{}');
-  if (!data[topicId]) data[topicId] = { total: 0, wrong: 0 };
-  data[topicId].total++;
-  if (isWrong) data[topicId].wrong++;
-  localStorage.setItem('mh_quiz_stats', JSON.stringify(data));
+  const today = new Date().toISOString().slice(0,10);
+  const data = JSON.parse(localStorage.getItem('mh_quiz_stats_v2') || '{}');
+  if (!data[today]) data[today] = {};
+  if (!data[today][topicId]) data[today][topicId] = { total: 0, wrong: 0 };
+  data[today][topicId].total++;
+  if (isWrong) data[today][topicId].wrong++;
+  localStorage.setItem('mh_quiz_stats_v2', JSON.stringify(data));
+}
+
+// Aggregate stats over a date range (null = all time)
+function quizGetStats(fromDate, toDate) {
+  const data = JSON.parse(localStorage.getItem('mh_quiz_stats_v2') || '{}');
+  const result = {}; // { topicId: {total, wrong} }
+  Object.entries(data).forEach(([date, topics]) => {
+    if (fromDate && date < fromDate) return;
+    if (toDate && date > toDate) return;
+    Object.entries(topics).forEach(([tid, s]) => {
+      if (!result[tid]) result[tid] = { total: 0, wrong: 0 };
+      result[tid].total += s.total;
+      result[tid].wrong += s.wrong;
+    });
+  });
+  return result;
+}
+
+// Get start of current week/month
+function quizWeekStart() {
+  const d = new Date(); d.setDate(d.getDate() - 6); return d.toISOString().slice(0,10);
+}
+function quizMonthStart() {
+  const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
 }
 
 function startQuiz() {
@@ -2135,105 +2162,111 @@ function startQuiz() {
 function renderQuizHome() {
   const area = document.getElementById('quiz-area');
 
-  // Weekly analysis
+  // Activity bar chart (last 7 days)
   const weekData = JSON.parse(localStorage.getItem('mh_quiz_week') || '{}');
   const days = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const key = d.toISOString().slice(0,10);
-    const label = d.toLocaleDateString('uk-UA', {weekday:'short'});
-    days.push({ key, label, count: weekData[key] || 0 });
+    days.push({ key, label: d.toLocaleDateString('uk-UA', {weekday:'short'}), count: weekData[key] || 0 });
   }
   const maxCount = Math.max(...days.map(d => d.count), 1);
 
-  // Per-topic stats
-  const stats = JSON.parse(localStorage.getItem('mh_quiz_stats') || '{}');
-  const totalAll = Object.values(stats).reduce((s, t) => s + (t.total||0), 0);
-  const wrongAll = Object.values(stats).reduce((s, t) => s + (t.wrong||0), 0);
-  const correctAll = totalAll - wrongAll;
-  const hasStats = totalAll > 0;
+  // Build stats panel (all-time + this week + this month)
+  function buildStatsPanel(period) {
+    const from = period === 'week' ? quizWeekStart() : period === 'month' ? quizMonthStart() : null;
+    const stats = quizGetStats(from, null);
+    const totalAll = Object.values(stats).reduce((s,t) => s+(t.total||0), 0);
+    const wrongAll = Object.values(stats).reduce((s,t) => s+(t.wrong||0), 0);
+    const correctAll = totalAll - wrongAll;
+    const pctAll = totalAll ? Math.round(correctAll/totalAll*100) : 0;
 
-  const topicStatsHtml = QUIZ_TOPICS_META.map(t => {
-    const s = stats[t.id] || { total: 0, wrong: 0 };
-    if (!s.total) return `
-      <div class="qs-row qs-empty">
+    const rows = QUIZ_TOPICS_META.map(t => {
+      const s = stats[t.id] || {total:0, wrong:0};
+      if (!s.total) return `<div class="qs-row qs-empty"><span class="qs-name">${t.name}</span><span class="qs-none">—</span></div>`;
+      const correct = s.total - s.wrong;
+      const pct = Math.round(correct/s.total*100);
+      const color = pct>=80?'#22c55e':pct>=60?'#f59e0b':'#ef4444';
+      const icon = pct>=80?'✅':pct>=60?'⚠️':'❌';
+      return `<div class="qs-row" onclick="startQuizTopic('${t.id}')" title="Тренуватись">
         <span class="qs-name">${t.name}</span>
-        <span class="qs-none">ще не проходив</span>
-      </div>`;
-    const correct = s.total - s.wrong;
-    const pct = Math.round(correct / s.total * 100);
-    const color = pct >= 80 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
-    const icon = pct >= 80 ? '✅' : pct >= 60 ? '⚠️' : '❌';
-    return `
-      <div class="qs-row" onclick="startQuizTopic('${t.id}')" title="Натисни, щоб потренуватись">
-        <span class="qs-name">${t.name}</span>
-        <div class="qs-bar-wrap">
-          <div class="qs-bar-fill" style="width:${pct}%;background:${color}"></div>
-        </div>
+        <div class="qs-bar-wrap"><div class="qs-bar-fill" style="width:${pct}%;background:${color}"></div></div>
         <span class="qs-score" style="color:${color}">${icon} ${correct}/${s.total}</span>
         <span class="qs-pct" style="color:${color}">${pct}%</span>
       </div>`;
-  }).join('');
+    }).join('');
 
-  const statsHtml = hasStats ? `
-    <div class="quiz-stats-section">
-      <div class="quiz-stats-header">
-        <span class="quiz-home-title" style="margin:0">📊 Моя статистика:</span>
-        <span class="qs-total-badge">${correctAll}/${totalAll} правильно</span>
-        <button class="qs-reset-btn" onclick="if(confirm('Скинути всю статистику?')){localStorage.removeItem('mh_quiz_stats');localStorage.removeItem('mh_quiz_week');renderQuizHome()}" title="Скинути">↺</button>
-      </div>
-      <div class="qs-overall-bar">
-        <div class="qs-overall-fill" style="width:${totalAll?Math.round(correctAll/totalAll*100):0}%"></div>
-      </div>
-      <div class="qs-topic-list">${topicStatsHtml}</div>
-    </div>
-  ` : `
-    <div class="quiz-stats-section quiz-stats-empty">
-      <div class="quiz-home-title">📊 Моя статистика:</div>
-      <p style="color:#888;font-size:.95rem;margin:4px 0 0">Пройди перший тест — тут зʼявиться твоя статистика!</p>
-    </div>
-  `;
+    const periodLabel = period==='week'?'Цей тиждень':period==='month'?'Цей місяць':'Весь час';
+    return totalAll === 0
+      ? `<p style="color:#888;font-size:.9rem;padding:8px 0">Пройди перший тест!</p>`
+      : `<div class="qs-overall-row">
+          <span class="qs-total-badge">${correctAll}/${totalAll}</span>
+          <div class="qs-overall-bar" style="flex:1"><div class="qs-overall-fill" style="width:${pctAll}%"></div></div>
+          <span style="font-weight:700;color:${pctAll>=80?'#22c55e':pctAll>=60?'#f59e0b':'#ef4444'}">${pctAll}%</span>
+        </div>
+        <div class="qs-topic-list">${rows}</div>`;
+  }
 
-  // Weekly activity bar chart
-  const weekHtml = `
-    <div class="quiz-week-section">
-      <div class="quiz-home-title" style="margin-bottom:6px">📅 Активність за 7 днів:</div>
-      <div class="quiz-week-chart">
+  const allStats = quizGetStats(null, null);
+  const hasAnyStats = Object.values(allStats).some(s => s.total > 0);
+
+  const statsPanel = `
+    <div class="quiz-stats-panel">
+      <div class="qs-tabs">
+        <button class="qs-tab active" id="qst-week" onclick="qsSetTab('week')">Тиждень</button>
+        <button class="qs-tab" id="qst-month" onclick="qsSetTab('month')">Місяць</button>
+        <button class="qs-tab" id="qst-all" onclick="qsSetTab('all')">Весь час</button>
+      </div>
+      <div id="qs-panel-body">${buildStatsPanel('week')}</div>
+      <div class="quiz-week-chart" style="margin-top:12px">
         ${days.map(d => `
-          <div class="quiz-week-bar-wrap" title="${d.count} питань">
-            <div class="quiz-week-bar" style="height:${Math.max(4, Math.round(d.count/maxCount*60))}px;background:${d.count>0?'var(--blue)':'var(--border)'}"></div>
+          <div class="quiz-week-bar-wrap" title="${d.label}: ${d.count} питань">
+            <div class="quiz-week-bar" style="height:${Math.max(4,Math.round(d.count/maxCount*48))}px;background:${d.count>0?'var(--blue)':'var(--border)'}"></div>
             <div class="quiz-week-label">${d.label}</div>
-          </div>
-        `).join('')}
+          </div>`).join('')}
       </div>
     </div>
   `;
 
   const continueHtml = quizHasSaved() ? `
-    <button class="quiz-continue-btn" onclick="quizResume()">▶️ Продовжити незавершений тест</button>
-  ` : '';
+    <button class="quiz-continue-btn" onclick="quizResume()">▶️ Продовжити незавершений тест</button>` : '';
+
+  // Topic cards with % badge from all-time stats
+  const topicCards = QUIZ_TOPICS_META.map(t => {
+    const s = allStats[t.id] || {total:0, wrong:0};
+    const pct = s.total ? Math.round((s.total-s.wrong)/s.total*100) : null;
+    const badge = pct!==null ? `<span class="qtc-badge" style="background:${pct>=80?'#22c55e':pct>=60?'#f59e0b':'#ef4444'}">${pct}%</span>` : '';
+    return `<button class="quiz-topic-card" onclick="startQuizTopic('${t.id}')">
+      <div class="quiz-topic-name">${t.name} ${badge}</div>
+      <div class="quiz-topic-desc">${t.desc}</div>
+    </button>`;
+  }).join('');
 
   area.innerHTML = `
-    <div class="quiz-home">
-      ${statsHtml}
-      ${weekHtml}
-      ${continueHtml}
-      <div class="quiz-home-title">Обери тему:</div>
-      <div class="quiz-topics-grid">
-        ${QUIZ_TOPICS_META.map(t => {
-          const s = stats[t.id] || { total: 0, wrong: 0 };
-          const pct = s.total ? Math.round((s.total-s.wrong)/s.total*100) : null;
-          const badge = pct !== null ? `<span class="qtc-badge" style="background:${pct>=80?'#22c55e':pct>=60?'#f59e0b':'#ef4444'}">${pct}%</span>` : '';
-          return `
-          <button class="quiz-topic-card" onclick="startQuizTopic('${t.id}')">
-            <div class="quiz-topic-name">${t.name} ${badge}</div>
-            <div class="quiz-topic-desc">${t.desc}</div>
-          </button>`;
-        }).join('')}
+    <div class="quiz-home-layout">
+      <div class="quiz-home-left">
+        ${continueHtml}
+        <div class="quiz-home-title">Обери тему:</div>
+        <div class="quiz-topics-grid">${topicCards}</div>
+        <button class="quiz-full-btn" onclick="startQuizFull()">🎯 Повний тест — всі теми (15 питань)</button>
       </div>
-      <button class="quiz-full-btn" onclick="startQuizFull()">🎯 Повний тест — всі теми (15 питань)</button>
+      <div class="quiz-home-right">
+        <div class="quiz-home-title" style="margin-bottom:8px">📊 Статистика</div>
+        ${statsPanel}
+      </div>
     </div>
   `;
+
+  // Store buildStatsPanel for tab switching
+  window._quizBuildStats = buildStatsPanel;
+}
+
+function qsSetTab(period) {
+  document.querySelectorAll('.qs-tab').forEach(t => t.classList.remove('active'));
+  const el = document.getElementById('qst-' + period);
+  if (el) el.classList.add('active');
+  const body = document.getElementById('qs-panel-body');
+  if (body && window._quizBuildStats) body.innerHTML = window._quizBuildStats(period);
 }
 
 function quizResume() {
