@@ -517,6 +517,34 @@
     /* Review btn */
     .quiz-review-btn{background:#f59e0b!important;color:#fff!important;}
     .quiz-review-btn:hover{background:#d97706!important;}
+    /* ── Stats section ── */
+    .quiz-stats-section{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:16px;}
+    body.dark .quiz-stats-section{background:#111827;}
+    .quiz-stats-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+    .qs-total-badge{background:var(--blue);color:#fff;border-radius:20px;padding:3px 12px;font-weight:700;font-size:.9rem;margin-left:auto;}
+    .qs-reset-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:3px 8px;cursor:pointer;color:#888;font-size:.95rem;}
+    .qs-reset-btn:hover{color:#ef4444;border-color:#ef4444;}
+    .qs-overall-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:12px;}
+    .qs-overall-fill{height:100%;background:var(--blue);border-radius:4px;transition:.4s;}
+    .qs-topic-list{display:flex;flex-direction:column;gap:6px;}
+    .qs-row{display:grid;grid-template-columns:110px 1fr 70px 44px;align-items:center;gap:8px;padding:4px 0;cursor:pointer;border-radius:6px;transition:.15s;}
+    .qs-row:hover{background:var(--blue-light);padding:4px 6px;}
+    body.dark .qs-row:hover{background:#1a2535;}
+    .qs-row.qs-empty{cursor:default;}
+    .qs-row.qs-empty:hover{background:none;padding:4px 0;}
+    .qs-name{font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .qs-none{font-size:.8rem;color:#aaa;font-style:italic;}
+    .qs-bar-wrap{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+    .qs-bar-fill{height:100%;border-radius:4px;transition:.4s;}
+    .qs-score{font-size:.82rem;font-weight:700;white-space:nowrap;text-align:right;}
+    .qs-pct{font-size:.82rem;font-weight:700;text-align:right;}
+    .quiz-stats-empty{text-align:center;padding:12px 16px;}
+    /* % badge on topic cards */
+    .qtc-badge{font-size:.72rem;font-weight:700;color:#fff;border-radius:20px;padding:1px 7px;vertical-align:middle;margin-left:5px;}
+    @media(max-width:500px){
+      .qs-row{grid-template-columns:90px 1fr 60px 38px;}
+      .qs-name{font-size:.78rem;}
+    }
 
     /* Quiz meta row */
     .quiz-meta-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}

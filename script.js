@@ -2107,17 +2107,25 @@ function quizHasSaved() {
   catch { return false; }
 }
 
-// Track daily activity for weekly analysis
+// Track daily activity for weekly bar chart
 function quizTrackDay() {
   const key = 'mh_quiz_week';
   const today = new Date().toISOString().slice(0,10);
   const data = JSON.parse(localStorage.getItem(key) || '{}');
   data[today] = (data[today] || 0) + 1;
-  // Keep only last 7 days
   const days = Object.keys(data).sort().slice(-7);
   const trimmed = {};
   days.forEach(d => trimmed[d] = data[d]);
   localStorage.setItem(key, JSON.stringify(trimmed));
+}
+
+// Track per-topic stats: total answered and wrong count
+function quizTrackStat(topicId, isWrong) {
+  const data = JSON.parse(localStorage.getItem('mh_quiz_stats') || '{}');
+  if (!data[topicId]) data[topicId] = { total: 0, wrong: 0 };
+  data[topicId].total++;
+  if (isWrong) data[topicId].wrong++;
+  localStorage.setItem('mh_quiz_stats', JSON.stringify(data));
 }
 
 function startQuiz() {
@@ -2137,12 +2145,62 @@ function renderQuizHome() {
     days.push({ key, label, count: weekData[key] || 0 });
   }
   const maxCount = Math.max(...days.map(d => d.count), 1);
+
+  // Per-topic stats
+  const stats = JSON.parse(localStorage.getItem('mh_quiz_stats') || '{}');
+  const totalAll = Object.values(stats).reduce((s, t) => s + (t.total||0), 0);
+  const wrongAll = Object.values(stats).reduce((s, t) => s + (t.wrong||0), 0);
+  const correctAll = totalAll - wrongAll;
+  const hasStats = totalAll > 0;
+
+  const topicStatsHtml = QUIZ_TOPICS_META.map(t => {
+    const s = stats[t.id] || { total: 0, wrong: 0 };
+    if (!s.total) return `
+      <div class="qs-row qs-empty">
+        <span class="qs-name">${t.name}</span>
+        <span class="qs-none">ще не проходив</span>
+      </div>`;
+    const correct = s.total - s.wrong;
+    const pct = Math.round(correct / s.total * 100);
+    const color = pct >= 80 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
+    const icon = pct >= 80 ? '✅' : pct >= 60 ? '⚠️' : '❌';
+    return `
+      <div class="qs-row" onclick="startQuizTopic('${t.id}')" title="Натисни, щоб потренуватись">
+        <span class="qs-name">${t.name}</span>
+        <div class="qs-bar-wrap">
+          <div class="qs-bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+        <span class="qs-score" style="color:${color}">${icon} ${correct}/${s.total}</span>
+        <span class="qs-pct" style="color:${color}">${pct}%</span>
+      </div>`;
+  }).join('');
+
+  const statsHtml = hasStats ? `
+    <div class="quiz-stats-section">
+      <div class="quiz-stats-header">
+        <span class="quiz-home-title" style="margin:0">📊 Моя статистика:</span>
+        <span class="qs-total-badge">${correctAll}/${totalAll} правильно</span>
+        <button class="qs-reset-btn" onclick="if(confirm('Скинути всю статистику?')){localStorage.removeItem('mh_quiz_stats');localStorage.removeItem('mh_quiz_week');renderQuizHome()}" title="Скинути">↺</button>
+      </div>
+      <div class="qs-overall-bar">
+        <div class="qs-overall-fill" style="width:${totalAll?Math.round(correctAll/totalAll*100):0}%"></div>
+      </div>
+      <div class="qs-topic-list">${topicStatsHtml}</div>
+    </div>
+  ` : `
+    <div class="quiz-stats-section quiz-stats-empty">
+      <div class="quiz-home-title">📊 Моя статистика:</div>
+      <p style="color:#888;font-size:.95rem;margin:4px 0 0">Пройди перший тест — тут зʼявиться твоя статистика!</p>
+    </div>
+  `;
+
+  // Weekly activity bar chart
   const weekHtml = `
     <div class="quiz-week-section">
-      <div class="quiz-home-title">📅 Активність за тиждень:</div>
+      <div class="quiz-home-title" style="margin-bottom:6px">📅 Активність за 7 днів:</div>
       <div class="quiz-week-chart">
         ${days.map(d => `
-          <div class="quiz-week-bar-wrap" title="${d.key}: ${d.count} питань">
+          <div class="quiz-week-bar-wrap" title="${d.count} питань">
             <div class="quiz-week-bar" style="height:${Math.max(4, Math.round(d.count/maxCount*60))}px;background:${d.count>0?'var(--blue)':'var(--border)'}"></div>
             <div class="quiz-week-label">${d.label}</div>
           </div>
@@ -2151,23 +2209,27 @@ function renderQuizHome() {
     </div>
   `;
 
-  // Continue button if saved progress
   const continueHtml = quizHasSaved() ? `
     <button class="quiz-continue-btn" onclick="quizResume()">▶️ Продовжити незавершений тест</button>
   ` : '';
 
   area.innerHTML = `
     <div class="quiz-home">
+      ${statsHtml}
       ${weekHtml}
       ${continueHtml}
       <div class="quiz-home-title">Обери тему:</div>
       <div class="quiz-topics-grid">
-        ${QUIZ_TOPICS_META.map(t => `
+        ${QUIZ_TOPICS_META.map(t => {
+          const s = stats[t.id] || { total: 0, wrong: 0 };
+          const pct = s.total ? Math.round((s.total-s.wrong)/s.total*100) : null;
+          const badge = pct !== null ? `<span class="qtc-badge" style="background:${pct>=80?'#22c55e':pct>=60?'#f59e0b':'#ef4444'}">${pct}%</span>` : '';
+          return `
           <button class="quiz-topic-card" onclick="startQuizTopic('${t.id}')">
-            <div class="quiz-topic-name">${t.name}</div>
+            <div class="quiz-topic-name">${t.name} ${badge}</div>
             <div class="quiz-topic-desc">${t.desc}</div>
-          </button>
-        `).join('')}
+          </button>`;
+        }).join('')}
       </div>
       <button class="quiz-full-btn" onclick="startQuizFull()">🎯 Повний тест — всі теми (15 питань)</button>
     </div>
@@ -2273,6 +2335,7 @@ function quizAnswer(i) {
     m[q.topic] = (m[q.topic]||0) + 1;
     localStorage.setItem('mh_quiz_mistakes', JSON.stringify(m));
   }
+  quizTrackStat(q.topic, i !== q.ans);
   quizTrackDay();
   quizSaveProgress();
   document.getElementById('quiz-next-btn').style.display = 'inline-block';
@@ -2302,6 +2365,7 @@ function quizAnswerOpen() {
     m[q.topic] = (m[q.topic]||0) + 1;
     localStorage.setItem('mh_quiz_mistakes', JSON.stringify(m));
   }
+  quizTrackStat(q.topic, !correct);
   quizTrackDay();
   quizSaveProgress();
   document.getElementById('quiz-next-btn').style.display = 'inline-block';
