@@ -781,12 +781,41 @@ async function noteDelete() {
 // ===== FLOATING NOTES DRAWER =====
 let drawerNoteId = null;
 
+function initDrawerResize() {
+  const handle = document.getElementById('notes-resize-handle');
+  const drawer = document.getElementById('notes-drawer');
+  if (!handle || !drawer) return;
+  let startX, startW;
+  handle.addEventListener('mousedown', e => {
+    startX = e.clientX;
+    startW = drawer.offsetWidth;
+    drawer.classList.add('resizing');
+    handle.classList.add('active');
+    const onMove = e => {
+      const newW = Math.max(280, Math.min(window.innerWidth * 0.85, startW - (e.clientX - startX)));
+      drawer.style.width = newW + 'px';
+      document.documentElement.style.setProperty('--drawer-w', newW + 'px');
+    };
+    const onUp = () => {
+      drawer.classList.remove('resizing');
+      handle.classList.remove('active');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    e.preventDefault();
+  });
+}
+document.addEventListener('DOMContentLoaded', initDrawerResize);
+
 async function notesDrawerOpen() {
   const overlay = document.getElementById('notes-drawer-overlay');
   const drawer  = document.getElementById('notes-drawer');
   if (!overlay || !drawer) return; // not on this page
   const token = localStorage.getItem('mh_token');
   drawer.classList.add('open');
+  document.documentElement.style.setProperty('--drawer-w', drawer.offsetWidth + 'px');
   document.body.classList.add('drawer-active');
   document.getElementById('drawer-editor').style.display = 'none';
   drawerNoteId = null;

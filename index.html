@@ -427,10 +427,10 @@
             <span class="hub-title">НМТ Симулятор</span>
             <span class="hub-desc">30 питань · таймер · розбір помилок</span>
           </a>
-          <button class="hub-card" onclick="notesDrawerOpen()">
-            <span class="hub-icon">📓</span>
-            <span class="hub-title">Конспекти</span>
-            <span class="hub-desc">Твої особисті нотатки та записи</span>
+          <button class="hub-card" onclick="show('textbooks')">
+            <span class="hub-icon">📖</span>
+            <span class="hub-title">Підручники</span>
+            <span class="hub-desc">Безкоштовні підручники МОН України</span>
           </button>
           <button class="hub-card" onclick="show('quiz')">
             <span class="hub-icon">🎮</span>
@@ -841,6 +841,9 @@
     <a href="simulator.html" class="qm-btn">
       <span class="qm-icon">🎯</span><span class="qm-label">НМТ</span>
     </a>
+    <button class="qm-btn qm-ai" onclick="show('pricing')" title="Скоро">
+      <span class="qm-icon">🤖</span><span class="qm-label">ШІ</span>
+    </button>
     <button class="qm-btn qm-pro" onclick="show('pricing')">
       <span class="qm-icon">⭐</span><span class="qm-label">Pro</span>
     </button>
@@ -849,6 +852,7 @@
   <!-- Floating Notes Drawer (works on top of any section) -->
   <div class="notes-drawer-overlay" id="notes-drawer-overlay"></div>
   <div class="notes-drawer" id="notes-drawer">
+    <div class="notes-resize-handle" id="notes-resize-handle"></div>
     <div class="notes-drawer-header">
       <span class="notes-drawer-title">📓 Конспекти</span>
       <div style="display:flex;gap:8px;align-items:center;">
