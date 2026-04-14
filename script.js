@@ -2386,34 +2386,56 @@ function initPanelResizes() {
   });
 }
 
-// Panel drag-to-reorder
+// Panel drag-to-reorder (left ↔ right)
 function initPanelDrag() {
   const workspace = document.getElementById('app-workspace');
   if (!workspace) return;
   let dragging = null;
+  let ghost = null;
 
   workspace.querySelectorAll('.side-panel-head').forEach(head => {
     head.addEventListener('mousedown', e => {
-      // Only start drag if clicking the header itself (not buttons)
       if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
       const panel = head.closest('.side-panel');
       if (!panel || !panel.classList.contains('open')) return;
 
       dragging = panel;
-      dragging.style.opacity = '0.5';
+      dragging.style.opacity = '0.55';
+
+      // Ghost placeholder — shows where panel will land
+      ghost = document.createElement('div');
+      ghost.style.cssText = `flex:0 0 ${panel.offsetWidth}px;width:${panel.offsetWidth}px;border:2px dashed #2563eb;border-radius:6px;background:rgba(37,99,235,.07);pointer-events:none;`;
+      panel.parentNode.insertBefore(ghost, panel);
 
       const onMove = e => {
-        const els = Array.from(workspace.children).filter(c => c !== dragging && c.classList.contains('side-panel') && c.classList.contains('open'));
-        els.forEach(el => {
-          const rect = el.getBoundingClientRect();
+        const openPanels = Array.from(workspace.children).filter(
+          c => c !== dragging && c !== ghost && c.classList.contains('side-panel') && c.classList.contains('open')
+        );
+
+        let inserted = false;
+        for (const target of openPanels) {
+          const rect = target.getBoundingClientRect();
           const mid = rect.left + rect.width / 2;
           if (e.clientX < mid) {
-            workspace.insertBefore(dragging, el);
+            // Insert before this target
+            workspace.insertBefore(dragging, target);
+            workspace.insertBefore(ghost, dragging);
+            inserted = true;
+            break;
           }
-        });
+        }
+        if (!inserted && openPanels.length > 0) {
+          // Insert after last open panel
+          const last = openPanels[openPanels.length - 1];
+          last.after(dragging);
+          dragging.after(ghost);
+        }
       };
+
       const onUp = () => {
         if (dragging) dragging.style.opacity = '';
+        if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
+        ghost = null;
         dragging = null;
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
