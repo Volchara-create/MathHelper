@@ -621,7 +621,7 @@
     .ws-r-panel-head{background:var(--blue);color:#fff;font-size:12.5px;font-weight:700;padding:7px 10px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;user-select:none;}
     .ws-r-head-btn{background:none!important;border:none!important;color:rgba(255,255,255,.75)!important;font-size:14px;cursor:pointer;padding:0 3px;transition:.15s;}
     .ws-r-head-btn:hover{color:#fff!important;}
-    .ws-r-panel-body{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#fff;}
+    .ws-r-panel-body{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#fff;min-height:0;}
     .ws-vpanel-resize{height:4px;background:#b3d9ff;cursor:ns-resize;flex-shrink:0;display:none;}
     .ws-vpanel-resize.show{display:block;}
     .ws-vpanel-resize:hover,.ws-vpanel-resize.active{background:var(--accent);}

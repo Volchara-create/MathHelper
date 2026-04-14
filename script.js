@@ -105,7 +105,6 @@ function show(sec){
   if(sec==='quiz') startQuiz();
   if(sec==='graph') requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
   window.scrollTo({top:0,behavior:'smooth'});
-  updateNavForGrade(grade);
 }
 function showFormulas(){ show('formulas'); }
 
@@ -435,7 +434,6 @@ function buildAlgebraTab(){
   const grid = document.getElementById('algebra-cats-grid');
   // Always rebuild — grade may have changed
   const grade = getUserGrade();
-  updateNavForGrade(grade);
   // Filter by exact grade range
   const cats = ALGEBRA_CATS.filter(c =>
     !grade || (grade >= (c.minGrade || 1) && grade <= (c.maxGrade || 11))
@@ -2237,7 +2235,6 @@ document.addEventListener('DOMContentLoaded', initFloatCalcDrag);
 
 // ===== SIDE PANEL WORKSPACE =====
 let spCalcExpr = '';
-const SP_NB_KEY = 'mh_sp_notebook';
 
 function togglePanel(name) {
   const panel = document.getElementById('panel-' + name);
@@ -2269,7 +2266,7 @@ function closePanel(name) {
 
 function _updatePanelResizes() {
   // Only show resize handle if the panel before it is open
-  ['notebook', 'calc'].forEach(name => {
+  ['calc'].forEach(name => {
     const panel = document.getElementById('panel-' + name);
     const resize = document.getElementById('ph-resize-' + name);
     if (panel && resize) {
@@ -2280,7 +2277,7 @@ function _updatePanelResizes() {
 
 // Panel resize (horizontal)
 function initPanelResizes() {
-  ['notebook', 'calc'].forEach(name => {
+  ['calc'].forEach(name => {
     const handle = document.getElementById('ph-resize-' + name);
     const panel = document.getElementById('panel-' + name);
     if (!handle || !panel) return;
@@ -2344,30 +2341,6 @@ function initPanelDrag() {
   });
 }
 
-// Side panel notebook functions
-function spNbStyle(style) {
-  const body = document.getElementById('sp-nb-body');
-  if (!body) return;
-  body.classList.remove('lined', 'grid');
-  if (style !== 'plain') body.classList.add(style);
-  document.getElementById('sp-nb-lined')?.classList.toggle('active', style === 'lined');
-  document.getElementById('sp-nb-grid')?.classList.toggle('active', style === 'grid');
-  localStorage.setItem('mh_sp_nb_style', style);
-}
-
-function spNbSave() {
-  const body = document.getElementById('sp-nb-body');
-  if (body) localStorage.setItem(SP_NB_KEY, body.innerHTML);
-}
-
-function spNbLoad() {
-  const body = document.getElementById('sp-nb-body');
-  const saved = localStorage.getItem(SP_NB_KEY);
-  if (body && saved) body.innerHTML = saved;
-  const style = localStorage.getItem('mh_sp_nb_style') || 'lined';
-  spNbStyle(style);
-}
-
 // Side panel calculator functions
 function spCalc(v) {
   spCalcExpr += v;
@@ -2407,5 +2380,4 @@ function spCalcEval() {
 document.addEventListener('DOMContentLoaded', () => {
   initPanelResizes();
   initPanelDrag();
-  spNbLoad();
 });

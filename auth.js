@@ -620,15 +620,6 @@ function dashLoad(user) {
   document.getElementById('dash-title').textContent = `Привіт, ${user.name}! 👋`;
   document.getElementById('dash-grade-badge').textContent = `${grade} клас`;
 
-  // NMT topics
-  const nmtSection = document.getElementById('dash-nmt');
-  if (nmtSection) {
-    nmtSection.style.display = '';
-    document.getElementById('dash-nmt-topics').innerHTML = NMT_TOPICS.map(t =>
-      `<span class="dash-nmt-topic">${t}</span>`
-    ).join('');
-  }
-
   // Load recent notes
   dashLoadRecentNotes();
   // Load daily goal progress
