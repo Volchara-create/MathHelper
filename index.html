@@ -98,6 +98,14 @@
       </div>
       <div class="side-panel-body">
         <div style="padding:4px 12px;font-size:11px;color:#7aa0c8;text-align:center;border-bottom:1px solid #d0e8ff;">Зошит для нотаток</div>
+        <div id="sp-nb-selector" style="display:none;padding:6px 10px;border-bottom:1px solid #d0e8ff;background:#f8fbff;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <select id="sp-nb-note-select" style="flex:1;font-size:12px;border:1px solid #b3d9ff;border-radius:6px;padding:3px 6px;background:#fff;color:var(--text);min-width:0;" onchange="spNbSwitchNote(this.value)">
+              <option value="">— Новий конспект —</option>
+            </select>
+            <button style="font-size:11px;padding:3px 8px;border:1px solid #b3d9ff;border-radius:5px;background:#fff;cursor:pointer;color:var(--blue);white-space:nowrap;" onclick="spNbSaveToServer()" title="Зберегти як конспект">💾</button>
+          </div>
+        </div>
         <div class="sp-nb-body lined" id="sp-nb-body" contenteditable="true" spellcheck="false" oninput="spNbSave()"></div>
       </div>
     </div>
@@ -819,6 +827,17 @@
       </div>
     </div>
     <div class="float-calc-resize" id="float-calc-resize"></div>
+  </div>
+
+  <!-- Floating quiz panel -->
+  <div class="float-panel" id="float-quiz" style="display:none;bottom:80px;right:340px;">
+    <div class="float-panel-head" id="float-quiz-head">
+      <span>🎮 Квіз</span>
+      <button class="float-panel-btn-head" onclick="closeFloatPanel('quiz')">✕</button>
+    </div>
+    <div class="float-panel-body" id="float-quiz-body">
+      <p style="color:#888;text-align:center;padding:20px;font-size:0.9rem;">Відкрий квіз через меню</p>
+    </div>
   </div>
 
   <div id="mh-toast"></div>

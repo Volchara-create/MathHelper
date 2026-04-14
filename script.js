@@ -2357,6 +2357,68 @@ function spNbLoad() {
   if (body && saved) body.innerHTML = saved;
   const style = localStorage.getItem('mh_sp_nb_style') || 'lined';
   spNbStyle(style);
+  // Load notes for selector if logged in
+  if (localStorage.getItem('mh_token')) spNbLoadNotesList();
+}
+
+async function spNbLoadNotesList() {
+  const token = localStorage.getItem('mh_token');
+  const selector = document.getElementById('sp-nb-selector');
+  const select = document.getElementById('sp-nb-note-select');
+  if (!selector || !select) return;
+  try {
+    const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return;
+    const notes = await res.json();
+    if (!Array.isArray(notes) || notes.length === 0) return;
+    selector.style.display = '';
+    select.innerHTML = '<option value="">— Новий конспект —</option>' +
+      notes.map(n => `<option value="${n.id}">${escHtml(n.title)}</option>`).join('');
+  } catch { /* silent */ }
+}
+
+function spNbSwitchNote(noteId) {
+  const body = document.getElementById('sp-nb-body');
+  if (!body) return;
+  if (!noteId) { body.innerHTML = ''; return; }
+  const token = localStorage.getItem('mh_token');
+  fetch(`${API}/notes/${noteId}`, { headers: { Authorization: `Bearer ${token}` } })
+    .then(r => r.json())
+    .then(note => { if (note && note.content) body.innerHTML = note.content; })
+    .catch(() => {});
+}
+
+async function spNbSaveToServer() {
+  const token = localStorage.getItem('mh_token');
+  if (!token) { showToast('Увійди щоб зберегти конспект'); return; }
+  const body = document.getElementById('sp-nb-body');
+  const select = document.getElementById('sp-nb-note-select');
+  const noteId = select?.value;
+  const content = body?.innerHTML || '';
+  if (!content.trim()) { showToast('Зошит порожній'); return; }
+
+  if (noteId) {
+    // Update existing note
+    await fetch(`${API}/notes/${noteId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ content })
+    });
+    showToast('✅ Конспект оновлено!');
+  } else {
+    // Create new note
+    const today = new Date().toLocaleDateString('uk-UA');
+    const title = `Зошит ${today}`;
+    const res = await fetch(`${API}/notes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ title, content })
+    });
+    if (res.ok) {
+      showToast('✅ Збережено!');
+      spNbLoadNotesList(); // refresh selector
+    }
+  }
 }
 
 // Side panel calculator functions
@@ -2396,6 +2458,58 @@ function spCalcEval() {
     const expr = document.getElementById('sp-calc-expr');
     if (expr) expr.textContent = '';
   }
+}
+
+// ===== FLOAT PANELS =====
+const _floatDragging = {};
+
+function initFloatPanelDrag(id) {
+  const panel = document.getElementById('float-' + id);
+  const head = document.getElementById('float-' + id + '-head');
+  if (!panel || !head) return;
+  let ox = 0, oy = 0, sx = 0, sy = 0;
+  head.addEventListener('mousedown', e => {
+    if (e.target.tagName === 'BUTTON') return;
+    sx = e.clientX; sy = e.clientY;
+    ox = panel.offsetLeft; oy = panel.offsetTop;
+    const onMove = e => {
+      panel.style.left = (ox + e.clientX - sx) + 'px';
+      panel.style.top = (oy + e.clientY - sy) + 'px';
+      panel.style.bottom = 'auto'; panel.style.right = 'auto';
+    };
+    const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    e.preventDefault();
+  });
+}
+
+function openFloatPanel(id) {
+  const panel = document.getElementById('float-' + id);
+  if (!panel) return;
+  panel.style.display = 'flex';
+  initFloatPanelDrag(id);
+}
+
+function closeFloatPanel(id) {
+  const el = document.getElementById('float-' + id);
+  if (el) el.style.display = 'none';
+}
+
+function openFloatQuiz() {
+  const body = document.getElementById('float-quiz-body');
+  if (body) {
+    const quizSec = document.getElementById('quiz');
+    if (quizSec) {
+      // Clone quiz section content into float panel
+      body.innerHTML = '';
+      const clone = quizSec.cloneNode(true);
+      clone.style.display = 'block';
+      clone.style.padding = '8px';
+      body.appendChild(clone);
+    }
+  }
+  openFloatPanel('quiz');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
