@@ -634,14 +634,6 @@ function flipAllCard(innerId) {
 // buildTrigTable2 removed — dead code (referenced non-existent #trig-tbody-2)
 function showGraph(){
   show('graph');
-  // Open notebook by default
-  const nb=document.getElementById('ws-notebook');
-  if(nb && !nb.classList.contains('open')){
-    nb.classList.add('open');
-    const btn=document.getElementById('wt-notebook');
-    if(btn)btn.classList.add('active');
-    wsUpdateRightCol();
-  }
   requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
 }
 function wsUpdateRightCol() {
@@ -692,7 +684,7 @@ function wsTogglePanel(key) {
   wsUpdateRightCol();
 }
 
-function wsToggleNotebook() { wsTogglePanel('notebook'); }
+function wsToggleNotebook() { togglePanel('notebook'); }
 
 // ===== МОДАЛКИ ФОРМУЛ (оригінал) =====
 function showCategory(cat){
@@ -1271,8 +1263,8 @@ function parseExpr(expr){
 let ccExpr='';
 let ccFreshResult=false; // after = next digit starts fresh
 
-function wsCalcOpen(){wsTogglePanel('calc');}
-function wsCalcClose(){wsClosePanel('calc');}
+function wsCalcOpen(){togglePanel('calc');}
+function wsCalcClose(){closePanel('calc');}
 
 function ccUpdateDisplay(){
   document.getElementById('cc-res').textContent=ccExpr||'0';
@@ -2266,7 +2258,7 @@ function closePanel(name) {
 
 function _updatePanelResizes() {
   // Only show resize handle if the panel before it is open
-  ['calc'].forEach(name => {
+  ['notebook', 'calc'].forEach(name => {
     const panel = document.getElementById('panel-' + name);
     const resize = document.getElementById('ph-resize-' + name);
     if (panel && resize) {
@@ -2277,7 +2269,7 @@ function _updatePanelResizes() {
 
 // Panel resize (horizontal)
 function initPanelResizes() {
-  ['calc'].forEach(name => {
+  ['notebook', 'calc'].forEach(name => {
     const handle = document.getElementById('ph-resize-' + name);
     const panel = document.getElementById('panel-' + name);
     if (!handle || !panel) return;
@@ -2341,11 +2333,40 @@ function initPanelDrag() {
   });
 }
 
+// Side panel notebook functions
+const SP_NB_KEY = 'mh_sp_notebook';
+
+function spNbStyle(style) {
+  const body = document.getElementById('sp-nb-body');
+  if (!body) return;
+  body.classList.remove('lined', 'grid');
+  if (style !== 'plain') body.classList.add(style);
+  document.getElementById('sp-nb-lined')?.classList.toggle('active', style === 'lined');
+  document.getElementById('sp-nb-grid')?.classList.toggle('active', style === 'grid');
+  localStorage.setItem('mh_sp_nb_style', style);
+}
+
+function spNbSave() {
+  const body = document.getElementById('sp-nb-body');
+  if (body) localStorage.setItem(SP_NB_KEY, body.innerHTML);
+}
+
+function spNbLoad() {
+  const body = document.getElementById('sp-nb-body');
+  const saved = localStorage.getItem(SP_NB_KEY);
+  if (body && saved) body.innerHTML = saved;
+  const style = localStorage.getItem('mh_sp_nb_style') || 'lined';
+  spNbStyle(style);
+}
+
 // Side panel calculator functions
 function spCalc(v) {
   spCalcExpr += v;
+  // Show running expression in large display (same UX as main calc)
+  const res = document.getElementById('sp-calc-res');
+  if (res) res.textContent = spCalcExpr;
   const el = document.getElementById('sp-calc-expr');
-  if (el) el.textContent = spCalcExpr;
+  if (el) el.textContent = '';
 }
 function spCalcClear() {
   spCalcExpr = '';
@@ -2356,18 +2377,18 @@ function spCalcClear() {
 }
 function spCalcBack() {
   spCalcExpr = spCalcExpr.slice(0, -1);
-  const el = document.getElementById('sp-calc-expr');
-  if (el) el.textContent = spCalcExpr;
+  const res = document.getElementById('sp-calc-res');
+  if (res) res.textContent = spCalcExpr || '0';
 }
 function spCalcEval() {
   try {
     const result = Function('"use strict"; return (' + spCalcExpr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-') + ')')();
     const rounded = typeof result === 'number' ? +result.toFixed(10) : result;
+    const expr = document.getElementById('sp-calc-expr');
     const res = document.getElementById('sp-calc-res');
+    if (expr) expr.textContent = spCalcExpr + ' =';
     if (res) res.textContent = rounded;
     spCalcExpr = String(rounded);
-    const expr = document.getElementById('sp-calc-expr');
-    if (expr) expr.textContent = '';
   } catch(e) {
     const res = document.getElementById('sp-calc-res');
     if (res) res.textContent = 'Помилка';
@@ -2380,4 +2401,5 @@ function spCalcEval() {
 document.addEventListener('DOMContentLoaded', () => {
   initPanelResizes();
   initPanelDrag();
+  spNbLoad();
 });
