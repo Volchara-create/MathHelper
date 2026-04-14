@@ -99,7 +99,7 @@ function show(sec){
   const grade = getUserGrade();
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(sec).classList.add('active');
-  document.getElementById('category-row').style.display='none';
+  document.getElementById('category-row')?.style && (document.getElementById('category-row').style.display='none');
   if(sec==='textbooks') buildTextbooks();
   if(sec==='formulas') showFormulaTab('algebra');
   if(sec==='quiz') startQuiz();
