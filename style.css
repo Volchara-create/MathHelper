@@ -1094,6 +1094,36 @@ body.dark .float-calc-head{background:#0d2340;}
 body.dark .float-panel{background:#151c2a;border-color:#1e3050;}
 body.dark .float-panel-head{background:#0d2340;}
 
+/* ===== SNAP ZONES for float panels ===== */
+.snap-zone{position:fixed;width:110px;height:90px;border:2px dashed rgba(37,99,235,.4);border-radius:12px;background:rgba(37,99,235,.07);display:none;z-index:9990;pointer-events:none;transition:border-color .15s,background .15s;}
+.snap-zone.active{border-color:rgba(37,99,235,.9);background:rgba(37,99,235,.18);box-shadow:0 0 0 3px rgba(37,99,235,.15);}
+body.dark .snap-zone{border-color:rgba(96,165,250,.35);background:rgba(96,165,250,.07);}
+body.dark .snap-zone.active{border-color:rgba(96,165,250,.9);background:rgba(96,165,250,.18);}
+
+/* ===== FORMULA DETAIL MODAL ===== */
+#formula-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9500;display:none;align-items:center;justify-content:center;}
+#formula-detail-modal.active{display:flex;}
+.fdm-content{background:#fff;border-radius:16px;max-width:520px;width:92%;max-height:80vh;overflow-y:auto;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,.2);position:relative;}
+.fdm-title{font-size:1.1rem;font-weight:700;color:var(--blue);margin-bottom:8px;}
+.fdm-formula{font-family:'Fira Code',monospace;font-size:1.05rem;background:var(--bg-blue);padding:10px 14px;border-radius:8px;margin-bottom:14px;color:#1a3e7c;}
+.fdm-section{font-size:.85rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 4px;}
+.fdm-text{font-size:.95rem;line-height:1.6;color:#333;}
+.fdm-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;}
+.fdm-close:hover{color:#333;}
+body.dark .fdm-content{background:#151c2a;color:#e2e8f0;}
+body.dark .fdm-formula{background:#0d2340;color:#93c5fd;}
+body.dark .fdm-text{color:#cbd5e1;}
+body.dark .fdm-section{color:#60a5fa;}
+
+/* Detail button in formula modal rows */
+.alg-modal-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.alg-modal-row .alg-modal-name{flex:0 0 auto;min-width:140px;font-size:.9rem;color:#555;}
+.alg-modal-row .alg-modal-expr{flex:1;font-family:'Fira Code',monospace;font-size:.93rem;color:#1a3e7c;}
+.alg-modal-row .alg-detail-btn{flex:0 0 auto;background:none;border:1.5px solid var(--blue);border-radius:6px;color:var(--blue);font-size:.75rem;padding:2px 8px;cursor:pointer;opacity:.7;transition:opacity .15s;}
+.alg-modal-row .alg-detail-btn:hover{opacity:1;background:var(--bg-blue);}
+body.dark .alg-modal-row .alg-modal-name{color:#94a3b8;}
+body.dark .alg-modal-row .alg-modal-expr{color:#93c5fd;}
+
 /* ===== QUADRANTS HINT in trig tab ===== */
 .trig-quadrants-hint{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:220px;margin:0 auto 20px;}
 

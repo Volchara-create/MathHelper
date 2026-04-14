@@ -840,6 +840,22 @@
     </div>
   </div>
 
+  <!-- Snap zones (corners) -->
+  <div class="snap-zone" id="snap-tl" style="top:62px;left:8px;"></div>
+  <div class="snap-zone" id="snap-tr" style="top:62px;right:8px;"></div>
+  <div class="snap-zone" id="snap-bl" style="bottom:8px;left:8px;"></div>
+  <div class="snap-zone" id="snap-br" style="bottom:8px;right:8px;"></div>
+
+  <!-- Formula detail modal -->
+  <div id="formula-detail-modal">
+    <div class="fdm-content">
+      <button class="fdm-close" onclick="closeFormulaDetail()">×</button>
+      <div class="fdm-title" id="fdm-title"></div>
+      <div class="fdm-formula" id="fdm-formula"></div>
+      <div id="fdm-body"></div>
+    </div>
+  </div>
+
   <div id="mh-toast"></div>
 
   <script src="script.js"></script>

@@ -110,59 +110,86 @@ function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====
 // v = visual (emoji side), m = math side, expr = text-only fallback
+// detail: { explanation, proof, example } — optional, shown as expandable card
 const ALGEBRA_CATS = [
   // === 7 КЛАС ===
   { name:'💯 Відсотки', minGrade:7, maxGrade:8, formulas:[
-    {name:'Що таке відсоток?',expr:'% = частина від 100\n50% = половина, 25% = чверть'},
-    {name:'Знайти % від числа',expr:'20% від 50 = 50 × 20 ÷ 100 = 10'},
-    {name:'Знайти який %',expr:'10 з 50 = 10 ÷ 50 × 100 = 20%'},
-    {name:'Знижка',expr:'Ціна 200грн, знижка 10% → 200 × 0.1 = 20грн знижки'},
+    {name:'Що таке відсоток?',expr:'% = частина від 100\n50% = половина, 25% = чверть',
+      detail:{explanation:'Відсоток — це сота частина цілого. Слово "відсоток" походить від латинського "pro centum" — на сто.',proof:'100% = ціле число\n1% = число ÷ 100\nk% = число × k ÷ 100',example:'50% від 80 = 80 × 50 ÷ 100 = 40'}},
+    {name:'Знайти % від числа',expr:'20% від 50 = 50 × 20 ÷ 100 = 10',
+      detail:{explanation:'Щоб знайти k% від числа N, множимо N на k і ділимо на 100.',example:'15% від 200 = 200 × 15 ÷ 100 = 30\n7% від 450 = 450 × 7 ÷ 100 = 31.5'}},
+    {name:'Знайти який %',expr:'10 з 50 = 10 ÷ 50 × 100 = 20%',
+      detail:{explanation:'Щоб знайти, який відсоток частина A від числа B: ділимо A на B і множимо на 100.',example:'25 з 200 = 25 ÷ 200 × 100 = 12.5%'}},
+    {name:'Знижка',expr:'Ціна 200грн, знижка 10% → 200 × 0.1 = 20грн знижки',
+      detail:{explanation:'Знижка — це зменшення ціни на певний відсоток. Нова ціна = стара × (1 − знижка/100).',example:'Куртка 1200грн, знижка 25%\nЗнижка: 1200 × 0.25 = 300грн\nНова ціна: 1200 − 300 = 900грн'}},
   ]},
   { name:'⚡ Степені (цілі)', minGrade:7, maxGrade:7, formulas:[
-    {name:'Множення',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ'},
-    {name:'Ділення',expr:'aⁿ ÷ aᵐ = aⁿ⁻ᵐ'},
-    {name:'Степінь степеня',expr:'(aⁿ)ᵐ = aⁿ·ᵐ'},
+    {name:'Множення',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ',
+      detail:{explanation:'При множенні степенів з однаковою основою показники додаються.',proof:'a³ · a² = (a·a·a) · (a·a) = a⁵\nЗагально: n доданків + m доданків = n+m доданків',example:'2³ · 2⁴ = 2⁷ = 128'}},
+    {name:'Ділення',expr:'aⁿ ÷ aᵐ = aⁿ⁻ᵐ',
+      detail:{explanation:'При діленні степенів з однаковою основою показники віднімаються.',proof:'a⁵ ÷ a² = a·a·a·a·a ÷ a·a = a·a·a = a³',example:'3⁵ ÷ 3² = 3³ = 27'}},
+    {name:'Степінь степеня',expr:'(aⁿ)ᵐ = aⁿ·ᵐ',
+      detail:{explanation:'Коли беремо ступінь від ступеня — показники множаться.',proof:'(a²)³ = a² · a² · a² = a²⁺²⁺² = a⁶',example:'(5²)³ = 5⁶ = 15625'}},
+    {name:'Нульовий степінь',expr:'a⁰ = 1  (a ≠ 0)',
+      detail:{explanation:'Будь-яке число (крім нуля) у нульовому степені дорівнює 1.',proof:'aⁿ ÷ aⁿ = aⁿ⁻ⁿ = a⁰\nАле aⁿ ÷ aⁿ = 1 → тому a⁰ = 1',example:'7⁰ = 1;   (−3)⁰ = 1;   (1/2)⁰ = 1'}},
+    {name:'Від\'ємний степінь',expr:'a⁻ⁿ = 1/aⁿ',
+      detail:{explanation:'Від\'ємний показник означає, що ми беремо обернене число.',proof:'a⁰ ÷ aⁿ = a⁻ⁿ\n1 ÷ aⁿ = 1/aⁿ → тому a⁻ⁿ = 1/aⁿ',example:'2⁻³ = 1/8;   10⁻² = 0.01'}},
     {name:'Степінь добутку',expr:'(a·b)ⁿ = aⁿ · bⁿ'},
-    {name:'Нульовий степінь',expr:'a⁰ = 1  (a ≠ 0)'},
-    {name:'Від\'ємний степінь',expr:'a⁻ⁿ = 1/aⁿ'},
   ]},
   { name:'✖️ Скорочене множення', minGrade:7, maxGrade:8, formulas:[
-    {name:'Квадрат суми',expr:'(a+b)² = a² + 2ab + b²'},
-    {name:'Квадрат різниці',expr:'(a−b)² = a² − 2ab + b²'},
-    {name:'Різниця квадратів',expr:'a² − b² = (a+b)(a−b)'},
-    {name:'Куб суми',expr:'(a+b)³ = a³ + 3a²b + 3ab² + b³'},
+    {name:'Квадрат суми',expr:'(a+b)² = a² + 2ab + b²',
+      detail:{explanation:'Квадрат суми двох чисел — це квадрат першого, плюс подвійний добуток, плюс квадрат другого.',proof:'(a+b)² = (a+b)(a+b)\n= a·a + a·b + b·a + b·b\n= a² + 2ab + b²',example:'(3+5)² = 9 + 30 + 25 = 64 ✓ (адже 8² = 64)'}},
+    {name:'Квадрат різниці',expr:'(a−b)² = a² − 2ab + b²',
+      detail:{explanation:'Квадрат різниці — як квадрат суми, але середній доданок від\'ємний.',proof:'(a−b)² = (a+(−b))² = a² + 2a(−b) + (−b)² = a² − 2ab + b²',example:'(7−2)² = 49 − 28 + 4 = 25 ✓ (адже 5² = 25)'}},
+    {name:'Різниця квадратів',expr:'a² − b² = (a+b)(a−b)',
+      detail:{explanation:'Різниця квадратів завжди розкладається в добуток суми та різниці. Дуже корисно для спрощення!',proof:'(a+b)(a−b) = a²−ab+ab−b² = a²−b²',example:'x²−9 = (x+3)(x−3)\n100−49 = (10+7)(10−7) = 17×3 = 51'}},
+    {name:'Куб суми',expr:'(a+b)³ = a³ + 3a²b + 3ab² + b³',
+      detail:{explanation:'Куб суми — результат потрійного множення (a+b) на себе.',proof:'(a+b)³ = (a+b)(a+b)²\n= (a+b)(a²+2ab+b²)\n= a³+2a²b+ab²+a²b+2ab²+b³\n= a³+3a²b+3ab²+b³',example:'(1+2)³ = 1 + 6 + 12 + 8 = 27 ✓'}},
     {name:'Куб різниці',expr:'(a−b)³ = a³ − 3a²b + 3ab² − b³'},
-    {name:'Сума кубів',expr:'a³ + b³ = (a+b)(a²−ab+b²)'},
+    {name:'Сума кубів',expr:'a³ + b³ = (a+b)(a²−ab+b²)',
+      detail:{explanation:'Сума кубів розкладається в добуток суми та неповного квадрата різниці.',proof:'Перевірка: (a+b)(a²−ab+b²)\n= a³−a²b+ab²+a²b−ab²+b³\n= a³+b³ ✓',example:'8+27 = (2+3)(4−6+9) = 5×7 = 35 ✓'}},
     {name:'Різниця кубів',expr:'a³ − b³ = (a−b)(a²+ab+b²)'},
   ]},
   { name:'📈 Лінійна функція', minGrade:7, maxGrade:7, formulas:[
-    {name:'Формула',expr:'y = kx + b'},
-    {name:'Кутовий коефіцієнт',expr:'k > 0 → зростає;  k < 0 → спадає'},
+    {name:'Формула',expr:'y = kx + b',
+      detail:{explanation:'Лінійна функція задає пряму лінію на графіку. k — нахил прямої, b — де пряма перетинає вісь OY.',example:'y = 2x + 1: при x=0 → y=1; при x=3 → y=7\nЦе пряма, що зростає (k=2>0)'}},
+    {name:'Кутовий коефіцієнт',expr:'k > 0 → зростає;  k < 0 → спадає',
+      detail:{explanation:'k показує "крутість" прямої. Чим більший |k|, тим крутіша пряма.',proof:'k = (y₂−y₁)/(x₂−x₁) = tg(кут нахилу)',example:'k=1: кут 45°\nk=3: крутіша пряма\nk=−2: пряма спадає'}},
     {name:'b — де перетинає OY',expr:'при x=0:  y = b'},
-    {name:'Пряма пропорційність',expr:'y = kx  (b = 0)'},
+    {name:'Пряма пропорційність',expr:'y = kx  (b = 0)',
+      detail:{explanation:'Пряма пропорційність — окремий випадок лінійної функції, де b=0. Пряма проходить через початок координат.',example:'y = 3x: при x=2 → y=6; при x=−1 → y=−3'}},
   ]},
 
   // === 8 КЛАС ===
   { name:'√ Ірраціональні вирази', minGrade:8, maxGrade:9, formulas:[
-    {name:'Корінь добутку',expr:'√(a·b) = √a · √b'},
+    {name:'Корінь добутку',expr:'√(a·b) = √a · √b',
+      detail:{explanation:'Квадратний корінь з добутку дорівнює добутку коренів. Умова: a ≥ 0, b ≥ 0.',example:'√(4·9) = √4 · √9 = 2·3 = 6\n√(25·16) = 5·4 = 20'}},
+    {name:'Корінь квадрату',expr:'√(a²) = |a|',
+      detail:{explanation:'Корінь з квадрату дає модуль (завжди невід\'ємне число), бо √ повертає невід\'ємне значення.',proof:'Якщо a≥0: √(a²)=a\nЯкщо a<0: √(a²)=√(позитивне)=−a=|a|',example:'√((-3)²) = √9 = 3 = |−3|'}},
+    {name:'Раціоналізація',expr:'1/√a = √a/a',
+      detail:{explanation:'Позбавляємось кореня в знаменнику, множачи чисельник і знаменник на √a.',proof:'1/√a · √a/√a = √a/(√a·√a) = √a/a',example:'1/√5 = √5/5 ≈ 0.447'}},
     {name:'Корінь частки',expr:'√(a/b) = √a / √b'},
     {name:'Квадрат кореня',expr:'(√a)² = a  (a ≥ 0)'},
-    {name:'Корінь квадрату',expr:'√(a²) = |a|'},
     {name:'Винесення з-під кореня',expr:'√(a²b) = a√b  (a ≥ 0)'},
-    {name:'Раціоналізація',expr:'1/√a = √a/a'},
   ]},
   { name:'📐 Квадратне рівняння', minGrade:8, formulas:[
-    {name:'Загальний вигляд',expr:'ax² + bx + c = 0'},
-    {name:'Дискримінант',expr:'D = b² − 4ac'},
-    {name:'Корені (D > 0)',expr:'x = (−b ± √D) / 2a'},
+    {name:'Загальний вигляд',expr:'ax² + bx + c = 0',
+      detail:{explanation:'Квадратне рівняння — це рівняння другого степеня. Воно може мати 0, 1 або 2 корені.',example:'2x²+3x−5=0: a=2, b=3, c=−5\nx²−4=0: a=1, b=0, c=−4'}},
+    {name:'Дискримінант',expr:'D = b² − 4ac',
+      detail:{explanation:'Дискримінант показує, скільки коренів у рівняння: D>0 → два корені, D=0 → один, D<0 → немає.',proof:'Походить із формули дискримінанта при виведенні загальної формули коренів (метод виділення квадрата).',example:'x²−5x+6=0: D = 25−24 = 1 > 0 → два корені\nx²+2x+1=0: D = 4−4 = 0 → один корінь'}},
+    {name:'Корені (D > 0)',expr:'x = (−b ± √D) / 2a',
+      detail:{explanation:'Знак ± означає два розрахунки: x₁ з +√D і x₂ з −√D.',example:'x²−5x+6=0, D=1\nx₁=(5+1)/2=3;  x₂=(5−1)/2=2\nПеревірка: 3²−5·3+6=0 ✓'}},
+    {name:'Теорема Вієта',expr:'x₁+x₂ = −b/a;   x₁·x₂ = c/a',
+      detail:{explanation:'Теорема Вієта дозволяє знайти суму і добуток коренів без розв\'язання рівняння.',proof:'Якщо x₁,x₂ — корені, то ax²+bx+c = a(x−x₁)(x−x₂)\nРозкривши: x₁+x₂=−b/a, x₁x₂=c/a',example:'x²−5x+6=0: x₁+x₂=5, x₁·x₂=6\nВідповідь: 2 і 3'}},
     {name:'Один корінь (D=0)',expr:'x = −b / 2a'},
     {name:'D < 0 — коренів немає',expr:'якщо D < 0, рівняння не має розв\'язків'},
-    {name:'Теорема Вієта',expr:'x₁+x₂ = −b/a;   x₁·x₂ = c/a'},
   ]},
   { name:'🔁 Квадратична функція', minGrade:8, maxGrade:9, formulas:[
     {name:'Формула',expr:'y = ax² + bx + c'},
-    {name:'Вершина параболи',expr:'x₀ = −b/(2a);   y₀ = f(x₀)'},
-    {name:'a > 0 — гілки вгору',expr:'мінімум у вершині'},
+    {name:'Вершина параболи',expr:'x₀ = −b/(2a);   y₀ = f(x₀)',
+      detail:{explanation:'Вершина — це найнижча (a>0) або найвища (a<0) точка параболи.',example:'y = x²−4x+3: x₀=2, y₀=4−8+3=−1\nВершина: (2; −1)'}},
+    {name:'a > 0 — гілки вгору',expr:'мінімум у вершині',
+      detail:{explanation:'Коли a>0, парабола схожа на букву "U". Вершина — мінімальне значення функції.',example:'y = x²: гілки вгору, мінімум y=0 при x=0'}},
     {name:'a < 0 — гілки вниз',expr:'максимум у вершині'},
     {name:'Нулі функції',expr:'ax² + bx + c = 0 (дискримінант)'},
     {name:'Обернена пропорц.',expr:'y = k/x  (гіпербола)'},
@@ -170,70 +197,92 @@ const ALGEBRA_CATS = [
 
   // === 9 КЛАС ===
   { name:'📊 Нерівності', minGrade:9, maxGrade:10, formulas:[
+    {name:'Модуль',expr:'|x| < a  ↔  −a < x < a',
+      detail:{explanation:'Модуль — це відстань від нуля. |x| < a означає, що x знаходиться в межах від −a до +a.',example:'|x| < 3  →  −3 < x < 3\n|x−2| < 1  →  1 < x < 3'}},
+    {name:'Модуль (більше)',expr:'|x| > a  ↔  x < −a або x > a',
+      detail:{explanation:'Якщо відстань від нуля більша за a, то x або "дуже лівий", або "дуже правий".',example:'|x| > 2  →  x<−2 або x>2'}},
     {name:'Квадратна нерівність',expr:'ax² + bx + c > 0  або  < 0'},
     {name:'D > 0: коріння x₁ < x₂',expr:'ax²+bx+c > 0: x < x₁ або x > x₂ (якщо a>0)'},
     {name:'D > 0, a < 0',expr:'розв\'язок: x₁ < x < x₂'},
     {name:'D < 0, a > 0',expr:'розв\'язок: x ∈ ℝ (уся числова вісь)'},
-    {name:'Модуль',expr:'|x| < a  ↔  −a < x < a'},
-    {name:'Модуль (більше)',expr:'|x| > a  ↔  x < −a або x > a'},
   ]},
   { name:'🔢 Прогресії', minGrade:9, formulas:[
-    {name:'Арифм. n-й член',expr:'aₙ = a₁ + (n−1)·d'},
-    {name:'Різниця',expr:'d = aₙ − aₙ₋₁'},
-    {name:'Сума арифм.',expr:'Sₙ = n·(a₁ + aₙ) / 2'},
-    {name:'Геом. n-й член',expr:'bₙ = b₁ · qⁿ⁻¹'},
-    {name:'Знаменник',expr:'q = bₙ / bₙ₋₁'},
+    {name:'Арифм. n-й член',expr:'aₙ = a₁ + (n−1)·d',
+      detail:{explanation:'Арифметична прогресія — послідовність, де кожен наступний елемент відрізняється від попереднього на одне й те ж число d.',proof:'a₁, a₁+d, a₁+2d, ...\nN-й елемент: a₁ + (n−1)·d',example:'a₁=2, d=3: 2, 5, 8, 11...\na₁₀ = 2 + 9·3 = 29'}},
+    {name:'Сума арифм.',expr:'Sₙ = n·(a₁ + aₙ) / 2',
+      detail:{explanation:'Формула Гауса: сума арифметичної прогресії дорівнює кількості доданків, помноженій на середнє значення.',proof:'Гаус у 10 років: 1+2+...+100 = (1+100)·100/2 = 5050',example:'1+2+3+...+10 = 10·11/2 = 55'}},
+    {name:'Геом. n-й член',expr:'bₙ = b₁ · qⁿ⁻¹',
+      detail:{explanation:'Геометрична прогресія — послідовність, де кожен елемент отримується множенням попереднього на q (знаменник).',example:'b₁=3, q=2: 3, 6, 12, 24...\nb₅ = 3·2⁴ = 48'}},
     {name:'Сума геом.',expr:'Sₙ = b₁·(qⁿ − 1) / (q − 1)'},
-    {name:'Нескінченна геом.',expr:'S∞ = b₁ / (1 − q),  |q| < 1'},
+    {name:'Нескінченна геом.',expr:'S∞ = b₁ / (1 − q),  |q| < 1',
+      detail:{explanation:'Якщо |q|<1, члени прогресії прямують до нуля, і нескінченна сума сходиться до скінченного числа.',example:'1 + 1/2 + 1/4 + 1/8 + ... = 1/(1−0.5) = 2'}},
+    {name:'Різниця',expr:'d = aₙ − aₙ₋₁'},
+    {name:'Знаменник',expr:'q = bₙ / bₙ₋₁'},
   ]},
 
   // === 10 КЛАС ===
   { name:'📈 Показникова функція', minGrade:10, maxGrade:10, formulas:[
-    {name:'Формула',expr:'y = aˣ  (a > 0, a ≠ 1)'},
+    {name:'Формула',expr:'y = aˣ  (a > 0, a ≠ 1)',
+      detail:{explanation:'Показникова функція — функція, де x є показником степеня. Основа a завжди позитивна.',example:'y=2ˣ: при x=0 → 1; x=3 → 8; x=−1 → 0.5'}},
+    {name:'Показникове рівняння',expr:'aˣ = aʸ  ↔  x = y',
+      detail:{explanation:'Якщо основи однакові, то показники рівні. Основний метод — зведення до однієї основи.',example:'4ˣ = 16  →  2²ˣ = 2⁴  →  x = 2'}},
+    {name:'Число e',expr:'e ≈ 2.718  (натуральна основа)',
+      detail:{explanation:'Число e — найзручніша основа для показникової функції в математиці та фізиці. Похідна від eˣ — це сам eˣ.',proof:'e = (1 + 1/n)ⁿ при n→∞\ne ≈ 2.71828...'}},
     {name:'a > 1 — зростає',expr:'lim = +∞ при x→+∞'},
     {name:'0 < a < 1 — спадає',expr:'lim = +∞ при x→−∞'},
-    {name:'Показникове рівняння',expr:'aˣ = aʸ  ↔  x = y'},
     {name:'Особливе значення',expr:'a⁰ = 1  для будь-якого a'},
-    {name:'Число e',expr:'e ≈ 2.718  (натуральна основа)'},
   ]},
   { name:'🔬 Логарифми', minGrade:10, formulas:[
-    {name:'Означення',expr:'logₐb = x  ↔  aˣ = b'},
-    {name:'Добуток',expr:'logₐ(xy) = logₐx + logₐy'},
+    {name:'Означення',expr:'logₐb = x  ↔  aˣ = b',
+      detail:{explanation:'Логарифм — це "зворотня дія" до степеня. Питання: "В який степінь треба підняти a, щоб отримати b?"',example:'log₂8 = 3, бо 2³ = 8\nlog₁₀100 = 2, бо 10² = 100'}},
+    {name:'Добуток',expr:'logₐ(xy) = logₐx + logₐy',
+      detail:{explanation:'Логарифм добутку = сума логарифмів. Саме тому логарифми спрощують множення.',proof:'Нехай logₐx=m, logₐy=n → x=aᵐ, y=aⁿ\nxy=aᵐ⁺ⁿ → logₐ(xy)=m+n',example:'log₂(4·8) = log₂4 + log₂8 = 2+3 = 5'}},
+    {name:'Зміна основи',expr:'logₐb = log b / log a',
+      detail:{explanation:'Дозволяє порахувати будь-який логарифм через ln або lg (які є на калькуляторі).',example:'log₂10 = lg10/lg2 = 1/0.301 ≈ 3.32'}},
     {name:'Частка',expr:'logₐ(x/y) = logₐx − logₐy'},
     {name:'Степінь',expr:'logₐ(xⁿ) = n · logₐx'},
-    {name:'Зміна основи',expr:'logₐb = log b / log a'},
     {name:'Натуральний ln',expr:'ln x = logₑ x;   ln e = 1'},
     {name:'Десятковий lg',expr:'lg x = log₁₀ x;   lg 10 = 1'},
     {name:'Логарифмічне рівняння',expr:'logₐx = b  →  x = aᵇ'},
   ]},
   { name:'📉 Похідна', minGrade:10, formulas:[
+    {name:'Степінь',expr:"(xⁿ)' = n · xⁿ⁻¹",
+      detail:{explanation:'Найважливіше правило похідної: "знижуємо показник і множимо".',proof:"(xⁿ)' = lim[(x+h)ⁿ−xⁿ]/h = n·xⁿ⁻¹ (формула бінома)",example:"(x³)' = 3x²\n(x⁵)' = 5x⁴\n(√x)' = (x^0.5)' = 0.5/√x"}},
+    {name:'Добуток',expr:"(uv)' = u'v + uv'",
+      detail:{explanation:'Похідна добутку — "перший на похідну другого плюс похідна першого на другий". Зазубрити!',example:"(x²·sin x)' = 2x·sin x + x²·cos x"}},
+    {name:'Частка',expr:"(u/v)' = (u'v − uv') / v²",
+      detail:{explanation:'Правило для дробу: різниця хрест-на-хрест ділити на квадрат знаменника.',example:"(x/sin x)' = (1·sin x − x·cos x)/sin²x"}},
+    {name:'Зростання/спадання',expr:"f'(x) > 0 → зростає;  f'(x) < 0 → спадає",
+      detail:{explanation:'Похідна показує "швидкість зміни" функції. Якщо похідна позитивна — функція зростає в цій точці.',example:"f(x)=x²: f'(x)=2x\nпри x>0: f'>0 → зростає\nпри x<0: f'<0 → спадає"}},
     {name:'Константа',expr:"(C)' = 0"},
-    {name:'Степінь',expr:"(xⁿ)' = n · xⁿ⁻¹"},
     {name:'Сума',expr:"(u+v)' = u' + v'"},
-    {name:'Добуток',expr:"(uv)' = u'v + uv'"},
-    {name:'Частка',expr:"(u/v)' = (u'v − uv') / v²"},
     {name:'sin',expr:"(sin x)' = cos x"},
     {name:'cos',expr:"(cos x)' = −sin x"},
     {name:'eˣ',expr:"(eˣ)' = eˣ"},
     {name:'ln x',expr:"(ln x)' = 1/x"},
-    {name:'Зростання/спадання',expr:"f'(x) > 0 → зростає;  f'(x) < 0 → спадає"},
   ]},
 
   // === 11 КЛАС ===
   { name:'∫ Інтеграл', minGrade:11, formulas:[
-    {name:'Степінь',expr:'∫xⁿ dx = xⁿ⁺¹/(n+1) + C'},
+    {name:'Степінь',expr:'∫xⁿ dx = xⁿ⁺¹/(n+1) + C',
+      detail:{explanation:'Інтегрування — зворотна дія до диференціювання. "Підвищуємо показник і ділимо".',example:'∫x² dx = x³/3 + C\n∫x⁴ dx = x⁵/5 + C'}},
+    {name:'Формула Ньютона–Лейбніца',expr:'∫ₐᵇf(x)dx = F(b) − F(a)',
+      detail:{explanation:'Для обчислення визначеного інтеграла (площі): знаходимо первісну F і підставляємо межі.',proof:'F — первісна f. Різниця F(b)−F(a) дає "накопичену зміну" на [a,b].',example:'∫₀³ x² dx = [x³/3]₀³ = 27/3 − 0 = 9'}},
+    {name:'Площа під графіком',expr:'S = |∫ₐᵇf(x)dx|',
+      detail:{explanation:'Визначений інтеграл дає площу між графіком і віссю X. Модуль потрібен, якщо функція від\'ємна.',example:'S під y=x від 0 до 4: ∫₀⁴x dx = [x²/2]₀⁴ = 8'}},
     {name:'sin',expr:'∫sin x dx = −cos x + C'},
     {name:'cos',expr:'∫cos x dx = sin x + C'},
     {name:'1/x',expr:'∫(1/x) dx = ln|x| + C'},
     {name:'eˣ',expr:'∫eˣ dx = eˣ + C'},
-    {name:'Формула Ньютона–Лейбніца',expr:'∫ₐᵇf(x)dx = F(b) − F(a)'},
-    {name:'Площа під графіком',expr:'S = |∫ₐᵇf(x)dx|'},
   ]},
   { name:'📊 Комбінаторика і теорвер', minGrade:11, formulas:[
-    {name:'Перестановки',expr:'Pₙ = n!'},
+    {name:'Перестановки',expr:'Pₙ = n!',
+      detail:{explanation:'Перестановки — кількість способів розставити n предметів у ряд.',proof:'Перше місце: n варіантів\nДруге: n−1\n...\nn! = 1·2·3·...·n',example:'3 книги: P₃ = 6 способів\n4 літери: P₄ = 24'}},
+    {name:'Комбінації',expr:'Cₙᵏ = n! / (k!·(n−k)!)',
+      detail:{explanation:'Комбінації — кількість способів вибрати k елементів з n, якщо порядок НЕ важливий.',example:'C₅² = 5!/(2!·3!) = 10\n"Скількома способами вибрати 2 з 5 учнів?"'}},
+    {name:'Ймовірність',expr:'P(A) = m / n',
+      detail:{explanation:'Класична ймовірність: відношення сприятливих випадків m до загальних n.',example:'Кидаємо кубик: P(парне) = 3/6 = 0.5\nP(більше 4) = 2/6 ≈ 0.33'}},
     {name:'Розміщення',expr:'Aₙᵏ = n! / (n−k)!'},
-    {name:'Комбінації',expr:'Cₙᵏ = n! / (k!·(n−k)!)'},
-    {name:'Ймовірність',expr:'P(A) = m / n'},
     {name:'Сума ймовірностей',expr:'P(A) + P(Ā) = 1'},
   ]},
 ];
@@ -241,46 +290,60 @@ const ALGEBRA_CATS = [
 // ===== TRIGONOMETRY DATA =====
 const TRIG_CATS = [
   { name:'Основні тотожності', minGrade:9, formulas:[
-    {name:'Основна',expr:'sin²α + cos²α = 1'},
-    {name:'tan через sin/cos',expr:'tan α = sin α / cos α'},
+    {name:'Основна',expr:'sin²α + cos²α = 1',
+      detail:{explanation:'Головна тригонометрична тотожність. Випливає з теореми Піфагора: якщо точка на одиничному колі, то x²+y²=1, а sin=y, cos=x.',proof:'На одиничному колі: x=cosα, y=sinα\nx²+y²=1 → cos²α+sin²α=1',example:'Знайти cosα, якщо sinα=0.6:\ncos²α = 1−0.36 = 0.64 → cosα=±0.8'}},
+    {name:'tan через sin/cos',expr:'tan α = sin α / cos α',
+      detail:{explanation:'Тангенс — відношення синуса до косинуса. Не визначений при cosα=0 (α=90°, 270°).',example:'sin30°=0.5, cos30°=√3/2\ntan30° = 0.5/(√3/2) = 1/√3 ≈ 0.577'}},
+    {name:'1 + tan²',expr:'1 + tan²α = 1/cos²α',
+      detail:{explanation:'Отримуємо діленням основної тотожності на cos²α.',proof:'sin²α+cos²α=1  | ÷cos²α\ntan²α + 1 = 1/cos²α',example:'Якщо tanα=1 → 1+1=2=1/cos²α → cos²α=0.5 → cosα=√2/2'}},
     {name:'ctg через sin/cos',expr:'ctg α = cos α / sin α'},
     {name:'tan · ctg',expr:'tan α · ctg α = 1'},
-    {name:'1 + tan²',expr:'1 + tan²α = 1/cos²α'},
     {name:'1 + ctg²',expr:'1 + ctg²α = 1/sin²α'},
   ]},
   { name:'Радіани', minGrade:9, formulas:[
+    {name:'π радіан',expr:'π рад = 180°',
+      detail:{explanation:'Радіан — кут, при якому довжина дуги дорівнює радіусу кола. 180° = π радіанів, бо довжина напівкола = πr.',proof:'Довжина кола = 2πr\n360° відповідає 2π рад\n180° → π рад',example:'60° = π/3 рад ≈ 1.047\n270° = 3π/2 рад ≈ 4.712'}},
+    {name:'Формула',expr:'рад = градуси × π / 180',
+      detail:{explanation:'Для переведення градусів в радіани множимо на π/180. Назад: рад × 180/π.',example:'45° × π/180 = π/4\n2π рад × 180/π = 360°'}},
     {name:'π радіан',expr:'π рад = 180°'},
     {name:'1 радіан',expr:'1 рад ≈ 57.3°'},
     {name:'30°',expr:'π/6'},
     {name:'45°',expr:'π/4'},
     {name:'60°',expr:'π/3'},
     {name:'90°',expr:'π/2'},
-    {name:'Формула',expr:'рад = градуси × π / 180'},
   ]},
   { name:'Формули суми кутів', minGrade:9, formulas:[
-    {name:'sin(α+β)',expr:'sinα·cosβ + cosα·sinβ'},
+    {name:'sin(α+β)',expr:'sinα·cosβ + cosα·sinβ',
+      detail:{explanation:'Формула суми кутів для синуса. Дозволяє знайти sin кута, якщо знаємо sin і cos двох інших кутів.',proof:'Доводиться через одиничне коло або комплексні числа.',example:'sin75° = sin(45°+30°) = sin45°cos30° + cos45°sin30°\n= (√2/2)(√3/2) + (√2/2)(1/2) = (√6+√2)/4'}},
+    {name:'cos(α+β)',expr:'cosα·cosβ − sinα·sinβ',
+      detail:{explanation:'Формула суми кутів для косинуса. Знак мінус — ключова відмінність від формули синуса.',example:'cos90° = cos(45°+45°) = cos²45° − sin²45° = 1/2−1/2 = 0 ✓'}},
     {name:'sin(α−β)',expr:'sinα·cosβ − cosα·sinβ'},
-    {name:'cos(α+β)',expr:'cosα·cosβ − sinα·sinβ'},
     {name:'cos(α−β)',expr:'cosα·cosβ + sinα·sinβ'},
     {name:'tan(α+β)',expr:'(tanα + tanβ)/(1 − tanα·tanβ)'},
     {name:'tan(α−β)',expr:'(tanα − tanβ)/(1 + tanα·tanβ)'},
   ]},
   { name:'Подвійний кут', minGrade:10, formulas:[
-    {name:'sin 2α',expr:'2·sinα·cosα'},
-    {name:'cos 2α (варіант 1)',expr:'cos²α − sin²α'},
-    {name:'cos 2α (варіант 2)',expr:'1 − 2sin²α'},
+    {name:'sin 2α',expr:'2·sinα·cosα',
+      detail:{explanation:'Синус подвійного кута — випадок формули суми при α=β.',proof:'sin(α+α) = sinα·cosα + cosα·sinα = 2sinα·cosα',example:'sin60° = 2·sin30°·cos30° = 2·(1/2)·(√3/2) = √3/2 ✓'}},
+    {name:'cos 2α (варіант 1)',expr:'cos²α − sin²α',
+      detail:{explanation:'Три рівнозначні форми формули cos 2α. Вибирай ту, де менше невідомих.',proof:'cos(α+α) = cosα·cosα − sinα·sinα = cos²α−sin²α',example:'cos90° = cos²45°−sin²45° = 1/2−1/2 = 0 ✓'}},
+    {name:'cos 2α (варіант 2)',expr:'1 − 2sin²α',
+      detail:{proof:'cos²α−sin²α = (1−sin²α)−sin²α = 1−2sin²α'}},
     {name:'cos 2α (варіант 3)',expr:'2cos²α − 1'},
     {name:'tan 2α',expr:'2tanα / (1 − tan²α)'},
   ]},
   { name:'Пониження степеня', minGrade:10, formulas:[
-    {name:'sin²α',expr:'(1 − cos 2α) / 2'},
-    {name:'cos²α',expr:'(1 + cos 2α) / 2'},
+    {name:'sin²α',expr:'(1 − cos 2α) / 2',
+      detail:{explanation:'Формули пониження степеня дозволяють замінити sin² і cos² через cos подвійного кута. Незамінні в інтегралах.',proof:'З cos2α = 1−2sin²α:\n2sin²α = 1−cos2α → sin²α = (1−cos2α)/2',example:'∫sin²x dx = ∫(1−cos2x)/2 dx = x/2 − sin2x/4 + C'}},
+    {name:'cos²α',expr:'(1 + cos 2α) / 2',
+      detail:{proof:'З cos2α = 2cos²α−1:\n2cos²α = 1+cos2α → cos²α = (1+cos2α)/2'}},
     {name:'tan²α',expr:'(1 − cos 2α) / (1 + cos 2α)'},
     {name:'sin³α',expr:'(3sinα − sin 3α) / 4'},
     {name:'cos³α',expr:'(3cosα + cos 3α) / 4'},
   ]},
   { name:'Формули зведення', minGrade:10, formulas:[
-    {name:'sin(90°−α)',expr:'cos α'},
+    {name:'sin(90°−α)',expr:'cos α',
+      detail:{explanation:'Формули зведення: тригонометрична функція від кута виду (90°±α) або (180°±α). Правило: якщо кут кратний 90° — функція змінюється (sin↔cos, tan↔ctg), якщо 180° — ні. Знак визначаємо для гострого α.',example:'sin(90°−30°)=sin60°=cos30° ✓\ncos(180°−45°)=−cos45°'}},
     {name:'cos(90°−α)',expr:'sin α'},
     {name:'sin(90°+α)',expr:'cos α'},
     {name:'cos(90°+α)',expr:'−sin α'},
@@ -290,9 +353,11 @@ const TRIG_CATS = [
     {name:'cos(−α)',expr:'cos α'},
   ]},
   { name:'Теорема синусів/косинусів', minGrade:9, formulas:[
-    {name:'Теорема синусів',expr:'a/sin A = b/sin B = c/sin C'},
+    {name:'Теорема синусів',expr:'a/sin A = b/sin B = c/sin C',
+      detail:{explanation:'У будь-якому трикутнику відношення сторони до синуса протилежного кута є сталим (дорівнює діаметру описаного кола).',proof:'Через описане коло радіуса R: a = 2R·sinA\n→ a/sinA = 2R',example:'a=6, A=30°, B=45°. Знайти b:\nb/sinB = a/sinA\nb = 6·sin45°/sin30° = 6·(√2/2)/(1/2) = 6√2 ≈ 8.49'}},
+    {name:'Теорема косинусів',expr:'c² = a² + b² − 2ab·cos C',
+      detail:{explanation:'Узагальнення теореми Піфагора для довільного кута C. При C=90°: cos90°=0 → c²=a²+b² (теорема Піфагора).',proof:'Через координати: розміщуємо C в початку координат...',example:'a=5, b=7, C=60°\nc² = 25+49−2·5·7·0.5 = 74−35 = 39\nc = √39 ≈ 6.24'}},
     {name:'Через описане коло',expr:'a/sin A = 2R'},
-    {name:'Теорема косинусів',expr:'c² = a² + b² − 2ab·cos C'},
     {name:'Косинус через сторони',expr:'cos C = (a²+b²−c²) / 2ab'},
   ]},
 ];
@@ -315,13 +380,44 @@ function buildTrigTab(){
 function openTrigModal(idx){
   const cat = TRIG_CATS[idx];
   document.getElementById('alg-modal-title').textContent = cat.name;
-  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map(f => `
+  document.getElementById('alg-modal-body').innerHTML = cat.formulas.map((f,i) =>
+    _buildAlgRow(f, 'trig', idx, i)
+  ).join('');
+  document.getElementById('algebra-modal').classList.add('active');
+}
+
+// Build a formula row — shared by algebra and trig modals
+function _buildAlgRow(f, source, catIdx, fIdx) {
+  const detailBtn = f.detail
+    ? `<button class="alg-detail-btn" onclick="openFormulaDetail(${catIdx},${fIdx},'${source}')">Детальніше</button>`
+    : '';
+  return `
     <div class="alg-modal-row">
       <span class="alg-modal-name">${f.name}</span>
-      <span class="alg-modal-expr">${f.expr}</span>
-    </div>
-  `).join('');
-  document.getElementById('algebra-modal').classList.add('active');
+      <span class="alg-modal-expr">${f.expr || f.m || ''}</span>
+      ${detailBtn}
+    </div>`;
+}
+
+// Formula detail modal
+function openFormulaDetail(catIdx, fIdx, source) {
+  const cat = source === 'trig' ? TRIG_CATS[catIdx] : ALGEBRA_CATS[catIdx];
+  if (!cat) return;
+  const f = cat.formulas[fIdx];
+  if (!f || !f.detail) return;
+  const d = f.detail;
+  document.getElementById('fdm-title').textContent = f.name;
+  document.getElementById('fdm-formula').textContent = f.expr || f.m || '';
+  let html = '';
+  if (d.explanation) html += `<div class="fdm-section">Пояснення</div><div class="fdm-text">${d.explanation.replace(/\n/g,'<br>')}</div>`;
+  if (d.proof)       html += `<div class="fdm-section">Доведення</div><div class="fdm-text" style="font-family:\'Fira Code\',monospace;font-size:.88rem">${d.proof.replace(/\n/g,'<br>')}</div>`;
+  if (d.example)     html += `<div class="fdm-section">Приклад</div><div class="fdm-text" style="font-family:\'Fira Code\',monospace;font-size:.88rem">${d.example.replace(/\n/g,'<br>')}</div>`;
+  document.getElementById('fdm-body').innerHTML = html;
+  document.getElementById('formula-detail-modal').classList.add('active');
+}
+
+function closeFormulaDetail() {
+  document.getElementById('formula-detail-modal').classList.remove('active');
 }
 
 // ===== TABLES DATA =====
@@ -481,11 +577,7 @@ function openAlgebraModal(idx){
         </div>`;
     }
     // Non-visual formula (older grades)
-    return `
-      <div class="alg-modal-row">
-        <span class="alg-modal-name">${f.name}</span>
-        <span class="alg-modal-expr">${f.expr || f.m || ''}</span>
-      </div>`;
+    return _buildAlgRow(f, 'alg', idx, i);
   }).join('');
 
   document.getElementById('algebra-modal').classList.add('active');
@@ -710,7 +802,7 @@ function openFormula(cat,idx){
   document.getElementById('modal').classList.add('active');
 }
 function closeModal(){document.getElementById('modal').classList.remove('active');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeCategoryModal();wsCalcClose();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeCategoryModal();wsCalcClose();closeFormulaDetail();}});
 
 // ===== ГРАФ+РОБОЧИЙ СТІЛ ENGINE =====
 let canvas, ctx, scale=50, offsetX=0, offsetY=0;
@@ -2463,21 +2555,74 @@ function spCalcEval() {
 // ===== FLOAT PANELS =====
 const _floatDragging = {};
 
+// Snap zones: 4 corners + center-top
+const SNAP_ZONES = [
+  { id:'snap-tl', snap:{ top:'62px',  left:'8px',   right:'auto', bottom:'auto' } },
+  { id:'snap-tr', snap:{ top:'62px',  right:'8px',  left:'auto',  bottom:'auto' } },
+  { id:'snap-bl', snap:{ bottom:'8px',left:'8px',   right:'auto', top:'auto'    } },
+  { id:'snap-br', snap:{ bottom:'8px',right:'8px',  left:'auto',  top:'auto'    } },
+];
+
+function _showSnapZones() {
+  SNAP_ZONES.forEach(z => { const el = document.getElementById(z.id); if (el) el.style.display = 'block'; });
+}
+function _hideSnapZones() {
+  SNAP_ZONES.forEach(z => { const el = document.getElementById(z.id); if (el) { el.style.display = 'none'; el.classList.remove('active'); } });
+}
+function _getNearestSnap(panelRect) {
+  const cx = panelRect.left + panelRect.width / 2;
+  const cy = panelRect.top + panelRect.height / 2;
+  let nearest = null, minDist = 160; // threshold 160px
+  SNAP_ZONES.forEach(z => {
+    const el = document.getElementById(z.id);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const dist = Math.hypot(cx - (r.left + r.width/2), cy - (r.top + r.height/2));
+    if (dist < minDist) { minDist = dist; nearest = z; }
+  });
+  return nearest;
+}
+
 function initFloatPanelDrag(id) {
   const panel = document.getElementById('float-' + id);
   const head = document.getElementById('float-' + id + '-head');
-  if (!panel || !head) return;
+  if (!panel || !head || head._floatDragInit) return;
+  head._floatDragInit = true;
   let ox = 0, oy = 0, sx = 0, sy = 0;
   head.addEventListener('mousedown', e => {
     if (e.target.tagName === 'BUTTON') return;
     sx = e.clientX; sy = e.clientY;
-    ox = panel.offsetLeft; oy = panel.offsetTop;
+    // Get current position regardless of which corner was last snapped
+    const rect = panel.getBoundingClientRect();
+    ox = rect.left; oy = rect.top;
+    // Reset to absolute position so we can freely move
+    panel.style.left = ox + 'px'; panel.style.top = oy + 'px';
+    panel.style.right = 'auto'; panel.style.bottom = 'auto';
+    _showSnapZones();
     const onMove = e => {
-      panel.style.left = (ox + e.clientX - sx) + 'px';
-      panel.style.top = (oy + e.clientY - sy) + 'px';
-      panel.style.bottom = 'auto'; panel.style.right = 'auto';
+      const nx = ox + e.clientX - sx;
+      const ny = oy + e.clientY - sy;
+      panel.style.left = nx + 'px';
+      panel.style.top  = ny + 'px';
+      // Highlight nearest snap zone
+      const rect = panel.getBoundingClientRect();
+      const nearest = _getNearestSnap(rect);
+      SNAP_ZONES.forEach(z => {
+        const el = document.getElementById(z.id);
+        if (el) el.classList.toggle('active', z === nearest);
+      });
     };
-    const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+    const onUp = () => {
+      const rect = panel.getBoundingClientRect();
+      const nearest = _getNearestSnap(rect);
+      if (nearest) {
+        // Snap: apply corner positions
+        Object.keys(nearest.snap).forEach(k => panel.style[k] = nearest.snap[k]);
+      }
+      _hideSnapZones();
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
     e.preventDefault();
