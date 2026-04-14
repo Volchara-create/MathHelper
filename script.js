@@ -1676,11 +1676,14 @@ function tasksInit() {
   // All grades 7-11: show mode bar + regular tasks
   if (modeBar) modeBar.style.display = '';
   if (visualWrap) visualWrap.style.display = 'none';
-  tasksSetMode('regular');
+  // Restore last mode instead of always resetting to 'regular'
+  const savedMode = localStorage.getItem('mh_tasks_mode') || 'regular';
+  tasksSetMode(savedMode);
   loadRandomTask();
 }
 
 function tasksSetMode(mode) {
+  localStorage.setItem('mh_tasks_mode', mode);
   const safe = document.getElementById('tasks-safe');
   const reg = document.getElementById('tasks-regular');
   if (safe) safe.style.display = mode === 'safe' ? '' : 'none';

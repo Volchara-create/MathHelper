@@ -2,6 +2,16 @@ const API = window.location.hostname === 'volchara-create.github.io'
   ? 'https://rostyslavv.vibe.brobots.org.ua'
   : '';
 
+// Escape HTML to prevent XSS
+function escHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function getSimulatorUrl() {
   return window.location.hostname === 'volchara-create.github.io'
     ? '/MathHelper/simulator.html'
@@ -639,8 +649,8 @@ async function dashLoadRecentNotes() {
     }
     container.innerHTML = allNotes.slice(0, 3).map(n => `
       <div class="dash-note-card" onclick="openNoteFromDash(${n.id})">
-        <div class="dash-note-title">${n.title}</div>
-        <div class="dash-note-preview">${(n.content || 'Порожній конспект').substring(0, 60)}</div>
+        <div class="dash-note-title">${escHtml(n.title)}</div>
+        <div class="dash-note-preview">${escHtml((n.content || 'Порожній конспект').substring(0, 60))}</div>
       </div>
     `).join('');
   } catch { /* silent */ }
@@ -680,7 +690,7 @@ function notesRender(openId) {
   }
   list.innerHTML = allNotes.map(n => `
     <div class="notes-list-item ${n.id === currentNoteId ? 'active' : ''}" onclick="noteOpen(${n.id})">
-      <div class="notes-item-title">${n.title}</div>
+      <div class="notes-item-title">${escHtml(n.title)}</div>
       <div class="notes-item-date">${new Date(n.updatedAt).toLocaleDateString('uk-UA')}</div>
     </div>
   `).join('');
@@ -768,10 +778,11 @@ async function noteDelete() {
   if (!confirm('Видалити цей конспект?')) return;
   const token = localStorage.getItem('mh_token');
   try {
-    await fetch(`${API}/notes/${currentNoteId}`, {
+    const res = await fetch(`${API}/notes/${currentNoteId}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
     });
+    if (!res.ok) throw new Error('server error');
     allNotes = allNotes.filter(n => n.id !== currentNoteId);
     currentNoteId = null;
     document.getElementById('notes-editor').style.display = 'none';
@@ -831,7 +842,9 @@ async function notesDrawerOpen() {
   listEl.innerHTML = '<p class="drawer-empty">Завантаження...</p>';
   try {
     const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
-    allNotes = await res.json();
+    if (!res.ok) throw new Error('server error');
+    const data = await res.json();
+    allNotes = Array.isArray(data) ? data : [];
     drawerRenderList();
   } catch {
     listEl.innerHTML = '<p class="drawer-empty">Помилка завантаження</p>';
