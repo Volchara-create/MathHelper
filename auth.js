@@ -2,6 +2,17 @@ const API = window.location.hostname === 'volchara-create.github.io'
   ? 'https://rostyslavv.vibe.brobots.org.ua'
   : '';
 
+// Toast notification
+let _toastTimer;
+function showToast(msg, duration = 3000) {
+  const el = document.getElementById('mh-toast');
+  if (!el) return;
+  clearTimeout(_toastTimer);
+  el.textContent = msg;
+  el.classList.add('show');
+  _toastTimer = setTimeout(() => el.classList.remove('show'), duration);
+}
+
 // Escape HTML to prevent XSS
 function escHtml(str) {
   return String(str ?? '')
@@ -509,7 +520,7 @@ async function deleteAccount() {
 function startTrial() {
   const token = localStorage.getItem('mh_token');
   if (!token) { authOpen('register'); return; }
-  alert('Незабаром тут буде оплата! Тримай 7 днів Pro безкоштовно 🎉');
+  showToast('Незабаром тут буде оплата! Ми сповістимо тебе коли Pro запуститься 🎉');
 }
 
 function authShowUser(user) {
@@ -520,7 +531,6 @@ function authShowUser(user) {
   // Hide "Головна" from nav — logged-in users have dashboard instead
   const homeBtn = document.querySelector('nav button[onclick="show(\'home\')"]');
   if (homeBtn) homeBtn.style.display = 'none';
-  if (typeof updateNavForGrade === 'function') updateNavForGrade(user.grade);
   // Show quick action menu for logged-in users
   const qm = document.getElementById('quick-menu');
   if (qm) qm.style.display = 'flex';
@@ -629,6 +639,8 @@ function dashLoad(user) {
 async function dashLoadRecentNotes() {
   const token = localStorage.getItem('mh_token');
   if (!token) return;
+  const container = document.getElementById('dash-recent-notes');
+  if (container) container.innerHTML = '<p class="dash-empty" style="color:#94a3b8;">Завантаження...</p>';
   try {
     const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) return;
@@ -1084,11 +1096,15 @@ async function checkPushStatus() {
 }
 
 function updatePushBtn(active) {
-  const btn = document.getElementById('push-toggle-btn');
-  if (!btn) return;
-  btn.textContent = active ? '🔔 Нагадування увімкнено' : '🔕 Увімкнути нагадування';
-  btn.onclick = active ? pushUnsubscribe : pushSubscribe;
-  btn.classList.toggle('active', active);
+  const label = active ? '🔔 Нагадування увімкнено' : '🔕 Увімкнути нагадування';
+  const handler = active ? pushUnsubscribe : pushSubscribe;
+  ['push-toggle-btn', 'push-toggle-btn-settings'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.textContent = label;
+    btn.onclick = handler;
+    btn.classList.toggle('active', active);
+  });
 }
 
 function urlBase64ToUint8Array(base64String) {

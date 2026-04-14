@@ -1098,3 +1098,8 @@ body.dark .float-calc-head{background:#0d2340;}
 .settings-link-btn{background:none;border:none;color:var(--blue);font-size:0.95rem;cursor:pointer;font-weight:600;padding:2px 0;}
 .settings-link-btn:hover{text-decoration:underline;}
 body.dark .settings-link-btn{color:#60a5fa;}
+
+/* ===== Toast notification ===== */
+#mh-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a3e7c;color:#fff;padding:12px 24px;border-radius:10px;font-size:.95rem;font-weight:600;z-index:9999;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+#mh-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+body.dark #mh-toast{background:#2563eb;}

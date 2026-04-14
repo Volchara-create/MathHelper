@@ -1960,7 +1960,7 @@ async function nbSaveAsNote() {
 
   const content = body.innerHTML; // preserve formatting
   try {
-    const res = await fetch(`${typeof API !== 'undefined' ? API : ''}/notes`, {
+    const res = await fetch(`${API}/notes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ title, content })

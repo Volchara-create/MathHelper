@@ -443,20 +443,6 @@
       </div>
     </section>
 
-    <div id="category-row" class="category-row">
-      <div class="category-card" onclick="showCategory('rectangle')">Прямокутник</div>
-      <div class="category-card" onclick="showCategory('rhombus')">Ромб</div>
-      <div class="category-card" onclick="showCategory('parallelogram')">Паралелограм</div>
-      <div class="category-card" onclick="showCategory('trapezoid')">Трапеція</div>
-      <div class="category-card" onclick="showCategory('circle')">Коло</div>
-      <div class="category-card" onclick="showCategory('triangle')">Трикутник</div>
-      <div class="category-card" onclick="showCategory('cube')">Куб</div>
-      <div class="category-card" onclick="showCategory('parallelepiped')">Паралелепіпед</div>
-      <div class="category-card" onclick="showCategory('cylinder')">Циліндр</div>
-      <div class="category-card" onclick="showCategory('cone')">Конус</div>
-      <div class="category-card" onclick="showCategory('pyramid')">Піраміда</div>
-    </div>
-
     <!-- РОБОЧИЙ СТІЛ (замінює графік) -->
     <section id="graph">
       <div class="graph-container">
@@ -817,7 +803,7 @@
         <div class="settings-block-title">🔔 Нагадування</div>
         <div class="settings-row">
           <span class="settings-label">Push о 18:00</span>
-          <button id="push-toggle-btn" class="push-toggle-btn" onclick="pushSubscribe()">🔕 Увімкнути</button>
+          <button id="push-toggle-btn-settings" class="push-toggle-btn" onclick="pushSubscribe()">🔕 Увімкнути</button>
         </div>
       </div>
       <!-- Language block (placeholder) -->
@@ -881,6 +867,8 @@
     </div>
     <div class="float-calc-resize" id="float-calc-resize"></div>
   </div>
+
+  <div id="mh-toast"></div>
 
   <script src="script.js"></script>
   <script src="auth.js"></script>
