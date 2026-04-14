@@ -1085,3 +1085,16 @@ body.dark .grade-btn-s.active{border-color:#3b82f6;background:#3b82f6;color:#fff
 .float-calc-resize{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:se-resize;background:linear-gradient(135deg,transparent 40%,#b3d9ff 40%,#b3d9ff 60%,transparent 60%,transparent 80%,#b3d9ff 80%);}
 body.dark .float-calc{background:#151c2a;border-color:#1e3050;}
 body.dark .float-calc-head{background:#0d2340;}
+
+/* ===== QUADRANTS HINT in trig tab ===== */
+.trig-quadrants-hint{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:220px;margin:0 auto 20px;}
+
+/* ===== ABOUT link in home ===== */
+.hero-about-link{text-align:center;margin-top:24px;}
+.hero-about-btn{background:none;border:1px solid #c7d8f5;border-radius:20px;padding:8px 20px;color:#6a8ab0;font-size:0.9rem;cursor:pointer;}
+.hero-about-btn:hover{background:#f0f6ff;color:var(--blue);}
+
+/* ===== Settings link button ===== */
+.settings-link-btn{background:none;border:none;color:var(--blue);font-size:0.95rem;cursor:pointer;font-weight:600;padding:2px 0;}
+.settings-link-btn:hover{text-decoration:underline;}
+body.dark .settings-link-btn{color:#60a5fa;}

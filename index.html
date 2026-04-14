@@ -141,85 +141,6 @@
     <div class="ph-resize" id="ph-resize-calc" style="display:none;"></div>
 
   <main>
-    <section id="trig">
-      <div id="trig-content">
-        <h2>📐 Тригонометрія</h2>
-        <p class="trig-subtitle">Формули та таблиця значень sin, cos, tan, ctg</p>
-        <div class="trig-layout">
-          <!-- Formulas panel LEFT -->
-          <div class="trig-formulas-panel">
-            <h3>📋 Основні формули</h3>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Основна тотожність</div>
-              <div class="trig-formula-expr">sin²α + cos²α = 1</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">tan і ctg</div>
-              <div class="trig-formula-expr">tan α = sin α / cos α</div>
-              <div class="trig-formula-expr">ctg α = cos α / sin α</div>
-              <div class="trig-formula-expr">tan α · ctg α = 1</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Радіани</div>
-              <div class="trig-formula-expr">180° = π рад</div>
-              <div class="trig-formula-expr">1° = π/180 рад</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Формули суми кутів</div>
-              <div class="trig-formula-expr">sin(α±β) = sinα·cosβ ± cosα·sinβ</div>
-              <div class="trig-formula-expr">cos(α±β) = cosα·cosβ ∓ sinα·sinβ</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Подвійний кут</div>
-              <div class="trig-formula-expr">sin 2α = 2·sinα·cosα</div>
-              <div class="trig-formula-expr">cos 2α = cos²α − sin²α</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Пониження степеня</div>
-              <div class="trig-formula-expr">sin²α = (1 − cos 2α) / 2</div>
-              <div class="trig-formula-expr">cos²α = (1 + cos 2α) / 2</div>
-              <div class="trig-formula-expr">tan²α = (1 − cos 2α) / (1 + cos 2α)</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Формули зведення</div>
-              <div class="trig-formula-expr">sin(90°−α) = cos α</div>
-              <div class="trig-formula-expr">cos(90°−α) = sin α</div>
-              <div class="trig-formula-expr">sin(180°−α) = sin α</div>
-              <div class="trig-formula-expr">cos(180°−α) = −cos α</div>
-              <div class="trig-formula-expr">sin(−α) = −sin α</div>
-              <div class="trig-formula-expr">cos(−α) = cos α</div>
-            </div>
-            <div class="trig-formula-block">
-              <div class="trig-formula-title">Теорема синусів / косинусів</div>
-              <div class="trig-formula-expr">a/sin A = b/sin B = c/sin C</div>
-              <div class="trig-formula-expr">c² = a² + b² − 2ab·cos C</div>
-            </div>
-            <div class="trig-formula-block signs-block">
-              <div class="trig-formula-title">Знаки за чвертями</div>
-              <div class="trig-quadrants">
-                <div class="trig-q trig-q2">II<br><span>sin+</span></div>
-                <div class="trig-q trig-q1">I<br><span>all+</span></div>
-                <div class="trig-q trig-q3">III<br><span>tan+</span></div>
-                <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
-              </div>
-            </div>
-          </div>
-          <!-- Table RIGHT -->
-          <div class="trig-table-wrap">
-            <table class="trig-table">
-              <thead>
-                <tr>
-                  <th>Кут °</th><th>Рад</th>
-                  <th>sin</th><th>cos</th><th>tan</th><th>ctg</th>
-                </tr>
-              </thead>
-              <tbody id="trig-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- FORMULAS SECTION — 3 tabs -->
     <section id="formulas">
       <div class="formulas-section-wrap">
@@ -245,6 +166,12 @@
 
         <!-- TRIGONOMETRY TAB — category buttons like algebra -->
         <div class="ftab-content" id="ftab-trigonometry">
+          <div class="trig-quadrants-hint">
+            <div class="trig-q trig-q2">II<br><span>sin+</span></div>
+            <div class="trig-q trig-q1">I<br><span>всі+</span></div>
+            <div class="trig-q trig-q3">III<br><span>tan+</span></div>
+            <div class="trig-q trig-q4">IV<br><span>cos+</span></div>
+          </div>
           <div class="algebra-cats-grid" id="trig-cats-grid"></div>
         </div>
 
@@ -265,79 +192,6 @@
       </div>
     </section>
 
-    <section id="tasks">
-      <div id="tasks-content" style="max-width:860px;margin:0 auto;">
-        <h2 style="text-align:center;color:var(--blue);margin-bottom:6px;font-size:1.8rem;">🎯 Задачі</h2>
-        <p id="tasks-grade-label" style="text-align:center;color:#888;margin-bottom:18px;"></p>
-
-        <!-- Mode switcher -->
-        <div class="tasks-mode-bar">
-          <button class="tmode-btn active" id="tmode-safe" onclick="tasksSetMode('safe')">🔐 Таємний сейф</button>
-          <button class="tmode-btn" id="tmode-regular" onclick="tasksSetMode('regular')">📝 Тренування</button>
-        </div>
-
-        <!-- ANIMATED VISUAL CARD (grades 1-5) -->
-        <div id="tasks-visual-wrap" class="tasks-panel tasks-visual-wrap">
-          <div class="vtask-label">🎴 Картка з анімацією</div>
-          <div id="vtask-card" class="vtask-card-wrap"></div>
-        </div>
-
-        <!-- SAFE MODE (grades 1-5) -->
-        <div id="tasks-safe" class="tasks-panel">
-          <div class="safe-wrap">
-            <!-- SVG safe -->
-            <div class="safe-box">
-              <svg id="safe-svg" viewBox="0 0 160 160" width="160" height="160">
-                <!-- Safe body -->
-                <rect x="10" y="10" width="140" height="140" rx="12" fill="#1a3e7c" stroke="#0d2340" stroke-width="3"/>
-                <rect x="20" y="20" width="120" height="120" rx="8" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
-                <!-- Bolts -->
-                <circle cx="32" cy="32" r="6" fill="#1a3e7c"/>
-                <circle cx="128" cy="32" r="6" fill="#1a3e7c"/>
-                <circle cx="32" cy="128" r="6" fill="#1a3e7c"/>
-                <circle cx="128" cy="128" r="6" fill="#1a3e7c"/>
-                <!-- Door (rotates on open) -->
-                <g id="safe-door">
-                  <!-- Dial -->
-                  <circle cx="80" cy="80" r="32" fill="#e8f4ff" stroke="#2563eb" stroke-width="3"/>
-                  <circle cx="80" cy="80" r="22" fill="#fff" stroke="#93c5fd" stroke-width="2"/>
-                  <circle cx="80" cy="80" r="6" fill="#1a3e7c"/>
-                  <!-- Tick marks on dial -->
-                  <line x1="80" y1="50" x2="80" y2="56" stroke="#1a3e7c" stroke-width="2"/>
-                  <line x1="80" y1="104" x2="80" y2="110" stroke="#1a3e7c" stroke-width="2"/>
-                  <line x1="50" y1="80" x2="56" y2="80" stroke="#1a3e7c" stroke-width="2"/>
-                  <line x1="104" y1="80" x2="110" y2="80" stroke="#1a3e7c" stroke-width="2"/>
-                  <!-- Pointer -->
-                  <line id="safe-pointer" x1="80" y1="80" x2="80" y2="55" stroke="#e53935" stroke-width="3" stroke-linecap="round"/>
-                </g>
-                <!-- Lock indicator -->
-                <text x="80" y="148" text-anchor="middle" font-size="11" fill="#93c5fd" font-family="monospace" id="safe-status-text">🔒 ЗАЧИНЕНО</text>
-              </svg>
-              <div id="safe-stars" class="safe-stars"></div>
-            </div>
-
-            <!-- Code inputs -->
-            <div class="safe-right">
-              <div class="safe-code-display">
-                <div class="safe-digit-wrap" id="safe-d0"><input class="safe-digit" id="sd0" maxlength="4" placeholder="?" disabled></div>
-                <div class="safe-sep">—</div>
-                <div class="safe-digit-wrap" id="safe-d1"><input class="safe-digit" id="sd1" maxlength="4" placeholder="?" disabled></div>
-                <div class="safe-sep">—</div>
-                <div class="safe-digit-wrap" id="safe-d2"><input class="safe-digit" id="sd2" maxlength="4" placeholder="?" disabled></div>
-              </div>
-              <div id="safe-questions" class="safe-questions"></div>
-              <div id="safe-msg" class="safe-msg"></div>
-              <button class="safe-new-btn" onclick="safeNew()">🔄 Новий сейф</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- REGULAR MODE -->
-        <div id="tasks-regular" class="tasks-panel" style="display:none;">
-          <div id="tasks-list"></div>
-        </div>
-      </div>
-    </section>
 
     <section id="home" class="active">
       <div id="home-content">
@@ -362,6 +216,9 @@
             </div>
             <a href="simulator.html" class="hero-nmt-btn">Почати тест →</a>
           </div>
+        </div>
+        <div class="hero-about-link">
+          <button onclick="show('about')" class="hero-about-btn">ℹ️ Про проєкт</button>
         </div>
       </div>
     </section>
@@ -425,17 +282,19 @@
     <section id="about">
       <div id="about-content">
         <h2>Про MathHelper</h2>
-        <p>MathHelper — це потужний інструмент для вивчення математики та геометрії. Додаток містить понад 30 формул для різних геометричних фігур та можливість побудови графіків функцій.</p>
-        <p><strong>Можливості:</strong></p>
-        <p>📐 Формули для плоских фігур: прямокутник, ромб, паралелограм, трапеція, коло, трикутник</p>
-        <p>📦 Формули для об'ємних фігур: куб, паралелепіпед, циліндр, конус, піраміда</p>
-        <p>📈 Побудова графіків математичних функцій на координатній площині</p>
-        <p>🔷 Геометричні фігури прямо на координатній площині</p>
-        <p>🎯 Інтерактивні візуалізації кожної формули</p>
+        <p>MathHelper — безкоштовна платформа для підготовки до НМТ та вивчення математики для учнів 7–11 класів.</p>
+        <p><strong>Що є на сайті:</strong></p>
+        <p>📚 Формули з алгебри, геометрії та тригонометрії — розбиті по класах</p>
+        <p>📈 Робочий стіл з графіками функцій та геометричними фігурами</p>
+        <p>🎯 Симулятор НМТ — 30 питань, таймер, розбір помилок</p>
+        <p>🎮 Квіз для повторення тем — з поясненнями відповідей</p>
+        <p>📓 Конспекти — записуй прямо на сайті й повертайся коли потрібно</p>
+        <p>🧮 Калькулятор — завжди під рукою</p>
         <hr style="margin:30px 0;border:1px solid #e6f0ff;">
         <h2>Контакти</h2>
         <p>📧 Email: <strong><a href="mailto:math.helper.proba@gmail.com">math.helper.proba@gmail.com</a></strong></p>
-        <p>🌍 Проєкт створений для навчання та саморозвитку</p>
+        <p>🌍 Проєкт створений для навчання та саморозвитку учнів України</p>
+        <p style="margin-top:12px;"><a href="https://github.com/Volchara-create/MathHelper" target="_blank" style="color:var(--blue);">⭐ GitHub проєкту</a></p>
       </div>
     </section>
 
@@ -991,6 +850,14 @@
         <div class="settings-row">
           <span class="settings-label">Інтерфейс</span>
           <span class="settings-value">🇺🇦 Українська</span>
+        </div>
+      </div>
+      <!-- About -->
+      <div class="settings-block">
+        <div class="settings-block-title">ℹ️ Про додаток</div>
+        <div class="settings-row">
+          <span class="settings-label">MathHelper</span>
+          <button class="settings-link-btn" onclick="closeSettings();show('about')">Відкрити →</button>
         </div>
       </div>
       <!-- Danger zone -->
