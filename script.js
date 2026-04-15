@@ -3182,26 +3182,23 @@ function _mathikSetChips(chips) {
   ).join('');
 }
 
-// ===== MATHIK TUTORIAL =====
-// Each step:
-//   navigate  — function called FIRST (opens the section), or null
-//   navDelay  — ms to wait after navigate before owl flies (default 400)
-//   target    — CSS selector inside the now-visible section to fly to
-//   msg       — what Mathik says after returning
+// ===== MATHIK TUTORIAL V2 =====
+// Owl STAYS at each position and speaks via floating speech bubble.
+// Only returns home at the very end. No teleportation between steps.
 const MATHIK_TUTORIAL = [
   {
-    msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій особистий гід по MathHelper.<br>Зараз я покажу кожен розділ сайту <b>зсередини</b>. Поїхали! 🚀',
-    navigate: null, target: null
+    // Step 0: intro — speak from home
+    msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій гід по MathHelper.<br>Зараз я покажу кожен розділ зсередини. Летимо! 🚀'
   },
   {
-    // 1. Формули: open section → fly to algebra tab
+    // Step 1: fly to formulas tab button
     navigate: () => show('formulas'),
     navDelay: 450,
     target: '#ftab-btn-algebra',
-    msg: '📐 <b>Формули</b> — тут вся математика по класах.<br>Вгорі є вкладки: Алгебра, Геометрія, Тригонометрія. Клікни на будь-яку категорію → потім на формулу щоб побачити детальний опис!'
+    msg: '📐 <b>Розділ "Формули"!</b><br>Вгорі вкладки: Алгебра, Геометрія, Тригонометрія. Вибери клас → обери тему → натисни на формулу щоб побачити детальний опис.'
   },
   {
-    // 2. Open algebra category → fly to first formula row
+    // Step 2: open algebra category → fly to first formula row
     navigate: () => {
       showFormulaTab('algebra');
       setTimeout(() => {
@@ -3210,177 +3207,243 @@ const MATHIK_TUTORIAL = [
         if (quad) quad.click();
       }, 250);
     },
-    navDelay: 650,
+    navDelay: 700,
     target: '.alg-modal-row',
-    msg: '🔢 <b>Ось список формул категорії!</b><br>Кожен рядок — клікабельний. Натисни → відкриється великий модал з формулою, поясненням і прикладом. Спробуй сам! 👆'
+    msg: '🔢 <b>Список формул!</b><br>Кожен рядок клікабельний — натисни і відкриється велика картка з поясненням і прикладом. Спробуй сам! 👆'
   },
   {
-    // 3. Квіз: open → fly to first topic button
-    navigate: () => { closeAlgebraModal(); show('quiz'); },
+    // Step 3: quiz
+    navigate: () => { try { closeAlgebraModal(); } catch(e){} show('quiz'); },
     navDelay: 400,
-    target: '.quiz-topic-btn, .vtask-start-btn, [onclick*="startQuiz"], .quiz-btn',
-    msg: '🎯 <b>Квіз</b> — перевіряй себе по темах!<br>Вибери тему → відповідай на питання → після кожної відповіді бачиш пояснення. Ідеально перед контрольною!'
+    target: '.quiz-topic-btn, .vtask-start-btn, [onclick*="startQuiz"]',
+    msg: '🎯 <b>Квіз!</b><br>Обери тему → відповідай на питання → після кожної відповіді бачиш пояснення. Ідеально для підготовки до контрольної!'
   },
   {
-    // 4. НМТ: fly to quick-menu button (always visible)
-    navigate: null,
+    // Step 4: НМТ button in quick-menu
     target: 'a.qm-btn[href="simulator.html"]',
-    msg: '🎯 <b>НМТ Симулятор</b> — ось ця кнопка в нижньому меню!<br>30 питань, таймер 90 хвилин — точно як на реальному НМТ. Після тесту — повний розбір помилок.'
+    msg: '📝 <b>НМТ Симулятор</b> — ось ця кнопка внизу!<br>30 питань, таймер 90 хвилин — точно як на реальному НМТ. Після тесту — повний розбір помилок.'
   },
   {
-    // 5. Графіки: open → fly to function input
+    // Step 5: graph
     navigate: () => showGraph(),
     navDelay: 700,
-    target: '#func-input, .func-input, input[placeholder*="y="], input[placeholder*="функц"]',
-    msg: '📈 <b>Графіки функцій</b> — будуй будь-яку функцію!<br>Введи y=x², sin(x), 2x+1 — і відразу бачиш графік. Скролл миші = zoom, drag = переміщення.'
+    target: '#func-input, .func-input, input[placeholder*="y="]',
+    msg: '📈 <b>Графіки функцій!</b><br>Введи y=x², sin(x), 2x+1 — і відразу бачиш графік. Скролл = zoom, перетягування = переміщення.'
   },
   {
-    // 6. Калькулятор: open panel → fly to calc display
-    navigate: () => openPanel('calc'),
-    navDelay: 450,
-    target: '.ws-calc-disp, .sp-calc-body, .side-panel',
-    msg: '🧮 <b>Калькулятор</b> відкрився збоку!<br>Тримай його поруч з формулами. Перетягуй за заголовок — можна розмістити де зручно.'
-  },
-  {
-    // 7. Зошит: open panel → fly to notebook body
-    navigate: () => openPanel('notebook'),
-    navDelay: 450,
-    target: '.sp-nb-body, .sp-canvas, .side-panel',
-    msg: '📓 <b>Зошит</b> відкрився збоку!<br>Пиши нотатки, конспекти — є режим лінійок і клітинок. Зберігається автоматично на сервері.'
-  },
-  {
-    // 8. Пошук: fly to header button
-    navigate: null,
+    // Step 6: search button
+    navigate: () => show('home'),
+    navDelay: 350,
     target: '#search-btn',
-    msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <b>/</b>!<br>Шукає по всьому сайту: формули, теми, підручники, нотатки. Спробуй "sin" або "дискримінант".'
+    msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <kbd>/</kbd>!<br>Шукає формули, теми, нотатки по всьому сайту. Спробуй "sin" або "дискримінант".'
   },
   {
-    // 9. Налаштування: fly to settings button
-    navigate: null,
+    // Step 7: settings button
     target: 'button[onclick="openSettings()"]',
-    msg: '⚙️ <b>Налаштування</b> — ось ця кнопка!<br>Вибери свій клас (7–11), щоденну ціль, увімкни нагадування о 18:00. Зареєструйся щоб прогрес зберігався!'
+    msg: '⚙️ <b>Налаштування</b> — ось де вибрати клас (7–11) і щоденну ціль.<br>Зареєструйся щоб прогрес зберігався між сесіями!'
   },
   {
-    msg: '🎉 <b>Туторіал завершено!</b><br>Тепер ти знаєш MathHelper від А до Я. Починай з формул свого класу → пройди квіз. Я завжди тут — натисни 🦉! 💪',
-    navigate: null, target: null
-  },
+    // Step 8: final — fly home, last message
+    isLast: true,
+    msg: '🎉 <b>Туторіал завершено!</b><br>Ти знаєш MathHelper від А до Я. Починай з формул → квіз.<br>Я завжди тут — натисни 🦉 якщо заблукав! 💪'
+  }
 ];
 
 let _tutorialStep = 0;
-let _owlFlying = false;
+let _owlFlying   = false;
+let _inTutorial  = false;
+let _owlAtHome   = true; // tracks if owl is in right/bottom positioning
 
 function mathikStartTutorial() {
   _tutorialStep = 0;
+  _inTutorial   = true;
+  _owlAtHome    = true;
+  mathikClose();
   _mathikSetChips([]);
-  _tutorialNextStep();
+  _mathikHideSpeech();
+  setTimeout(() => _tutorialNextStep(), 150);
+}
+
+function mathikTutorialNext() {
+  if (!_inTutorial) return;
+  _mathikHideSpeech();
+  setTimeout(() => _tutorialNextStep(), 180);
+}
+
+function mathikTutorialAbort() {
+  _inTutorial = false;
+  _mathikHideSpeech();
+  _owlFlyHome();
 }
 
 function _tutorialNextStep() {
   if (_tutorialStep >= MATHIK_TUTORIAL.length) {
-    _mathikSetChips([
-      { label: '📐 Відкрити формули', msg: 'формули' },
-      { label: '🎯 Почати квіз', msg: 'квіз' },
-      { label: '🔍 Пошук', msg: 'пошук' },
-    ]);
+    _inTutorial = false;
+    _owlFlyHome(() => {
+      mathikOpen();
+      _mathikAddMsg('bot', '🎉 Туторіал завершено! Починай з формул → квіз. Я завжди тут 🦉');
+      _mathikSetChips([{ label: '📐 Формули', msg: 'формули' }, { label: '🎯 Квіз', msg: 'квіз' }]);
+    });
     return;
   }
-  const step = MATHIK_TUTORIAL[_tutorialStep];
-  _tutorialStep++;
+  const step = MATHIK_TUTORIAL[_tutorialStep++];
 
-  const doFlyAndChat = () => {
-    if (step.target) {
-      // Navigate first (if needed), wait navDelay, then fly owl inside the section
-      if (step.navigate) {
-        mathikClose();
-        step.navigate();
-        setTimeout(() => _owlFlyAndReturn(step.target, () => _showTutorialMsg(step)), step.navDelay || 400);
-      } else {
-        // No navigation — just fly to always-visible target
-        mathikClose();
-        setTimeout(() => _owlFlyAndReturn(step.target, () => _showTutorialMsg(step)), 200);
-      }
-    } else if (step.navigate) {
-      // Navigate but no target to fly to (just open and explain)
-      mathikClose();
-      step.navigate();
-      setTimeout(() => { mathikOpen(); _showTutorialMsg(step); }, step.navDelay || 400);
-    } else {
-      // No navigate, no target — just show message
-      _showTutorialMsg(step);
-    }
+  // Last step: fly home then show speech for a few seconds
+  if (step.isLast) {
+    _inTutorial = false;
+    _owlFlyHome(() => {
+      _mathikShowSpeech(step.msg, true);
+      setTimeout(() => _mathikHideSpeech(), 5000);
+    });
+    return;
+  }
+
+  const showSpeech = () => {
+    _mathikShowSpeech(step.msg, _tutorialStep >= MATHIK_TUTORIAL.length);
   };
 
-  doFlyAndChat();
+  if (step.target) {
+    const doFly = () => _owlFlyToAndStay(step.target, showSpeech);
+    if (step.navigate) {
+      step.navigate();
+      setTimeout(doFly, step.navDelay || 450);
+    } else {
+      doFly();
+    }
+  } else if (step.navigate) {
+    step.navigate();
+    setTimeout(showSpeech, step.navDelay || 400);
+  } else {
+    // No navigate, no target — speak from current position (home for step 0)
+    showSpeech();
+  }
 }
 
-function _showTutorialMsg(step) {
-  mathikOpen();
-  _mathikAddMsg('bot', step.msg);
-  const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
-  if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
-}
-
-// Fly owl to target (already visible), hover 1s, return fast from bottom, then callback
-function _owlFlyAndReturn(selector, callback) {
+// Fly owl to selector and STAY there (no return home)
+function _owlFlyToAndStay(selector, callback) {
   if (_owlFlying) { if (callback) callback(); return; }
 
-  // Try multiple selectors (comma-separated)
   const selectors = selector.split(',').map(s => s.trim());
   let target = null;
   for (const sel of selectors) {
     const el = document.querySelector(sel);
     if (el) { const r = el.getBoundingClientRect(); if (r.width && r.height) { target = el; break; } }
   }
-
   if (!target) { if (callback) callback(); return; }
 
   _owlFlying = true;
   const bubble = document.getElementById('mathik-bubble');
+
+  // If owl is at home (right/bottom), switch to left/top coords first
+  if (_owlAtHome) {
+    const homeRect = bubble.getBoundingClientRect();
+    bubble.style.transition = 'none';
+    bubble.style.right  = 'auto';
+    bubble.style.bottom = 'auto';
+    bubble.style.left   = homeRect.left + 'px';
+    bubble.style.top    = homeRect.top  + 'px';
+    _owlAtHome = false;
+  }
+
   const tRect   = target.getBoundingClientRect();
-  const homeRect = bubble.getBoundingClientRect();
-  const homeLeft = homeRect.left;
-  const homeTop  = homeRect.top;
+  const destLeft = Math.min(Math.max(8, tRect.left + tRect.width / 2 - 26), window.innerWidth - 64);
+  const destTop  = Math.max(8, tRect.top - 62);
 
-  // Switch to left/top absolute coords
-  bubble.style.transition = 'none';
-  bubble.style.right  = 'auto';
-  bubble.style.bottom = 'auto';
-  bubble.style.left   = homeLeft + 'px';
-  bubble.style.top    = homeTop  + 'px';
+  bubble.classList.add('owl-flying');
+  bubble.classList.remove('owl-arrived');
 
-  // ① Fly to target (smooth bounce)
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    bubble.style.transition = 'left .6s cubic-bezier(.34,1.4,.64,1), top .55s cubic-bezier(.34,1.4,.64,1)';
-    bubble.style.left = (tRect.left + tRect.width / 2 - 26) + 'px';
-    bubble.style.top  = Math.max(8, tRect.top - 58) + 'px';
+    bubble.style.transition = 'left .65s cubic-bezier(.34,1.4,.64,1), top .6s cubic-bezier(.34,1.4,.64,1)';
+    bubble.style.left = destLeft + 'px';
+    bubble.style.top  = destTop  + 'px';
     target.classList.add('mathik-target-pulse');
   }));
 
-  // ② Hover 1 second at target (user sees it clearly)
   setTimeout(() => {
+    bubble.classList.remove('owl-flying');
+    bubble.classList.add('owl-arrived');
     target.classList.remove('mathik-target-pulse');
+    _owlFlying = false;
+    setTimeout(() => bubble.classList.remove('owl-arrived'), 600);
+    if (callback) callback();
+  }, 720);
+}
 
-    // ③ Shoot down below screen instantly
-    bubble.style.transition = 'top .25s ease-in, left .25s ease-in';
-    bubble.style.left = homeLeft + 'px';
-    bubble.style.top  = (window.innerHeight + 80) + 'px';
+// Fly owl back home (shoot down, spring up from bottom-right)
+function _owlFlyHome(callback) {
+  if (_owlAtHome) { if (callback) callback(); return; }
 
-    // ④ Spring back up to home position
-    setTimeout(() => {
-      bubble.style.transition = 'top .4s cubic-bezier(.22,.61,.36,1)';
-      bubble.style.top = homeTop + 'px';
+  _owlFlying = true;
+  const bubble = document.getElementById('mathik-bubble');
+  bubble.classList.add('owl-flying');
+
+  // 1. Shoot down below screen
+  bubble.style.transition = 'top .25s ease-in';
+  bubble.style.top = (window.innerHeight + 100) + 'px';
+
+  setTimeout(() => {
+    // 2. Teleport to bottom-right below screen (home X position)
+    bubble.style.transition = 'none';
+    bubble.style.left = (window.innerWidth - 68) + 'px';
+    bubble.style.top  = (window.innerHeight + 100) + 'px';
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      // 3. Spring up to approximate home position
+      bubble.style.transition = 'top .42s cubic-bezier(.34,1.4,.64,1)';
+      bubble.style.top = (window.innerHeight - 135) + 'px';
 
       setTimeout(() => {
-        bubble.style.transition = '';
+        // 4. Restore right/bottom positioning
+        bubble.style.transition = 'none';
         bubble.style.right  = '16px';
         bubble.style.bottom = '80px';
         bubble.style.left   = '';
         bubble.style.top    = '';
+        bubble.classList.remove('owl-flying');
+        bubble.classList.add('owl-arrived');
+        _owlAtHome = true;
         _owlFlying = false;
+        setTimeout(() => bubble.classList.remove('owl-arrived'), 600);
         if (callback) callback();
-      }, 420);
-    }, 280);
-  }, 1550); // 1s hover + ~0.6s flight time
+      }, 460);
+    }));
+  }, 280);
+}
+
+// Show speech bubble near owl's current bounding rect
+function _mathikShowSpeech(html, isLast) {
+  const sp     = document.getElementById('mathik-speech');
+  const bubble = document.getElementById('mathik-bubble');
+  if (!sp) return;
+
+  document.getElementById('mathik-speech-text').innerHTML = html;
+  const nextBtn = document.getElementById('mathik-speech-next');
+  nextBtn.style.display = isLast ? 'none' : '';
+
+  // Show first (for offsetHeight measurement)
+  sp.style.display = 'block';
+
+  // Position relative to owl
+  const owlRect  = bubble.getBoundingClientRect();
+  const spW = 270;
+  const spH = sp.offsetHeight || 130;
+
+  let left = owlRect.left - spW - 12;
+  let top  = owlRect.top  + owlRect.height / 2 - spH / 2;
+
+  // If would go off-screen left → put right of owl
+  if (left < 8) left = owlRect.right + 12;
+  // Clamp
+  left = Math.max(8, Math.min(left, window.innerWidth  - spW - 8));
+  top  = Math.max(8, Math.min(top,  window.innerHeight - spH - 16));
+
+  sp.style.left = left + 'px';
+  sp.style.top  = top  + 'px';
+}
+
+function _mathikHideSpeech() {
+  const sp = document.getElementById('mathik-speech');
+  if (sp) sp.style.display = 'none';
 }
 
 function _mathikReply(text) {
