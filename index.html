@@ -64,7 +64,7 @@
       <button id="global-back-btn" class="global-back-btn" onclick="qmGoBack()" style="display:none;">←</button>
       <button id="global-home-btn" class="global-back-btn global-home-btn" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="display:none;">🏠 Головна</button>
       <button id="search-btn" onclick="searchOpen()" title="Пошук (натисни /)">🔍</button>
-      <button id="guide-btn" onclick="mathikToggle()" title="Mathik — помічник">❓</button>
+      <button id="guide-btn" onclick="mathikOpen();mathikStartTutorial()" title="Туторіал по сайту">❓</button>
       <button id="dark-toggle" onclick="toggleDark()">🌙</button>
     </nav>
 

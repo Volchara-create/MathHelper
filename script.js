@@ -3176,6 +3176,7 @@ const MATHIK_TUTORIAL = [
 ];
 
 let _tutorialStep = 0;
+let _owlFlying = false;
 
 function mathikStartTutorial() {
   _tutorialStep = 0;
@@ -3194,48 +3195,83 @@ function _tutorialNextStep() {
   }
   const step = MATHIK_TUTORIAL[_tutorialStep];
   _tutorialStep++;
-  _mathikAddMsg('bot', step.msg);
-  if (step.target) setTimeout(() => _mathikHighlight(step.target), 300);
-  const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
-  if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
+
+  if (step.target) {
+    // Close chat, fly owl to button, come back, then show message
+    mathikClose();
+    setTimeout(() => _owlFlyTo(step.target, () => {
+      mathikOpen();
+      _mathikAddMsg('bot', step.msg);
+      const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
+      if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
+    }), 200);
+  } else {
+    // No target — just show message in open chat
+    _mathikAddMsg('bot', step.msg);
+    const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
+    if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
+  }
 }
 
-function _mathikHighlight(selector) {
+// Fly the owl bubble to a button, highlight it, then return home
+function _owlFlyTo(selector, callback) {
+  if (_owlFlying) return;
   const target = document.querySelector(selector);
-  if (!target) return;
-  const rect = target.getBoundingClientRect();
-  if (!rect.width) return; // not visible
+  if (!target) { if (callback) callback(); return; }
+  const tRect = target.getBoundingClientRect();
+  if (!tRect.width) { if (callback) callback(); return; }
 
-  // Create or reuse pointer element
-  let ptr = document.getElementById('mathik-pointer');
-  if (!ptr) {
-    ptr = document.createElement('div');
-    ptr.id = 'mathik-pointer';
-    ptr.textContent = '👆';
-    document.body.appendChild(ptr);
-  }
-
-  // Start near Mathik bubble
+  _owlFlying = true;
   const bubble = document.getElementById('mathik-bubble');
-  const br = bubble.getBoundingClientRect();
-  ptr.style.cssText = `position:fixed;font-size:1.8rem;z-index:9999;pointer-events:none;transition:left .6s cubic-bezier(.34,1.56,.64,1),top .6s cubic-bezier(.34,1.56,.64,1),opacity .3s;left:${br.left}px;top:${br.top}px;opacity:0;`;
 
-  // Add highlight to target
-  target.classList.add('mathik-target-pulse');
+  // Remember home position from current computed style
+  const homeRect = bubble.getBoundingClientRect();
+  const homeLeft = homeRect.left;
+  const homeTop = homeRect.top;
 
-  // Animate to target
+  // Switch from right/bottom to left/top absolute coords
+  bubble.style.transition = 'none';
+  bubble.style.right = 'auto';
+  bubble.style.bottom = 'auto';
+  bubble.style.left = homeLeft + 'px';
+  bubble.style.top = homeTop + 'px';
+
+  // Fly to target (slightly above center)
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    ptr.style.left = (rect.left + rect.width / 2 - 14) + 'px';
-    ptr.style.top = (rect.top - 36) + 'px';
-    ptr.style.opacity = '1';
+    bubble.style.transition = 'left .55s cubic-bezier(.34,1.4,.64,1), top .5s cubic-bezier(.34,1.4,.64,1)';
+    bubble.style.left = (tRect.left + tRect.width / 2 - 26) + 'px';
+    bubble.style.top = Math.max(10, tRect.top - 60) + 'px';
+
+    // Highlight target
+    target.classList.add('mathik-target-pulse');
   }));
 
-  // Remove after 2.8s
+  // Stay 1.4s, then zoom back fast from bottom
   setTimeout(() => {
-    ptr.style.opacity = '0';
     target.classList.remove('mathik-target-pulse');
-    setTimeout(() => ptr && ptr.remove(), 400);
-  }, 2800);
+
+    // Snap to bottom first (off-screen fast), then slide to home
+    bubble.style.transition = 'none';
+    bubble.style.left = homeLeft + 'px';
+    bubble.style.top = (window.innerHeight + 60) + 'px'; // below screen
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      bubble.style.transition = 'top .35s cubic-bezier(.22,.61,.36,1), left .35s ease';
+      bubble.style.left = homeLeft + 'px';
+      bubble.style.top = homeTop + 'px';
+    }));
+
+    // Restore right/bottom positioning after animation
+    setTimeout(() => {
+      bubble.style.transition = '';
+      bubble.style.right = '16px';
+      bubble.style.bottom = '80px';
+      bubble.style.left = '';
+      bubble.style.top = '';
+      _owlFlying = false;
+      if (callback) callback();
+    }, 380);
+  }, 1600);
 }
 
 function _mathikReply(text) {
