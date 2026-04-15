@@ -3117,7 +3117,7 @@ const MATHIK_QA = [
 ];
 
 const MATHIK_CHIPS_DEFAULT = [
-  { label: '🎓 Туторіал сайту', msg: 'покажи туторіал' },
+  { label: '🎓 Огляд сайту', msg: 'покажи огляд' },
   { label: '📐 Формули', msg: 'формули' },
   { label: '🎯 Квіз', msg: 'квіз' },
   { label: '🏆 НМТ', msg: 'нмт' },
@@ -3139,7 +3139,7 @@ function mathikOpen() {
   document.getElementById('mathik-badge').style.display = 'none';
   if (!_mathikGreeted) {
     _mathikGreeted = true;
-    _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій гід по MathHelper.<br>Вперше тут? Натисни <b>🎓 Туторіал</b> — покажу все за хвилину!');
+    _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій помічник у MathHelper.<br>Вперше тут? Натисни <b>🎓 Огляд сайту</b> — покажу все за хвилину!');
     _mathikSetChips(MATHIK_CHIPS_DEFAULT);
   }
   setTimeout(() => document.getElementById('mathik-input').focus(), 100);
@@ -3188,64 +3188,59 @@ function _mathikSetChips(chips) {
 const MATHIK_TUTORIAL = [
   {
     // Step 0: intro — speak from home
-    msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій гід по MathHelper.<br>Зараз я покажу кожен розділ зсередини. Летимо! 🚀'
+    msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій помічник.<br>Зроблю короткий <b>огляд</b> сайту — покажу кожен розділ зсередини. Поїхали! 🚀'
   },
   {
-    // Step 1: fly to formulas tab button
+    // Step 1: formulas tab
     navigate: () => show('formulas'),
-    navDelay: 600,
     target: '#ftab-btn-algebra',
-    msg: '📐 <b>Розділ "Формули"!</b><br>Вгорі вкладки: Алгебра, Геометрія, Тригонометрія. Вибери клас → обери тему → натисни на формулу щоб побачити детальний опис.'
+    msg: '📐 <b>Формули</b> — тут вся математика!<br>Вкладки вгорі: Алгебра, Геометрія, Тригонометрія. Вибери тему → натисни на формулу → побачиш детальний опис.'
   },
   {
-    // Step 2: open algebra category → fly to first formula row
+    // Step 2: formula list
     navigate: () => {
       showFormulaTab('algebra');
       setTimeout(() => {
         const cats = document.querySelectorAll('.alg-cat-btn');
         const quad = Array.from(cats).find(b => b.textContent.includes('Квадрат')) || cats[0];
         if (quad) quad.click();
-      }, 250);
+      }, 200);
     },
-    navDelay: 700,
     target: '.alg-modal-row',
-    msg: '🔢 <b>Список формул!</b><br>Кожен рядок клікабельний — натисни і відкриється велика картка з поясненням і прикладом. Спробуй сам! 👆'
+    msg: '🔢 <b>Список формул категорії!</b><br>Кожен рядок клікабельний — натисни і відкриється велика картка з поясненням і прикладом.'
   },
   {
     // Step 3: quiz
     navigate: () => { try { closeAlgebraModal(); } catch(e){} show('quiz'); },
-    navDelay: 550,
     target: '.quiz-topic-btn, .vtask-start-btn, [onclick*="startQuiz"]',
-    msg: '🎯 <b>Квіз!</b><br>Обери тему → відповідай на питання → після кожної відповіді бачиш пояснення. Ідеально для підготовки до контрольної!'
+    msg: '🎯 <b>Квіз</b> — перевіряй себе!<br>Обери тему → відповідай на питання → після кожної відповіді бачиш пояснення. Ідеально перед контрольною!'
   },
   {
-    // Step 4: НМТ button in quick-menu
+    // Step 4: НМТ button in quick-menu (always visible)
     target: 'a.qm-btn[href="simulator.html"]',
-    msg: '📝 <b>НМТ Симулятор</b> — ось ця кнопка внизу!<br>30 питань, таймер 90 хвилин — точно як на реальному НМТ. Після тесту — повний розбір помилок.'
+    msg: '📝 <b>НМТ Симулятор</b> — ось ця кнопка в нижньому меню!<br>30 питань, таймер 90 хвилин — точно як на реальному НМТ. Після — повний розбір помилок.'
   },
   {
     // Step 5: graph
     navigate: () => showGraph(),
-    navDelay: 700,
     target: '#func-input, .func-input, input[placeholder*="y="]',
-    msg: '📈 <b>Графіки функцій!</b><br>Введи y=x², sin(x), 2x+1 — і відразу бачиш графік. Скролл = zoom, перетягування = переміщення.'
+    msg: '📈 <b>Графіки</b> — будуй будь-яку функцію!<br>Введи y=x², sin(x) — відразу бачиш графік. Скролл = масштаб, мишка = переміщення.'
   },
   {
-    // Step 6: search button
+    // Step 6: search
     navigate: () => show('home'),
-    navDelay: 500,
     target: '#search-btn',
-    msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <kbd>/</kbd>!<br>Шукає формули, теми, нотатки по всьому сайту. Спробуй "sin" або "дискримінант".'
+    msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <kbd>/</kbd>!<br>Шукає формули, теми, нотатки по всьому сайту.'
   },
   {
-    // Step 7: settings button
+    // Step 7: settings
     target: 'button[onclick="openSettings()"]',
-    msg: '⚙️ <b>Налаштування</b> — ось де вибрати клас (7–11) і щоденну ціль.<br>Зареєструйся щоб прогрес зберігався між сесіями!'
+    msg: '⚙️ <b>Налаштування</b> — вибери свій клас (7–11) і щоденну ціль.<br>Зареєструйся щоб прогрес зберігався!'
   },
   {
-    // Step 8: final — fly home, last message
+    // Step 8: done — fly home
     isLast: true,
-    msg: '🎉 <b>Туторіал завершено!</b><br>Ти знаєш MathHelper від А до Я. Починай з формул → квіз.<br>Я завжди тут — натисни 🦉 якщо заблукав! 💪'
+    msg: '🎉 <b>Огляд завершено!</b><br>Ти знаєш MathHelper від А до Я. Починай з формул → квіз.<br>Я завжди тут — натисни 🦉 якщо заблукав! 💪'
   }
 ];
 
@@ -3310,15 +3305,15 @@ function _tutorialNextStep() {
     const doFly = () => _owlFlyToAndStay(step.target, showSpeech);
     if (step.navigate) {
       step.navigate();
-      setTimeout(doFly, step.navDelay || 450);
+      // Wait 2 frames so browser renders the new section, then fly immediately
+      requestAnimationFrame(() => requestAnimationFrame(doFly));
     } else {
       doFly();
     }
   } else if (step.navigate) {
     step.navigate();
-    setTimeout(showSpeech, step.navDelay || 400);
+    requestAnimationFrame(() => requestAnimationFrame(showSpeech));
   } else {
-    // No navigate, no target — speak from current position (home for step 0)
     showSpeech();
   }
 }
