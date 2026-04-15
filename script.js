@@ -3319,6 +3319,40 @@ function _tutorialNextStep() {
   }
 }
 
+// Easing: ease-out-back (overshoots slightly then settles)
+function _easeOutBack(t) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
+// JS frame-by-frame animation (CSS transitions break when DOM changes mid-flight)
+function _animOwl(fromL, fromT, toL, toT, duration, onDone) {
+  const bubble = document.getElementById('mathik-bubble');
+  const start  = performance.now();
+  function step(now) {
+    const raw = Math.min((now - start) / duration, 1);
+    const t   = _easeOutBack(raw);
+    bubble.style.left = (fromL + (toL - fromL) * t) + 'px';
+    bubble.style.top  = (fromT + (toT - fromT) * t) + 'px';
+    if (raw < 1) requestAnimationFrame(step);
+    else if (onDone) onDone();
+  }
+  requestAnimationFrame(step);
+}
+
+// Apply "flying" visual style directly in JS (no CSS class dependency)
+function _owlSetFlying(bubble, on) {
+  if (on) {
+    bubble.style.transform  = 'scale(1.55)';
+    bubble.style.zIndex     = '9990';
+    bubble.style.boxShadow  = '0 0 0 10px rgba(37,99,235,.35),0 0 30px rgba(37,99,235,.4),0 10px 30px rgba(0,0,0,.3)';
+  } else {
+    bubble.style.transform  = '';
+    bubble.style.zIndex     = '';
+    bubble.style.boxShadow  = '';
+  }
+}
+
 // Fly owl to selector and STAY there (no return home)
 function _owlFlyToAndStay(selector, callback) {
   if (_owlFlying) { if (callback) callback(); return; }
@@ -3334,80 +3368,81 @@ function _owlFlyToAndStay(selector, callback) {
   _owlFlying = true;
   const bubble = document.getElementById('mathik-bubble');
 
-  // If owl is at home (right/bottom), switch to left/top coords first
+  // Get start position (from home right/bottom or from current left/top)
+  let fromL, fromT;
   if (_owlAtHome) {
-    const homeRect = bubble.getBoundingClientRect();
+    const hr = bubble.getBoundingClientRect();
+    fromL = hr.left; fromT = hr.top;
     bubble.style.transition = 'none';
     bubble.style.right  = 'auto';
     bubble.style.bottom = 'auto';
-    bubble.style.left   = homeRect.left + 'px';
-    bubble.style.top    = homeRect.top  + 'px';
+    bubble.style.left   = fromL + 'px';
+    bubble.style.top    = fromT + 'px';
     _owlAtHome = false;
+  } else {
+    fromL = parseFloat(bubble.style.left) || 0;
+    fromT = parseFloat(bubble.style.top)  || 0;
   }
 
-  const tRect   = target.getBoundingClientRect();
-  const destLeft = Math.min(Math.max(8, tRect.left + tRect.width / 2 - 26), window.innerWidth - 64);
-  const destTop  = Math.max(8, tRect.top - 62);
+  const tr   = target.getBoundingClientRect();
+  const toL  = Math.min(Math.max(8, tr.left + tr.width / 2 - 26), window.innerWidth  - 64);
+  const toT  = Math.max(8, Math.min(tr.top - 62, window.innerHeight - 64));
 
+  // Make owl visually big & glowing during flight
+  _owlSetFlying(bubble, true);
   bubble.classList.add('owl-flying');
   bubble.classList.remove('owl-arrived');
+  target.classList.add('mathik-target-pulse');
 
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    bubble.style.transition = 'left 1.1s cubic-bezier(.34,1.3,.64,1), top 1.0s cubic-bezier(.34,1.3,.64,1)';
-    bubble.style.left = destLeft + 'px';
-    bubble.style.top  = destTop  + 'px';
-    target.classList.add('mathik-target-pulse');
-  }));
-
-  setTimeout(() => {
+  // JS animation — 1100ms
+  _animOwl(fromL, fromT, toL, toT, 1100, () => {
+    _owlSetFlying(bubble, false);
     bubble.classList.remove('owl-flying');
     bubble.classList.add('owl-arrived');
     target.classList.remove('mathik-target-pulse');
     _owlFlying = false;
     setTimeout(() => bubble.classList.remove('owl-arrived'), 650);
     if (callback) callback();
-  }, 1150);
+  });
 }
 
-// Fly owl back home (shoot down, spring up from bottom-right)
+// Fly owl back home: shoot down, reappear bottom-right, spring up
 function _owlFlyHome(callback) {
   if (_owlAtHome) { if (callback) callback(); return; }
 
   _owlFlying = true;
   const bubble = document.getElementById('mathik-bubble');
+
+  const fromL = parseFloat(bubble.style.left) || (window.innerWidth  - 68);
+  const fromT = parseFloat(bubble.style.top)  || (window.innerHeight - 135);
+  const offT  = window.innerHeight + 120;
+  const homeL = window.innerWidth  - 68;
+  const homeT = window.innerHeight - 135;
+
+  _owlSetFlying(bubble, true);
   bubble.classList.add('owl-flying');
 
-  // 1. Shoot down below screen
-  bubble.style.transition = 'top .25s ease-in';
-  bubble.style.top = (window.innerHeight + 100) + 'px';
-
-  setTimeout(() => {
-    // 2. Teleport to bottom-right below screen (home X position)
-    bubble.style.transition = 'none';
-    bubble.style.left = (window.innerWidth - 68) + 'px';
-    bubble.style.top  = (window.innerHeight + 100) + 'px';
-
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      // 3. Spring up to approximate home position
-      bubble.style.transition = 'top .42s cubic-bezier(.34,1.4,.64,1)';
-      bubble.style.top = (window.innerHeight - 135) + 'px';
-
-      setTimeout(() => {
-        // 4. Restore right/bottom positioning
-        bubble.style.transition = 'none';
-        bubble.style.right  = '16px';
-        bubble.style.bottom = '80px';
-        bubble.style.left   = '';
-        bubble.style.top    = '';
-        bubble.classList.remove('owl-flying');
-        bubble.classList.add('owl-arrived');
-        _owlAtHome = true;
-        _owlFlying = false;
-        setTimeout(() => bubble.classList.remove('owl-arrived'), 600);
-        if (callback) callback();
-      }, 460);
-    }));
-  }, 280);
+  // 1. Shoot down (250ms)
+  _animOwl(fromL, fromT, homeL, offT, 250, () => {
+    // 2. Spring up from bottom to home (500ms)
+    bubble.style.left = homeL + 'px';
+    bubble.style.top  = offT  + 'px';
+    _animOwl(homeL, offT, homeL, homeT, 500, () => {
+      // 3. Restore right/bottom CSS positioning
+      bubble.style.transition = 'none';
+      bubble.style.right  = '16px';
+      bubble.style.bottom = '80px';
+      bubble.style.left   = '';
+      bubble.style.top    = '';
+      _owlSetFlying(bubble, false);
+      bubble.classList.remove('owl-flying');
+      bubble.classList.add('owl-arrived');
+      _owlAtHome = true;
+      _owlFlying = false;
+      setTimeout(() => bubble.classList.remove('owl-arrived'), 650);
+      if (callback) callback();
+    });
+  });
 }
 
 // Show speech bubble near owl's current bounding rect
