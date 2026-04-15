@@ -1181,26 +1181,8 @@ body.dark #mh-toast{background:#2563eb;}
 .search-hint{padding:10px 18px;font-size:.75rem;color:#aab;border-top:1px solid #f0f4ff;}
 .search-hint kbd{background:#f0f4ff;border:1px solid #c8d8f0;padding:1px 5px;border-radius:4px;font-size:.72rem;}
 
-/* ===== GUIDE ===== */
-.guide-modal{position:fixed;top:80px;left:50%;transform:translateX(-50%);width:min(640px,95vw);background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);z-index:3501;overflow:hidden;max-height:80vh;display:flex;flex-direction:column;}
-.guide-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--blue);color:#fff;font-weight:700;font-size:1.05rem;flex-shrink:0;}
-.guide-body{overflow-y:auto;padding:20px;}
-.guide-subtitle{color:#5a7ab0;font-size:.9rem;margin-bottom:16px;}
-.guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-.guide-card{display:flex;align-items:flex-start;gap:12px;padding:14px;background:#f5f8ff;border-radius:12px;border:1.5px solid #e0eaff;cursor:pointer;transition:.2s;text-align:left;}
-.guide-card:hover{background:#eef4ff;border-color:#b3d9ff;transform:translateY(-1px);}
-.guide-card-icon{font-size:1.6rem;flex-shrink:0;}
-.guide-card-body{}
-.guide-card-title{font-weight:700;color:#0d2340;font-size:.9rem;}
-.guide-card-desc{font-size:.78rem;color:#7aa0c8;margin-top:2px;}
-.guide-tips{background:#fffbea;border:1.5px solid #fde68a;border-radius:12px;padding:14px 18px;}
-.guide-tip-title{font-weight:700;color:#92400e;margin-bottom:8px;font-size:.9rem;}
-.guide-tips ul{padding-left:18px;display:flex;flex-direction:column;gap:5px;}
-.guide-tips li{font-size:.83rem;color:#78350f;}
-.guide-tips kbd{background:#fff;border:1px solid #fcd34d;padding:1px 5px;border-radius:4px;font-size:.75rem;}
-
 /* dark mode */
-body.dark .search-modal,body.dark .guide-modal{background:#151c2a;color:#e0eaff;}
+body.dark .search-modal{background:#151c2a;color:#e0eaff;}
 body.dark .search-input{color:#e0eaff;}
 body.dark .search-group-label{background:#0d1117;color:#60a5fa;}
 body.dark .search-item{border-color:#1e3050;}
@@ -1208,6 +1190,42 @@ body.dark .search-item:hover,body.dark .search-item.selected{background:#1e2d3e;
 body.dark .search-item-label{color:#e0eaff;}
 body.dark .search-hint{border-color:#1e3050;color:#5a7ab0;}
 body.dark .search-hint kbd{background:#1e3050;border-color:#2a4060;}
-body.dark .guide-card{background:#1a2535;border-color:#1e3050;}
-body.dark .guide-card:hover{background:#1e2d3e;}
-body.dark .guide-card-title{color:#e0eaff;}
+/* ===== MATHIK CHAT ===== */
+.mathik-bubble{position:fixed;bottom:80px;right:16px;width:52px;height:52px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(26,62,124,.35);z-index:700;transition:.2s;border:2px solid var(--accent);}
+.mathik-bubble:hover{transform:scale(1.08);}
+.mathik-avatar{font-size:1.5rem;line-height:1;}
+.mathik-badge{position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:50%;width:18px;height:18px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.mathik-chat{position:fixed;bottom:140px;right:16px;width:320px;max-height:460px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.2);z-index:701;display:flex;flex-direction:column;border:1.5px solid #d0e4ff;overflow:hidden;}
+.mathik-chat-header{background:var(--blue);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.95rem;flex-shrink:0;}
+.mathik-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:0;}
+.mathik-msg{max-width:85%;padding:9px 12px;border-radius:12px;font-size:.85rem;line-height:1.45;}
+.mathik-msg.bot{background:#f0f4ff;color:#0d2340;border-bottom-left-radius:4px;align-self:flex-start;}
+.mathik-msg.user{background:var(--blue);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}
+.mathik-msg a{color:var(--accent);font-weight:600;text-decoration:none;cursor:pointer;}
+.mathik-msg a:hover{text-decoration:underline;}
+.mathik-chips{display:flex;flex-wrap:wrap;gap:6px;padding:6px 12px;flex-shrink:0;}
+.mathik-chip{background:#e8f0ff;border:1.5px solid #c0d4f5;border-radius:20px;padding:5px 12px;font-size:.78rem;color:#1a3e7c;cursor:pointer;font-weight:600;transition:.15s;}
+.mathik-chip:hover{background:#d0e4ff;}
+.mathik-input-row{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #e8eef8;flex-shrink:0;}
+.mathik-input{flex:1;border:1.5px solid #d0e4ff;border-radius:20px;padding:7px 14px;font-size:.85rem;outline:none;font-family:'Roboto',sans-serif;}
+.mathik-input:focus{border-color:var(--blue);}
+.mathik-send-btn{background:var(--blue);color:#fff;border:none;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;}
+.mathik-send-btn:hover{background:#2563eb;}
+/* dark mode */
+body.dark .mathik-chat{background:#151c2a;border-color:#1e3050;}
+body.dark .mathik-msg.bot{background:#1a2535;color:#e0eaff;}
+body.dark .mathik-chip{background:#1a2535;border-color:#2a4060;color:#aac4e0;}
+body.dark .mathik-chip:hover{background:#1e3050;}
+body.dark .mathik-input{background:#1a2535;border-color:#2a4060;color:#e0eaff;}
+body.dark .mathik-input-row{border-color:#1e3050;}
+
+/* ===== FOOTER (compact with socials) ===== */
+#site-footer{display:block;text-align:center;padding:14px 20px 18px;background:var(--blue);color:rgba(255,255,255,.85);border-top:2px solid var(--accent);font-size:.82rem;}
+#site-footer a{color:var(--accent);font-weight:700;text-decoration:none;}
+#site-footer a:hover{text-decoration:underline;}
+.footer-main{margin-bottom:8px;}
+.footer-socials{display:flex;justify-content:center;gap:14px;}
+.footer-socials a img{width:22px;height:22px;opacity:.8;filter:brightness(0) invert(1);transition:.2s;}
+.footer-socials a:hover img{opacity:1;transform:scale(1.15);}
+#app-workspace > main:has(section#graph.active) #site-footer{display:none;}
+body.dark #site-footer{background:#0d1117;}

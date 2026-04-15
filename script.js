@@ -2983,41 +2983,149 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ===== SITE GUIDE =====
-const GUIDE_CARDS = [
-  { icon: '📐', title: 'Формули', desc: 'Алгебра, геометрія, тригонометрія по класах', action: () => show('formulas') },
-  { icon: '📊', title: 'Графік функцій', desc: 'Будуй і аналізуй графіки в реальному часі', action: () => showGraph() },
-  { icon: '🎯', title: 'Квіз', desc: 'Тренуйся по темах або пройди повний тест', action: () => show('quiz') },
-  { icon: '🏆', title: 'НМТ Симулятор', desc: 'Повноцінний тест як на реальному НМТ', action: () => { guideClose(); window.location.href='simulator.html'; } },
-  { icon: '📚', title: 'Підручники', desc: 'Онлайн підручники 7-11 клас безкоштовно', action: () => show('textbooks') },
-  { icon: '📓', title: 'Зошит', desc: 'Нотатки з лінійками/клітинками, збереження', action: () => togglePanel('notebook') },
-  { icon: '🧮', title: 'Калькулятор', desc: 'Зручний панельний калькулятор', action: () => togglePanel('calc') },
-  { icon: '🔍', title: 'Пошук', desc: 'Шукай по всьому сайту — Ctrl+K', action: () => { guideClose(); searchOpen(); } },
+// ===== MATHIK CHAT =====
+const MATHIK_QA = [
+  {
+    keys: ['формул','алгебр','геометр','тригоном'],
+    chips: ['📐 Формули'],
+    answer: '📐 У розділі <b>Формули</b> є алгебра, геометрія і тригонометрія — згруповані по класах. <a onclick="mathikClose();show(\'formulas\')">Відкрити →</a>',
+  },
+  {
+    keys: ['квіз','тест','перевір','тренув'],
+    chips: ['🎯 Квіз'],
+    answer: '🎯 <b>Квіз</b> — це тренування по темах з відповідями. Є кілька тем на вибір або повний тест. <a onclick="mathikClose();show(\'quiz\')">Спробувати →</a>',
+  },
+  {
+    keys: ['нмт','симулят','підготов','іспит'],
+    chips: ['🏆 НМТ'],
+    answer: '🏆 <b>НМТ Симулятор</b> — повноцінний тест: 30 питань, таймер, розбір помилок. Схожий на реальний НМТ. <a onclick="mathikClose();window.location.href=\'simulator.html\'">Відкрити →</a>',
+  },
+  {
+    keys: ['граф','функц','побудув'],
+    chips: ['📊 Графіки'],
+    answer: '📊 На <b>Графіках</b> можна будувати функції: y=x², sin, cos і інші. Zoom мишею, drag для переміщення. <a onclick="mathikClose();showGraph()">Відкрити →</a>',
+  },
+  {
+    keys: ['калькул','порахув','обчисл'],
+    chips: ['🧮 Калькулятор'],
+    answer: '🧮 <b>Калькулятор</b> відкривається як панель збоку — можна тримати відкритим поруч з формулами. <a onclick="mathikClose();togglePanel(\'calc\')">Відкрити →</a>',
+  },
+  {
+    keys: ['зошит','нотатк','записати','конспект'],
+    chips: ['📓 Зошит'],
+    answer: '📓 <b>Зошит</b> — панель збоку де можна писати нотатки. Є лінійки або клітинки. Зберігається автоматично. <a onclick="mathikClose();togglePanel(\'notebook\')">Відкрити →</a>',
+  },
+  {
+    keys: ['підручник','книг','читати','7 клас','8 клас','9 клас','10 клас','11 клас'],
+    chips: ['📚 Підручники'],
+    answer: '📚 У розділі <b>Підручники</b> — безкоштовні онлайн підручники МОН для 7–11 класів. <a onclick="mathikClose();show(\'textbooks\')">Відкрити →</a>',
+  },
+  {
+    keys: ['пошук','знайти','шукати'],
+    chips: ['🔍 Пошук'],
+    answer: '🔍 Натисни <b>/</b> або кнопку 🔍 щоб шукати по всьому сайту — формули, теми, підручники. <a onclick="mathikClose();searchOpen()">Спробувати →</a>',
+  },
+  {
+    keys: ['темн','нічн','режим','змінити вигляд'],
+    answer: '🌙 Натисни кнопку <b>🌙</b> у верхньому правому куті щоб увімкнути темний режим.',
+  },
+  {
+    keys: ['про','платн','безкоштовн','купити'],
+    answer: '⭐ Є безкоштовна версія з усіма базовими функціями. Pro версія додасть AI-помічника, PDF та більше нотаток.',
+  },
+  {
+    keys: ['привіт','хто ти','mathik','ти','хелло','hi'],
+    answer: '👋 Привіт! Я <b>Mathik</b> — помічник MathHelper. Запитай мене про будь-який розділ сайту або напиши що хочеш знайти!',
+  },
+  {
+    keys: ['дякую','дякуємо','спасибі','ok','ок'],
+    answer: '😊 Будь ласка! Якщо є ще запитання — пиши, я тут.',
+  },
 ];
 
-function guideOpen() {
-  const grid = document.getElementById('guide-grid');
-  grid.innerHTML = GUIDE_CARDS.map((c, i) => `
-    <button class="guide-card" onclick="guideGo(${i})">
-      <span class="guide-card-icon">${c.icon}</span>
-      <div class="guide-card-body">
-        <div class="guide-card-title">${c.title}</div>
-        <div class="guide-card-desc">${c.desc}</div>
-      </div>
-    </button>`).join('');
-  document.getElementById('guide-overlay').classList.add('open');
-  document.getElementById('guide-modal').style.display = 'flex';
+const MATHIK_CHIPS_DEFAULT = [
+  { label: '📐 Формули', msg: 'формули' },
+  { label: '🎯 Квіз', msg: 'квіз' },
+  { label: '🏆 НМТ', msg: 'нмт' },
+  { label: '🧮 Калькулятор', msg: 'калькулятор' },
+  { label: '📊 Графіки', msg: 'графік' },
+  { label: '📓 Зошит', msg: 'зошит' },
+];
+
+let _mathikOpen = false;
+let _mathikGreeted = false;
+
+function mathikToggle() {
+  _mathikOpen ? mathikClose() : mathikOpen();
 }
 
-function guideClose() {
-  document.getElementById('guide-overlay').classList.remove('open');
-  document.getElementById('guide-modal').style.display = 'none';
+function mathikOpen() {
+  _mathikOpen = true;
+  const chat = document.getElementById('mathik-chat');
+  chat.style.display = 'flex';
+  document.getElementById('mathik-badge').style.display = 'none';
+  if (!_mathikGreeted) {
+    _mathikGreeted = true;
+    _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій помічник по MathHelper.<br>Запитай що тебе цікавить або вибери тему:');
+    _mathikSetChips(MATHIK_CHIPS_DEFAULT);
+  }
+  setTimeout(() => document.getElementById('mathik-input').focus(), 100);
 }
 
-function guideGo(i) {
-  guideClose();
-  GUIDE_CARDS[i].action();
+function mathikClose() {
+  _mathikOpen = false;
+  document.getElementById('mathik-chat').style.display = 'none';
 }
+
+function mathikSend() {
+  const inp = document.getElementById('mathik-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  _mathikAddMsg('user', text);
+  _mathikSetChips([]);
+  setTimeout(() => _mathikReply(text), 400);
+}
+
+function mathikChip(msg) {
+  _mathikAddMsg('user', msg);
+  _mathikSetChips([]);
+  setTimeout(() => _mathikReply(msg), 400);
+}
+
+function _mathikReply(text) {
+  const q = text.toLowerCase();
+  for (const qa of MATHIK_QA) {
+    if (qa.keys.some(k => q.includes(k))) {
+      _mathikAddMsg('bot', qa.answer);
+      if (qa.chips) _mathikSetChips(qa.chips.map(c => ({ label: c, msg: c.replace(/^.{2}\s/, '') })));
+      else _mathikSetChips(MATHIK_CHIPS_DEFAULT);
+      return;
+    }
+  }
+  _mathikAddMsg('bot', '🤔 Не зрозумів питання. Спробуй одну з тем або напиши інакше:');
+  _mathikSetChips(MATHIK_CHIPS_DEFAULT);
+}
+
+function _mathikAddMsg(role, html) {
+  const msgs = document.getElementById('mathik-messages');
+  const div = document.createElement('div');
+  div.className = 'mathik-msg ' + role;
+  div.innerHTML = html;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function _mathikSetChips(chips) {
+  const el = document.getElementById('mathik-chips');
+  el.innerHTML = chips.map(c =>
+    `<button class="mathik-chip" onclick="mathikChip('${c.msg}')">${c.label}</button>`
+  ).join('');
+}
+
+// Legacy — keep guideOpen/guideClose for compatibility
+function guideOpen() { mathikOpen(); }
+function guideClose() { mathikClose(); }
 
 // ===== DARK MODE =====
 function toggleDark() {
