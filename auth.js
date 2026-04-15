@@ -531,9 +531,15 @@ function authShowUser(user) {
   // Hide "Головна" from nav — logged-in users have dashboard instead
   const homeBtn = document.querySelector('nav button[onclick="show(\'home\')"]');
   if (homeBtn) homeBtn.style.display = 'none';
-  // Show quick action menu for logged-in users
+  // Show elements that are only for logged-in users
   const qm = document.getElementById('quick-menu');
   if (qm) qm.style.display = 'flex';
+  const sb = document.getElementById('search-btn');
+  if (sb) sb.style.display = '';
+  const gb = document.getElementById('guide-btn');
+  if (gb) gb.style.display = '';
+  const mb = document.getElementById('mathik-bubble');
+  if (mb) mb.style.display = '';
   checkDailyReward(user);
 }
 

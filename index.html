@@ -63,8 +63,8 @@
     <nav>
       <button id="global-back-btn" class="global-back-btn" onclick="qmGoBack()" style="display:none;">←</button>
       <button id="global-home-btn" class="global-back-btn global-home-btn" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="display:none;">🏠 Головна</button>
-      <button id="search-btn" onclick="searchOpen()" title="Пошук (натисни /)">🔍</button>
-      <button id="guide-btn" onclick="mathikOpen();mathikStartTutorial()" title="Туторіал по сайту">❓</button>
+      <button id="search-btn" onclick="searchOpen()" title="Пошук (натисни /)" style="display:none;">🔍</button>
+      <button id="guide-btn" onclick="mathikOpen();mathikStartTutorial()" title="Огляд сайту" style="display:none;">❓</button>
       <button id="dark-toggle" onclick="toggleDark()">🌙</button>
     </nav>
 
@@ -283,7 +283,7 @@
     <section id="about">
       <div id="about-content">
         <h2>Про MathHelper</h2>
-        <p>MathHelper — безкоштовна платформа для підготовки до НМТ та вивчення математики для учнів 7–11 класів.</p>
+        <p>MathHelper — платформа для підготовки до НМТ та вивчення математики для учнів 7–11 класів. Основні функції безкоштовні, повний доступ — з Pro.</p>
         <p><strong>Що є на сайті:</strong></p>
         <p>📚 Формули з алгебри, геометрії та тригонометрії — розбиті по класах</p>
         <p>📈 Робочий стіл з графіками функцій та геометричними фігурами</p>
@@ -295,7 +295,6 @@
         <h2>Контакти</h2>
         <p>📧 Email: <strong><a href="mailto:math.helper.proba@gmail.com">math.helper.proba@gmail.com</a></strong></p>
         <p>🌍 Проєкт створений для навчання та саморозвитку учнів України</p>
-        <p style="margin-top:12px;"><a href="https://github.com/Volchara-create/MathHelper" target="_blank" style="color:var(--blue);">⭐ GitHub проєкту</a></p>
       </div>
     </section>
 
@@ -883,7 +882,7 @@
 
   <!-- ===== GUIDE MODAL ===== -->
   <!-- ===== MATHIK CHAT ===== -->
-  <div id="mathik-bubble" class="mathik-bubble" onclick="mathikToggle()">
+  <div id="mathik-bubble" class="mathik-bubble" onclick="mathikToggle()" style="display:none;">
     <span class="mathik-avatar">🦉</span>
     <span class="mathik-badge" id="mathik-badge" style="display:none;">1</span>
   </div>
