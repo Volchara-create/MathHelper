@@ -3183,77 +3183,86 @@ function _mathikSetChips(chips) {
 }
 
 // ===== MATHIK TUTORIAL =====
-// Each step: msg, target (selector to fly to), action (fn called when owl arrives at target)
+// Each step:
+//   navigate  — function called FIRST (opens the section), or null
+//   navDelay  — ms to wait after navigate before owl flies (default 400)
+//   target    — CSS selector inside the now-visible section to fly to
+//   msg       — what Mathik says after returning
 const MATHIK_TUTORIAL = [
   {
-    msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій особистий гід по MathHelper.<br>Зараз я покажу тобі кожен розділ сайту <b>зсередини</b>. Поїхали! 🚀',
-    target: null, action: null
+    msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій особистий гід по MathHelper.<br>Зараз я покажу кожен розділ сайту <b>зсередини</b>. Поїхали! 🚀',
+    navigate: null, target: null
   },
   {
-    msg: '📐 <b>Формули</b> — головний розділ! Тут зібрана вся математика по класах: алгебра, геометрія, тригонометрія.<br>Клікни на будь-яку формулу — побачиш великий детальний опис.',
-    target: '#search-btn',
-    action: () => { show('formulas'); }
+    // 1. Формули: open section → fly to algebra tab
+    navigate: () => show('formulas'),
+    navDelay: 450,
+    target: '#ftab-btn-algebra',
+    msg: '📐 <b>Формули</b> — тут вся математика по класах.<br>Вгорі є вкладки: Алгебра, Геометрія, Тригонометрія. Клікни на будь-яку категорію → потім на формулу щоб побачити детальний опис!'
   },
   {
-    msg: '🔢 <b>Відкрив "Квадратні рівняння"</b> — подивись як це виглядає!<br>Кожен рядок клікабельний → відкривається великий модал з формулою, поясненням і прикладом.',
-    target: null,
-    action: () => {
-      show('formulas');
+    // 2. Open algebra category → fly to first formula row
+    navigate: () => {
+      showFormulaTab('algebra');
       setTimeout(() => {
-        showFormulaTab('algebra');
-        setTimeout(() => {
-          const cats = document.querySelectorAll('.alg-cat-btn');
-          // find quadratic or first cat
-          const quad = Array.from(cats).find(b => b.textContent.includes('Квадрат')) || cats[0];
-          if (quad) quad.click();
-        }, 300);
-      }, 200);
-    }
+        const cats = document.querySelectorAll('.alg-cat-btn');
+        const quad = Array.from(cats).find(b => b.textContent.includes('Квадрат')) || cats[0];
+        if (quad) quad.click();
+      }, 250);
+    },
+    navDelay: 650,
+    target: '.alg-modal-row',
+    msg: '🔢 <b>Ось список формул категорії!</b><br>Кожен рядок — клікабельний. Натисни → відкриється великий модал з формулою, поясненням і прикладом. Спробуй сам! 👆'
   },
   {
-    msg: '🎯 <b>Квіз</b> — тренуйся по темах!<br>Вибираєш тему → відповідаєш на питання → після кожної відповіді бачиш пояснення. Ідеально для повторення перед контрольною.',
-    target: null,
-    action: () => { show('quiz'); }
+    // 3. Квіз: open → fly to first topic button
+    navigate: () => { closeAlgebraModal(); show('quiz'); },
+    navDelay: 400,
+    target: '.quiz-topic-btn, .vtask-start-btn, [onclick*="startQuiz"], .quiz-btn',
+    msg: '🎯 <b>Квіз</b> — перевіряй себе по темах!<br>Вибери тему → відповідай на питання → після кожної відповіді бачиш пояснення. Ідеально перед контрольною!'
   },
   {
-    msg: '🎯 <b>НМТ Симулятор</b> — кнопка в нижньому меню.<br>30 питань, таймер 90 хвилин — точно як на реальному НМТ. Після тесту — розбір усіх помилок.',
+    // 4. НМТ: fly to quick-menu button (always visible)
+    navigate: null,
     target: 'a.qm-btn[href="simulator.html"]',
-    action: null
+    msg: '🎯 <b>НМТ Симулятор</b> — ось ця кнопка в нижньому меню!<br>30 питань, таймер 90 хвилин — точно як на реальному НМТ. Після тесту — повний розбір помилок.'
   },
   {
-    msg: '📈 <b>Графіки функцій</b> — будуй будь-яку функцію в реальному часі!<br>Введи y=x², sin(x), 2x+1 — і одразу бачиш графік. Скролл миші — zoom, drag — переміщення.',
-    target: null,
-    action: () => { showGraph(); }
+    // 5. Графіки: open → fly to function input
+    navigate: () => showGraph(),
+    navDelay: 700,
+    target: '#func-input, .func-input, input[placeholder*="y="], input[placeholder*="функц"]',
+    msg: '📈 <b>Графіки функцій</b> — будуй будь-яку функцію!<br>Введи y=x², sin(x), 2x+1 — і відразу бачиш графік. Скролл миші = zoom, drag = переміщення.'
   },
   {
-    msg: '🧮 <b>Калькулятор</b> відкрився збоку — бачиш?<br>Можна тримати його відкритим поруч з формулами. Перетягуй за заголовок куди зручно!',
-    target: 'button.qm-btn[onclick*="calc"]',
-    action: () => {
-      if (typeof openPanel === 'function') openPanel('calc');
-      else if (typeof togglePanel === 'function') togglePanel('calc');
-    }
+    // 6. Калькулятор: open panel → fly to calc display
+    navigate: () => openPanel('calc'),
+    navDelay: 450,
+    target: '.ws-calc-disp, .sp-calc-body, .side-panel',
+    msg: '🧮 <b>Калькулятор</b> відкрився збоку!<br>Тримай його поруч з формулами. Перетягуй за заголовок — можна розмістити де зручно.'
   },
   {
-    msg: '📓 <b>Зошит</b> відкрився збоку!<br>Пиши нотатки прямо тут — є режим лінійок і клітинок. Конспекти зберігаються на сервері і будуть тут завжди.',
-    target: 'button.qm-btn[onclick*="notebook"]',
-    action: () => {
-      if (typeof openPanel === 'function') openPanel('notebook');
-      else if (typeof togglePanel === 'function') togglePanel('notebook');
-    }
+    // 7. Зошит: open panel → fly to notebook body
+    navigate: () => openPanel('notebook'),
+    navDelay: 450,
+    target: '.sp-nb-body, .sp-canvas, .side-panel',
+    msg: '📓 <b>Зошит</b> відкрився збоку!<br>Пиши нотатки, конспекти — є режим лінійок і клітинок. Зберігається автоматично на сервері.'
   },
   {
-    msg: '🔍 <b>Пошук</b> — натисни <b>/</b> на клавіатурі або кнопку 🔍 вгорі.<br>Шукає по всьому сайту: формули, теми, підручники, нотатки. Спробуй написати "sin" або "квадратне"!',
+    // 8. Пошук: fly to header button
+    navigate: null,
     target: '#search-btn',
-    action: null
+    msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <b>/</b>!<br>Шукає по всьому сайту: формули, теми, підручники, нотатки. Спробуй "sin" або "дискримінант".'
   },
   {
-    msg: '⚙️ <b>Налаштування</b> — кнопка ⚙️ у правому куті.<br>Тут: вибір класу (7-11), щоденна ціль, push-нагадування о 18:00. Зареєструйся щоб зберігати прогрес!',
+    // 9. Налаштування: fly to settings button
+    navigate: null,
     target: 'button[onclick="openSettings()"]',
-    action: null
+    msg: '⚙️ <b>Налаштування</b> — ось ця кнопка!<br>Вибери свій клас (7–11), щоденну ціль, увімкни нагадування о 18:00. Зареєструйся щоб прогрес зберігався!'
   },
   {
-    msg: '🎉 <b>Туторіал завершено!</b><br>Тепер ти знаєш MathHelper від А до Я. Рекомендую почати з формул свого класу → потім пройди квіз. Я завжди поруч — натисни 🦉 якщо є питання! 💪',
-    target: null, action: null
+    msg: '🎉 <b>Туторіал завершено!</b><br>Тепер ти знаєш MathHelper від А до Я. Починай з формул свого класу → пройди квіз. Я завжди тут — натисни 🦉! 💪',
+    navigate: null, target: null
   },
 ];
 
@@ -3263,10 +3272,6 @@ let _owlFlying = false;
 function mathikStartTutorial() {
   _tutorialStep = 0;
   _mathikSetChips([]);
-  _mathikAddMsg('bot', ''); // clear placeholder if any
-  // Remove last empty msg
-  const msgs = document.getElementById('mathik-messages');
-  if (msgs.lastChild && !msgs.lastChild.innerHTML) msgs.lastChild.remove();
   _tutorialNextStep();
 }
 
@@ -3282,97 +3287,100 @@ function _tutorialNextStep() {
   const step = MATHIK_TUTORIAL[_tutorialStep];
   _tutorialStep++;
 
-  if (step.target) {
-    mathikClose();
-    setTimeout(() => _owlFlyTo(step.target, step.action, () => {
-      mathikOpen();
-      _mathikAddMsg('bot', step.msg);
-      const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
-      if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
-    }), 200);
-  } else if (step.action) {
-    // No target to fly to, but has action (navigate)
-    mathikClose();
-    step.action();
-    setTimeout(() => {
-      mathikOpen();
-      _mathikAddMsg('bot', step.msg);
-      const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
-      if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
-    }, 500);
-  } else {
-    _mathikAddMsg('bot', step.msg);
-    const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
-    if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
-  }
+  const doFlyAndChat = () => {
+    if (step.target) {
+      // Navigate first (if needed), wait navDelay, then fly owl inside the section
+      if (step.navigate) {
+        mathikClose();
+        step.navigate();
+        setTimeout(() => _owlFlyAndReturn(step.target, () => _showTutorialMsg(step)), step.navDelay || 400);
+      } else {
+        // No navigation — just fly to always-visible target
+        mathikClose();
+        setTimeout(() => _owlFlyAndReturn(step.target, () => _showTutorialMsg(step)), 200);
+      }
+    } else if (step.navigate) {
+      // Navigate but no target to fly to (just open and explain)
+      mathikClose();
+      step.navigate();
+      setTimeout(() => { mathikOpen(); _showTutorialMsg(step); }, step.navDelay || 400);
+    } else {
+      // No navigate, no target — just show message
+      _showTutorialMsg(step);
+    }
+  };
+
+  doFlyAndChat();
 }
 
-// Fly the owl bubble to a button, run action on arrival, then return home, then callback
-function _owlFlyTo(selector, action, callback) {
-  if (_owlFlying) return;
-  const target = document.querySelector(selector);
-  if (!target) {
-    if (action) action();
-    setTimeout(() => { if (callback) callback(); }, action ? 400 : 0);
-    return;
+function _showTutorialMsg(step) {
+  mathikOpen();
+  _mathikAddMsg('bot', step.msg);
+  const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
+  if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
+}
+
+// Fly owl to target (already visible), hover 1s, return fast from bottom, then callback
+function _owlFlyAndReturn(selector, callback) {
+  if (_owlFlying) { if (callback) callback(); return; }
+
+  // Try multiple selectors (comma-separated)
+  const selectors = selector.split(',').map(s => s.trim());
+  let target = null;
+  for (const sel of selectors) {
+    const el = document.querySelector(sel);
+    if (el) { const r = el.getBoundingClientRect(); if (r.width && r.height) { target = el; break; } }
   }
-  const tRect = target.getBoundingClientRect();
-  if (!tRect.width) {
-    if (action) action();
-    setTimeout(() => { if (callback) callback(); }, action ? 400 : 0);
-    return;
-  }
+
+  if (!target) { if (callback) callback(); return; }
 
   _owlFlying = true;
   const bubble = document.getElementById('mathik-bubble');
-
+  const tRect   = target.getBoundingClientRect();
   const homeRect = bubble.getBoundingClientRect();
   const homeLeft = homeRect.left;
   const homeTop  = homeRect.top;
 
-  // Switch to left/top coords
+  // Switch to left/top absolute coords
   bubble.style.transition = 'none';
-  bubble.style.right = 'auto';
+  bubble.style.right  = 'auto';
   bubble.style.bottom = 'auto';
-  bubble.style.left = homeLeft + 'px';
-  bubble.style.top  = homeTop  + 'px';
+  bubble.style.left   = homeLeft + 'px';
+  bubble.style.top    = homeTop  + 'px';
 
-  // Fly to target
+  // ① Fly to target (smooth bounce)
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    bubble.style.transition = 'left .55s cubic-bezier(.34,1.4,.64,1), top .5s cubic-bezier(.34,1.4,.64,1)';
+    bubble.style.transition = 'left .6s cubic-bezier(.34,1.4,.64,1), top .55s cubic-bezier(.34,1.4,.64,1)';
     bubble.style.left = (tRect.left + tRect.width / 2 - 26) + 'px';
-    bubble.style.top  = Math.max(10, tRect.top - 60) + 'px';
+    bubble.style.top  = Math.max(8, tRect.top - 58) + 'px';
     target.classList.add('mathik-target-pulse');
   }));
 
-  // Arrived: run action, stay 1.4s, then shoot back from bottom
+  // ② Hover 1 second at target (user sees it clearly)
   setTimeout(() => {
-    if (action) action();
     target.classList.remove('mathik-target-pulse');
 
-    setTimeout(() => {
-      // Snap below screen, then spring back home
-      bubble.style.transition = 'none';
-      bubble.style.left = homeLeft + 'px';
-      bubble.style.top  = (window.innerHeight + 80) + 'px';
+    // ③ Shoot down below screen instantly
+    bubble.style.transition = 'top .25s ease-in, left .25s ease-in';
+    bubble.style.left = homeLeft + 'px';
+    bubble.style.top  = (window.innerHeight + 80) + 'px';
 
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        bubble.style.transition = 'top .38s cubic-bezier(.22,.61,.36,1), left .38s ease';
-        bubble.style.left = homeLeft + 'px';
-        bubble.style.top  = homeTop  + 'px';
-      }));
+    // ④ Spring back up to home position
+    setTimeout(() => {
+      bubble.style.transition = 'top .4s cubic-bezier(.22,.61,.36,1)';
+      bubble.style.top = homeTop + 'px';
 
       setTimeout(() => {
         bubble.style.transition = '';
         bubble.style.right  = '16px';
         bubble.style.bottom = '80px';
-        bubble.style.left = '';
-        bubble.style.top  = '';
+        bubble.style.left   = '';
+        bubble.style.top    = '';
         _owlFlying = false;
         if (callback) callback();
       }, 420);
-    }, action ? 800 : 1400); // shorter pause if action opened a section (user needs to see it)
-  }, 600); // time to reach target
+    }, 280);
+  }, 1550); // 1s hover + ~0.6s flight time
 }
 
 function _mathikReply(text) {
