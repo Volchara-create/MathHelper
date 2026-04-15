@@ -3185,56 +3185,85 @@ function _mathikSetChips(chips) {
 // ===== MATHIK TUTORIAL V2 =====
 // Owl STAYS at each position and speaks via floating speech bubble.
 // Only returns home at the very end. No teleportation between steps.
-// autoClick:true → сова летить до кнопки, сидить 1.5с (наче натискає), потім action() і наступний крок
+// autoClick → сова летить до кнопки, сидить 1.5с, потім action() і наступний крок автоматично
+// navigate → тиха навігація ДО польоту (щоб ціль була видна)
 const MATHIK_TUTORIAL = [
-  // 0 ── Вступ (сова вдома)
-  { msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій помічник.<br>Зараз зроблю <b>огляд</b> сайту і покажу кожен розділ. Поїхали! 🚀' },
 
-  // 1 ── Летить до кнопки Формули на дашборді → "натискає" → секція відкривається
-  { autoClick: true, target: '#dash-quick-btns button[onclick*="formulas"]',
-    clickMsg: '📚 Летимо до <b>Формул</b>! Ось кнопка — натискаю...',
+  // 0. ВСТУП ──────────────────────────────────────────────────────────────
+  { msg: '👋 Привіт! Я <b>Mathik</b> 🦉 — твій помічник.<br>Зараз зроблю повний <b>огляд сайту</b> — ~3 хв і знатимеш усі можливості. Поїхали! 🚀' },
+
+  // 1. Натискає кнопку Формули ────────────────────────────────────────────
+  { autoClick: true,
+    target: '#dash-quick-btns button[onclick*="formulas"]',
+    clickMsg: '📚 Перший розділ — <b>Формули</b>. Натискаю!',
     action: () => show('formulas') },
 
-  // 2 ── Летить до вкладки Алгебра
+  // 2. Летить до вкладки Алгебра ──────────────────────────────────────────
   { target: '#ftab-btn-algebra',
-    msg: '📐 <b>Розділ Формули!</b><br>Вкладки вгорі: Алгебра, Геометрія, Тригонометрія. Обирай тему → натисни формулу щоб побачити опис!' },
+    msg: '📐 <b>Формули</b> — уся математика 7–11 класів!<br>Вкладки вгорі: Алгебра, Геометрія, Тригонометрія, Таблиці.<br>Вибери тему — і бачиш список формул свого класу.' },
 
-  // 3 ── Відкриває категорію → летить до першої формули
-  { navigate: () => {
-      showFormulaTab('algebra');
-      setTimeout(() => { const q = Array.from(document.querySelectorAll('.alg-cat-btn')).find(b=>b.textContent.includes('Квадрат'))||document.querySelector('.alg-cat-btn'); if(q)q.click(); }, 200);
-    },
+  // 3. Відкриває категорію → перша формула ──────────────────────────────
+  { navigate: () => { showFormulaTab('algebra'); setTimeout(() => { const q = document.querySelector('.alg-cat-btn'); if(q) q.click(); }, 200); },
     target: '.alg-modal-row',
-    msg: '🔢 <b>Список формул!</b><br>Кожен рядок клікабельний — відкриє велику картку з поясненням, доведенням і прикладом.' },
+    msg: '🔢 Ось список формул! Кожен рядок — <b>клікабельний</b>.<br>Натисни будь-яку → відкриється велика картка з формулою, поясненням, доведенням і прикладом.' },
 
-  // 4 ── Летить до 🏠 кнопки в хедері → "натискає" → дашборд
-  { autoClick: true, target: '#user-nav button[onclick*="dashboard"], .auth-nav-btn[onclick*="dashboard"]',
-    clickMsg: '🏠 Повертаємось на <b>Головну</b>...',
-    action: () => show('dashboard') },
-
-  // 5 ── Летить до кнопки Квіз на дашборді → "натискає" → секція відкривається
-  { autoClick: true, target: '#dash-quick-btns button[onclick*="quiz"]',
-    clickMsg: '🎯 Летимо до <b>Квізу</b>! Ось кнопка — натискаю...',
+  // 4. Тихо на дашборд + натискає Квіз ───────────────────────────────────
+  { autoClick: true,
+    navigate: () => { try { closeAlgebraModal(); } catch(e){} show('dashboard'); },
+    target: '#dash-quick-btns button[onclick*="quiz"]',
+    clickMsg: '🎮 Наступний розділ — <b>Квіз</b>. Натискаю!',
     action: () => show('quiz') },
 
-  // 6 ── Летить до теми квізу
+  // 5. Летить до теми квізу ───────────────────────────────────────────────
   { target: '.quiz-topic-btn, .vtask-start-btn, [onclick*="startQuiz"]',
-    msg: '🎮 <b>Квіз!</b><br>Обери тему → відповідай → після кожної відповіді бачиш пояснення. Ідеально перед контрольною!' },
+    msg: '🎯 <b>Квіз</b> — перевіряй себе по темах!<br>Обери тему → відповідай на питання → після кожної відповіді бачиш пояснення.<br>Є <b>тижнева статистика</b> твого прогресу!' },
 
-  // 7 ── НМТ в нижньому меню
-  { target: 'a.qm-btn[href="simulator.html"]',
-    msg: '📝 <b>НМТ Симулятор</b> — ось кнопка внизу!<br>30 питань, 90 хвилин — як на реальному НМТ. Після — повний розбір помилок.' },
+  // 6. Тихо на дашборд + натискає Графіки ────────────────────────────────
+  { autoClick: true,
+    navigate: () => show('dashboard'),
+    target: '#dash-quick-btns button[onclick*="showGraph"]',
+    clickMsg: '📈 Тепер — <b>Графіки функцій</b>. Натискаю!',
+    action: () => showGraph() },
 
-  // 8 ── Пошук
+  // 7. Летить до поля вводу функції ──────────────────────────────────────
+  { target: '#func-input, .func-input, input[placeholder*="y="]',
+    msg: '📈 <b>Графіки</b> — вводь будь-яку формулу!<br>Спробуй: y=x², sin(x), 2x+1. Скролл = масштаб, drag = переміщення.<br>Можна будувати <b>кілька функцій</b> одночасно.' },
+
+  // 8. Тихо на дашборд → летить до НМТ ──────────────────────────────────
+  { navigate: () => show('dashboard'),
+    target: 'a.qm-btn[href="simulator.html"]',
+    msg: '📝 <b>НМТ Симулятор</b> — ця кнопка в меню внизу!<br>30 питань, таймер 90 хвилин — точно як на реальному НМТ.<br>Після тесту — <b>повний розбір помилок</b> з поясненнями.' },
+
+  // 9. Відкриває зошит → летить до нього ─────────────────────────────────
+  { navigate: () => openPanel('notebook'),
+    target: '.sp-nb-body, #sp-notebook .side-panel-body, .sp-nb-canvas',
+    msg: '📓 <b>Зошит</b> відкрився збоку!<br>Пиши нотатки і конспекти — є режим лінійок і клітинок.<br><b>Зберігається на сервері</b> — відкриєш на будь-якому пристрої.' },
+
+  // 10. Закриває зошит → відкриває калькулятор ────────────────────────────
+  { navigate: () => { try { closePanel('notebook'); } catch(e){} openPanel('calc'); },
+    target: '.sp-calc-body, .side-panel',
+    msg: '🧮 <b>Калькулятор</b> відкрився збоку!<br>Тримай поруч з формулами під час розв\'язання.<br>Перетягуй за заголовок — встанови де зручно.' },
+
+  // 11. Закриває панель → летить до швидкого меню ─────────────────────────
+  { navigate: () => { try { closePanel('calc'); } catch(e){} },
+    target: '#quick-menu, .quick-menu',
+    msg: '⚡ <b>Швидке меню</b> — завжди внизу екрана!<br>Тут: Калькулятор, Зошит, НМТ.<br>Скоро — <b>AI-помічник</b> і Pro з необмеженими функціями.' },
+
+  // 12. Летить до темної теми ─────────────────────────────────────────────
+  { target: '#dark-toggle',
+    msg: '🌙 <b>Темна тема</b> — ця кнопка в шапці!<br>Зручно вчитися увечері без навантаження на очі. Налаштування зберігаються.' },
+
+  // 13. Летить до пошуку ──────────────────────────────────────────────────
   { target: '#search-btn',
-    msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <kbd>/</kbd>.<br>Шукає формули, теми, нотатки по всьому сайту.' },
+    msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <kbd>/</kbd>.<br>Шукає по всьому сайту: формули, теми, нотатки.<br>Спробуй "sin" або "дискримінант"!' },
 
-  // 9 ── Налаштування
+  // 14. Летить до налаштувань ─────────────────────────────────────────────
   { target: 'button[onclick="openSettings()"]',
-    msg: '⚙️ <b>Налаштування</b> — вибери клас (7–11) і щоденну ціль.<br>Зареєструйся щоб прогрес зберігався!' },
+    msg: '⚙️ <b>Налаштування</b> — важливо зробити відразу!<br>• Вибери <b>клас (7–11)</b> — формули фільтруються по програмі<br>• Постав <b>щоденну ціль</b> — скільки формул опрацювати за день<br>• Увімкни <b>нагадування</b> о 18:00' },
 
-  // 10 ── Фінал → летить додому
-  { isLast: true, msg: '🎉 <b>Огляд завершено!</b><br>Тепер знаєш усе. Починай з Формул → Квіз.<br>Якщо заблукаєш — я тут, натисни 🦉! 💪' }
+  // 15. ФІНАЛ ─────────────────────────────────────────────────────────────
+  { isLast: true,
+    msg: '🎉 <b>Огляд завершено!</b><br>Ти знаєш усі можливості MathHelper:<br>📐 Формули · 🎯 Квіз · 📈 Графіки · 📝 НМТ · 📓 Зошит · 🧮 Калькулятор<br><br>Починай з Формул → Квіз. Я тут — натисни 🦉! 💪' }
 ];
 
 let _tutorialStep = 0;
@@ -3294,25 +3323,29 @@ function _tutorialNextStep() {
     _mathikShowSpeech(step.msg, _tutorialStep >= MATHIK_TUTORIAL.length);
   };
 
-  // autoClick: fly to button → sit 1.5s → action() → next step
+  // autoClick: (optional silent navigate) → fly to button → sit 1.5s → action() → next step
   if (step.autoClick) {
-    const selectors = step.target.split(',').map(s => s.trim());
-    let found = null;
-    for (const sel of selectors) {
-      const el = document.querySelector(sel);
-      if (el) { const r = el.getBoundingClientRect(); if (r.width && r.height) { found = el; break; } }
-    }
-    if (!found) { _tutorialNextStep(); return; } // target not found → skip
-    _owlFlyToAndStay(step.target, () => {
-      _mathikShowSpeech(step.clickMsg, false, true); // show msg, no Далі button
-      found.classList.add('mathik-target-pulse');
-      setTimeout(() => {
-        found.classList.remove('mathik-target-pulse');
-        _mathikHideSpeech();
-        if (step.action) step.action();
-        setTimeout(_tutorialNextStep, 350); // let section render, then proceed
-      }, 1500);
-    });
+    const doAutoClick = () => {
+      const selectors = step.target.split(',').map(s => s.trim());
+      let found = null;
+      for (const sel of selectors) {
+        const el = document.querySelector(sel);
+        if (el) { const r = el.getBoundingClientRect(); if (r.width && r.height) { found = el; break; } }
+      }
+      if (!found) { _tutorialNextStep(); return; } // target not found → skip
+      _owlFlyToAndStay(step.target, () => {
+        _mathikShowSpeech(step.clickMsg, false, true); // no Далі button
+        found.classList.add('mathik-target-pulse');
+        setTimeout(() => {
+          found.classList.remove('mathik-target-pulse');
+          _mathikHideSpeech();
+          if (step.action) step.action();
+          setTimeout(_tutorialNextStep, 350);
+        }, 1500);
+      });
+    };
+    if (step.navigate) { step.navigate(); requestAnimationFrame(() => requestAnimationFrame(doAutoClick)); }
+    else { doAutoClick(); }
     return;
   }
 
