@@ -860,13 +860,13 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .dark .alg-card-math{background:#1a2535;color:#60a5fa;}
 
 .alg-modal-body{display:flex;flex-direction:column;gap:0;}
-.alg-modal-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 20px;border-radius:10px;margin-bottom:4px;background:#f8faff;transition:.15s;}
+.alg-modal-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 16px;border-radius:10px;margin-bottom:3px;background:#f8faff;transition:.15s;cursor:pointer;}
 .dark .alg-modal-row{background:#0f172a;}
-.alg-modal-row:hover{background:#e8f0fe;}
+.alg-modal-row:hover{background:#e8f0fe;transform:translateX(3px);}
 .dark .alg-modal-row:hover{background:#1e3a5f;}
-.alg-modal-name{font-size:.95rem;color:#555;flex-shrink:0;max-width:50%;}
+.alg-modal-name{font-size:.9rem;color:#555;flex-shrink:0;max-width:50%;}
 .dark .alg-modal-name{color:#94a3b8;}
-.alg-modal-expr{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:700;color:var(--blue);text-align:right;}
+.alg-modal-expr{font-family:'Fira Code',monospace;font-size:1.05rem;font-weight:700;color:var(--blue);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50%;}
 
 /* Tables tab */
 .tables-section{margin-bottom:36px;overflow-x:auto;}
@@ -1113,19 +1113,28 @@ body.dark .snap-zone{border-color:rgba(96,165,250,.35);background:rgba(96,165,25
 body.dark .snap-zone.active{border-color:rgba(96,165,250,.9);background:rgba(96,165,250,.18);}
 
 /* ===== FORMULA DETAIL MODAL ===== */
-#formula-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9500;display:none;align-items:center;justify-content:center;}
+#formula-detail-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;display:none;align-items:center;justify-content:center;padding:16px;}
 #formula-detail-modal.active{display:flex;}
-.fdm-content{background:#fff;border-radius:16px;max-width:520px;width:92%;max-height:80vh;overflow-y:auto;padding:28px 28px 24px;box-shadow:0 12px 40px rgba(0,0,0,.2);position:relative;}
-.fdm-title{font-size:1.25rem;font-weight:700;color:var(--blue);margin-bottom:10px;}
-.fdm-formula{font-family:'Fira Code',monospace;font-size:1.4rem;font-weight:700;background:var(--bg-blue);padding:14px 18px;border-radius:10px;margin-bottom:16px;color:#1a3e7c;text-align:center;line-height:1.5;}
-.fdm-section{font-size:.82rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.08em;margin:16px 0 6px;padding-bottom:4px;border-bottom:2px solid #e8f0fe;}
-.fdm-text{font-size:1rem;line-height:1.7;color:#1e293b;}
-.fdm-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;}
-.fdm-close:hover{color:#333;}
+.fdm-content{background:#fff;border-radius:20px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto;padding:32px 32px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;}
+.fdm-title{font-size:1.1rem;font-weight:600;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em;}
+.fdm-formula{font-family:'Fira Code',monospace;font-size:1.7rem;font-weight:700;background:linear-gradient(135deg,#e8f0fe,#dbeafe);padding:20px 24px;border-radius:14px;margin-bottom:20px;color:#1a3e7c;text-align:center;line-height:1.6;border:2px solid #bfdbfe;word-break:break-word;}
+.fdm-section{font-size:.8rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.1em;margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid #dbeafe;}
+.fdm-text{font-size:1rem;line-height:1.75;color:#1e293b;}
+.fdm-code{font-family:'Fira Code',monospace;font-size:.95rem;background:#f8faff;padding:12px 16px;border-radius:10px;border-left:3px solid var(--blue);}
+.fdm-svg-wrap{text-align:center;margin-bottom:16px;}
+.fdm-svg{width:100%;max-width:300px;background:#f9f9f9;border-radius:12px;padding:12px;}
+.fdm-symbols-table{width:100%;border-collapse:collapse;margin-bottom:8px;}
+.fdm-symbols-table td{padding:6px 10px;border-bottom:1px solid #f0f4ff;font-size:.95rem;}
+.fdm-symbols-table td:first-child{font-family:'Fira Code',monospace;color:var(--blue);width:60px;}
+.fdm-no-detail{text-align:center;color:#94a3b8;padding:20px;font-size:.95rem;}
+.fdm-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8;line-height:1;transition:.15s;}
+.fdm-close:hover{color:#1e293b;transform:scale(1.1);}
 body.dark .fdm-content{background:#151c2a;color:#e2e8f0;}
-body.dark .fdm-formula{background:#0d2340;color:#93c5fd;}
+body.dark .fdm-formula{background:linear-gradient(135deg,#0d2340,#1e3a5f);border-color:#1e3a5f;color:#93c5fd;}
 body.dark .fdm-text{color:#cbd5e1;}
-body.dark .fdm-section{color:#60a5fa;}
+body.dark .fdm-section{color:#60a5fa;border-color:#1e3050;}
+body.dark .fdm-code{background:#0f172a;border-color:#2563eb;}
+body.dark .fdm-symbols-table td{border-color:#1e3050;}
 
 /* Detail button in formula rows */
 .alg-detail-btn{background:none;border:1.5px solid var(--blue);border-radius:6px;color:var(--blue);font-size:.78rem;padding:3px 10px;cursor:pointer;opacity:.75;transition:opacity .15s;white-space:nowrap;}

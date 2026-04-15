@@ -388,30 +388,49 @@ function openTrigModal(idx){
 
 // Build a formula row — shared by algebra and trig modals
 function _buildAlgRow(f, source, catIdx, fIdx) {
-  const detailBtn = f.detail
-    ? `<button class="alg-detail-btn" onclick="openFormulaDetail(${catIdx},${fIdx},'${source}')">Детальніше</button>`
-    : '';
   return `
-    <div class="alg-modal-row">
+    <div class="alg-modal-row" onclick="openFormulaModalByIdx(${catIdx},${fIdx},'${source}')">
       <span class="alg-modal-name">${f.name}</span>
       <span class="alg-modal-expr">${f.expr || f.m || ''}</span>
-      ${detailBtn}
     </div>`;
 }
 
-// Formula detail modal
-function openFormulaDetail(catIdx, fIdx, source) {
+// Open formula detail by index (algebra/trig)
+function openFormulaModalByIdx(catIdx, fIdx, source) {
   const cat = source === 'trig' ? TRIG_CATS[catIdx] : ALGEBRA_CATS[catIdx];
   if (!cat) return;
   const f = cat.formulas[fIdx];
-  if (!f || !f.detail) return;
-  const d = f.detail;
-  document.getElementById('fdm-title').textContent = f.name;
-  document.getElementById('fdm-formula').textContent = f.expr || f.m || '';
+  if (!f) return;
+  openFormulaModal({ name: f.name, expr: f.expr || f.m || '', detail: f.detail || null });
+}
+
+// Unified formula detail modal — works for algebra, trig, geometry
+function openFormulaModal({ name, expr, detail, svg, symbols }) {
+  document.getElementById('fdm-title').textContent = name || '';
+  document.getElementById('fdm-formula').textContent = expr || '';
+
   let html = '';
-  if (d.explanation) html += `<div class="fdm-section">Пояснення</div><div class="fdm-text">${d.explanation.replace(/\n/g,'<br>')}</div>`;
-  if (d.proof)       html += `<div class="fdm-section">Доведення</div><div class="fdm-text" style="font-family:\'Fira Code\',monospace;font-size:.88rem">${d.proof.replace(/\n/g,'<br>')}</div>`;
-  if (d.example)     html += `<div class="fdm-section">Приклад</div><div class="fdm-text" style="font-family:\'Fira Code\',monospace;font-size:.88rem">${d.example.replace(/\n/g,'<br>')}</div>`;
+
+  // SVG (geometry figures)
+  if (svg) html += `<div class="fdm-svg-wrap"><svg viewBox="0 0 300 200" class="fdm-svg">${svg}</svg></div>`;
+
+  // Symbols table (geometry)
+  if (symbols && symbols.length) {
+    html += `<div class="fdm-section">Позначення</div>
+      <table class="fdm-symbols-table">
+        ${symbols.map(s => `<tr><td><b>${s.s}</b></td><td>${s.m}</td></tr>`).join('')}
+      </table>`;
+  }
+
+  // Explanation / proof / example
+  if (detail) {
+    if (detail.explanation) html += `<div class="fdm-section">Пояснення</div><div class="fdm-text">${detail.explanation.replace(/\n/g,'<br>')}</div>`;
+    if (detail.proof)       html += `<div class="fdm-section">Доведення</div><div class="fdm-text fdm-code">${detail.proof.replace(/\n/g,'<br>')}</div>`;
+    if (detail.example)     html += `<div class="fdm-section">Приклад</div><div class="fdm-text fdm-code">${detail.example.replace(/\n/g,'<br>')}</div>`;
+  }
+
+  if (!html) html = '<p class="fdm-no-detail">📖 Детального пояснення поки немає</p>';
+
   document.getElementById('fdm-body').innerHTML = html;
   document.getElementById('formula-detail-modal').classList.add('active');
 }
@@ -419,6 +438,8 @@ function openFormulaDetail(catIdx, fIdx, source) {
 function closeFormulaDetail() {
   document.getElementById('formula-detail-modal').classList.remove('active');
 }
+// legacy alias
+function openFormulaDetail(catIdx, fIdx, source) { openFormulaModalByIdx(catIdx, fIdx, source); }
 
 // ===== TABLES DATA =====
 const TABLES_LIST = [
@@ -787,7 +808,7 @@ function showCategory(cat){
     const d=document.createElement('div');
     d.className='formula-in-modal-item';
     d.innerHTML=`<div class="formula-in-modal-title">${f.title}</div><div class="formula-in-modal-expr">${f.formula}</div>`;
-    d.onclick=()=>openFormula(cat,i);
+    d.onclick=()=>openFormulaModal({name:f.title, expr:f.formula, svg:f.svg||null, symbols:f.symbols||null});
     cont.appendChild(d);
   });
   document.getElementById('category-modal').classList.add('active');
