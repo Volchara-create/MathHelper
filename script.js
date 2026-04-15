@@ -2847,31 +2847,73 @@ function _searchWelcome() {
     </div>`;
 }
 
+// Split text into words, ignoring punctuation
+function _words(text) {
+  return text.toLowerCase().split(/[\s\-–,.()/·]+/).filter(Boolean);
+}
+
+// Score how well item matches query (higher = better match)
+function _searchScore(item, query) {
+  const q = query.toLowerCase().trim();
+  const label = item.label.toLowerCase();
+  const sub = (item.sub || '').toLowerCase();
+  const all = label + ' ' + sub;
+
+  // 1. Exact substring in label
+  if (label.includes(q)) return 100;
+  // 2. Exact substring in subtitle
+  if (sub.includes(q)) return 80;
+
+  const qWords = _words(q);
+  const labelWords = _words(label);
+  const allWords = _words(all);
+
+  // 3. All query words start with prefixes that match label words
+  if (qWords.every(qw => labelWords.some(lw => lw.startsWith(qw)))) return 70;
+
+  // 4. All query words found anywhere in label+sub as prefixes
+  if (qWords.every(qw => allWords.some(lw => lw.startsWith(qw)))) return 55;
+
+  // 5. Acronym: query = first letters of label words (e.g. "АП" → "Арифметична Прогресія")
+  const acronym = labelWords.map(w => w[0] || '').join('');
+  const qClean = q.replace(/\s/g, '');
+  if (acronym.includes(qClean) && qClean.length >= 2) return 50;
+
+  // 6. Any single query word matches start of a label word
+  if (qWords.some(qw => qw.length >= 3 && labelWords.some(lw => lw.startsWith(qw)))) return 35;
+  if (qWords.some(qw => qw.length >= 3 && allWords.some(lw => lw.startsWith(qw)))) return 20;
+
+  return 0;
+}
+
 function searchQuery(q) {
   _searchSelected = -1;
   const res = document.getElementById('search-results');
   if (!q.trim()) { res.innerHTML = _searchWelcome(); return; }
-  const query = q.toLowerCase().trim();
-  const matches = _searchIndex.filter(item =>
-    item.label.toLowerCase().includes(query) ||
-    (item.sub && item.sub.toLowerCase().includes(query))
-  ).slice(0, 18);
 
-  if (!matches.length) {
+  const scored = _searchIndex
+    .map(item => ({ item, score: _searchScore(item, q) }))
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 18)
+    .map(x => x.item);
+
+  if (!scored.length) {
     res.innerHTML = `<div class="search-empty">😕 Нічого не знайдено для "<strong>${q}</strong>"</div>`;
     return;
   }
 
   // Group by type
   const groups = {};
-  matches.forEach(m => {
+  scored.forEach(m => {
     if (!groups[m.type]) groups[m.type] = [];
     groups[m.type].push(m);
   });
 
+  const query = q.toLowerCase().trim();
   res.innerHTML = Object.entries(groups).map(([type, items]) => `
     <div class="search-group-label">${type}</div>
-    ${items.map((item, i) => `
+    ${items.map(item => `
       <div class="search-item" onclick="searchGo(${_searchIndex.indexOf(item)})" data-sidx="${_searchIndex.indexOf(item)}">
         <span class="search-item-icon">${item.icon}</span>
         <div class="search-item-body">
@@ -2884,9 +2926,23 @@ function searchQuery(q) {
 }
 
 function _highlight(text, query) {
+  // Try exact substring first
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
-  if (idx === -1) return text;
-  return text.slice(0, idx) + `<mark style="background:#fff3a0;border-radius:2px;">${text.slice(idx, idx + query.length)}</mark>` + text.slice(idx + query.length);
+  if (idx !== -1) {
+    return text.slice(0, idx) + `<mark style="background:#fff3a0;border-radius:2px;">${text.slice(idx, idx + query.length)}</mark>` + text.slice(idx + query.length);
+  }
+  // Try highlighting first matching word prefix
+  const qWords = _words(query);
+  let result = text;
+  for (const qw of qWords) {
+    if (qw.length < 2) continue;
+    const re = new RegExp(`(${qw})`, 'gi');
+    if (re.test(result)) {
+      result = result.replace(re, '<mark style="background:#fff3a0;border-radius:2px;">$1</mark>');
+      break;
+    }
+  }
+  return result;
 }
 
 function searchGo(idx) {
