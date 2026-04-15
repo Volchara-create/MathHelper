@@ -2837,9 +2837,9 @@ function searchClose() {
 function _searchWelcome() {
   const quick = [
     { label: 'Формули', icon: '📐', action: "show('formulas')" },
-    { label: 'Графік', icon: '📊', action: "showGraph()" },
     { label: 'Квіз', icon: '🎯', action: "show('quiz')" },
     { label: 'НМТ', icon: '🏆', action: "window.location.href='simulator.html'" },
+    { label: 'Підручники', icon: '📚', action: "show('textbooks')" },
   ];
   return `<div style="padding:14px 18px 8px;font-size:.8rem;color:#7aa0c8;font-weight:600;">Швидкий перехід</div>
     <div style="display:flex;gap:8px;padding:0 18px 14px;flex-wrap:wrap;">
@@ -2897,7 +2897,10 @@ function searchGo(idx) {
 
 // Keyboard navigation
 document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+  // '/' opens search (like GitHub/YouTube) — skip if typing in input/textarea
+  if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
     e.preventDefault();
     const modal = document.getElementById('search-modal');
     if (modal && modal.style.display === 'none') searchOpen();

@@ -37,7 +37,6 @@
     .side-panel.drag-target{border:2px dashed var(--accent)!important;}
     section{display:none;}
     section.active{display:block;}
-    section#graph.active{display:flex;}
     .category-row{display:none;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:30px;}
     .category-card{flex:0 0 calc(16% - 12px);background:var(--blue-light);border-radius:12px;padding:14px;box-shadow:0 3px 8px rgba(0,0,0,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;transition:0.3s;font-weight:600;color:var(--text);min-width:130px;}
     .category-card:hover{background:var(--accent);color:#fff;transform:translateY(-3px);}
@@ -68,8 +67,11 @@
     .formula-in-modal-expr{font-family:'Fira Code',monospace;font-size:0.95rem;color:var(--text);}
 
     /* ===== WORKSPACE (замість графіка) ===== */
-    #graph{padding:0;display:flex;flex-direction:column;height:100%;overflow:hidden;}
-    .graph-container{display:flex;gap:0;flex:1;min-height:400px;background:#fff;border-radius:0;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;position:relative;}
+    /* When graph is active: main becomes overflow:hidden so height:100% works correctly */
+    #app-workspace > main:has(section#graph.active){overflow:hidden;padding:0;}
+    section#graph.active{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+    #graph{padding:0;}
+    .graph-container{display:flex;gap:0;flex:1;min-height:0;background:#fff;border-radius:0;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;position:relative;}
 
     /* ліва панель інструментів */
     .ws-toolbar{flex:0 0 64px;background:var(--blue-light);border-right:2px solid #b3d9ff;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;overflow:hidden;}
@@ -288,7 +290,8 @@
     .socials a{text-decoration:none;display:inline-block;transition:transform 0.3s;}
     .socials img{width:40px;height:40px;display:block;transition:transform 0.3s;}
     .socials a:hover img{transform:scale(1.2);}
-    footer{text-align:center;padding:16px 16px 90px;background:var(--blue);color:#fff;border-top:2px solid var(--accent);margin-top:auto;flex-shrink:0;}
+    footer{display:none;}
+    #site-footer{text-align:center;padding:12px 16px;background:var(--blue);color:#fff;border-top:2px solid var(--accent);font-size:.85rem;}
 
     /* калькулятор — бічна панель */
     .ws-calc-side{flex:0 0 0;background:#fff;border-left:2px solid #b3d9ff;overflow:hidden;transition:flex-basis .22s ease;display:flex;flex-direction:column;}
