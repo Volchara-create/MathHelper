@@ -1677,6 +1677,11 @@ function quizMonthStart() {
 }
 
 function startQuiz() {
+  // If quiz is already in progress — resume instead of resetting
+  if (quizOrder.length > 0 && quizCurrent < quizOrder.length) {
+    renderQuizQuestion();
+    return;
+  }
   renderQuizHome();
 }
 
@@ -2337,6 +2342,7 @@ function openPanel(name) {
   const resize = document.getElementById('ph-resize-' + name);
   if (resize) resize.style.display = '';
   _updatePanelResizes();
+  _updateQmBtnActive(name, true);
 }
 
 function closePanel(name) {
@@ -2346,6 +2352,16 @@ function closePanel(name) {
   const resize = document.getElementById('ph-resize-' + name);
   if (resize) resize.style.display = 'none';
   _updatePanelResizes();
+  _updateQmBtnActive(name, false);
+}
+
+// Update quick-menu button active state
+function _updateQmBtnActive(name, isOpen) {
+  const qmMap = { calc: 0, notebook: 1 }; // index in quick-menu buttons
+  const idx = qmMap[name];
+  if (idx === undefined) return;
+  const btns = document.querySelectorAll('#quick-menu .qm-btn');
+  if (btns[idx]) btns[idx].classList.toggle('active', isOpen);
 }
 
 function _updatePanelResizes() {

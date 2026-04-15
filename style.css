@@ -1001,6 +1001,8 @@ body.dark .notes-drawer-textarea{background:#1a2535;border-color:#1e3050;color:#
 .quick-menu{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1.5px solid #e0eaff;z-index:500;display:flex;align-items:stretch;box-shadow:0 -4px 16px rgba(26,62,124,.1);}
 .qm-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;background:none;border:none;cursor:pointer;text-decoration:none;color:#1a3e7c;font-family:'Roboto',sans-serif;transition:.2s;}
 .qm-btn:hover{background:#f0f4ff;}
+.qm-btn.active{background:#e0eaff;color:#1a3e7c;font-weight:600;}
+.qm-btn.active .qm-label{color:#1a3e7c;}
 .qm-icon{font-size:1.3rem;line-height:1;}
 .qm-label{font-size:.68rem;font-weight:600;color:#5a7ab0;white-space:nowrap;}
 .qm-pro{opacity:.65;}
