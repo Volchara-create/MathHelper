@@ -3193,7 +3193,7 @@ const MATHIK_TUTORIAL = [
   {
     // Step 1: fly to formulas tab button
     navigate: () => show('formulas'),
-    navDelay: 450,
+    navDelay: 600,
     target: '#ftab-btn-algebra',
     msg: '📐 <b>Розділ "Формули"!</b><br>Вгорі вкладки: Алгебра, Геометрія, Тригонометрія. Вибери клас → обери тему → натисни на формулу щоб побачити детальний опис.'
   },
@@ -3214,7 +3214,7 @@ const MATHIK_TUTORIAL = [
   {
     // Step 3: quiz
     navigate: () => { try { closeAlgebraModal(); } catch(e){} show('quiz'); },
-    navDelay: 400,
+    navDelay: 550,
     target: '.quiz-topic-btn, .vtask-start-btn, [onclick*="startQuiz"]',
     msg: '🎯 <b>Квіз!</b><br>Обери тему → відповідай на питання → після кожної відповіді бачиш пояснення. Ідеально для підготовки до контрольної!'
   },
@@ -3233,7 +3233,7 @@ const MATHIK_TUTORIAL = [
   {
     // Step 6: search button
     navigate: () => show('home'),
-    navDelay: 350,
+    navDelay: 500,
     target: '#search-btn',
     msg: '🔍 <b>Пошук</b> — ця кнопка або клавіша <kbd>/</kbd>!<br>Шукає формули, теми, нотатки по всьому сайту. Спробуй "sin" або "дискримінант".'
   },
@@ -3353,7 +3353,7 @@ function _owlFlyToAndStay(selector, callback) {
   bubble.classList.remove('owl-arrived');
 
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    bubble.style.transition = 'left .65s cubic-bezier(.34,1.4,.64,1), top .6s cubic-bezier(.34,1.4,.64,1)';
+    bubble.style.transition = 'left 1.1s cubic-bezier(.34,1.3,.64,1), top 1.0s cubic-bezier(.34,1.3,.64,1)';
     bubble.style.left = destLeft + 'px';
     bubble.style.top  = destTop  + 'px';
     target.classList.add('mathik-target-pulse');
@@ -3364,9 +3364,9 @@ function _owlFlyToAndStay(selector, callback) {
     bubble.classList.add('owl-arrived');
     target.classList.remove('mathik-target-pulse');
     _owlFlying = false;
-    setTimeout(() => bubble.classList.remove('owl-arrived'), 600);
+    setTimeout(() => bubble.classList.remove('owl-arrived'), 650);
     if (callback) callback();
-  }, 720);
+  }, 1150);
 }
 
 // Fly owl back home (shoot down, spring up from bottom-right)
