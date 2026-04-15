@@ -3163,19 +3163,19 @@ function _mathikSetChips(chips) {
 
 // ===== MATHIK TUTORIAL =====
 const MATHIK_TUTORIAL = [
-  '👋 Привіт! Я <b>Mathik</b> — твій гід по MathHelper. Покажу тобі все за 1 хвилину! 🚀',
-  '📐 <b>Крок 1 — Формули</b><br>Головний розділ сайту. Вибери свій клас (7–11) і отримаєш всі потрібні формули з алгебри, геометрії та тригонометрії. Є детальні пояснення з доведеннями! <a onclick="mathikClose();show(\'formulas\')">Відкрити →</a>',
-  '🎯 <b>Крок 2 — Квіз</b><br>Перевіряй себе! Обери тему або пройди повний тест. Після кожної відповіді — пояснення. Ідеально для повторення перед контрольною. <a onclick="mathikClose();show(\'quiz\')">Спробувати →</a>',
-  '🏆 <b>Крок 3 — НМТ Симулятор</b><br>30 питань, таймер 90 хвилин — як на реальному НМТ. Після тесту побачиш помилки і правильні відповіді. <a onclick="mathikClose();window.location.href=\'simulator.html\'">Відкрити →</a>',
-  '📊 <b>Крок 4 — Графіки</b><br>Будуй функції в реальному часі: y=x², sin(x), 2x+1 і будь-що інше. Скролл мишею — zoom, drag — переміщення. <a onclick="mathikClose();showGraph()">Відкрити →</a>',
-  '🧮📓 <b>Крок 5 — Панелі</b><br>Кнопки <b>🧮</b> і <b>📓</b> у верхньому меню відкривають калькулятор і зошит збоку. Їх можна тримати відкритими поруч з формулами. Перетягуй за заголовок!',
-  '🔍 <b>Крок 6 — Пошук</b><br>Натисни <b>/</b> на клавіатурі — і шукай будь-що: формули, теми, підручники, нотатки. Швидкий пошук по всьому сайту!',
-  '⚙️ <b>Крок 7 — Налаштування</b><br>Кнопка ⚙️ → вибери свій клас, щоденну ціль, увімкни нагадування о 18:00. Зареєструйся щоб зберігати прогрес!',
-  '🎉 <b>Готово!</b> Тепер ти знаєш все про MathHelper. Починай з формул свого класу і пройди перший квіз. Я завжди тут якщо є питання! 💪',
+  { msg: '👋 Привіт! Я <b>Mathik</b> — твій гід по MathHelper. Покажу тобі все за 1 хвилину! 🚀', target: null },
+  { msg: '📐 <b>Крок 1 — Формули</b><br>Головний розділ: алгебра, геометрія та тригонометрія по класах. Відкрий і вибери свій клас — побачиш тільки потрібні формули. <a onclick="mathikClose();show(\'formulas\')">Відкрити →</a>', target: null },
+  { msg: '🎯 <b>Крок 2 — Квіз</b><br>Тренуйся по темах! Обери тему або пройди повний тест. Після кожної відповіді — пояснення. <a onclick="mathikClose();show(\'quiz\')">Спробувати →</a>', target: null },
+  { msg: '🎯 <b>Крок 3 — НМТ Симулятор</b><br>Кнопка <b>🎯 НМТ</b> у нижньому меню — 30 питань, таймер 90 хвилин, як на реальному НМТ. <a onclick="mathikClose();window.location.href=\'simulator.html\'">Відкрити →</a>', target: 'a.qm-btn[href="simulator.html"]' },
+  { msg: '📈 <b>Крок 4 — Графіки</b><br>Будуй функції: y=x², sin(x) і інші. Скролл миші — zoom, drag — переміщення. Знайди на головній або в дашборді. <a onclick="mathikClose();showGraph()">Відкрити →</a>', target: null },
+  { msg: '🧮 <b>Крок 5 — Калькулятор</b><br>Кнопка <b>🧮</b> у нижньому меню — панель калькулятора. Відкривається збоку, можна тримати поруч з формулами!', target: 'button[onclick*="togglePanel(\'calc\')"].qm-btn, .qm-btn:not([href])[onclick*="calc"]' },
+  { msg: '📓 <b>Крок 6 — Зошит</b><br>Кнопка <b>📓</b> у нижньому меню — панель нотаток з лінійками/клітинками. Зберігається автоматично на сервері!', target: '.qm-btn[onclick*="notebook"]' },
+  { msg: '🔍 <b>Крок 7 — Пошук</b><br>Натисни кнопку <b>🔍</b> або клавішу <b>/</b> — і шукай по всьому сайту: формули, теми, підручники, нотатки.', target: '#search-btn' },
+  { msg: '⚙️ <b>Крок 8 — Налаштування</b><br>Кнопка <b>⚙️</b> у правому куті хедера → вибери клас, щоденну ціль, увімкни нагадування о 18:00.', target: 'button[onclick="openSettings()"]' },
+  { msg: '🎉 <b>Готово!</b> Тепер ти знаєш MathHelper від А до Я. Починай з формул свого класу — і пройди перший квіз. Я тут якщо є питання! 💪', target: null },
 ];
 
 let _tutorialStep = 0;
-let _tutorialTimer = null;
 
 function mathikStartTutorial() {
   _tutorialStep = 0;
@@ -3192,13 +3192,50 @@ function _tutorialNextStep() {
     ]);
     return;
   }
-  const msg = MATHIK_TUTORIAL[_tutorialStep];
+  const step = MATHIK_TUTORIAL[_tutorialStep];
   _tutorialStep++;
-  _mathikAddMsg('bot', msg);
+  _mathikAddMsg('bot', step.msg);
+  if (step.target) setTimeout(() => _mathikHighlight(step.target), 300);
   const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
-  if (!isLast) {
-    _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
+  if (!isLast) _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
+}
+
+function _mathikHighlight(selector) {
+  const target = document.querySelector(selector);
+  if (!target) return;
+  const rect = target.getBoundingClientRect();
+  if (!rect.width) return; // not visible
+
+  // Create or reuse pointer element
+  let ptr = document.getElementById('mathik-pointer');
+  if (!ptr) {
+    ptr = document.createElement('div');
+    ptr.id = 'mathik-pointer';
+    ptr.textContent = '👆';
+    document.body.appendChild(ptr);
   }
+
+  // Start near Mathik bubble
+  const bubble = document.getElementById('mathik-bubble');
+  const br = bubble.getBoundingClientRect();
+  ptr.style.cssText = `position:fixed;font-size:1.8rem;z-index:9999;pointer-events:none;transition:left .6s cubic-bezier(.34,1.56,.64,1),top .6s cubic-bezier(.34,1.56,.64,1),opacity .3s;left:${br.left}px;top:${br.top}px;opacity:0;`;
+
+  // Add highlight to target
+  target.classList.add('mathik-target-pulse');
+
+  // Animate to target
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    ptr.style.left = (rect.left + rect.width / 2 - 14) + 'px';
+    ptr.style.top = (rect.top - 36) + 'px';
+    ptr.style.opacity = '1';
+  }));
+
+  // Remove after 2.8s
+  setTimeout(() => {
+    ptr.style.opacity = '0';
+    target.classList.remove('mathik-target-pulse');
+    setTimeout(() => ptr && ptr.remove(), 400);
+  }, 2800);
 }
 
 function _mathikReply(text) {

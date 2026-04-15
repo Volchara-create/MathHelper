@@ -43,10 +43,38 @@ _Оновлено: 15.04.2026_
 
 ---
 
+## 📐 Специфікація футера (НЕ ЗМІНЮВАТИ без потреби)
+
+Футер знаходиться **всередині `<main>`** (скролиться з контентом), перед `</main>`.
+
+**HTML**: `<footer>` — звичайний тег, без ID, з класом `.socials` для іконок.
+**CSS**: `footer{text-align:center; padding:14px 16px 68px; background:var(--blue); color:#fff; border-top:2px solid var(--accent); margin-left:-24px; margin-right:-24px; margin-bottom:-30px;}`
+
+- `margin:-24px` з боків — компенсує padding main (24px), прибирає білі краї
+- `margin-bottom:-30px` — прибирає білий простір після футера
+- `padding-bottom:68px` — простір щоб quick-menu не перекривав контент
+- При open quick-menu: `footer{margin-bottom:-72px}` (бо main отримує padding-bottom:72px)
+- Іконки flaticon БЕЗ filter — кольорові на синьому фоні
+- На графіку footer прихований: `:has(section#graph.active) footer{display:none}`
+
+---
+
 ## ⏸ Пізніше / Після оплати
 
 - **Hero stats "∞ графіків"** — поки немає реального ліміту; виправити коли буде payment flow
 - **Соцмережі TikTok/Instagram/Facebook** — ведуть на головні сторінки; виправити коли будуть акаунти проєкту
+
+---
+
+## 💡 Ідеї для майбутнього (Pro версія)
+
+### SmartOwl (Mathik Pro з ШІ)
+- **Концепція**: при покупці Pro в quick-menu кнопка 🤖 ШІ змінюється на 🦉⚡ — "SmartOwl"
+- **Анімація**: звичайна сова стає "металевою" / з ефектом glow при активації
+- **Функція**: замість keyword-бота — реальний AI (Claude API) для пояснення математики
+- **Назви**: SmartOwl / МудрикPro / Сова3000 / OWL-AI
+- **Технічно**: Claude API via backend, ~$0.001/запит, тільки для Pro users
+- **Важливо**: звичайний Mathik (🦉) залишається для всіх безкоштовно
 
 ---
 

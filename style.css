@@ -63,8 +63,8 @@
     .formulas-in-modal{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
     .formula-in-modal-item{background:#eaf3ff;padding:15px;border-radius:10px;cursor:pointer;transition:0.3s;flex:1 1 calc(50% - 12px);min-width:200px;}
     .formula-in-modal-item:hover{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);transform:translateY(-2px);}
-    .formula-in-modal-title{font-family:'Fira Code',monospace;font-size:1.1rem;color:var(--blue);margin-bottom:8px;font-weight:600;}
-    .formula-in-modal-expr{font-family:'Fira Code',monospace;font-size:0.95rem;color:var(--text);}
+    .formula-in-modal-title{font-family:'Fira Code',monospace;font-size:1.2rem;color:var(--blue);margin-bottom:8px;font-weight:700;}
+    .formula-in-modal-expr{font-family:'Fira Code',monospace;font-size:1.1rem;font-weight:600;color:var(--text);}
 
     /* ===== WORKSPACE (замість графіка) ===== */
     /* When graph is active: main becomes overflow:hidden so height:100% works correctly */
@@ -864,9 +864,9 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .dark .alg-modal-row{background:#0f172a;}
 .alg-modal-row:hover{background:#e8f0fe;}
 .dark .alg-modal-row:hover{background:#1e3a5f;}
-.alg-modal-name{font-size:1rem;color:#555;flex-shrink:0;max-width:50%;}
-.dark .alg-modal-name{color:#94a3b8;}
-.alg-modal-expr{font-family:'Fira Code',monospace;font-size:1.25rem;font-weight:700;color:var(--blue);text-align:right;}
+.alg-modal-name{font-size:1.05rem;font-weight:700;color:#333;flex-shrink:0;max-width:52%;}
+.dark .alg-modal-name{color:#cbd5e1;}
+.alg-modal-expr{font-family:'Fira Code',monospace;font-size:1.35rem;font-weight:700;color:var(--blue);text-align:right;}
 
 /* Tables tab */
 .tables-section{margin-bottom:36px;overflow-x:auto;}
@@ -1127,13 +1127,10 @@ body.dark .fdm-formula{background:#0d2340;color:#93c5fd;}
 body.dark .fdm-text{color:#cbd5e1;}
 body.dark .fdm-section{color:#60a5fa;}
 
-/* Detail button in formula modal rows */
-.alg-modal-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
-.alg-modal-row .alg-modal-name{flex:0 0 auto;min-width:140px;font-size:.9rem;color:#555;}
-.alg-modal-row .alg-modal-expr{flex:1;font-family:'Fira Code',monospace;font-size:.93rem;color:#1a3e7c;}
-.alg-modal-row .alg-detail-btn{flex:0 0 auto;background:none;border:1.5px solid var(--blue);border-radius:6px;color:var(--blue);font-size:.75rem;padding:2px 8px;cursor:pointer;opacity:.7;transition:opacity .15s;}
-.alg-modal-row .alg-detail-btn:hover{opacity:1;background:var(--bg-blue);}
-body.dark .alg-modal-row .alg-modal-name{color:#94a3b8;}
+/* Detail button in formula rows */
+.alg-detail-btn{background:none;border:1.5px solid var(--blue);border-radius:6px;color:var(--blue);font-size:.78rem;padding:3px 10px;cursor:pointer;opacity:.75;transition:opacity .15s;white-space:nowrap;}
+.alg-detail-btn:hover{opacity:1;background:#e8f0fe;}
+body.dark .alg-modal-row .alg-modal-name{color:#cbd5e1;}
 body.dark .alg-modal-row .alg-modal-expr{color:#93c5fd;}
 
 /* ===== QUADRANTS HINT in trig tab ===== */
@@ -1188,6 +1185,9 @@ body.dark .search-item-label{color:#e0eaff;}
 body.dark .search-hint{border-color:#1e3050;color:#5a7ab0;}
 body.dark .search-hint kbd{background:#1e3050;border-color:#2a4060;}
 /* ===== MATHIK CHAT ===== */
+/* Tutorial pointer + highlight */
+@keyframes mathikPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}50%{box-shadow:0 0 0 10px rgba(37,99,235,0)}}
+.mathik-target-pulse{animation:mathikPulse .7s ease 4;outline:3px solid #2563eb;outline-offset:3px;border-radius:8px;z-index:9998;position:relative;}
 .mathik-bubble{position:fixed;bottom:80px;right:16px;width:52px;height:52px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(26,62,124,.35);z-index:700;transition:.2s;border:2px solid var(--accent);}
 .mathik-bubble:hover{transform:scale(1.08);}
 .mathik-avatar{font-size:1.5rem;line-height:1;}
