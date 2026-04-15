@@ -59,6 +59,32 @@ _Оновлено: 15.04.2026_
 
 ---
 
+## 📋 Специфікація модалу формул (НЕ ЗМІНЮВАТИ без потреби)
+
+Єдина система для всіх формул: алгебра, тригонометрія, геометрія — клік → `#formula-detail-modal`.
+
+**JS функція**: `openFormulaModal({name, expr, detail, svg, symbols})`
+- `name` — назва формули
+- `expr` — сам вираз (показується великим жирним)
+- `detail` — об'єкт `{explanation, proof, example}` — необов'язково
+- `svg` — SVG розмітка (для геометрії)
+- `symbols` — масив `[{s, m}]` таблиця символів (для геометрії)
+
+**Точки виклику:**
+- Алгебра/Тригонометрія: `_buildAlgRow()` → `openFormulaModalByIdx(catIdx, fIdx, source)` → `openFormulaModal()`
+- Геометрія: `showCategory()` → `d.onclick = () => openFormulaModal({...})` — без проміжного кроку
+- Кнопки "Детальніше" — **видалені**, замість них клік на весь рядок
+
+**CSS ключові стилі:**
+- `.fdm-formula` — `font-size:1.7rem; font-weight:700; gradient background; word-break:break-word`
+- `.alg-modal-expr` — `white-space:nowrap; text-overflow:ellipsis` (не переноситься в рядку)
+- `.alg-modal-row` — `cursor:pointer; hover: translateX(3px)` (підказка що клікабельно)
+- `.fdm-content` — `max-width:680px; max-height:88vh`
+
+**Якщо немає detail/svg/symbols** → показується `.fdm-no-detail` повідомлення (НЕ ЛАМАЄТЬСЯ).
+
+---
+
 ## ⏸ Пізніше / Після оплати
 
 - **Hero stats "∞ графіків"** — поки немає реального ліміту; виправити коли буде payment flow
