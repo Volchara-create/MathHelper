@@ -290,12 +290,8 @@
     .socials a{text-decoration:none;display:inline-block;transition:transform 0.3s;}
     .socials img{width:40px;height:40px;display:block;transition:transform 0.3s;}
     .socials a:hover img{transform:scale(1.2);}
-    footer{display:none;}
-    #site-footer{display:block;text-align:center;padding:10px 16px;background:var(--blue);color:rgba(255,255,255,.85);border-top:2px solid var(--accent);font-size:.8rem;}
-    #site-footer a{color:var(--accent);font-weight:700;text-decoration:none;}
-    #site-footer a:hover{text-decoration:underline;}
-    /* Hide footer when graph active (no scroll in main) */
-    #app-workspace > main:has(section#graph.active) #site-footer{display:none;}
+    footer{text-align:center;padding:12px 16px 80px;background:var(--blue);color:#fff;border-top:2px solid var(--accent);flex-shrink:0;}
+    body:has(section#graph.active) footer{display:none;}
 
     /* калькулятор — бічна панель */
     .ws-calc-side{flex:0 0 0;background:#fff;border-left:2px solid #b3d9ff;overflow:hidden;transition:flex-basis .22s ease;display:flex;flex-direction:column;}
@@ -1219,13 +1215,4 @@ body.dark .mathik-chip:hover{background:#1e3050;}
 body.dark .mathik-input{background:#1a2535;border-color:#2a4060;color:#e0eaff;}
 body.dark .mathik-input-row{border-color:#1e3050;}
 
-/* ===== FOOTER (compact with socials) ===== */
-#site-footer{display:block;text-align:center;padding:14px 20px 18px;background:var(--blue);color:rgba(255,255,255,.85);border-top:2px solid var(--accent);font-size:.82rem;}
-#site-footer a{color:var(--accent);font-weight:700;text-decoration:none;}
-#site-footer a:hover{text-decoration:underline;}
-.footer-main{margin-bottom:8px;}
-.footer-socials{display:flex;justify-content:center;gap:14px;}
-.footer-socials a img{width:22px;height:22px;opacity:.8;filter:brightness(0) invert(1);transition:.2s;}
-.footer-socials a:hover img{opacity:1;transform:scale(1.15);}
-#app-workspace > main:has(section#graph.active) #site-footer{display:none;}
-body.dark #site-footer{background:#0d1117;}
+body.dark footer{background:#0d1117;}

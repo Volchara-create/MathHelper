@@ -563,27 +563,24 @@
     </section>
     <!-- /РОБОЧИЙ СТІЛ -->
 
-    <!-- Footer (inside main — scrolls with content) -->
-    <footer id="site-footer">
-      <div class="footer-main">
-        © 2026 MathHelper &nbsp;|&nbsp;
-        <a href="https://send.monobank.ua/jar/7kcin57bo4" target="_blank" rel="noopener noreferrer">☕ Підтримати проект</a>
-      </div>
-      <div class="footer-socials">
-        <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" title="TikTok">
-          <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok">
-        </a>
-        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
-        </a>
-        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook">
-          <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook">
-        </a>
-      </div>
-    </footer>
-
   </main>
   </div><!-- /#app-workspace -->
+
+  <footer>
+    © 2026 MathHelper &nbsp;|&nbsp;
+    <a href="https://send.monobank.ua/jar/7kcin57bo4" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700;text-decoration:none;">☕ Підтримати проект</a>
+    <div class="socials" style="margin-top:8px;">
+      <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" title="TikTok">
+        <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok" loading="lazy">
+      </a>
+      <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" loading="lazy">
+      </a>
+      <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" loading="lazy">
+      </a>
+    </div>
+  </footer>
 
   <!-- Category modal (geometry) -->
   <div id="category-modal" class="category-modal">
@@ -877,7 +874,7 @@
   <div id="search-modal" class="search-modal" style="display:none;">
     <div class="search-header">
       <span class="search-icon-lbl">🔍</span>
-      <input id="search-input" class="search-input" placeholder="Шукати формули, теми, задачі, нотатки..." oninput="searchQuery(this.value)" autocomplete="off" />
+      <input id="search-input" class="search-input" type="text" placeholder="Шукати формули, теми, задачі, нотатки..." oninput="searchQuery(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();searchGoFirst();}" autocomplete="off" />
       <button class="search-close-btn" onclick="searchClose()">✕</button>
     </div>
     <div id="search-results" class="search-results"></div>

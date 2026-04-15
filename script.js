@@ -2951,6 +2951,24 @@ function searchGo(idx) {
   _searchIndex[idx].action();
 }
 
+function searchGoFirst() {
+  // Enter with selected item
+  if (_searchSelected >= 0) {
+    const items = document.querySelectorAll('#search-results .search-item');
+    if (items[_searchSelected]) {
+      const idx = parseInt(items[_searchSelected].dataset.sidx);
+      searchGo(idx);
+      return;
+    }
+  }
+  // Enter with no selection → go to first result
+  const first = document.querySelector('#search-results .search-item');
+  if (first) {
+    const idx = parseInt(first.dataset.sidx);
+    searchGo(idx);
+  }
+}
+
 // Keyboard navigation
 document.addEventListener('keydown', e => {
   // '/' opens search (like GitHub/YouTube) — skip if typing in input/textarea
@@ -3041,15 +3059,49 @@ const MATHIK_QA = [
     keys: ['дякую','дякуємо','спасибі','ok','ок'],
     answer: '😊 Будь ласка! Якщо є ще запитання — пиши, я тут.',
   },
+  {
+    keys: ['зв\'яз','контакт','розробник','написати','email','пошта','допомог','підтримка'],
+    chips: ['📧 Зв\'язатися'],
+    answer: '📧 Щоб зв\'язатися з розробником, перейди до розділу <b>Про проект</b> — там є email: <b>math.helper.proba@gmail.com</b>. <a onclick="mathikClose();show(\'about\')">Відкрити →</a>',
+  },
+  {
+    keys: ['налаштуван','профіл','клас','змінити клас','вийти','аккаунт','акаунт'],
+    chips: ['⚙️ Налаштування'],
+    answer: '⚙️ <b>Налаштування</b> відкриваються кнопкою ⚙️ у верхньому правому куті. Там можна змінити клас, ціль, управляти нотатками та вийти з акаунту.',
+  },
+  {
+    keys: ['увійт','зареєстр','логін','login','реєстрац','sign'],
+    answer: '🔐 Натисни кнопку <b>Увійти</b> у верхньому правому куті. Можна увійти через Google або email+пароль. Реєстрація займає 30 секунд!',
+  },
+  {
+    keys: ['нагадуван','сповіщен','push','notification'],
+    answer: '🔔 Нагадування налаштовуються в <b>Налаштуваннях</b> (⚙️). Увімкни push-сповіщення — і сайт нагадає тобі вчитися о 18:00.',
+  },
+  {
+    keys: ['як користуватись','навчит','почати','перший раз','новачок','що робити'],
+    answer: '🚀 Ось з чого почати:\n1. <a onclick="mathikClose();show(\'formulas\')">📐 Формули</a> — вибери свій клас\n2. <a onclick="mathikClose();show(\'quiz\')">🎯 Квіз</a> — потренуйся\n3. <a onclick="mathikClose();window.location.href=\'simulator.html\'">🏆 НМТ</a> — спробуй симулятор\n\nНатисни <b>/</b> щоб шукати будь-яку тему!',
+  },
+  {
+    keys: ['про проект','про сайт','що це','mathhelper'],
+    answer: 'ℹ️ <b>MathHelper</b> — безкоштовна платформа для підготовки до НМТ. Формули, графіки, квіз, симулятор НМТ, підручники — все в одному місці. <a onclick="mathikClose();show(\'about\')">Детальніше →</a>',
+  },
+  {
+    keys: ['денна ціль','ціль','ціль на день','прогрес'],
+    answer: '🎯 <b>Щоденна ціль</b> — стеж за своїм прогресом у дашборді. Налаштувати можна у ⚙️ Налаштуваннях. Рекомендую 10-15 питань на день!',
+  },
+  {
+    keys: ['клас','7','8','9','10','11','вибрати клас'],
+    answer: '🏫 Обери свій клас у <b>Налаштуваннях</b> (⚙️) — тоді формули і матеріал будуть відфільтровані саме для твого класу.',
+  },
 ];
 
 const MATHIK_CHIPS_DEFAULT = [
   { label: '📐 Формули', msg: 'формули' },
   { label: '🎯 Квіз', msg: 'квіз' },
   { label: '🏆 НМТ', msg: 'нмт' },
-  { label: '🧮 Калькулятор', msg: 'калькулятор' },
-  { label: '📊 Графіки', msg: 'графік' },
-  { label: '📓 Зошит', msg: 'зошит' },
+  { label: '📧 Контакт', msg: "зв'язок з розробником" },
+  { label: '⚙️ Налаштування', msg: 'налаштування' },
+  { label: '🚀 Як почати', msg: 'як користуватись' },
 ];
 
 let _mathikOpen = false;
