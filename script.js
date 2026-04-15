@@ -2712,6 +2712,238 @@ function openFloatQuiz() {
   openFloatPanel('quiz');
 }
 
+// ===== UNIVERSAL SEARCH =====
+let _searchIndex = null;
+let _searchSelected = -1;
+
+function _buildSearchIndex() {
+  const idx = [];
+
+  // Sections (навігація)
+  const sections = [
+    { label: 'Формули', icon: '📐', sub: 'Алгебра, геометрія, тригонометрія', type: 'Розділ', action: () => show('formulas') },
+    { label: 'Графік функцій', icon: '📊', sub: 'Побудова і аналіз графіків', type: 'Розділ', action: () => showGraph() },
+    { label: 'Квіз', icon: '🎯', sub: 'Тренування і перевірка знань', type: 'Розділ', action: () => show('quiz') },
+    { label: 'Підручники', icon: '📚', sub: 'Онлайн підручники 7-11 клас', type: 'Розділ', action: () => show('textbooks') },
+    { label: 'НМТ Симулятор', icon: '🏆', sub: 'Повноцінний тест як на НМТ', type: 'Розділ', action: () => window.location.href='simulator.html' },
+    { label: 'Калькулятор', icon: '🧮', sub: 'Відкрити калькулятор', type: 'Інструмент', action: () => togglePanel('calc') },
+    { label: 'Зошит', icon: '📓', sub: 'Відкрити зошит для нотаток', type: 'Інструмент', action: () => togglePanel('notebook') },
+    { label: 'Темний режим', icon: '🌙', sub: 'Увімкнути/вимкнути темну тему', type: 'Налаштування', action: () => toggleDark() },
+  ];
+  sections.forEach(s => idx.push(s));
+
+  // Algebra categories
+  ALGEBRA_CATS.forEach(cat => {
+    idx.push({
+      label: cat.name,
+      icon: '📐',
+      sub: `Алгебра · ${cat.formulas.length} формул`,
+      type: 'Формула',
+      action: () => { show('formulas'); showFormulaTab('algebra'); setTimeout(() => openAlgebraModal(ALGEBRA_CATS.indexOf(cat)), 100); }
+    });
+    cat.formulas.forEach(f => {
+      idx.push({
+        label: f.name,
+        icon: '🔢',
+        sub: cat.name,
+        type: 'Формула',
+        action: () => { show('formulas'); showFormulaTab('algebra'); setTimeout(() => openAlgebraModal(ALGEBRA_CATS.indexOf(cat)), 100); }
+      });
+    });
+  });
+
+  // Geometry categories
+  Object.entries(categoryNames).forEach(([key, name]) => {
+    idx.push({
+      label: name,
+      icon: '📐',
+      sub: 'Геометрія',
+      type: 'Формула',
+      action: () => { show('formulas'); showFormulaTab('geometry'); setTimeout(() => showCategory(key), 150); }
+    });
+  });
+
+  // Quiz topics
+  QUIZ_TOPICS_META.forEach(t => {
+    idx.push({
+      label: t.name.replace(/^.{2}/, '').trim(),
+      icon: t.name[0] + t.name[1],
+      sub: t.desc,
+      type: 'Квіз',
+      action: () => { show('quiz'); setTimeout(() => startQuizTopic(t.id), 100); }
+    });
+  });
+
+  // Textbooks
+  TEXTBOOKS.forEach(b => {
+    idx.push({
+      label: b.title,
+      icon: '📖',
+      sub: `${b.author} · ${b.grades} клас`,
+      type: 'Підручник',
+      action: () => { show('textbooks'); window.open(b.url, '_blank'); }
+    });
+  });
+
+  // Notebook content (local)
+  const nb = localStorage.getItem('mh_sp_notebook');
+  if (nb && nb.trim()) {
+    idx.push({
+      label: 'Зошит (локальний)',
+      icon: '📓',
+      sub: nb.replace(/<[^>]*>/g, ' ').trim().slice(0, 80),
+      type: 'Зошит',
+      action: () => openPanel('notebook')
+    });
+  }
+
+  return idx;
+}
+
+function searchOpen() {
+  _searchIndex = _buildSearchIndex();
+  _searchSelected = -1;
+  const overlay = document.getElementById('search-overlay');
+  const modal = document.getElementById('search-modal');
+  overlay.classList.add('open');
+  modal.style.display = 'block';
+  const inp = document.getElementById('search-input');
+  inp.value = '';
+  document.getElementById('search-results').innerHTML = _searchWelcome();
+  setTimeout(() => inp.focus(), 50);
+}
+
+function searchClose() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-modal').style.display = 'none';
+}
+
+function _searchWelcome() {
+  const quick = [
+    { label: 'Формули', icon: '📐', action: "show('formulas')" },
+    { label: 'Графік', icon: '📊', action: "showGraph()" },
+    { label: 'Квіз', icon: '🎯', action: "show('quiz')" },
+    { label: 'НМТ', icon: '🏆', action: "window.location.href='simulator.html'" },
+  ];
+  return `<div style="padding:14px 18px 8px;font-size:.8rem;color:#7aa0c8;font-weight:600;">Швидкий перехід</div>
+    <div style="display:flex;gap:8px;padding:0 18px 14px;flex-wrap:wrap;">
+      ${quick.map(q => `<button onclick="${q.action};searchClose()" style="background:#f0f4ff;border:1.5px solid #dde8ff;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:.85rem;color:#1a3e7c;font-weight:600;">${q.icon} ${q.label}</button>`).join('')}
+    </div>`;
+}
+
+function searchQuery(q) {
+  _searchSelected = -1;
+  const res = document.getElementById('search-results');
+  if (!q.trim()) { res.innerHTML = _searchWelcome(); return; }
+  const query = q.toLowerCase().trim();
+  const matches = _searchIndex.filter(item =>
+    item.label.toLowerCase().includes(query) ||
+    (item.sub && item.sub.toLowerCase().includes(query))
+  ).slice(0, 18);
+
+  if (!matches.length) {
+    res.innerHTML = `<div class="search-empty">😕 Нічого не знайдено для "<strong>${q}</strong>"</div>`;
+    return;
+  }
+
+  // Group by type
+  const groups = {};
+  matches.forEach(m => {
+    if (!groups[m.type]) groups[m.type] = [];
+    groups[m.type].push(m);
+  });
+
+  res.innerHTML = Object.entries(groups).map(([type, items]) => `
+    <div class="search-group-label">${type}</div>
+    ${items.map((item, i) => `
+      <div class="search-item" onclick="searchGo(${_searchIndex.indexOf(item)})" data-sidx="${_searchIndex.indexOf(item)}">
+        <span class="search-item-icon">${item.icon}</span>
+        <div class="search-item-body">
+          <div class="search-item-label">${_highlight(item.label, query)}</div>
+          ${item.sub ? `<div class="search-item-sub">${_highlight(item.sub, query)}</div>` : ''}
+        </div>
+        <span class="search-item-type">${type}</span>
+      </div>`).join('')}
+  `).join('');
+}
+
+function _highlight(text, query) {
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text;
+  return text.slice(0, idx) + `<mark style="background:#fff3a0;border-radius:2px;">${text.slice(idx, idx + query.length)}</mark>` + text.slice(idx + query.length);
+}
+
+function searchGo(idx) {
+  if (!_searchIndex || !_searchIndex[idx]) return;
+  searchClose();
+  _searchIndex[idx].action();
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    const modal = document.getElementById('search-modal');
+    if (modal && modal.style.display === 'none') searchOpen();
+    else searchClose();
+    return;
+  }
+  const modal = document.getElementById('search-modal');
+  if (!modal || modal.style.display === 'none') return;
+  if (e.key === 'Escape') { searchClose(); return; }
+  const items = document.querySelectorAll('#search-results .search-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    _searchSelected = Math.min(_searchSelected + 1, items.length - 1);
+    items.forEach((el, i) => el.classList.toggle('selected', i === _searchSelected));
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    _searchSelected = Math.max(_searchSelected - 1, 0);
+    items.forEach((el, i) => el.classList.toggle('selected', i === _searchSelected));
+  } else if (e.key === 'Enter' && _searchSelected >= 0) {
+    e.preventDefault();
+    const idx = parseInt(items[_searchSelected].dataset.sidx);
+    searchGo(idx);
+  }
+});
+
+// ===== SITE GUIDE =====
+const GUIDE_CARDS = [
+  { icon: '📐', title: 'Формули', desc: 'Алгебра, геометрія, тригонометрія по класах', action: () => show('formulas') },
+  { icon: '📊', title: 'Графік функцій', desc: 'Будуй і аналізуй графіки в реальному часі', action: () => showGraph() },
+  { icon: '🎯', title: 'Квіз', desc: 'Тренуйся по темах або пройди повний тест', action: () => show('quiz') },
+  { icon: '🏆', title: 'НМТ Симулятор', desc: 'Повноцінний тест як на реальному НМТ', action: () => { guideClose(); window.location.href='simulator.html'; } },
+  { icon: '📚', title: 'Підручники', desc: 'Онлайн підручники 7-11 клас безкоштовно', action: () => show('textbooks') },
+  { icon: '📓', title: 'Зошит', desc: 'Нотатки з лінійками/клітинками, збереження', action: () => togglePanel('notebook') },
+  { icon: '🧮', title: 'Калькулятор', desc: 'Зручний панельний калькулятор', action: () => togglePanel('calc') },
+  { icon: '🔍', title: 'Пошук', desc: 'Шукай по всьому сайту — Ctrl+K', action: () => { guideClose(); searchOpen(); } },
+];
+
+function guideOpen() {
+  const grid = document.getElementById('guide-grid');
+  grid.innerHTML = GUIDE_CARDS.map((c, i) => `
+    <button class="guide-card" onclick="guideGo(${i})">
+      <span class="guide-card-icon">${c.icon}</span>
+      <div class="guide-card-body">
+        <div class="guide-card-title">${c.title}</div>
+        <div class="guide-card-desc">${c.desc}</div>
+      </div>
+    </button>`).join('');
+  document.getElementById('guide-overlay').classList.add('open');
+  document.getElementById('guide-modal').style.display = 'flex';
+}
+
+function guideClose() {
+  document.getElementById('guide-overlay').classList.remove('open');
+  document.getElementById('guide-modal').style.display = 'none';
+}
+
+function guideGo(i) {
+  guideClose();
+  GUIDE_CARDS[i].action();
+}
+
 // ===== DARK MODE =====
 function toggleDark() {
   const isDark = document.body.classList.toggle('dark');

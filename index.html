@@ -63,6 +63,8 @@
     <nav>
       <button id="global-back-btn" class="global-back-btn" onclick="qmGoBack()" style="display:none;">←</button>
       <button id="global-home-btn" class="global-back-btn global-home-btn" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="display:none;">🏠 Головна</button>
+      <button id="search-btn" onclick="searchOpen()" title="Пошук (Ctrl+K)">🔍</button>
+      <button id="guide-btn" onclick="guideOpen()" title="Гід по сайту">❓</button>
       <button id="dark-toggle" onclick="toggleDark()">🌙</button>
     </nav>
 
@@ -857,6 +859,41 @@
   </div>
 
   <div id="mh-toast"></div>
+
+  <!-- ===== SEARCH MODAL ===== -->
+  <div id="search-overlay" class="search-overlay" onclick="searchClose()"></div>
+  <div id="search-modal" class="search-modal" style="display:none;">
+    <div class="search-header">
+      <span class="search-icon-lbl">🔍</span>
+      <input id="search-input" class="search-input" placeholder="Шукати формули, теми, задачі, нотатки..." oninput="searchQuery(this.value)" autocomplete="off" />
+      <button class="search-close-btn" onclick="searchClose()">✕</button>
+    </div>
+    <div id="search-results" class="search-results"></div>
+    <div class="search-hint">Натисни <kbd>Esc</kbd> щоб закрити · <kbd>Enter</kbd> щоб перейти · <kbd>Ctrl+K</kbd> щоб відкрити</div>
+  </div>
+
+  <!-- ===== GUIDE MODAL ===== -->
+  <div id="guide-overlay" class="search-overlay" onclick="guideClose()"></div>
+  <div id="guide-modal" class="guide-modal" style="display:none;">
+    <div class="guide-header">
+      <span>❓ Гід по MathHelper</span>
+      <button class="search-close-btn" onclick="guideClose()">✕</button>
+    </div>
+    <div class="guide-body">
+      <p class="guide-subtitle">Привіт! Ось що є на сайті — клікни щоб перейти:</p>
+      <div class="guide-grid" id="guide-grid"></div>
+      <div class="guide-tips">
+        <div class="guide-tip-title">💡 Корисні поради</div>
+        <ul>
+          <li>Натисни <kbd>Ctrl+K</kbd> щоб відкрити пошук</li>
+          <li>🌙 — перемикає темний режим</li>
+          <li>Перетягни панелі калькулятора і зошита за заголовок</li>
+          <li>В графіку — скролл миші для zoom, drag для переміщення</li>
+          <li>Квіз зберігає прогрес — можна повернутись і продовжити</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
   <script src="auth.js"></script>
