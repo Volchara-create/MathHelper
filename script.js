@@ -2291,13 +2291,19 @@ function initFloatCalcDrag() {
   if (!calc || !head) return;
 
   head.addEventListener('mousedown', e => {
-    const sx = e.clientX - calc.offsetLeft;
-    const sy = e.clientY - calc.offsetTop;
+    const rect = calc.getBoundingClientRect();
+    const sx = e.clientX - rect.left;
+    const sy = e.clientY - rect.top;
+    // Lock position immediately so right/bottom don't interfere
+    calc.style.left = rect.left + 'px';
+    calc.style.top = rect.top + 'px';
+    calc.style.right = 'auto';
+    calc.style.bottom = 'auto';
     const onMove = e => {
-      calc.style.left = (e.clientX - sx) + 'px';
-      calc.style.top = (e.clientY - sy) + 'px';
-      calc.style.right = 'auto';
-      calc.style.bottom = 'auto';
+      const newLeft = Math.max(0, Math.min(window.innerWidth - calc.offsetWidth, e.clientX - sx));
+      const newTop = Math.max(0, Math.min(window.innerHeight - calc.offsetHeight, e.clientY - sy));
+      calc.style.left = newLeft + 'px';
+      calc.style.top = newTop + 'px';
     };
     const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
     document.addEventListener('mousemove', onMove);
@@ -2343,6 +2349,7 @@ function openPanel(name) {
   if (resize) resize.style.display = '';
   _updatePanelResizes();
   _updateQmBtnActive(name, true);
+  _resizeGraphAfterPanel();
 }
 
 function closePanel(name) {
@@ -2353,6 +2360,16 @@ function closePanel(name) {
   if (resize) resize.style.display = 'none';
   _updatePanelResizes();
   _updateQmBtnActive(name, false);
+  _resizeGraphAfterPanel();
+}
+
+// Resize graph canvas after panel open/close (CSS transition takes ~300ms)
+function _resizeGraphAfterPanel() {
+  const graphSection = document.getElementById('graph');
+  if (!graphSection || !graphSection.classList.contains('active')) return;
+  setTimeout(() => {
+    if (typeof initOrResizeCanvas === 'function') initOrResizeCanvas();
+  }, 320);
 }
 
 // Update quick-menu button active state
@@ -2695,7 +2712,22 @@ function openFloatQuiz() {
   openFloatPanel('quiz');
 }
 
+// ===== DARK MODE =====
+function toggleDark() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('mh_dark', isDark ? '1' : '0');
+  document.getElementById('dark-toggle').textContent = isDark ? '☀️' : '🌙';
+  // Redraw graph canvas with correct colors
+  if (typeof drawGraph === 'function') drawGraph();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Restore dark mode preference
+  if (localStorage.getItem('mh_dark') === '1') {
+    document.body.classList.add('dark');
+    const btn = document.getElementById('dark-toggle');
+    if (btn) btn.textContent = '☀️';
+  }
   initPanelResizes();
   initPanelDrag();
   spNbLoad();
