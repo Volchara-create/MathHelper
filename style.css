@@ -1237,15 +1237,10 @@ body.dark footer{background:#0d1117;}
 body.dark .mathik-speech{background:#151c2a;border-color:#2563eb;color:#e0eaff;}
 body.dark .mathik-speech-text{color:#c8dcf8;}
 
-/* Owl flight animation */
-@keyframes owlSpin{0%{transform:rotate(0deg)}25%{transform:rotate(-30deg)}75%{transform:rotate(25deg)}100%{transform:rotate(0deg)}}
-@keyframes owlLand{0%{transform:scale(1.4) rotate(10deg)}100%{transform:scale(1) rotate(0deg)}}
-@keyframes owlGlow{0%,100%{box-shadow:0 0 0 6px rgba(37,99,235,.4),0 0 20px rgba(37,99,235,.3)}50%{box-shadow:0 0 0 12px rgba(37,99,235,.2),0 0 35px rgba(37,99,235,.4)}}
-/* Owl is BIG + glowing + on top of everything during flight */
-.mathik-bubble.owl-flying{
-  transform:scale(1.6)!important;
-  z-index:9990!important;
-  animation:owlGlow .6s ease infinite;
-}
-.mathik-bubble.owl-flying .mathik-avatar{display:inline-block;animation:owlSpin .5s ease infinite;font-size:1.5rem;}
-.mathik-bubble.owl-arrived .mathik-avatar{animation:owlLand .55s cubic-bezier(.34,1.8,.64,1) forwards;}
+/* Owl flight animation — NO transform in CSS (JS handles translate+scale via style.transform) */
+@keyframes owlGlow{0%,100%{box-shadow:0 0 0 6px rgba(37,99,235,.45),0 0 22px rgba(37,99,235,.35)}50%{box-shadow:0 0 0 14px rgba(37,99,235,.2),0 0 40px rgba(37,99,235,.5)}}
+@keyframes owlSpin{0%{rotate:0deg}25%{rotate:-30deg}75%{rotate:25deg}100%{rotate:0deg}}
+@keyframes owlLand{0%{scale:1.35;rotate:8deg}100%{scale:1;rotate:0deg}}
+.mathik-bubble.owl-flying{z-index:9990!important;animation:owlGlow .55s ease infinite;}
+.mathik-bubble.owl-flying .mathik-avatar{display:inline-block;animation:owlSpin .5s ease infinite;}
+.mathik-bubble.owl-arrived .mathik-avatar{animation:owlLand .5s cubic-bezier(.34,1.8,.64,1) forwards;}
