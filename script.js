@@ -3096,12 +3096,12 @@ const MATHIK_QA = [
 ];
 
 const MATHIK_CHIPS_DEFAULT = [
+  { label: '🎓 Туторіал сайту', msg: 'покажи туторіал' },
   { label: '📐 Формули', msg: 'формули' },
   { label: '🎯 Квіз', msg: 'квіз' },
   { label: '🏆 НМТ', msg: 'нмт' },
   { label: '📧 Контакт', msg: "зв'язок з розробником" },
   { label: '⚙️ Налаштування', msg: 'налаштування' },
-  { label: '🚀 Як почати', msg: 'як користуватись' },
 ];
 
 let _mathikOpen = false;
@@ -3118,7 +3118,7 @@ function mathikOpen() {
   document.getElementById('mathik-badge').style.display = 'none';
   if (!_mathikGreeted) {
     _mathikGreeted = true;
-    _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій помічник по MathHelper.<br>Запитай що тебе цікавить або вибери тему:');
+    _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій гід по MathHelper.<br>Вперше тут? Натисни <b>🎓 Туторіал</b> — покажу все за хвилину!');
     _mathikSetChips(MATHIK_CHIPS_DEFAULT);
   }
   setTimeout(() => document.getElementById('mathik-input').focus(), 100);
@@ -3145,20 +3145,6 @@ function mathikChip(msg) {
   setTimeout(() => _mathikReply(msg), 400);
 }
 
-function _mathikReply(text) {
-  const q = text.toLowerCase();
-  for (const qa of MATHIK_QA) {
-    if (qa.keys.some(k => q.includes(k))) {
-      _mathikAddMsg('bot', qa.answer);
-      if (qa.chips) _mathikSetChips(qa.chips.map(c => ({ label: c, msg: c.replace(/^.{2}\s/, '') })));
-      else _mathikSetChips(MATHIK_CHIPS_DEFAULT);
-      return;
-    }
-  }
-  _mathikAddMsg('bot', '🤔 Не зрозумів питання. Спробуй одну з тем або напиши інакше:');
-  _mathikSetChips(MATHIK_CHIPS_DEFAULT);
-}
-
 function _mathikAddMsg(role, html) {
   const msgs = document.getElementById('mathik-messages');
   const div = document.createElement('div');
@@ -3173,6 +3159,73 @@ function _mathikSetChips(chips) {
   el.innerHTML = chips.map(c =>
     `<button class="mathik-chip" onclick="mathikChip('${c.msg}')">${c.label}</button>`
   ).join('');
+}
+
+// ===== MATHIK TUTORIAL =====
+const MATHIK_TUTORIAL = [
+  '👋 Привіт! Я <b>Mathik</b> — твій гід по MathHelper. Покажу тобі все за 1 хвилину! 🚀',
+  '📐 <b>Крок 1 — Формули</b><br>Головний розділ сайту. Вибери свій клас (7–11) і отримаєш всі потрібні формули з алгебри, геометрії та тригонометрії. Є детальні пояснення з доведеннями! <a onclick="mathikClose();show(\'formulas\')">Відкрити →</a>',
+  '🎯 <b>Крок 2 — Квіз</b><br>Перевіряй себе! Обери тему або пройди повний тест. Після кожної відповіді — пояснення. Ідеально для повторення перед контрольною. <a onclick="mathikClose();show(\'quiz\')">Спробувати →</a>',
+  '🏆 <b>Крок 3 — НМТ Симулятор</b><br>30 питань, таймер 90 хвилин — як на реальному НМТ. Після тесту побачиш помилки і правильні відповіді. <a onclick="mathikClose();window.location.href=\'simulator.html\'">Відкрити →</a>',
+  '📊 <b>Крок 4 — Графіки</b><br>Будуй функції в реальному часі: y=x², sin(x), 2x+1 і будь-що інше. Скролл мишею — zoom, drag — переміщення. <a onclick="mathikClose();showGraph()">Відкрити →</a>',
+  '🧮📓 <b>Крок 5 — Панелі</b><br>Кнопки <b>🧮</b> і <b>📓</b> у верхньому меню відкривають калькулятор і зошит збоку. Їх можна тримати відкритими поруч з формулами. Перетягуй за заголовок!',
+  '🔍 <b>Крок 6 — Пошук</b><br>Натисни <b>/</b> на клавіатурі — і шукай будь-що: формули, теми, підручники, нотатки. Швидкий пошук по всьому сайту!',
+  '⚙️ <b>Крок 7 — Налаштування</b><br>Кнопка ⚙️ → вибери свій клас, щоденну ціль, увімкни нагадування о 18:00. Зареєструйся щоб зберігати прогрес!',
+  '🎉 <b>Готово!</b> Тепер ти знаєш все про MathHelper. Починай з формул свого класу і пройди перший квіз. Я завжди тут якщо є питання! 💪',
+];
+
+let _tutorialStep = 0;
+let _tutorialTimer = null;
+
+function mathikStartTutorial() {
+  _tutorialStep = 0;
+  _mathikSetChips([]);
+  _tutorialNextStep();
+}
+
+function _tutorialNextStep() {
+  if (_tutorialStep >= MATHIK_TUTORIAL.length) {
+    _mathikSetChips([
+      { label: '🔍 Пошук', msg: 'пошук' },
+      { label: '📐 Формули', msg: 'формули' },
+      { label: '🎯 Квіз', msg: 'квіз' },
+    ]);
+    return;
+  }
+  const msg = MATHIK_TUTORIAL[_tutorialStep];
+  _tutorialStep++;
+  _mathikAddMsg('bot', msg);
+  const isLast = _tutorialStep >= MATHIK_TUTORIAL.length;
+  if (!isLast) {
+    _mathikSetChips([{ label: '▶️ Далі', msg: '__tutorial_next__' }]);
+  }
+}
+
+function _mathikReply(text) {
+  if (text === '__tutorial_next__') {
+    _mathikSetChips([]);
+    _tutorialNextStep();
+    return;
+  }
+  // Tutorial keywords
+  if (text.toLowerCase().includes('туторіал') || text.toLowerCase().includes('tutorial') ||
+      text.toLowerCase().includes('навчи') || text.toLowerCase().includes('покажи') ||
+      text.toLowerCase().includes('гід') || text.toLowerCase().includes('огляд')) {
+    _mathikSetChips([]);
+    mathikStartTutorial();
+    return;
+  }
+  const q = text.toLowerCase();
+  for (const qa of MATHIK_QA) {
+    if (qa.keys.some(k => q.includes(k))) {
+      _mathikAddMsg('bot', qa.answer);
+      if (qa.chips) _mathikSetChips(qa.chips.map(c => ({ label: c, msg: c.replace(/^.{2}\s/, '') })));
+      else _mathikSetChips(MATHIK_CHIPS_DEFAULT);
+      return;
+    }
+  }
+  _mathikAddMsg('bot', '🤔 Не зрозумів питання. Спробуй одну з тем або напиши інакше:');
+  _mathikSetChips(MATHIK_CHIPS_DEFAULT);
 }
 
 // Legacy — keep guideOpen/guideClose for compatibility
