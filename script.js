@@ -2424,7 +2424,10 @@ function initPanelDrag() {
   const workspace = document.getElementById('app-workspace');
   if (!workspace) return;
   let dragging = null;
-  let ghost = null;
+  // Visual drop indicator (thin line, not a box)
+  const indicator = document.createElement('div');
+  indicator.style.cssText = 'flex:0 0 4px;width:4px;background:var(--accent);border-radius:4px;pointer-events:none;display:none;transition:none;';
+  workspace.appendChild(indicator);
 
   workspace.querySelectorAll('.side-panel-head').forEach(head => {
     head.addEventListener('mousedown', e => {
@@ -2433,45 +2436,58 @@ function initPanelDrag() {
       if (!panel || !panel.classList.contains('open')) return;
 
       dragging = panel;
-      dragging.style.opacity = '0.55';
+      dragging.style.boxShadow = '0 0 0 3px var(--accent)';
+      indicator.style.display = 'flex';
 
-      // Ghost placeholder — shows where panel will land
-      ghost = document.createElement('div');
-      ghost.style.cssText = `flex:0 0 ${panel.offsetWidth}px;width:${panel.offsetWidth}px;border:2px dashed #2563eb;border-radius:6px;background:rgba(37,99,235,.07);pointer-events:none;`;
-      panel.parentNode.insertBefore(ghost, panel);
+      const mainEl = workspace.querySelector('main');
 
       const onMove = e => {
-        const openPanels = Array.from(workspace.children).filter(
-          c => c !== dragging && c !== ghost && c.classList.contains('side-panel') && c.classList.contains('open')
-        );
+        const mainRect = mainEl.getBoundingClientRect();
+        const isRightSide = e.clientX > mainRect.right - 50;
+        const isLeftSide = e.clientX < mainRect.left + 50;
 
-        let inserted = false;
-        for (const target of openPanels) {
-          const rect = target.getBoundingClientRect();
-          const mid = rect.left + rect.width / 2;
-          if (e.clientX < mid) {
-            // Insert before this target
-            workspace.insertBefore(dragging, target);
-            workspace.insertBefore(ghost, dragging);
-            inserted = true;
-            break;
+        if (isRightSide) {
+          // Move panel to the right of main
+          mainEl.after(dragging);
+          dragging.after(indicator);
+          dragging.style.borderRight = '2px solid #b3d9ff';
+          dragging.style.borderLeft = 'none';
+        } else {
+          // Left side: find correct position among left panels
+          const leftPanels = Array.from(workspace.children).filter(
+            c => c !== dragging && c !== indicator && c !== mainEl && c.classList.contains('side-panel') && c.classList.contains('open')
+          );
+          let inserted = false;
+          for (const target of leftPanels) {
+            const rect = target.getBoundingClientRect();
+            if (e.clientX < rect.left + rect.width / 2) {
+              workspace.insertBefore(indicator, target);
+              workspace.insertBefore(dragging, indicator);
+              inserted = true;
+              break;
+            }
           }
-        }
-        if (!inserted && openPanels.length > 0) {
-          // Insert after last open panel
-          const last = openPanels[openPanels.length - 1];
-          last.after(dragging);
-          dragging.after(ghost);
+          if (!inserted) {
+            // Before main
+            mainEl.before(dragging);
+            dragging.after(indicator);
+          }
+          dragging.style.borderRight = '2px solid #b3d9ff';
+          dragging.style.borderLeft = 'none';
         }
       };
 
       const onUp = () => {
-        if (dragging) dragging.style.opacity = '';
-        if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
-        ghost = null;
+        if (dragging) {
+          dragging.style.boxShadow = '';
+          dragging.style.borderRight = '';
+          dragging.style.borderLeft = '';
+        }
+        indicator.style.display = 'none';
         dragging = null;
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
+        _updatePanelResizes();
       };
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);

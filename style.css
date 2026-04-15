@@ -15,6 +15,8 @@
     /* ===== SIDE PANELS ===== */
     .side-panel{flex:0 0 0;width:0;display:flex;flex-direction:column;background:#fff;border-right:2px solid #b3d9ff;overflow:hidden;transition:none;position:relative;}
     .side-panel.open{flex:0 0 280px;width:280px;}
+    /* Panel placed after <main> (right side) gets left border instead */
+    main ~ .side-panel{border-right:none;border-left:2px solid #b3d9ff;}
     .side-panel-head{background:var(--blue);color:#fff;font-size:13px;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;cursor:grab;user-select:none;}
     .side-panel-head:active{cursor:grabbing;}
     .sp-head-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:13px;cursor:pointer;padding:2px 7px;border-radius:5px;transition:.15s;}
@@ -35,6 +37,7 @@
     .side-panel.drag-target{border:2px dashed var(--accent)!important;}
     section{display:none;}
     section.active{display:block;}
+    section#graph.active{display:flex;}
     .category-row{display:none;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:30px;}
     .category-card{flex:0 0 calc(16% - 12px);background:var(--blue-light);border-radius:12px;padding:14px;box-shadow:0 3px 8px rgba(0,0,0,0.1);cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;transition:0.3s;font-weight:600;color:var(--text);min-width:130px;}
     .category-card:hover{background:var(--accent);color:#fff;transform:translateY(-3px);}
@@ -65,8 +68,8 @@
     .formula-in-modal-expr{font-family:'Fira Code',monospace;font-size:0.95rem;color:var(--text);}
 
     /* ===== WORKSPACE (замість графіка) ===== */
-    #graph{padding:0;}
-    .graph-container{display:flex;gap:0;height:calc(100vh - 130px);min-height:500px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;position:relative;}
+    #graph{padding:0;display:flex;flex-direction:column;height:100%;overflow:hidden;}
+    .graph-container{display:flex;gap:0;flex:1;min-height:400px;background:#fff;border-radius:0;box-shadow:0 4px 12px rgba(0,0,0,0.1);overflow:hidden;position:relative;}
 
     /* ліва панель інструментів */
     .ws-toolbar{flex:0 0 64px;background:var(--blue-light);border-right:2px solid #b3d9ff;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;overflow:hidden;}
