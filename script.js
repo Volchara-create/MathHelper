@@ -3324,6 +3324,29 @@ function _aiFormatReply(text) {
     .replace(/\n/g, '<br>');
 }
 
+async function _aiRequest(msg) {
+  const token = localStorage.getItem('mh_token');
+  return fetch('/api/ai-chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ message: msg, context: _aiGetContext(), history: _aiHistory.slice(-4) })
+  });
+}
+
+async function _aiCountdown(seconds, msgDiv) {
+  return new Promise(resolve => {
+    let left = seconds;
+    const tick = () => {
+      if (!document.getElementById('ai-loading-msg')) { resolve('cancelled'); return; }
+      msgDiv.querySelector('.ai-bubble').innerHTML = `⏳ Ліміт запитів — повторю автоматично через <b>${left}</b> сек...`;
+      if (left <= 0) { resolve('done'); return; }
+      left--;
+      setTimeout(tick, 1000);
+    };
+    tick();
+  });
+}
+
 async function aiSend() {
   if (_aiLoading) return;
   const input = document.getElementById('ai-input');
@@ -3340,15 +3363,24 @@ async function aiSend() {
   _aiLoading = true;
   const btn = document.getElementById('ai-send-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
-  _aiAddMsg('bot', '<span class="ai-typing">●●●</span>', true);
+  const loadingDiv = _aiAddMsg('bot', '<span class="ai-typing">●●●</span>', true);
+
+  const _finish = () => {
+    _aiLoading = false;
+    if (btn) { btn.disabled = false; btn.textContent = '➤'; }
+  };
 
   try {
-    const token = localStorage.getItem('mh_token');
-    const res = await fetch('/api/ai-chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ message: msg, context: _aiGetContext(), history: _aiHistory.slice(-6) })
-    });
+    let res = await _aiRequest(msg);
+
+    // Auto-retry on rate limit: countdown then retry once
+    if (res.status === 429) {
+      await _aiCountdown(62, loadingDiv);
+      document.getElementById('ai-loading-msg')?.querySelector('.ai-bubble') &&
+        (loadingDiv.querySelector('.ai-bubble').innerHTML = '<span class="ai-typing">●●●</span>');
+      res = await _aiRequest(msg); // second attempt
+    }
+
     const data = await res.json();
     document.getElementById('ai-loading-msg')?.remove();
 
@@ -3357,7 +3389,7 @@ async function aiSend() {
       return;
     }
     if (res.status === 429) {
-      _aiAddMsg('bot', '⏳ Забагато запитів. Зачекай хвилину і спробуй ще раз.');
+      _aiAddMsg('bot', '⏳ Ліміт вичерпано. Спробуй ще раз пізніше.');
       return;
     }
     const reply = data.reply || data.error || 'Помилка. Спробуй ще раз.';
@@ -3367,8 +3399,7 @@ async function aiSend() {
     document.getElementById('ai-loading-msg')?.remove();
     _aiAddMsg('bot', '❌ Немає зʼєднання. Перевір інтернет і спробуй ще раз.');
   } finally {
-    _aiLoading = false;
-    if (btn) { btn.disabled = false; btn.textContent = '➤'; }
+    _finish();
   }
 }
 
