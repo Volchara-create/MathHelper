@@ -6,6 +6,7 @@ const { PrismaClient } = require('@prisma/client');
 const { OAuth2Client } = require('google-auth-library');
 const webpush = require('web-push');
 const cron = require('node-cron');
+const Anthropic = require('@anthropic-ai/sdk');
 require('dotenv').config();
 
 webpush.setVapidDetails(
@@ -344,6 +345,67 @@ cron.schedule('0 18 * * *', async () => {
     }
   }
 }, { timezone: 'Europe/Kyiv' });
+
+// ===== AI MATH ASSISTANT =====
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const TOPIC_NAMES = {
+  algebra: 'Алгебра', geometry: 'Геометрія', statistics: 'Статистика',
+  functions: 'Функції та графіки', nmt: 'НМТ-задачі', trig: 'Тригонометрія'
+};
+
+app.post('/api/ai-chat', authMiddleware, async (req, res) => {
+  const { message, context, history = [] } = req.body;
+  if (!message || message.trim().length < 2)
+    return res.status(400).json({ error: 'Порожнє повідомлення' });
+  if (!process.env.ANTHROPIC_API_KEY)
+    return res.status(503).json({ error: 'AI-помічник тимчасово недоступний' });
+
+  const { grade = '?', name = 'Учень', weakTopics = {}, quizStats = '', nmtResult = '' } = context || {};
+
+  const weakList = Object.entries(weakTopics)
+    .filter(([, v]) => v > 0)
+    .map(([k, v]) => `${TOPIC_NAMES[k] || k} (${v} помилок)`)
+    .join(', ') || 'немає даних';
+
+  const systemPrompt = `Ти — MathHelper AI, розумний математичний репетитор-агент для учня ${grade} класу в Україні.
+
+ПРОФІЛЬ УЧНЯ:
+- Ім'я: ${name}
+- Клас: ${grade}
+- Слабкі теми (помилки в квізі): ${weakList}
+${quizStats ? `- Активність у квізі: ${quizStats}` : ''}
+${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
+
+ТВОЇ ПРАВИЛА:
+1. Відповідай ТІЛЬКИ на математичні питання (алгебра, геометрія, тригонометрія, функції, статистика, НМТ)
+2. Завжди українською мовою, без суржику
+3. Пояснюй ПОКРОКОВО — кожен крок з нового рядка, пронумеровано
+4. Якщо учень помилявся у темі — нагадай типову помилку при поясненні
+5. Якщо питання НЕ математика — скажи: "Я математичний репетитор 🦉 Можу допомогти лише з математикою!"
+6. Формули пиши чітко: x², x³, √x, π, ≤, ≥, ∞, →
+7. Давай ОДИН конкретний приклад після пояснення теорії
+8. Максимум 250 слів — коротко, чітко, зрозуміло`;
+
+  try {
+    const messages = [
+      ...history.slice(-6).map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: message }
+    ];
+
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5',
+      max_tokens: 600,
+      system: systemPrompt,
+      messages
+    });
+
+    res.json({ reply: response.content[0].text });
+  } catch (e) {
+    console.error('AI error:', e.message);
+    res.status(500).json({ error: 'Помилка AI. Спробуй ще раз.' });
+  }
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '::', () => console.log(`Server running on port ${PORT}`));

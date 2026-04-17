@@ -21,7 +21,7 @@
   <meta property="og:locale" content="uk_UA">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=2026041713">
+  <link rel="stylesheet" href="style.css?v=2026041714">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <script>
@@ -275,6 +275,42 @@
           <button onclick="show('about')" class="hero-about-btn">ℹ️ Про проєкт</button>
         </div>
 
+      </div>
+    </section>
+
+    <!-- ===== AI MATH ASSISTANT ===== -->
+    <section id="ai">
+      <div class="ai-wrap">
+        <div class="ai-header">
+          <div>
+            <h2 class="ai-title">🤖 AI Математичний репетитор</h2>
+            <div class="ai-context-bar" id="ai-context-bar">Завантаження профілю...</div>
+          </div>
+        </div>
+
+        <div class="ai-suggestions" id="ai-suggestions">
+          <button class="ai-chip" onclick="aiSuggest('Поясни теорему Піфагора з прикладом')">📐 Теорема Піфагора</button>
+          <button class="ai-chip" onclick="aiSuggest('Як розвʼязати квадратне рівняння?')">📊 Квадратне рівняння</button>
+          <button class="ai-chip" onclick="aiSuggest('Що таке похідна і як її знаходити?')">📈 Похідна</button>
+          <button class="ai-chip" onclick="aiSuggest('Поясни sin, cos і tg простими словами')">🔺 sin, cos, tg</button>
+          <button class="ai-chip" onclick="aiSuggest('Що перевіряє НМТ з математики і як підготуватись?')">🏆 НМТ поради</button>
+          <button class="ai-chip" onclick="aiAnalyze()">📊 Проаналізуй мій прогрес</button>
+        </div>
+
+        <div class="ai-messages" id="ai-messages">
+          <div class="ai-msg ai-msg--bot">
+            <span class="ai-avatar">🤖</span>
+            <div class="ai-bubble">Привіт! Я твій персональний математичний репетитор.<br>Завантажую твій профіль — зможу давати поради з урахуванням твоїх слабких тем. Питай будь-що з математики! 📐</div>
+          </div>
+        </div>
+
+        <div class="ai-input-row">
+          <textarea id="ai-input" class="ai-input" placeholder="Запитай про будь-яку математичну тему..." rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend();}"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+          <button class="ai-send-btn" onclick="aiSend()" id="ai-send-btn">➤</button>
+        </div>
+        <div class="ai-footer">Shift+Enter — новий рядок · відповідає на основі твого класу і слабких тем</div>
       </div>
     </section>
 
@@ -758,7 +794,7 @@
     <a href="simulator.html" class="qm-btn">
       <span class="qm-icon">🎯</span><span class="qm-label">НМТ</span>
     </a>
-    <button class="qm-btn qm-ai" onclick="show('pricing')" title="Скоро">
+    <button class="qm-btn qm-ai" onclick="show('ai');_aiUpdateContextBar()" title="AI Репетитор">
       <span class="qm-icon">🤖</span><span class="qm-label">ШІ</span>
     </button>
     <button class="qm-btn qm-pro" onclick="show('pricing')">
@@ -968,7 +1004,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=2026041713"></script>
+  <script src="script.js?v=2026041714"></script>
   <script src="auth.js?v=2026041713"></script>
 </body>
 </html>

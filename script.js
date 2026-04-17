@@ -3111,6 +3111,127 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// ===== AI MATH ASSISTANT =====
+let _aiHistory = [];
+let _aiLoading = false;
+
+function _aiGetContext() {
+  const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
+  const mistakes = JSON.parse(localStorage.getItem('mh_quiz_mistakes') || '{}');
+  const statsRaw = JSON.parse(localStorage.getItem('mh_quiz_stats_v2') || '{}');
+
+  // Count total questions answered in last 30 days
+  const now = new Date();
+  let totalQ = 0, totalW = 0;
+  Object.entries(statsRaw).forEach(([date, topics]) => {
+    const d = new Date(date);
+    if ((now - d) / 86400000 <= 30) {
+      Object.values(topics).forEach(s => { totalQ += s.total || 0; totalW += s.wrong || 0; });
+    }
+  });
+  const quizStats = totalQ > 0 ? `${totalQ} питань за місяць, ${Math.round((1-totalW/totalQ)*100)}% правильно` : '';
+
+  // NMT result from localStorage
+  const nmtScore = localStorage.getItem('mh_nmt_last_score');
+  const nmtResult = nmtScore ? `${nmtScore}/30 правильних` : '';
+
+  return {
+    grade: user.grade || '?',
+    name: user.name || 'Учень',
+    weakTopics: mistakes,
+    quizStats,
+    nmtResult
+  };
+}
+
+function _aiUpdateContextBar() {
+  const ctx = _aiGetContext();
+  const bar = document.getElementById('ai-context-bar');
+  if (!bar) return;
+  const weakNames = { algebra:'Алгебра', geometry:'Геометрія', statistics:'Статистика', functions:'Функції', nmt:'НМТ', trig:'Тригонометрія' };
+  const weakStr = Object.entries(ctx.weakTopics)
+    .filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]).slice(0,3)
+    .map(([k]) => weakNames[k] || k).join(', ') || 'немає даних';
+  bar.textContent = `${ctx.grade} клас · Слабкі теми: ${weakStr}${ctx.quizStats ? ' · ' + ctx.quizStats : ''}`;
+}
+
+function _aiAddMsg(role, html, isLoading) {
+  const msgs = document.getElementById('ai-messages');
+  if (!msgs) return null;
+  const div = document.createElement('div');
+  div.className = 'ai-msg ai-msg--' + role;
+  if (isLoading) div.id = 'ai-loading-msg';
+  div.innerHTML = role === 'bot'
+    ? `<span class="ai-avatar">🤖</span><div class="ai-bubble">${html}</div>`
+    : `<div class="ai-bubble ai-bubble--user">${html}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function _aiFormatReply(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+    .replace(/\*(.+?)\*/g, '<i>$1</i>')
+    .replace(/\n/g, '<br>');
+}
+
+async function aiSend() {
+  if (_aiLoading) return;
+  const input = document.getElementById('ai-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('ai-suggestions').style.display = 'none';
+
+  _aiAddMsg('user', msg.replace(/</g,'&lt;'));
+  _aiHistory.push({ role: 'user', content: msg });
+
+  _aiLoading = true;
+  const btn = document.getElementById('ai-send-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+  _aiAddMsg('bot', '<span class="ai-typing">●●●</span>', true);
+
+  try {
+    const token = localStorage.getItem('mh_token');
+    const res = await fetch('/api/ai-chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ message: msg, context: _aiGetContext(), history: _aiHistory.slice(-6) })
+    });
+    const data = await res.json();
+    document.getElementById('ai-loading-msg')?.remove();
+
+    const reply = data.reply || data.error || 'Помилка. Спробуй ще раз.';
+    _aiAddMsg('bot', _aiFormatReply(reply));
+    if (data.reply) _aiHistory.push({ role: 'assistant', content: reply });
+  } catch {
+    document.getElementById('ai-loading-msg')?.remove();
+    _aiAddMsg('bot', '❌ Немає зʼєднання. Перевір інтернет і спробуй ще раз.');
+  } finally {
+    _aiLoading = false;
+    if (btn) { btn.disabled = false; btn.textContent = '➤'; }
+  }
+}
+
+function aiSuggest(text) {
+  const input = document.getElementById('ai-input');
+  if (input) { input.value = text; input.focus(); }
+  aiSend();
+}
+
+function aiAnalyze() {
+  const ctx = _aiGetContext();
+  const weakNames = { algebra:'Алгебра', geometry:'Геометрія', statistics:'Статистика', functions:'Функції', nmt:'НМТ', trig:'Тригонометрія' };
+  const weakStr = Object.entries(ctx.weakTopics).filter(([,v])=>v>0).map(([k,v])=>`${weakNames[k]||k}: ${v} помилок`).join(', ');
+  const prompt = weakStr
+    ? `Я учень ${ctx.grade} класу. Мої слабкі теми в квізі: ${weakStr}. ${ctx.quizStats ? 'Статистика: ' + ctx.quizStats + '.' : ''} Дай мені персональний план підготовки на тиждень.`
+    : `Я учень ${ctx.grade} класу. Поки немає статистики помилок. Що порадиш для підготовки до НМТ?`;
+  aiSuggest(prompt);
+}
+
 // ===== MATHIK CHAT =====
 const MATHIK_QA = [
   {
