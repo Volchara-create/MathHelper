@@ -3118,25 +3118,52 @@ let _sigmaMode = false; // true after first AI visit transformation
 function openAISection() {
   show('ai');
   _aiUpdateContextBar();
-  _sigmaRestoreBtn(); // always restore metallic owl on button if already transformed before
   const today = new Date().toISOString().slice(0, 10);
   const lastPlayed = localStorage.getItem('mh_sigma_date');
-  if (lastPlayed !== today && !_sigmaMode) {
+  if (lastPlayed !== today) {
+    // First click today: big transformation
     localStorage.setItem('mh_sigma_date', today);
     setTimeout(() => _sigmaTransformSequence(), 400);
+  } else {
+    // Already transformed today: restore button + repair animation
+    const aiBtn = document.querySelector('.qm-ai');
+    if (aiBtn) {
+      aiBtn.classList.add('sigma-btn-active');
+      _owlRepairAnimation(aiBtn);
+    }
   }
 }
 
 function _sigmaRestoreBtn() {
-  // If already transformed today, restore metallic owl on button (persists across section switches)
   const today = new Date().toISOString().slice(0, 10);
   if (localStorage.getItem('mh_sigma_date') === today) {
     const aiBtn = document.querySelector('.qm-ai');
-    if (aiBtn && !aiBtn.classList.contains('sigma-btn-active')) {
-      aiBtn.querySelector('.qm-icon').textContent = '🦉';
+    if (aiBtn) {
       aiBtn.classList.add('sigma-btn-active');
+      _owlApplyRust(aiBtn); // apply rust based on time of day
     }
   }
+}
+
+function _owlApplyRust(aiBtn) {
+  // Calculate rust level: 0% at midnight, 100% by end of day
+  const now = new Date();
+  const secondsElapsed = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const dayFraction = secondsElapsed / 86400; // 0.0 → 1.0
+  const owl = aiBtn ? aiBtn.querySelector('.owl-svg') : null;
+  if (!owl) return;
+  // Sync rust animation to current time of day using negative delay
+  owl.style.animation = 'owlRust 86400s linear forwards';
+  owl.style.animationDelay = `-${Math.floor(secondsElapsed)}s`;
+}
+
+function _owlRepairAnimation(aiBtn) {
+  const owl = aiBtn ? aiBtn.querySelector('.owl-svg') : null;
+  if (!owl) return;
+  // Stop rust, flash repair, restart rust from current point
+  owl.style.animation = 'owlRepair 1.2s ease-out forwards';
+  owl.style.animationDelay = '0s';
+  setTimeout(() => _owlApplyRust(aiBtn), 1300);
 }
 
 function _sigmaTransformSequence() {
@@ -3167,10 +3194,10 @@ function _sigmaTransformSequence() {
       setTimeout(() => {
         _mathikHideSpeech();
 
-        // AI button icon becomes metallic owl (MathΣimus stays here)
+        // AI button becomes active (SVG owl already there from HTML)
         if (aiBtn) {
-          aiBtn.querySelector('.qm-icon').textContent = '🦾';
           aiBtn.classList.add('sigma-btn-active');
+          _owlApplyRust(aiBtn);
         }
 
         // Regular Mathik flies back home and restores normal look
