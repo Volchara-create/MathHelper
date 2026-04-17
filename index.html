@@ -21,7 +21,7 @@
   <meta property="og:locale" content="uk_UA">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=2026041702">
+  <link rel="stylesheet" href="style.css?v=2026041703">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <script>
@@ -905,11 +905,16 @@
   <!-- ===== MATHIK TUTORIAL SPEECH BUBBLE ===== -->
   <div id="mathik-speech" class="mathik-speech" style="display:none;">
     <button class="mathik-speech-skip" onclick="mathikTutorialAbort()" title="Пропустити">✕</button>
+    <div class="mathik-speech-progress" id="mathik-speech-progress"></div>
+    <div class="mathik-speech-bar"><div class="mathik-speech-bar-fill" id="mathik-speech-bar-fill" style="width:0%"></div></div>
     <div class="mathik-speech-text" id="mathik-speech-text"></div>
-    <button class="mathik-speech-next" id="mathik-speech-next" onclick="mathikTutorialNext()">▶ Далі</button>
+    <div class="mathik-speech-footer">
+      <span id="mathik-speech-hint" style="font-size:.72rem;color:#aaa;"></span>
+      <button class="mathik-speech-next" id="mathik-speech-next" onclick="mathikTutorialNext()">▶ Далі</button>
+    </div>
   </div>
 
-  <script src="script.js?v=2026041702"></script>
-  <script src="auth.js?v=2026041702"></script>
+  <script src="script.js?v=2026041703"></script>
+  <script src="auth.js?v=2026041703"></script>
 </body>
 </html>
