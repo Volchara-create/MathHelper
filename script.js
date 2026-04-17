@@ -123,7 +123,7 @@ const ALGEBRA_CATS = [
     {name:'Знижка',expr:'Ціна 200грн, знижка 10% → 200 × 0.1 = 20грн знижки',
       detail:{explanation:'Знижка — це зменшення ціни на певний відсоток. Нова ціна = стара × (1 − знижка/100).',example:'Куртка 1200грн, знижка 25%\nЗнижка: 1200 × 0.25 = 300грн\nНова ціна: 1200 − 300 = 900грн'}},
   ]},
-  { name:'⚡ Степені (цілі)', minGrade:7, maxGrade:7, formulas:[
+  { name:'⚡ Степені (цілі)', minGrade:7, formulas:[
     {name:'Множення',expr:'aⁿ · aᵐ = aⁿ⁺ᵐ',
       detail:{explanation:'При множенні степенів з однаковою основою показники додаються.',proof:'a³ · a² = (a·a·a) · (a·a) = a⁵\nЗагально: n доданків + m доданків = n+m доданків',example:'2³ · 2⁴ = 2⁷ = 128'}},
     {name:'Ділення',expr:'aⁿ ÷ aᵐ = aⁿ⁻ᵐ',
@@ -137,7 +137,7 @@ const ALGEBRA_CATS = [
     {name:'Степінь добутку',expr:'(a·b)ⁿ = aⁿ · bⁿ',
       detail:{explanation:'Степінь добутку дорівнює добутку степенів кожного множника.',proof:'(a·b)² = (a·b)(a·b) = a·a·b·b = a²·b²\nАналогічно для будь-якого n.',example:'(2·3)⁴ = 2⁴ · 3⁴ = 16 · 81 = 1296\n(−2x)³ = (−2)³·x³ = −8x³'}},
   ]},
-  { name:'✖️ Скорочене множення', minGrade:7, maxGrade:8, formulas:[
+  { name:'✖️ Скорочене множення', minGrade:7, formulas:[
     {name:'Квадрат суми',expr:'(a+b)² = a² + 2ab + b²',
       detail:{explanation:'Квадрат суми двох чисел — це квадрат першого, плюс подвійний добуток, плюс квадрат другого.',proof:'(a+b)² = (a+b)(a+b)\n= a·a + a·b + b·a + b·b\n= a² + 2ab + b²',example:'(3+5)² = 9 + 30 + 25 = 64 ✓ (адже 8² = 64)'}},
     {name:'Квадрат різниці',expr:'(a−b)² = a² − 2ab + b²',
@@ -153,7 +153,7 @@ const ALGEBRA_CATS = [
     {name:'Різниця кубів',expr:'a³ − b³ = (a−b)(a²+ab+b²)',
       detail:{explanation:'Різниця кубів розкладається в добуток різниці та неповного квадрата суми.',proof:'Перевірка: (a−b)(a²+ab+b²)\n= a³+a²b+ab²−a²b−ab²−b³ = a³−b³ ✓',example:'x³−8 = (x−2)(x²+2x+4)\n27−1 = (3−1)(9+3+1) = 2×13 = 26 ✓'}},
   ]},
-  { name:'📈 Лінійна функція', minGrade:7, maxGrade:7, formulas:[
+  { name:'📈 Лінійна функція', minGrade:7, formulas:[
     {name:'Формула',expr:'y = kx + b',
       detail:{explanation:'Лінійна функція задає пряму лінію на графіку. k — нахил прямої, b — де пряма перетинає вісь OY.',example:'y = 2x + 1: при x=0 → y=1; при x=3 → y=7\nЦе пряма, що зростає (k=2>0)'}},
     {name:'Кутовий коефіцієнт',expr:'k > 0 → зростає;  k < 0 → спадає',
@@ -165,7 +165,7 @@ const ALGEBRA_CATS = [
   ]},
 
   // === 8 КЛАС ===
-  { name:'√ Ірраціональні вирази', minGrade:8, maxGrade:9, formulas:[
+  { name:'√ Ірраціональні вирази', minGrade:8, formulas:[
     {name:'Корінь добутку',expr:'√(a·b) = √a · √b',
       detail:{explanation:'Квадратний корінь з добутку дорівнює добутку коренів. Умова: a ≥ 0, b ≥ 0.',example:'√(4·9) = √4 · √9 = 2·3 = 6\n√(25·16) = 5·4 = 20'}},
     {name:'Корінь квадрату',expr:'√(a²) = |a|',
@@ -193,7 +193,7 @@ const ALGEBRA_CATS = [
     {name:'D < 0 — коренів немає',expr:'якщо D < 0, рівняння не має розв\'язків',
       detail:{explanation:'Коли D<0, парабола не перетинає вісь OX — рівняння не має дійсних коренів (є тільки комплексні, але їх не вивчають у школі).',example:'x²+x+1=0: D=1−4=−3<0\nКоренів немає'}},
   ]},
-  { name:'🔁 Квадратична функція', minGrade:8, maxGrade:9, formulas:[
+  { name:'🔁 Квадратична функція', minGrade:8, formulas:[
     {name:'Формула',expr:'y = ax² + bx + c',
       detail:{explanation:'Квадратична функція задає параболу. a визначає напрямок гілок, c — де пряма перетинає OY.',example:'y = x²: найпростіша парабола, вершина в (0,0)\ny = −x²+4: перевернута парабола, вершина в (0,4)'}},
     {name:'Вершина параболи',expr:'x₀ = −b/(2a);   y₀ = f(x₀)',
@@ -209,19 +209,25 @@ const ALGEBRA_CATS = [
   ]},
 
   // === 9 КЛАС ===
-  { name:'📊 Нерівності', minGrade:9, maxGrade:10, formulas:[
-    {name:'Модуль',expr:'|x| < a  ↔  −a < x < a',
-      detail:{explanation:'Модуль — це відстань від нуля. |x| < a означає, що x знаходиться в межах від −a до +a.',example:'|x| < 3  →  −3 < x < 3\n|x−2| < 1  →  1 < x < 3'}},
-    {name:'Модуль (більше)',expr:'|x| > a  ↔  x < −a або x > a',
-      detail:{explanation:'Якщо відстань від нуля більша за a, то x або "дуже лівий", або "дуже правий".',example:'|x| > 2  →  x<−2 або x>2'}},
-    {name:'Квадратна нерівність',expr:'ax² + bx + c > 0  або  < 0',
-      detail:{explanation:'Розв\'язати квадратну нерівність = знайти де парабола вища або нижча від осі OX. Спочатку знаходимо корені, потім дивимось на знак a.',example:'x²−5x+6>0: корені 2 і 3\na=1>0 → парабола вгору → відповідь: x<2 або x>3'}},
-    {name:'D > 0: коріння x₁ < x₂',expr:'ax²+bx+c > 0: x < x₁ або x > x₂ (якщо a>0)',
-      detail:{explanation:'При a>0 парабола вгору. Вона вища за нуль по боках від коренів — "зовні" коренів.',example:'x²−x−6>0: корені −2 і 3\nВідповідь: x<−2 або x>3'}},
-    {name:'D > 0, a < 0',expr:'розв\'язок: x₁ < x < x₂',
-      detail:{explanation:'При a<0 парабола вниз. Вона вища за нуль "між" коренями.',example:'−x²+5x−6>0: корені 2 і 3\nВідповідь: 2<x<3'}},
-    {name:'D < 0, a > 0',expr:'розв\'язок: x ∈ ℝ (уся числова вісь)',
-      detail:{explanation:'Якщо парабола не перетинає OX (D<0) і гілки вгору — вона завжди додатня. Нерівність >0 виконується для всіх x.',example:'x²+x+1>0: D=1−4=−3<0, a>0\nВідповідь: x ∈ ℝ (всі числа)'}},
+  { name:'🔢 Нерівності з модулем', minGrade:9, formulas:[
+    {name:'|x| < a (менше)',expr:'|x| < a  ↔  −a < x < a',
+      detail:{explanation:'Модуль — це відстань від нуля на числовій прямій. |x| < a означає: x знаходиться між −a і +a, тобто ближче нуля ніж a.',proof:'|x| = відстань від 0\n|x| < a → −a < x < a',example:'|x| < 3  →  −3 < x < 3\n|x−2| < 1  →  1 < x < 3'}},
+    {name:'|x| > a (більше)',expr:'|x| > a  ↔  x < −a або x > a',
+      detail:{explanation:'Якщо відстань від нуля більша за a, то x або "ліворуч" від −a, або "праворуч" від +a. Два окремих проміжки!',example:'|x| > 2  →  x<−2 або x>2\n|x+1| > 3  →  x<−4 або x>2'}},
+    {name:'|x| = a',expr:'x = a  або  x = −a',
+      detail:{explanation:'Рівняння з модулем: дві точки на числовій прямій на відстані a від нуля.',example:'|x| = 5  →  x=5 або x=−5\n|x−1| = 3  →  x=4 або x=−2'}},
+  ]},
+  { name:'📐 Квадратні нерівності', minGrade:9, formulas:[
+    {name:'Алгоритм розв\'язання',expr:'ax² + bx + c > 0  або  < 0',
+      detail:{explanation:'Кроки: 1) знайти корені рівняння (дискримінант); 2) визначити знак a; 3) намалювати параболу і визначити де вона вища/нижча за OX.',example:'x²−5x+6>0: D=1>0, корені 2 і 3\na=1>0 → парабола вгору\nВідповідь: x<2 або x>3'}},
+    {name:'a>0, D>0: x₁<x₂',expr:'> 0: x<x₁ або x>x₂\n< 0: x₁<x<x₂',
+      detail:{explanation:'При a>0 парабола — "чаша" (вгору). Вона вища за OX зовні коренів, нижча — між коренями.',example:'x²−x−6>0 (корені −2 і 3):\nВідповідь: x<−2 або x>3\n\nx²−x−6<0:\nВідповідь: −2<x<3'}},
+    {name:'a<0, D>0: x₁<x₂',expr:'> 0: x₁<x<x₂\n< 0: x<x₁ або x>x₂',
+      detail:{explanation:'При a<0 парабола перевернута ("гора"). Вища за OX між коренями, нижча — зовні.',example:'−x²+5x−6>0 (корені 2 і 3):\nВідповідь: 2<x<3'}},
+    {name:'D<0, a>0',expr:'ax²+bx+c > 0 для всіх x ∈ ℝ',
+      detail:{explanation:'Якщо парабола не перетинає OX (D<0) і гілки вгору — вона завжди вища за нуль.',example:'x²+x+1>0: D=1−4=−3<0, a>0\nВідповідь: x ∈ ℝ (всі числа — нерівність завжди вірна)'}},
+    {name:'D<0, a<0',expr:'ax²+bx+c < 0 для всіх x ∈ ℝ',
+      detail:{explanation:'Якщо парабола не перетинає OX (D<0) і гілки вниз — вона завжди нижча за нуль.',example:'−x²−1<0: D=0−4=−4<0, a<0\nВідповідь: x ∈ ℝ'}},
   ]},
   { name:'🔢 Прогресії', minGrade:9, formulas:[
     {name:'Арифм. n-й член',expr:'aₙ = a₁ + (n−1)·d',
@@ -241,7 +247,7 @@ const ALGEBRA_CATS = [
   ]},
 
   // === 10 КЛАС ===
-  { name:'📈 Показникова функція', minGrade:10, maxGrade:10, formulas:[
+  { name:'📈 Показникова функція', minGrade:10, formulas:[
     {name:'Формула',expr:'y = aˣ  (a > 0, a ≠ 1)',
       detail:{explanation:'Показникова функція — функція, де x є показником степеня. Основа a завжди позитивна.',example:'y=2ˣ: при x=0 → 1; x=3 → 8; x=−1 → 0.5'}},
     {name:'Показникове рівняння',expr:'aˣ = aʸ  ↔  x = y',
@@ -361,6 +367,16 @@ const TRIG_CATS = [
     {name:'90°',expr:'π/2',
       detail:{explanation:'90° = π/2 радіанів. Прямий кут. sin90°=1, cos90°=0.',example:'sin(π/2) = 1\ncos(π/2) = 0\ntan(π/2) — не існує!'}},
   ]},
+  { name:'Теорема синусів/косинусів', minGrade:9, formulas:[
+    {name:'Теорема синусів',expr:'a/sin A = b/sin B = c/sin C',
+      detail:{explanation:'У будь-якому трикутнику відношення сторони до синуса протилежного кута є сталим (дорівнює діаметру описаного кола).',proof:'Через описане коло радіуса R: a = 2R·sinA\n→ a/sinA = 2R',example:'a=6, A=30°, B=45°. Знайти b:\nb/sinB = a/sinA\nb = 6·sin45°/sin30° = 6·(√2/2)/(1/2) = 6√2 ≈ 8.49'}},
+    {name:'Теорема косинусів',expr:'c² = a² + b² − 2ab·cos C',
+      detail:{explanation:'Узагальнення теореми Піфагора для довільного кута C. При C=90°: cos90°=0 → c²=a²+b² (теорема Піфагора).',proof:'Через координати: розміщуємо C в початку координат...',example:'a=5, b=7, C=60°\nc² = 25+49−2·5·7·0.5 = 74−35 = 39\nc = √39 ≈ 6.24'}},
+    {name:'Через описане коло',expr:'a/sin A = 2R',
+      detail:{explanation:'Теорема синусів у іншій формі: відношення сторони до синуса = діаметру описаного кола (2R).',example:'Якщо a=6, A=30°: 2R = 6/sin30° = 6/0.5 = 12 → R=6'}},
+    {name:'Косинус через сторони',expr:'cos C = (a²+b²−c²) / 2ab',
+      detail:{explanation:'З теореми косинусів можна виразити будь-який кут через три сторони трикутника.',example:'a=3, b=4, c=5: cos C = (9+16−25)/(2·3·4) = 0/24 = 0 → C=90°\nЦе прямокутний трикутник!'}},
+  ]},
   { name:'Формули суми кутів', minGrade:9, formulas:[
     {name:'sin(α+β)',expr:'sinα·cosβ + cosα·sinβ',
       detail:{explanation:'Формула суми кутів для синуса. Дозволяє знайти sin кута, якщо знаємо sin і cos двох інших кутів.',proof:'Доводиться через одиничне коло або комплексні числа.',example:'sin75° = sin(45°+30°) = sin45°cos30° + cos45°sin30°\n= (√2/2)(√3/2) + (√2/2)(1/2) = (√6+√2)/4'}},
@@ -387,18 +403,6 @@ const TRIG_CATS = [
     {name:'tan 2α',expr:'2tanα / (1 − tan²α)',
       detail:{explanation:'Тангенс подвійного кута через тангенс одинарного. Не визначений при tanα=±1 (α=45°, 135°).',proof:'tan(α+α) = (tanα+tanα)/(1−tan²α) = 2tanα/(1−tan²α)',example:'tan60° = 2tan30°/(1−tan²30°) = 2·(1/√3)/(1−1/3) = √3 ✓'}},
   ]},
-  { name:'Пониження степеня', minGrade:10, formulas:[
-    {name:'sin²α',expr:'(1 − cos 2α) / 2',
-      detail:{explanation:'Формули пониження степеня дозволяють замінити sin² і cos² через cos подвійного кута. Незамінні в інтегралах.',proof:'З cos2α = 1−2sin²α:\n2sin²α = 1−cos2α → sin²α = (1−cos2α)/2',example:'∫sin²x dx = ∫(1−cos2x)/2 dx = x/2 − sin2x/4 + C'}},
-    {name:'cos²α',expr:'(1 + cos 2α) / 2',
-      detail:{proof:'З cos2α = 2cos²α−1:\n2cos²α = 1+cos2α → cos²α = (1+cos2α)/2'}},
-    {name:'tan²α',expr:'(1 − cos 2α) / (1 + cos 2α)',
-      detail:{explanation:'tan²α = sin²α/cos²α. Підставляємо формули пониження для sin² і cos².',proof:'tan²α = (1−cos2α)/2 ÷ (1+cos2α)/2 = (1−cos2α)/(1+cos2α)',example:'tan²45° = (1−0)/(1+0) = 1 ✓ (адже tan45°=1)'}},
-    {name:'sin³α',expr:'(3sinα − sin 3α) / 4',
-      detail:{explanation:'Формула пониження степеня для кубу синуса. Використовується в інтегралах.',proof:'Отримується з формули cos3α через sin і cos подвійного кута.',example:'∫sin³x dx → підставляємо формулу → ∫(3sinx−sin3x)/4 dx'}},
-    {name:'cos³α',expr:'(3cosα + cos 3α) / 4',
-      detail:{explanation:'Формула пониження степеня для кубу косинуса.',example:'∫cos³x dx → підставляємо формулу → ∫(3cosx+cos3x)/4 dx'}},
-  ]},
   { name:'Формули зведення', minGrade:10, formulas:[
     {name:'sin(90°−α)',expr:'cos α',
       detail:{explanation:'Формули зведення: тригонометрична функція від кута виду (90°±α) або (180°±α). Правило: якщо кут кратний 90° — функція змінюється (sin↔cos, tan↔ctg), якщо 180° — ні. Знак визначаємо для гострого α.',example:'sin(90°−30°)=sin60°=cos30° ✓\ncos(180°−45°)=−cos45°'}},
@@ -417,31 +421,42 @@ const TRIG_CATS = [
     {name:'cos(−α)',expr:'cos α',
       detail:{explanation:'Косинус — парна функція: cos(−α)=cos(α). При відображенні кута косинус не змінюється.',example:'cos(−60°) = cos60° = 1/2\ncos(−180°) = cos180° = −1'}},
   ]},
-  { name:'Теорема синусів/косинусів', minGrade:9, formulas:[
-    {name:'Теорема синусів',expr:'a/sin A = b/sin B = c/sin C',
-      detail:{explanation:'У будь-якому трикутнику відношення сторони до синуса протилежного кута є сталим (дорівнює діаметру описаного кола).',proof:'Через описане коло радіуса R: a = 2R·sinA\n→ a/sinA = 2R',example:'a=6, A=30°, B=45°. Знайти b:\nb/sinB = a/sinA\nb = 6·sin45°/sin30° = 6·(√2/2)/(1/2) = 6√2 ≈ 8.49'}},
-    {name:'Теорема косинусів',expr:'c² = a² + b² − 2ab·cos C',
-      detail:{explanation:'Узагальнення теореми Піфагора для довільного кута C. При C=90°: cos90°=0 → c²=a²+b² (теорема Піфагора).',proof:'Через координати: розміщуємо C в початку координат...',example:'a=5, b=7, C=60°\nc² = 25+49−2·5·7·0.5 = 74−35 = 39\nc = √39 ≈ 6.24'}},
-    {name:'Через описане коло',expr:'a/sin A = 2R',
-      detail:{explanation:'Теорема синусів у іншій формі: відношення сторони до синуса = діаметру описаного кола (2R).',example:'Якщо a=6, A=30°: 2R = 6/sin30° = 6/0.5 = 12 → R=6'}},
-    {name:'Косинус через сторони',expr:'cos C = (a²+b²−c²) / 2ab',
-      detail:{explanation:'З теореми косинусів можна виразити будь-який кут через три сторони трикутника.',example:'a=3, b=4, c=5: cos C = (9+16−25)/(2·3·4) = 0/24 = 0 → C=90°\nЦе прямокутний трикутник!'}},
+  { name:'Пониження степеня', minGrade:10, formulas:[
+    {name:'sin²α',expr:'(1 − cos 2α) / 2',
+      detail:{explanation:'Формули пониження степеня дозволяють замінити sin² і cos² через cos подвійного кута. Незамінні в інтегралах.',proof:'З cos2α = 1−2sin²α:\n2sin²α = 1−cos2α → sin²α = (1−cos2α)/2',example:'∫sin²x dx = ∫(1−cos2x)/2 dx = x/2 − sin2x/4 + C'}},
+    {name:'cos²α',expr:'(1 + cos 2α) / 2',
+      detail:{proof:'З cos2α = 2cos²α−1:\n2cos²α = 1+cos2α → cos²α = (1+cos2α)/2'}},
+    {name:'tan²α',expr:'(1 − cos 2α) / (1 + cos 2α)',
+      detail:{explanation:'tan²α = sin²α/cos²α. Підставляємо формули пониження для sin² і cos².',proof:'tan²α = (1−cos2α)/2 ÷ (1+cos2α)/2 = (1−cos2α)/(1+cos2α)',example:'tan²45° = (1−0)/(1+0) = 1 ✓ (адже tan45°=1)'}},
+    {name:'sin³α',expr:'(3sinα − sin 3α) / 4',
+      detail:{explanation:'Формула пониження степеня для кубу синуса. Використовується в інтегралах.',proof:'Отримується з формули cos3α через sin і cos подвійного кута.',example:'∫sin³x dx → підставляємо формулу → ∫(3sinx−sin3x)/4 dx'}},
+    {name:'cos³α',expr:'(3cosα + cos 3α) / 4',
+      detail:{explanation:'Формула пониження степеня для кубу косинуса.',example:'∫cos³x dx → підставляємо формулу → ∫(3cosx+cos3x)/4 dx'}},
   ]},
 ];
 
 // Build trigonometry tab
 function buildTrigTab(){
   const grid = document.getElementById('trig-cats-grid');
-  if(!grid || grid.children.length > 0) return;
+  if(!grid) return;
   const grade = getUserGrade();
   const cats = TRIG_CATS.filter(c => !grade || grade >= (c.minGrade || 1));
   if(!cats.length) { grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Тригонометрія з\'являється у 9 класі</p>'; return; }
-  grid.innerHTML = cats.map(cat => `
-    <div class="alg-cat-btn geo-cat-btn" onclick="openTrigModal(${TRIG_CATS.indexOf(cat)})">
-      <div class="alg-cat-name">${cat.name}</div>
-      <div class="alg-cat-count">${cat.formulas.length} формул</div>
-    </div>
-  `).join('');
+  let html = '';
+  let lastGradeLabel = null;
+  cats.forEach(cat => {
+    const gradeLabel = cat.minGrade ? `${cat.minGrade} клас` : null;
+    if (gradeLabel && gradeLabel !== lastGradeLabel) {
+      html += `<div class="geo-group-label">📚 ${gradeLabel} і вище</div>`;
+      lastGradeLabel = gradeLabel;
+    }
+    html += `
+      <div class="alg-cat-btn geo-cat-btn" onclick="openTrigModal(${TRIG_CATS.indexOf(cat)})">
+        <div class="alg-cat-name">${cat.name}</div>
+        <div class="alg-cat-count">${cat.formulas.length} формул</div>
+      </div>`;
+  });
+  grid.innerHTML = html;
 }
 
 function openTrigModal(idx){
@@ -616,9 +631,7 @@ function getUserGrade() {
 // Build algebra tab (category buttons)
 function buildAlgebraTab(){
   const grid = document.getElementById('algebra-cats-grid');
-  // Always rebuild — grade may have changed
   const grade = getUserGrade();
-  // Filter by exact grade range
   const cats = ALGEBRA_CATS.filter(c =>
     !grade || (grade >= (c.minGrade || 1) && grade <= (c.maxGrade || 11))
   );
@@ -626,12 +639,21 @@ function buildAlgebraTab(){
     grid.innerHTML = '<p style="color:#888;padding:20px;text-align:center">Формули для цього класу незабаром!</p>';
     return;
   }
-  grid.innerHTML = cats.map(cat => `
-    <div class="alg-cat-btn" onclick="openAlgebraModal(${ALGEBRA_CATS.indexOf(cat)})">
-      <div class="alg-cat-name">${cat.name}</div>
-      <div class="alg-cat-count">${cat.formulas.length} карток</div>
-    </div>
-  `).join('');
+  let html = '';
+  let lastGradeLabel = null;
+  cats.forEach(cat => {
+    const gradeLabel = cat.minGrade ? `${cat.minGrade} клас` : null;
+    if (gradeLabel && gradeLabel !== lastGradeLabel) {
+      html += `<div class="geo-group-label">📚 ${gradeLabel} і вище</div>`;
+      lastGradeLabel = gradeLabel;
+    }
+    html += `
+      <div class="alg-cat-btn" onclick="openAlgebraModal(${ALGEBRA_CATS.indexOf(cat)})">
+        <div class="alg-cat-name">${cat.name}</div>
+        <div class="alg-cat-count">${cat.formulas.length} карток</div>
+      </div>`;
+  });
+  grid.innerHTML = html;
 }
 
 // Timers for auto-flip cards
