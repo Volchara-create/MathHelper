@@ -403,6 +403,18 @@ const TRIG_CATS = [
     {name:'tan 2α',expr:'2tanα / (1 − tan²α)',
       detail:{explanation:'Тангенс подвійного кута через тангенс одинарного. Не визначений при tanα=±1 (α=45°, 135°).',proof:'tan(α+α) = (tanα+tanα)/(1−tan²α) = 2tanα/(1−tan²α)',example:'tan60° = 2tan30°/(1−tan²30°) = 2·(1/√3)/(1−1/3) = √3 ✓'}},
   ]},
+  { name:'Пониження степеня', minGrade:10, formulas:[
+    {name:'sin²α',expr:'(1 − cos 2α) / 2',
+      detail:{explanation:'Формули пониження степеня дозволяють замінити sin² і cos² через cos подвійного кута. Незамінні в інтегралах.',proof:'З cos2α = 1−2sin²α:\n2sin²α = 1−cos2α → sin²α = (1−cos2α)/2',example:'∫sin²x dx = ∫(1−cos2x)/2 dx = x/2 − sin2x/4 + C'}},
+    {name:'cos²α',expr:'(1 + cos 2α) / 2',
+      detail:{proof:'З cos2α = 2cos²α−1:\n2cos²α = 1+cos2α → cos²α = (1+cos2α)/2'}},
+    {name:'tan²α',expr:'(1 − cos 2α) / (1 + cos 2α)',
+      detail:{explanation:'tan²α = sin²α/cos²α. Підставляємо формули пониження для sin² і cos².',proof:'tan²α = (1−cos2α)/2 ÷ (1+cos2α)/2 = (1−cos2α)/(1+cos2α)',example:'tan²45° = (1−0)/(1+0) = 1 ✓ (адже tan45°=1)'}},
+    {name:'sin³α',expr:'(3sinα − sin 3α) / 4',
+      detail:{explanation:'Формула пониження степеня для кубу синуса. Використовується в інтегралах.',proof:'Отримується з формули cos3α через sin і cos подвійного кута.',example:'∫sin³x dx → підставляємо формулу → ∫(3sinx−sin3x)/4 dx'}},
+    {name:'cos³α',expr:'(3cosα + cos 3α) / 4',
+      detail:{explanation:'Формула пониження степеня для кубу косинуса.',example:'∫cos³x dx → підставляємо формулу → ∫(3cosx+cos3x)/4 dx'}},
+  ]},
   { name:'Формули зведення', minGrade:10, formulas:[
     {name:'sin(90°−α)',expr:'cos α',
       detail:{explanation:'Формули зведення: тригонометрична функція від кута виду (90°±α) або (180°±α). Правило: якщо кут кратний 90° — функція змінюється (sin↔cos, tan↔ctg), якщо 180° — ні. Знак визначаємо для гострого α.',example:'sin(90°−30°)=sin60°=cos30° ✓\ncos(180°−45°)=−cos45°'}},
@@ -420,18 +432,6 @@ const TRIG_CATS = [
       detail:{explanation:'Синус — непарна функція: sin(−α)=−sin(α). Якщо відображаємо кут відносно осі OX, синус змінює знак.',example:'sin(−30°) = −sin30° = −1/2\nsin(−90°) = −1'}},
     {name:'cos(−α)',expr:'cos α',
       detail:{explanation:'Косинус — парна функція: cos(−α)=cos(α). При відображенні кута косинус не змінюється.',example:'cos(−60°) = cos60° = 1/2\ncos(−180°) = cos180° = −1'}},
-  ]},
-  { name:'Пониження степеня', minGrade:10, formulas:[
-    {name:'sin²α',expr:'(1 − cos 2α) / 2',
-      detail:{explanation:'Формули пониження степеня дозволяють замінити sin² і cos² через cos подвійного кута. Незамінні в інтегралах.',proof:'З cos2α = 1−2sin²α:\n2sin²α = 1−cos2α → sin²α = (1−cos2α)/2',example:'∫sin²x dx = ∫(1−cos2x)/2 dx = x/2 − sin2x/4 + C'}},
-    {name:'cos²α',expr:'(1 + cos 2α) / 2',
-      detail:{proof:'З cos2α = 2cos²α−1:\n2cos²α = 1+cos2α → cos²α = (1+cos2α)/2'}},
-    {name:'tan²α',expr:'(1 − cos 2α) / (1 + cos 2α)',
-      detail:{explanation:'tan²α = sin²α/cos²α. Підставляємо формули пониження для sin² і cos².',proof:'tan²α = (1−cos2α)/2 ÷ (1+cos2α)/2 = (1−cos2α)/(1+cos2α)',example:'tan²45° = (1−0)/(1+0) = 1 ✓ (адже tan45°=1)'}},
-    {name:'sin³α',expr:'(3sinα − sin 3α) / 4',
-      detail:{explanation:'Формула пониження степеня для кубу синуса. Використовується в інтегралах.',proof:'Отримується з формули cos3α через sin і cos подвійного кута.',example:'∫sin³x dx → підставляємо формулу → ∫(3sinx−sin3x)/4 dx'}},
-    {name:'cos³α',expr:'(3cosα + cos 3α) / 4',
-      detail:{explanation:'Формула пониження степеня для кубу косинуса.',example:'∫cos³x dx → підставляємо формулу → ∫(3cosx+cos3x)/4 dx'}},
   ]},
 ];
 

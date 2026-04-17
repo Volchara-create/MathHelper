@@ -833,7 +833,7 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .fgeo-card span{font-size:0.85rem;font-weight:700;color:var(--text);}
 
 /* Algebra category buttons */
-.algebra-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+.algebra-cats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,220px));gap:14px;justify-content:center;}
 .geo-group-label{grid-column:1/-1;font-size:0.85rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;padding:4px 0 2px;border-bottom:1px solid var(--blue-light);margin-bottom:4px;}
 .dark .geo-group-label{color:#64748b;border-color:#1e3050;}
 .alg-cat-btn{background:#fff;border:1.5px solid var(--blue-light);border-radius:14px;padding:20px 16px;cursor:pointer;transition:.2s;text-align:center;}
