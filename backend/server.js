@@ -6,7 +6,7 @@ const { PrismaClient } = require('@prisma/client');
 const { OAuth2Client } = require('google-auth-library');
 const webpush = require('web-push');
 const cron = require('node-cron');
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
 webpush.setVapidDetails(
@@ -346,9 +346,7 @@ cron.schedule('0 18 * * *', async () => {
   }
 }, { timezone: 'Europe/Kyiv' });
 
-// ===== AI MATH ASSISTANT =====
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
+// ===== AI MATH ASSISTANT (Gemini Flash) =====
 const TOPIC_NAMES = {
   algebra: 'Алгебра', geometry: 'Геометрія', statistics: 'Статистика',
   functions: 'Функції та графіки', nmt: 'НМТ-задачі', trig: 'Тригонометрія'
@@ -358,7 +356,7 @@ app.post('/api/ai-chat', authMiddleware, async (req, res) => {
   const { message, context, history = [] } = req.body;
   if (!message || message.trim().length < 2)
     return res.status(400).json({ error: 'Порожнє повідомлення' });
-  if (!process.env.ANTHROPIC_API_KEY)
+  if (!process.env.GEMINI_API_KEY)
     return res.status(503).json({ error: 'AI-помічник тимчасово недоступний' });
 
   const { grade = '?', name = 'Учень', weakTopics = {}, quizStats = '', nmtResult = '' } = context || {};
@@ -368,7 +366,7 @@ app.post('/api/ai-chat', authMiddleware, async (req, res) => {
     .map(([k, v]) => `${TOPIC_NAMES[k] || k} (${v} помилок)`)
     .join(', ') || 'немає даних';
 
-  const systemPrompt = `Ти — MathHelper AI, розумний математичний репетитор-агент для учня ${grade} класу в Україні.
+  const systemPrompt = `Ти — MathHelper AI, математичний репетитор для учня ${grade} класу в Україні.
 
 ПРОФІЛЬ УЧНЯ:
 - Ім'я: ${name}
@@ -377,30 +375,33 @@ app.post('/api/ai-chat', authMiddleware, async (req, res) => {
 ${quizStats ? `- Активність у квізі: ${quizStats}` : ''}
 ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
 
-ТВОЇ ПРАВИЛА:
-1. Відповідай ТІЛЬКИ на математичні питання (алгебра, геометрія, тригонометрія, функції, статистика, НМТ)
-2. Завжди українською мовою, без суржику
+ПРАВИЛА:
+1. Відповідай ТІЛЬКИ на математичні питання (алгебра, геометрія, тригонометрія, функції, НМТ)
+2. Завжди українською мовою
 3. Пояснюй ПОКРОКОВО — кожен крок з нового рядка, пронумеровано
-4. Якщо учень помилявся у темі — нагадай типову помилку при поясненні
-5. Якщо питання НЕ математика — скажи: "Я математичний репетитор 🦉 Можу допомогти лише з математикою!"
-6. Формули пиши чітко: x², x³, √x, π, ≤, ≥, ∞, →
-7. Давай ОДИН конкретний приклад після пояснення теорії
-8. Максимум 250 слів — коротко, чітко, зрозуміло`;
+4. Якщо питання НЕ математика — скажи: "Я математичний репетитор 🦉 Можу допомогти лише з математикою!"
+5. Формули: x², x³, √x, π, ≤, ≥
+6. Один конкретний приклад після теорії
+7. Максимум 250 слів`;
 
   try {
-    const messages = [
-      ...history.slice(-6).map(m => ({ role: m.role, content: m.content })),
-      { role: 'user', content: message }
-    ];
-
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5',
-      max_tokens: 600,
-      system: systemPrompt,
-      messages
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      systemInstruction: systemPrompt
     });
 
-    res.json({ reply: response.content[0].text });
+    // Convert history to Gemini format
+    const chatHistory = history.slice(-6).map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    }));
+
+    const chat = model.startChat({ history: chatHistory });
+    const result = await chat.sendMessage(message);
+    const reply = result.response.text();
+
+    res.json({ reply });
   } catch (e) {
     console.error('AI error:', e.message);
     res.status(500).json({ error: 'Помилка AI. Спробуй ще раз.' });
