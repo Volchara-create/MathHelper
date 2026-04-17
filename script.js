@@ -369,7 +369,7 @@ const TRIG_CATS = [
     {name:'sin(α−β)',expr:'sinα·cosβ − cosα·sinβ',
       detail:{explanation:'Формула різниці кутів для синуса. Знак мінус у середині — ключова відмінність від суми.',example:'sin15° = sin(45°−30°) = sin45°cos30° − cos45°sin30°\n= (√2/2)(√3/2) − (√2/2)(1/2) = (√6−√2)/4'}},
     {name:'cos(α−β)',expr:'cosα·cosβ + sinα·sinβ',
-      detail:{explanation:'Формула різниці кутів для косинуса. Знак плюс — відмінність від формули суми.',example:'cos15° = cos(45°−30°) = cos45°cos30° + sin45°sin30°\n= (√2·√3 + √2·1)/4 = (√6+√2)/4'}},
+      detail:{explanation:'Формула різниці кутів для косинуса. Знак плюс — відмінність від формули суми.',proof:'cos(α−β) = cos(α+(−β))\n= cosα·cos(−β) − sinα·sin(−β)\n= cosα·cosβ − sinα·(−sinβ)\n= cosα·cosβ + sinα·sinβ',example:'cos15° = cos(45°−30°) = cos45°cos30° + sin45°sin30°\n= (√2·√3 + √2·1)/4 = (√6+√2)/4'}},
     {name:'tan(α+β)',expr:'(tanα + tanβ)/(1 − tanα·tanβ)',
       detail:{explanation:'Формула тангенса суми кутів. Не визначена коли tanα·tanβ=1 (знаменник = 0).',example:'tan75° = tan(45°+30°) = (1 + 1/√3)/(1 − 1/√3) = (√3+1)/(√3−1) = 2+√3'}},
     {name:'tan(α−β)',expr:'(tanα − tanβ)/(1 + tanα·tanβ)',
