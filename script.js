@@ -3128,37 +3128,46 @@ function openAISection() {
 function _sigmaTransformSequence() {
   _owlLockUI();
 
-  // Step 1: fly to AI button
+  // Step 1: Mathik flies to AI button
   _owlFlyToAndStay('.qm-ai', () => {
     const bubble = document.getElementById('mathik-bubble');
+    const aiBtn  = document.querySelector('.qm-ai');
 
-    // Step 2: lightning burst
+    // Step 2: lightning at AI button location
     _sigmaLightning(bubble, () => {
-
-      // Step 3: transform owl → metallic ΣIGMA mode
       _sigmaMode = true;
+
+      // Step 3: transform owl to metallic mid-flight
       if (bubble) {
         bubble.classList.add('sigma-mode');
         bubble.querySelector('.mathik-avatar').textContent = '🦾';
       }
 
-      // Step 4: intro speech
+      // Step 4: intro speech as MathΣimus
       _mathikShowSpeech(
-        '⚡ Я — <b>ΣIGMA</b>, версія Mathik з майбутнього!<br>Мене прокачали математичними алгоритмами.<br>Mathik показує шлях — я <b>розвʼязую задачі</b>.<br>Питай будь-що з математики! 🧠',
+        '⚡ Я — <b>MathΣimus</b>! Версія Mathik з майбутнього.<br>Залишаюсь тут — у кнопці ШІ 🦾<br>Mathik повернеться додому — нас тепер <b>двоє</b>!<br>Питай будь-що з математики! 🧠',
         false, true
       );
 
-      // Step 5: after pause — hide speech, fly home, restore
+      // Step 5: after speech — metallic owl stays on AI btn, regular Mathik flies home
       setTimeout(() => {
         _mathikHideSpeech();
+
+        // AI button icon becomes metallic owl (MathΣimus stays here)
+        if (aiBtn) {
+          aiBtn.querySelector('.qm-icon').textContent = '🦾';
+          aiBtn.classList.add('sigma-btn-active');
+        }
+
+        // Regular Mathik flies back home and restores normal look
         setTimeout(() => {
-          _owlFlyHome(() => {
-            _owlUnlockUI();
-            // restore normal owl look but keep sigma-mode class
-            if (bubble) bubble.querySelector('.mathik-avatar').textContent = '🦾';
-          });
-        }, 300);
-      }, 4500);
+          if (bubble) {
+            bubble.classList.remove('sigma-mode');
+            bubble.querySelector('.mathik-avatar').textContent = '🦉';
+          }
+          _owlFlyHome(() => _owlUnlockUI());
+        }, 400);
+      }, 4200);
     });
   });
 }
