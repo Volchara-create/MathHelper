@@ -1201,13 +1201,15 @@ body.dark .settings-link-btn{color:#60a5fa;}
 .owl-svg{width:1.5em;height:1.5em;display:block;}
 .owl-title{width:1.8rem;height:1.8rem;vertical-align:middle;margin-right:6px;filter:drop-shadow(0 0 4px #60a5fa);}
 .qm-ai .qm-icon{filter:none;display:flex;align-items:center;justify-content:center;}
-/* darker owl in quick menu by default */
-.qm-ai .owl-svg{filter:brightness(0.75) saturate(0.8);}
 .ai-title{display:flex;align-items:center;}
 .ai-avatar{display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;flex-shrink:0;}
 .ai-avatar .owl-svg{width:100%;height:100%;}
 /* After transformation: blue glow */
 .qm-btn.sigma-btn-active{background:linear-gradient(135deg,#1e3a5f,#1e40af)!important;border-color:#60a5fa!important;animation:sigmaGlow 2.5s ease-in-out infinite;}
+/* On blue background: bright white-silver owl */
+.qm-btn.sigma-btn-active .owl-svg{filter:brightness(2.2) saturate(0.3) drop-shadow(0 0 5px #93c5fd);}
+/* Default (not active): slightly darker */
+.qm-ai:not(.sigma-btn-active) .owl-svg{filter:brightness(0.8) saturate(0.7);}
 /* Rust: starts shiny, ends dull brown — 24h animation, synced by JS delay */
 @keyframes owlRust{
   0%{filter:drop-shadow(0 0 5px #60a5fa) brightness(1.1);}
