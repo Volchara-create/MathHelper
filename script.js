@@ -3477,7 +3477,12 @@ function _tutorialNextStep() {
     _inTutorial = false;
     localStorage.setItem('mh_tutorial_done', '1');
     _owlFlyHome(() => {
-      mathikOpen();
+      // Open chat directly (bypass _mathikGreeted flag)
+      _mathikOpen = true;
+      const _chat = document.getElementById('mathik-chat');
+      if (_chat) _chat.style.display = 'flex';
+      const _badge = document.getElementById('mathik-badge');
+      if (_badge) _badge.style.display = 'none';
       _mathikAddMsg('bot', '🎉 <b>Огляд завершено!</b> Тепер знаєш усі можливості MathHelper 🦉<br>Я тут якщо заблукаєш — питай про будь-який розділ! 🗺️');
       _mathikSetChips(MATHIK_CHIPS_RETURNING);
     });
