@@ -3352,6 +3352,14 @@ async function aiSend() {
     const data = await res.json();
     document.getElementById('ai-loading-msg')?.remove();
 
+    if (res.status === 401) {
+      _aiAddMsg('bot', '🔒 Сесія закінчилась. <button onclick="authLogout()" style="background:#2563eb;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;margin-left:6px">Увійти знову</button>');
+      return;
+    }
+    if (res.status === 429) {
+      _aiAddMsg('bot', '⏳ Забагато запитів. Зачекай хвилину і спробуй ще раз.');
+      return;
+    }
     const reply = data.reply || data.error || 'Помилка. Спробуй ще раз.';
     _aiAddMsg('bot', _aiFormatReply(reply));
     if (data.reply) _aiHistory.push({ role: 'assistant', content: reply });
