@@ -21,7 +21,7 @@
   <meta property="og:locale" content="uk_UA">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=2026041705">
+  <link rel="stylesheet" href="style.css?v=2026041713">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <script>
@@ -81,7 +81,6 @@
         </div>
         <button class="auth-nav-btn" onclick="show('dashboard')">🏠</button>
         <button class="auth-nav-btn" onclick="openSettings()">⚙️</button>
-        <button class="auth-nav-btn" onclick="authLogout()">Вийти</button>
       </div>
     </div>
   </header>
@@ -206,21 +205,76 @@
 
     <section id="home" class="active">
       <div id="home-content">
-        <h1>MathHelper</h1>
-        <p class="hero-sub">Твій розумний помічник з математики — формули, графіки, задачі та тригонометрія в одному місці.</p>
+
+        <div class="hero-badge">🎓 Підготовка до НМТ 2026</div>
+        <h1>Math<span class="hero-accent">Helper</span></h1>
+        <p class="hero-sub">Формули, квіз, графіки і симулятор НМТ — все що потрібно для підготовки.<br><b>Безкоштовно. Без реклами.</b></p>
+
         <div class="hero-btns">
-          <button class="hero-btn-main" onclick="showFormulas()">📐 Відкрити формули</button>
-          <button class="hero-btn-sec" onclick="showGraph()">📈 Робочий стіл</button>
+          <button class="hero-btn-main" onclick="authOpen('register')">🚀 Почати безкоштовно</button>
+          <a href="simulator.html" class="hero-btn-nmt">📝 Спробувати НМТ</a>
         </div>
+
         <div class="hero-stats">
-          <div class="hero-stat"><span>30+</span><p>формул геометрії</p></div>
+          <div class="hero-stat"><span>200+</span><p>формул по класах</p></div>
+          <div class="hero-stat"><span>30+</span><p>тем у квізі</p></div>
           <div class="hero-stat"><span>∞</span><p>графіків функцій</p></div>
-          <div class="hero-stat"><span>20+</span><p>задач з геометрії</p></div>
-          <div class="hero-stat"><span>15+</span><p>квіз-питань</p></div>
+          <div class="hero-stat"><span>7–11</span><p>класи МОН</p></div>
         </div>
+
+        <div class="lp-features">
+          <div class="lp-feat-card">
+            <div class="lp-feat-icon">📐</div>
+            <div class="lp-feat-title">Формули</div>
+            <div class="lp-feat-desc">Алгебра, геометрія, тригонометрія — відфільтровано по твоєму класу</div>
+          </div>
+          <div class="lp-feat-card">
+            <div class="lp-feat-icon">🎯</div>
+            <div class="lp-feat-title">Квіз</div>
+            <div class="lp-feat-desc">Тренуй слабкі теми, бачиш помилки і стежиш за прогресом по тижнях</div>
+          </div>
+          <div class="lp-feat-card">
+            <div class="lp-feat-icon">📈</div>
+            <div class="lp-feat-title">Графіки</div>
+            <div class="lp-feat-desc">Будуй sin(x), x² та будь-яку функцію — інтерактивно прямо в браузері</div>
+          </div>
+          <div class="lp-feat-card">
+            <div class="lp-feat-icon">📚</div>
+            <div class="lp-feat-title">Підручники</div>
+            <div class="lp-feat-desc">Безкоштовні офіційні підручники МОН для 7–11 класів</div>
+          </div>
+          <div class="lp-feat-card">
+            <div class="lp-feat-icon">📓</div>
+            <div class="lp-feat-title">Зошит</div>
+            <div class="lp-feat-desc">Особисті нотатки прямо в браузері — лінійки або клітинки</div>
+          </div>
+          <div class="lp-feat-card lp-feat-card--pro">
+            <div class="lp-feat-icon">⭐</div>
+            <div class="lp-feat-title">PRO — скоро</div>
+            <div class="lp-feat-desc">ШІ-помічник, PDF конспекти, необмежені нотатки — 99₴/міс</div>
+          </div>
+        </div>
+
+        <div class="hero-nmt-banner">
+          <div class="hero-nmt-inner">
+            <div>
+              <div class="hero-nmt-label">🏆 Симулятор НМТ</div>
+              <div class="hero-nmt-title">Відчуй реальний іспит</div>
+              <div class="hero-nmt-desc">30 завдань · таймер 90 хв · розбір кожної помилки</div>
+            </div>
+            <a href="simulator.html" class="hero-nmt-btn">Спробувати →</a>
+          </div>
+        </div>
+
+        <div class="lp-login-row">
+          <span>Вже маєш акаунт?</span>
+          <button onclick="authOpen('login')" class="lp-login-link">Увійти →</button>
+        </div>
+
         <div class="hero-about-link">
           <button onclick="show('about')" class="hero-about-btn">ℹ️ Про проєкт</button>
         </div>
+
       </div>
     </section>
 
@@ -914,7 +968,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=2026041712"></script>
-  <script src="auth.js?v=2026041703"></script>
+  <script src="script.js?v=2026041713"></script>
+  <script src="auth.js?v=2026041713"></script>
 </body>
 </html>

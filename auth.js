@@ -450,6 +450,15 @@ function authLogout() {
   localStorage.removeItem('mh_user');
   document.getElementById('auth-nav').style.display = '';
   document.getElementById('user-nav').style.display = 'none';
+  // Hide registered-only UI elements
+  const qm = document.getElementById('quick-menu');
+  if (qm) qm.style.display = 'none';
+  const sb = document.getElementById('search-btn');
+  if (sb) sb.style.display = 'none';
+  const gb = document.getElementById('guide-btn');
+  if (gb) gb.style.display = 'none';
+  const mb = document.getElementById('mathik-bubble');
+  if (mb) mb.style.display = 'none';
   show('home');
 }
 

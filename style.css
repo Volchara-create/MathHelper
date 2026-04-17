@@ -1150,6 +1150,30 @@ body.dark .alg-modal-row .alg-modal-expr{color:#93c5fd;}
 .hero-about-btn{background:none;border:1px solid #c7d8f5;border-radius:20px;padding:8px 20px;color:#6a8ab0;font-size:0.9rem;cursor:pointer;}
 .hero-about-btn:hover{background:#f0f6ff;color:var(--blue);}
 
+/* ===== Landing page redesign ===== */
+.hero-accent{color:var(--accent);}
+.hero-btn-nmt{display:inline-block;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;border:none;padding:13px 32px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;transition:.25s;box-shadow:0 4px 14px rgba(124,58,237,.3);}
+.hero-btn-nmt:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(124,58,237,.4);}
+.lp-features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0 24px;text-align:left;}
+.lp-feat-card{background:#fff;border:1.5px solid #e0ecff;border-radius:14px;padding:18px 16px;transition:.2s;}
+.lp-feat-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(26,62,124,.1);transform:translateY(-2px);}
+.lp-feat-icon{font-size:1.6rem;margin-bottom:8px;}
+.lp-feat-title{font-weight:700;color:var(--blue);font-size:.95rem;margin-bottom:4px;}
+.lp-feat-desc{font-size:.8rem;color:#6a8ab0;line-height:1.5;}
+.lp-feat-card--pro{background:linear-gradient(135deg,#fefce8,#fff7ed);border-color:#fbbf24;}
+.lp-feat-card--pro .lp-feat-title{color:#b45309;}
+.lp-login-row{text-align:center;margin:20px 0 8px;font-size:.9rem;color:#6a8ab0;}
+.lp-login-link{background:none;border:none;color:var(--blue);font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:underline;margin-left:6px;}
+.lp-login-link:hover{color:#2563eb;}
+body.dark .lp-feat-card{background:#151c2a;border-color:#1e3050;}
+body.dark .lp-feat-card:hover{border-color:#3b82f6;}
+body.dark .lp-feat-title{color:#60a5fa;}
+body.dark .lp-feat-desc{color:#7aa0c8;}
+body.dark .lp-feat-card--pro{background:linear-gradient(135deg,#2a1f00,#1e1200);border-color:#92400e;}
+body.dark .lp-feat-card--pro .lp-feat-title{color:#fbbf24;}
+body.dark .lp-login-row{color:#7aa0c8;}
+@media(max-width:700px){.lp-features{grid-template-columns:repeat(2,1fr);}}
+
 /* ===== Settings link button ===== */
 .settings-link-btn{background:none;border:none;color:var(--blue);font-size:0.95rem;cursor:pointer;font-weight:600;padding:2px 0;}
 .settings-link-btn:hover{text-decoration:underline;}
