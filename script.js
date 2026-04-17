@@ -3129,7 +3129,7 @@ const MATHIK_QA = [
     answer: '🏆 <b>НМТ Симулятор</b> — повноцінний тест: 30 питань, таймер, розбір помилок. Схожий на реальний НМТ. <a onclick="mathikClose();window.location.href=\'simulator.html\'">Відкрити →</a>',
   },
   {
-    keys: ['граф','функц','побудув'],
+    keys: ['граф','функц','побудув','графіки'],
     chips: ['📊 Графіки'],
     answer: '📊 На <b>Графіках</b> можна будувати функції: y=x², sin, cos і інші. Zoom мишею, drag для переміщення. <a onclick="mathikClose();showGraph()">Відкрити →</a>',
   },
@@ -3162,8 +3162,8 @@ const MATHIK_QA = [
     answer: '⭐ Є безкоштовна версія з усіма базовими функціями. Pro версія додасть AI-помічника, PDF та більше нотаток.',
   },
   {
-    keys: ['привіт','хто ти','mathik','ти','хелло','hi'],
-    answer: '👋 Привіт! Я <b>Mathik</b> — помічник MathHelper. Запитай мене про будь-який розділ сайту або напиши що хочеш знайти!',
+    keys: ['привіт','хто ти','mathik','ти','хелло','hi','що ти можеш','ти шi','ти аі'],
+    answer: '🦉 Я <b>Mathik</b> — навігатор по MathHelper! Знаю всі розділи сайту і покажу шлях куди треба 🗺️<br>Запитай: "формули", "квіз", "НМТ", "пошук", "налаштування"...<br><span style="opacity:.65;font-size:.82em">⚠️ Я <b>не ШІ</b> — математичні задачі не розвʼязую. Тільки навігація по сайту!</span>',
   },
   {
     keys: ['дякую','дякуємо','спасибі','ok','ок'],
@@ -3214,6 +3214,15 @@ const MATHIK_CHIPS_DEFAULT = [
   { label: '⚙️ Налаштування', msg: 'налаштування' },
 ];
 
+const MATHIK_CHIPS_RETURNING = [
+  { label: '📐 Формули', msg: 'формули' },
+  { label: '🎯 Квіз', msg: 'квіз' },
+  { label: '🏆 НМТ', msg: 'нмт' },
+  { label: '📊 Графіки', msg: 'графіки' },
+  { label: '🎓 Огляд знову', msg: 'покажи огляд' },
+  { label: '⚙️ Налаштування', msg: 'налаштування' },
+];
+
 let _mathikOpen = false;
 let _mathikGreeted = false;
 
@@ -3230,11 +3239,12 @@ function mathikOpen() {
     _mathikGreeted = true;
     const tutorialDone = localStorage.getItem('mh_tutorial_done') === '1';
     if (tutorialDone) {
-      _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> 🦉 — твій помічник.<br>Чим допомогти сьогодні? Обирай розділ або запитуй!');
+      _mathikAddMsg('bot', '👋 З поверненням! Я <b>Mathik</b> 🦉 — твій навігатор по MathHelper.<br>Покажу шлях куди треба — питай про будь-який розділ! 🗺️<br><span style="opacity:.6;font-size:.82em">⚠️ Я не ШІ — задачі не розвʼязую, але сайт знаю ідеально.</span>');
+      _mathikSetChips(MATHIK_CHIPS_RETURNING);
     } else {
-      _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій помічник у MathHelper.<br>Вперше тут? Натисни <b>🎓 Огляд сайту</b> — покажу все за хвилину!');
+      _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> 🦉 — твій навігатор по MathHelper.<br>🗺️ Знаю кожен куточок сайту і покажу шлях куди треба.<br>Вперше тут? Натисни <b>🎓 Огляд сайту</b>!');
+      _mathikSetChips(MATHIK_CHIPS_DEFAULT);
     }
-    _mathikSetChips(MATHIK_CHIPS_DEFAULT);
   }
   setTimeout(() => document.getElementById('mathik-input').focus(), 100);
 }
@@ -3346,12 +3356,11 @@ const MATHIK_TUTORIAL = [
     target: '#dash-quick-btns button[onclick*="showGraph"]',
     msg: '📈 Ось кнопка <b>Графіки</b> на головній!<br>Натисни ▶ Далі — відкриємо разом.' },
 
-  // 11. autoClick → натискає Графіки (входить у розділ)
+  // 11. autoClick → натискає Графіки (входить у розділ) + відкриває панель функцій
   { autoClick: true,
     target: '#dash-quick-btns button[onclick*="showGraph"]',
-    clickMsg: '📈 Натискаю <b>Графіки</b>! Відкриваємо...',
-    delay: 1600,
-    action: () => showGraph() },
+    clickMsg: '📈 Натискаю <b>Графіки</b>! Відкриваю розділ і одразу панель <b>Функції</b> — тут будуємо графіки y=x², sin, cos і будь-що інше. Тисни ▶ Далі!',
+    action: () => { showGraph(); setTimeout(() => { try { wsToggleSide('func'); } catch(e){} }, 600); } },
 
   // 12. Graph demo — летить до "+ Додати", реально додає функцію x²
   { autoClick: true,
@@ -3454,6 +3463,7 @@ function mathikTutorialNext() {
 
 function mathikTutorialAbort() {
   if (_owlBusy) return; // can't abort mid-animation
+  if (_owlPendingAfterDelay) { _owlPendingAfterDelay(); _owlPendingAfterDelay = null; }
   _inTutorial = false;
   _owlUnlockUI();
   _owlStopHover();
@@ -3462,13 +3472,14 @@ function mathikTutorialAbort() {
 }
 
 function _tutorialNextStep() {
+  if (_owlPendingAfterDelay) { _owlPendingAfterDelay(); _owlPendingAfterDelay = null; }
   if (_tutorialStep >= MATHIK_TUTORIAL.length) {
     _inTutorial = false;
     localStorage.setItem('mh_tutorial_done', '1');
     _owlFlyHome(() => {
       mathikOpen();
-      _mathikAddMsg('bot', '🎉 <b>Огляд завершено!</b> Тепер знаєш всі можливості 🦉<br>Починай: формули → квіз → НМТ!');
-      _mathikSetChips([{ label: '📐 Формули', msg: 'формули' }, { label: '🎯 Квіз', msg: 'квіз' }, { label: '🏆 НМТ', msg: 'нмт' }]);
+      _mathikAddMsg('bot', '🎉 <b>Огляд завершено!</b> Тепер знаєш усі можливості MathHelper 🦉<br>Я тут якщо заблукаєш — питай про будь-який розділ! 🗺️');
+      _mathikSetChips(MATHIK_CHIPS_RETURNING);
     });
     return;
   }
@@ -3512,10 +3523,8 @@ function _tutorialNextStep() {
     return;
   }
 
-  // autoClick: lock UI → fly to target → hover + clickMsg → action → afterDelay → next step
-  // openNow:true  → action() fires immediately on landing (search/settings/dark)
-  // openNow:false → action() fires AFTER full linger (show, navigate)
-  // afterDelay()  → called at end of linger (close modal / restore)
+  // autoClick: lock UI during flight → land → fire action immediately → show speech WITH ▶ Далі
+  // afterDelay() stored in _owlPendingAfterDelay → called before next step starts
   if (step.autoClick) {
     _owlLockUI();
     const doAutoClick = () => {
@@ -3527,16 +3536,11 @@ function _tutorialNextStep() {
       }
       if (!found) { _owlUnlockUI(); _tutorialNextStep(); return; }
       _owlFlyToAndStay(step.target, () => {
-        _mathikShowSpeech(step.clickMsg, false, true);
+        if (step.action) step.action(); // fire immediately on landing
         found.classList.add('mathik-target-pulse');
-        if (step.openNow && step.action) step.action(); // open immediately
-        setTimeout(() => {
-          found.classList.remove('mathik-target-pulse');
-          if (step.afterDelay) step.afterDelay(); // close/restore at end
-          _mathikHideSpeech();
-          if (!step.openNow && step.action) step.action(); // navigate after full read
-          setTimeout(_tutorialNextStep, 400);
-        }, step.delay || 2500);
+        setTimeout(() => found.classList.remove('mathik-target-pulse'), 1800);
+        _owlPendingAfterDelay = step.afterDelay || null; // cleanup called before next step
+        _mathikShowSpeech(step.clickMsg, false, false); // show ▶ Далі — user reads at own pace
       });
     };
     if (step.navigate) { step.navigate(); setTimeout(doAutoClick, step.navigateDelay || 80); }
@@ -3577,6 +3581,7 @@ let _owlTY = 0;
 let _owlHovering = false;
 let _owlHoverPhase = 0;
 let _owlBusy = false; // true during auto sequences — blocks ✕ and ▶ Далі
+let _owlPendingAfterDelay = null; // called at start of next step (cleanup from autoClick)
 
 function _owlLockUI() {
   _owlBusy = true;
