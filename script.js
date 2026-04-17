@@ -3113,6 +3113,102 @@ document.addEventListener('keydown', e => {
 
 // ===== AI MATH ASSISTANT =====
 let _aiHistory = [];
+let _sigmaMode = false; // true after first AI visit transformation
+
+function openAISection() {
+  show('ai');
+  _aiUpdateContextBar();
+  const firstTime = !localStorage.getItem('mh_sigma_visited');
+  if (firstTime && !_sigmaMode) {
+    localStorage.setItem('mh_sigma_visited', '1');
+    setTimeout(() => _sigmaTransformSequence(), 400);
+  }
+}
+
+function _sigmaTransformSequence() {
+  _owlLockUI();
+
+  // Step 1: fly to AI button
+  _owlFlyToAndStay('.qm-ai', () => {
+    const bubble = document.getElementById('mathik-bubble');
+
+    // Step 2: lightning burst
+    _sigmaLightning(bubble, () => {
+
+      // Step 3: transform owl → metallic ΣIGMA mode
+      _sigmaMode = true;
+      if (bubble) {
+        bubble.classList.add('sigma-mode');
+        bubble.querySelector('.mathik-avatar').textContent = '🦾';
+      }
+
+      // Step 4: intro speech
+      _mathikShowSpeech(
+        '⚡ Я — <b>ΣIGMA</b>, версія Mathik з майбутнього!<br>Мене прокачали математичними алгоритмами.<br>Mathik показує шлях — я <b>розвʼязую задачі</b>.<br>Питай будь-що з математики! 🧠',
+        false, true
+      );
+
+      // Step 5: after pause — hide speech, fly home, restore
+      setTimeout(() => {
+        _mathikHideSpeech();
+        setTimeout(() => {
+          _owlFlyHome(() => {
+            _owlUnlockUI();
+            // restore normal owl look but keep sigma-mode class
+            if (bubble) bubble.querySelector('.mathik-avatar').textContent = '🦾';
+          });
+        }, 300);
+      }, 4500);
+    });
+  });
+}
+
+function _sigmaLightning(target, onDone) {
+  const rect = target ? target.getBoundingClientRect() : { left: window.innerWidth - 60, top: window.innerHeight - 80, width: 52, height: 52 };
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  // Create lightning container
+  const container = document.createElement('div');
+  container.id = 'sigma-lightning';
+  container.style.cssText = `position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:9998;`;
+  document.body.appendChild(container);
+
+  // Flash the owl
+  if (target) target.classList.add('sigma-flash');
+
+  // Create 8 lightning bolts radiating outward
+  const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+  angles.forEach((angle, i) => {
+    const bolt = document.createElement('div');
+    bolt.className = 'sigma-bolt';
+    bolt.style.cssText = `left:${cx}px;top:${cy}px;transform:rotate(${angle}deg);animation-delay:${i * 40}ms;`;
+    bolt.textContent = '⚡';
+    container.appendChild(bolt);
+  });
+
+  // Central flash
+  const flash = document.createElement('div');
+  flash.className = 'sigma-central-flash';
+  flash.style.cssText = `left:${cx - 40}px;top:${cy - 40}px;`;
+  container.appendChild(flash);
+
+  // Screen flash overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'sigma-overlay';
+  document.body.appendChild(overlay);
+
+  setTimeout(() => overlay.classList.add('sigma-overlay--flash'), 100);
+  setTimeout(() => overlay.classList.remove('sigma-overlay--flash'), 400);
+
+  // Cleanup and callback
+  setTimeout(() => {
+    container.remove();
+    overlay.remove();
+    if (target) target.classList.remove('sigma-flash');
+    if (onDone) onDone();
+  }, 1200);
+}
 let _aiLoading = false;
 
 function _aiGetContext() {
