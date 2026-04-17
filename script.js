@@ -3118,10 +3118,24 @@ let _sigmaMode = false; // true after first AI visit transformation
 function openAISection() {
   show('ai');
   _aiUpdateContextBar();
-  const firstTime = !localStorage.getItem('mh_sigma_visited');
-  if (firstTime && !_sigmaMode) {
-    localStorage.setItem('mh_sigma_visited', '1');
+  _sigmaRestoreBtn(); // always restore metallic owl on button if already transformed before
+  const today = new Date().toISOString().slice(0, 10);
+  const lastPlayed = localStorage.getItem('mh_sigma_date');
+  if (lastPlayed !== today && !_sigmaMode) {
+    localStorage.setItem('mh_sigma_date', today);
     setTimeout(() => _sigmaTransformSequence(), 400);
+  }
+}
+
+function _sigmaRestoreBtn() {
+  // If already transformed today, restore metallic owl on button (persists across section switches)
+  const today = new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem('mh_sigma_date') === today) {
+    const aiBtn = document.querySelector('.qm-ai');
+    if (aiBtn && !aiBtn.classList.contains('sigma-btn-active')) {
+      aiBtn.querySelector('.qm-icon').textContent = '🦉';
+      aiBtn.classList.add('sigma-btn-active');
+    }
   }
 }
 
@@ -3253,7 +3267,7 @@ function _aiUpdateContextBar() {
   const ctx = _aiGetContext();
   const bar = document.getElementById('ai-context-bar');
   if (!bar) return;
-  const weakNames = { algebra:'Алгебра', geometry:'Геометрія', statistics:'Статистика', functions:'Функції', nmt:'НМТ', trig:'Тригонометрія' };
+  const weakNames = { algebra:'Алгебра', equations:'Рівняння', geometry:'Геометрія', statistics:'Статистика', functions:'Функції', nmt:'НМТ', trig:'Тригонометрія' };
   const weakStr = Object.entries(ctx.weakTopics)
     .filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]).slice(0,3)
     .map(([k]) => weakNames[k] || k).join(', ') || 'немає даних';

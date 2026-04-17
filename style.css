@@ -1195,10 +1195,13 @@ body.dark .settings-link-btn{color:#60a5fa;}
 .mathik-bubble.sigma-mode{background:linear-gradient(135deg,#1e3a5f,#2563eb,#1e40af)!important;border-color:#60a5fa!important;box-shadow:0 4px 20px rgba(37,99,235,.5)!important;}
 .mathik-bubble.sigma-mode .mathik-avatar{filter:drop-shadow(0 0 6px #93c5fd);}
 
-/* MathΣimus — metallic owl permanently on AI button */
+/* MathΣimus — metallic owl on AI button */
 @keyframes sigmaGlow{0%,100%{box-shadow:0 0 8px rgba(99,179,255,.4),0 2px 12px rgba(26,62,124,.3)}50%{box-shadow:0 0 18px rgba(99,179,255,.7),0 2px 16px rgba(37,99,235,.4)}}
+/* Default: metallic gray owl */
+.qm-ai .qm-icon{filter:grayscale(1) brightness(1.6) contrast(1.1);}
+/* After transformation: blue glow */
 .qm-btn.sigma-btn-active{background:linear-gradient(135deg,#1e3a5f,#1e40af)!important;border-color:#60a5fa!important;animation:sigmaGlow 2.5s ease-in-out infinite;}
-.qm-btn.sigma-btn-active .qm-icon{filter:drop-shadow(0 0 5px #93c5fd);}
+.qm-btn.sigma-btn-active .qm-icon{filter:drop-shadow(0 0 6px #93c5fd) brightness(1.3) saturate(0.2)!important;}
 
 /* ===== AI Math Assistant ===== */
 .ai-wrap{max-width:720px;margin:0 auto;padding:20px 20px 40px;display:flex;flex-direction:column;height:calc(100vh - 120px);}
