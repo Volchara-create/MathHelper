@@ -1195,8 +1195,8 @@ body.dark .search-hint{border-color:#1e3050;color:#5a7ab0;}
 body.dark .search-hint kbd{background:#1e3050;border-color:#2a4060;}
 /* ===== MATHIK CHAT ===== */
 /* Tutorial pointer + highlight */
-@keyframes mathikPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}50%{box-shadow:0 0 0 10px rgba(37,99,235,0)}}
-.mathik-target-pulse{animation:mathikPulse .7s ease 4;outline:3px solid #2563eb;outline-offset:3px;border-radius:8px;z-index:9998;position:relative;}
+@keyframes mathikPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.65)}50%{box-shadow:0 0 0 18px rgba(37,99,235,0)}}
+.mathik-target-pulse{animation:mathikPulse 1s ease-in-out infinite;outline:3px solid #2563eb;outline-offset:5px;border-radius:8px;z-index:9998;position:relative;}
 .mathik-bubble{position:fixed;bottom:80px;right:16px;width:52px;height:52px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(26,62,124,.35);z-index:700;transition:.2s;border:2px solid var(--accent);}
 .mathik-bubble:hover{transform:scale(1.08);}
 .mathik-avatar{font-size:1.5rem;line-height:1;}

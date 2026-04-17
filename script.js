@@ -3368,24 +3368,27 @@ const MATHIK_TUTORIAL = [
   // 14. Темна тема — реально вмикається і вимикається
   { autoClick: true,
     target: '#dark-toggle',
-    clickMsg: '🌙 <b>Темна тема</b> — вмикаю! Зручно вчитися ввечері.',
-    delay: 2200,
+    clickMsg: '🌙 <b>Темна тема</b> — вмикаю прямо зараз! Зручно вчитися ввечері.',
+    delay: 2500,
+    openNow: true,
     action: () => toggleDark(),
     afterDelay: () => toggleDark() },
 
   // 15. Пошук — реально відкривається
   { autoClick: true,
     target: '#search-btn',
-    clickMsg: '🔍 Відкриваю <b>Пошук</b>!<br>Знаходить формули, теми, конспекти...<br>Спробуй: "sin", "дискримінант", "похідна".',
-    delay: 2500,
+    clickMsg: '🔍 Відкриваю <b>Пошук</b>! Знаходить формули, теми, конспекти.<br>Спробуй: "sin", "дискримінант", "похідна".',
+    delay: 2800,
+    openNow: true,
     action: () => searchOpen(),
     afterDelay: () => searchClose() },
 
   // 16. Налаштування — реально відкривається
   { autoClick: true,
     target: 'button[onclick="openSettings()"]',
-    clickMsg: '⚙️ Відкриваю <b>Налаштування</b>!<br>Тут вибираєш <b>свій клас (7–11)</b> — важливо зробити це першим!',
-    delay: 3000,
+    clickMsg: '⚙️ Відкриваю <b>Налаштування</b>! Тут вибираєш свій <b>клас (7–11)</b> — важливо зробити це першим!',
+    delay: 3200,
+    openNow: true,
     action: () => openSettings(),
     afterDelay: () => closeSettings() },
 
@@ -3429,6 +3432,7 @@ function mathikTutorialNext() {
 
 function mathikTutorialAbort() {
   _inTutorial = false;
+  _owlStopHover();
   _mathikHideSpeech();
   _owlFlyHome();
 }
@@ -3459,7 +3463,7 @@ function _tutorialNextStep() {
     _mathikShowSpeech(step.msg, _tutorialStep >= MATHIK_TUTORIAL.length);
   };
 
-  // viaHome: fly to 🏠 btn → show homeMsg → navigate to dashboard → dashAction → fly to target
+  // viaHome: fly to 🏠 btn → hover + show homeMsg → navigate → dashAction → fly to target
   if (step.viaHome) {
     const doViaHome = () => {
       _owlFlyToAndStay('#global-home-btn, #global-back-btn', () => {
@@ -3470,8 +3474,8 @@ function _tutorialNextStep() {
           if (step.dashAction) step.dashAction();
           setTimeout(() => {
             _owlFlyToAndStay(step.target, showSpeech);
-          }, step.dashDelay || 350);
-        }, 1900);
+          }, step.dashDelay || 700);
+        }, 2600); // long pause at 🏠 so user sees it
       });
     };
     if (step.navigate) { step.navigate(); requestAnimationFrame(() => requestAnimationFrame(doViaHome)); }
@@ -3479,8 +3483,10 @@ function _tutorialNextStep() {
     return;
   }
 
-  // autoClick: fly to target → show clickMsg → action() immediately → afterDelay() at end → next step
-  // Supports: delay (ms to linger), afterDelay (called before moving on)
+  // autoClick: fly to target → hover + show clickMsg → action (immediate or after) → next step
+  // openNow:true  → action() fires immediately on landing (search/settings/dark — open right away)
+  // openNow:false → action() fires AFTER linger (show, navigate)
+  // afterDelay()  → called at end of linger (close modal/restore)
   if (step.autoClick) {
     const doAutoClick = () => {
       const selectors = step.target.split(',').map(s => s.trim());
@@ -3493,13 +3499,14 @@ function _tutorialNextStep() {
       _owlFlyToAndStay(step.target, () => {
         _mathikShowSpeech(step.clickMsg, false, true);
         found.classList.add('mathik-target-pulse');
-        if (step.action) step.action(); // open immediately (search, settings, dark…)
+        if (step.openNow && step.action) step.action(); // open modal/toggle immediately
         setTimeout(() => {
           found.classList.remove('mathik-target-pulse');
-          if (step.afterDelay) step.afterDelay(); // close/restore at end of linger
+          if (step.afterDelay) step.afterDelay(); // close modal / restore at end
           _mathikHideSpeech();
-          setTimeout(_tutorialNextStep, 350);
-        }, step.delay || 1500);
+          if (!step.openNow && step.action) step.action(); // navigate AFTER user has read
+          setTimeout(_tutorialNextStep, 400);
+        }, step.delay || 2500); // default 2500ms so user can read the message
       });
     };
     if (step.navigate) { step.navigate(); requestAnimationFrame(() => requestAnimationFrame(doAutoClick)); }
@@ -3526,10 +3533,31 @@ function _tutorialNextStep() {
 // ===== OWL ANIMATION via transform:translate() + bezier arc =====
 let _owlTX = 0;
 let _owlTY = 0;
+let _owlHovering = false;
+let _owlHoverPhase = 0;
 
 function _easeInOutCubic(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
 function _easeOutBack(t)    { const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); }
 function _easeInQuad(t)     { return t*t; }
+
+// Hover bob: sine-wave up-down ±9px while owl sits at a target
+function _owlStartHover() {
+  _owlHovering = true;
+  _owlHoverPhase = 0;
+  const bubble = document.getElementById('mathik-bubble');
+  (function loop() {
+    if (!_owlHovering || !bubble) return;
+    _owlHoverPhase += 0.032;
+    const dy = Math.sin(_owlHoverPhase) * 9;
+    bubble.style.transform = `translate(${_owlTX}px,${_owlTY + dy}px)`;
+    requestAnimationFrame(loop);
+  })();
+}
+function _owlStopHover() {
+  _owlHovering = false;
+  const bubble = document.getElementById('mathik-bubble');
+  if (bubble) bubble.style.transform = `translate(${_owlTX}px,${_owlTY}px)`;
+}
 
 // Bezier arc: flies in a curved arc over duration ms
 function _animOwlBezier(fromTX, fromTY, toTX, toTY, duration, onDone) {
@@ -3566,6 +3594,7 @@ function _animOwlBezier(fromTX, fromTY, toTX, toTY, duration, onDone) {
 // Fly owl to a CSS selector via bezier arc
 function _owlFlyToAndStay(selector, callback) {
   if (_owlFlying) { if (callback) callback(); return; }
+  _owlStopHover(); // stop hover bob before flying
 
   const selectors = selector.split(',').map(s => s.trim());
   let target = null;
@@ -3603,12 +3632,14 @@ function _owlFlyToAndStay(selector, callback) {
     target.classList.remove('mathik-target-pulse');
     _owlFlying = false;
     setTimeout(() => bubble.classList.remove('owl-arrived'), 600);
+    _owlStartHover(); // start hover bob after landing
     if (callback) callback();
   });
 }
 
 // Fly owl home via arc
 function _owlFlyHome(callback) {
+  _owlStopHover();
   const bubble = document.getElementById('mathik-bubble');
   if (_owlTX === 0 && _owlTY === 0) {
     bubble.style.transform = '';
