@@ -3228,7 +3228,12 @@ function mathikOpen() {
   document.getElementById('mathik-badge').style.display = 'none';
   if (!_mathikGreeted) {
     _mathikGreeted = true;
-    _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій помічник у MathHelper.<br>Вперше тут? Натисни <b>🎓 Огляд сайту</b> — покажу все за хвилину!');
+    const tutorialDone = localStorage.getItem('mh_tutorial_done') === '1';
+    if (tutorialDone) {
+      _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> 🦉 — твій помічник.<br>Чим допомогти сьогодні? Обирай розділ або запитуй!');
+    } else {
+      _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> — твій помічник у MathHelper.<br>Вперше тут? Натисни <b>🎓 Огляд сайту</b> — покажу все за хвилину!');
+    }
     _mathikSetChips(MATHIK_CHIPS_DEFAULT);
   }
   setTimeout(() => document.getElementById('mathik-input').focus(), 100);
@@ -3459,10 +3464,11 @@ function mathikTutorialAbort() {
 function _tutorialNextStep() {
   if (_tutorialStep >= MATHIK_TUTORIAL.length) {
     _inTutorial = false;
+    localStorage.setItem('mh_tutorial_done', '1');
     _owlFlyHome(() => {
       mathikOpen();
-      _mathikAddMsg('bot', '🎉 Туторіал завершено! Починай з формул → квіз. Я завжди тут 🦉');
-      _mathikSetChips([{ label: '📐 Формули', msg: 'формули' }, { label: '🎯 Квіз', msg: 'квіз' }]);
+      _mathikAddMsg('bot', '🎉 <b>Огляд завершено!</b> Тепер знаєш всі можливості 🦉<br>Починай: формули → квіз → НМТ!');
+      _mathikSetChips([{ label: '📐 Формули', msg: 'формули' }, { label: '🎯 Квіз', msg: 'квіз' }, { label: '🏆 НМТ', msg: 'нмт' }]);
     });
     return;
   }
@@ -3471,6 +3477,7 @@ function _tutorialNextStep() {
   // Last step: fly home then show speech for a few seconds
   if (step.isLast) {
     _inTutorial = false;
+    localStorage.setItem('mh_tutorial_done', '1');
     _owlFlyHome(() => {
       _mathikShowSpeech(step.msg, true);
       setTimeout(() => _mathikHideSpeech(), 5000);
