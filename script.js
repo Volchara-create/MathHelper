@@ -3296,25 +3296,25 @@ const MATHIK_TUTORIAL = [
     msg: '📐 <b>Геометрія</b> — планіметрія і стереометрія.<br>Кожна фігура має <b>SVG-малюнок</b> з позначеннями і всіма формулами.<br>Клікни на фігуру → побачиш інтерактивну картку!' },
 
   // 4. Відкриває першу категорію алгебри → летить до рядка формули
-  { navigate: () => { showFormulaTab('algebra'); setTimeout(() => { const q = document.querySelector('.alg-cat-btn'); if(q) q.click(); }, 260); },
+  { navigate: () => { showFormulaTab('algebra'); setTimeout(() => { const q = document.querySelector('.alg-cat-btn'); if(q) q.click(); }, 280); },
     target: '.alg-modal-row',
-    navigateDelay: 400,
+    navigateDelay: 900, // 280ms timeout + 300ms CSS modal transition + buffer
     msg: '🔢 <b>Список формул</b> — кожен рядок клікабельний!<br>Натисни будь-яку формулу → відкриється картка з поясненням, доведенням і прикладом.' },
 
   // 5. Відкриває деталь-модалку формули
   { navigate: () => { const r = document.querySelector('.alg-modal-row'); if(r) r.click(); },
     target: '#formula-detail-modal .fdm-content',
-    navigateDelay: 200,
+    navigateDelay: 500, // wait for detail modal CSS animation
     msg: '📖 Ось <b>детальна картка</b>!<br>• <b>Пояснення</b> — що це і навіщо<br>• <b>Доведення</b> — звідки береться<br>• <b>Приклад</b> — конкретні числа<br>Закрий ✕ і натисни ▶ Далі.' },
 
   // 6. VIA HOME → Quiz
-  // Сова летить до кнопки 🏠, пояснює навігацію, переходить у Квіз
   { viaHome: true,
     navigate: () => { try { closeFormulaDetail(); closeAlgebraModal(); } catch(e){} },
+    viaHomeDelay: 500, // wait for modal closing animations before flying to 🏠
     homeMsg: '🏠 Ось кнопка <b>Головна</b> — так переходять між розділами!<br>Натискаємо її щоб повернутись і піти далі.',
     preNavigate: () => show('dashboard'),
     dashAction: () => setTimeout(() => show('quiz'), 200),
-    dashDelay: 450,
+    dashDelay: 600,
     target: '.quiz-topic-card, .quiz-full-btn',
     msg: '🎮 <b>Квіз</b> — перевіряй себе по темах!<br>Алгебра · Геометрія · Статистика · Функції · НМТ.<br>Картки: 🟢 засвоєно · 🟡 є помилки · 🔴 слабке місце.' },
 
@@ -3323,12 +3323,11 @@ const MATHIK_TUTORIAL = [
     msg: '📊 <b>Статистика</b> — праворуч від тем!<br>3 вкладки: <b>Тиждень · Місяць · Весь час</b>.<br>Батьки бачать реальний прогрес — статистика не скидається!' },
 
   // 8. VIA HOME → Graphs
-  // Сова летить до кнопки 🏠 з квізу, потім до Графіків
   { viaHome: true,
     homeMsg: '🏠 І знову через <b>Головна</b> — до Графіків функцій!<br>Так міняємо будь-який розділ на будь-який.',
     preNavigate: () => show('dashboard'),
-    dashAction: () => setTimeout(() => showGraph(), 200),
-    dashDelay: 450,
+    dashAction: () => setTimeout(() => showGraph(), 250),
+    dashDelay: 700, // wait for graph canvas to render
     target: '#ws-canvas, canvas',
     msg: '📈 <b>Графіки функцій</b> — будуй що завгодно!<br>Введи: <code>x²</code>, <code>sin(x)</code>, <code>2x+1</code>...<br>🖱 Скролл = масштаб · Drag = переміщення' },
 
@@ -3342,22 +3341,26 @@ const MATHIK_TUTORIAL = [
     navigateDelay: 80,
     msg: '📝 <b>НМТ Симулятор</b> — у швидкому меню внизу!<br>30 завдань · таймер 90 хв · умови як на реальному НМТ.<br>Після тесту — розбір кожного питання з поясненнями.' },
 
-  // 11. Зошит — реально відкривається
+  // 11. Зошит — летить до кнопки в quick menu, відкриває панель
   { autoClick: true,
-    navigate: () => { show('dashboard'); openPanel('notebook'); },
-    target: '#panel-notebook',
-    clickMsg: '📓 <b>Зошит</b> відкрився збоку!<br>Пиши конспекти під час вивчення.<br>Режими: 📄 Лінійки і ⊞ Клітинки.',
-    delay: 2200,
-    action: () => {},
+    navigate: () => { try { closePanel('calc'); closePanel('notebook'); } catch(e){} show('dashboard'); },
+    target: 'button.qm-btn[onclick*="notebook"]',
+    navigateDelay: 200,
+    clickMsg: '📓 Ось кнопка <b>Зошит</b> у швидкому меню!<br>Натискаю — панель з\'являється збоку для конспектів.<br>Режими: 📄 Лінійки і ⊞ Клітинки.',
+    delay: 2500,
+    openNow: true,
+    action: () => openPanel('notebook'),
     afterDelay: () => {} },
 
-  // 12. Калькулятор — реально відкривається
+  // 12. Калькулятор — летить до кнопки в quick menu, відкриває панель
   { autoClick: true,
-    navigate: () => { try { closePanel('notebook'); } catch(e){} openPanel('calc'); },
-    target: '#panel-calc',
-    clickMsg: '🧮 <b>Калькулятор</b> — завжди під рукою!<br>Відкрий поруч з формулами і одразу перевіряй обрахунки.',
-    delay: 2200,
-    action: () => {},
+    navigate: () => { try { closePanel('notebook'); } catch(e){} },
+    target: 'button.qm-btn[onclick*="calc"]',
+    navigateDelay: 150,
+    clickMsg: '🧮 Ось кнопка <b>Калькулятор</b> у швидкому меню!<br>Натискаю — з\'являється поруч. Перетягни за заголовок — де зручно.',
+    delay: 2500,
+    openNow: true,
+    action: () => openPanel('calc'),
     afterDelay: () => {} },
 
   // 13. Швидке меню
@@ -3425,13 +3428,15 @@ function mathikStartTutorial() {
 }
 
 function mathikTutorialNext() {
-  if (!_inTutorial) return;
+  if (!_inTutorial || _owlBusy) return; // block during auto sequences
   _mathikHideSpeech();
   setTimeout(() => _tutorialNextStep(), 180);
 }
 
 function mathikTutorialAbort() {
+  if (_owlBusy) return; // can't abort mid-animation
   _inTutorial = false;
+  _owlUnlockUI();
   _owlStopHover();
   _mathikHideSpeech();
   _owlFlyHome();
@@ -3463,8 +3468,9 @@ function _tutorialNextStep() {
     _mathikShowSpeech(step.msg, _tutorialStep >= MATHIK_TUTORIAL.length);
   };
 
-  // viaHome: fly to 🏠 btn → hover + show homeMsg → navigate → dashAction → fly to target
+  // viaHome: lock UI → fly to 🏠 → hover + homeMsg → navigate → dashAction → fly to target
   if (step.viaHome) {
+    _owlLockUI();
     const doViaHome = () => {
       _owlFlyToAndStay('#global-home-btn, #global-back-btn', () => {
         _mathikShowSpeech(step.homeMsg || '🏠 Ось <b>Головна</b> — так переходимо між розділами!', false, true);
@@ -3473,21 +3479,24 @@ function _tutorialNextStep() {
           if (step.preNavigate) step.preNavigate();
           if (step.dashAction) step.dashAction();
           setTimeout(() => {
-            _owlFlyToAndStay(step.target, showSpeech);
+            _owlFlyToAndStay(step.target, showSpeech); // showSpeech unlocks UI via _mathikShowSpeech
           }, step.dashDelay || 700);
-        }, 2600); // long pause at 🏠 so user sees it
+        }, 2600);
       });
     };
-    if (step.navigate) { step.navigate(); requestAnimationFrame(() => requestAnimationFrame(doViaHome)); }
-    else doViaHome();
+    if (step.navigate) {
+      step.navigate();
+      setTimeout(doViaHome, step.viaHomeDelay || 150); // wait for modal-close animations
+    } else doViaHome();
     return;
   }
 
-  // autoClick: fly to target → hover + show clickMsg → action (immediate or after) → next step
-  // openNow:true  → action() fires immediately on landing (search/settings/dark — open right away)
-  // openNow:false → action() fires AFTER linger (show, navigate)
-  // afterDelay()  → called at end of linger (close modal/restore)
+  // autoClick: lock UI → fly to target → hover + clickMsg → action → afterDelay → next step
+  // openNow:true  → action() fires immediately on landing (search/settings/dark)
+  // openNow:false → action() fires AFTER full linger (show, navigate)
+  // afterDelay()  → called at end of linger (close modal / restore)
   if (step.autoClick) {
+    _owlLockUI();
     const doAutoClick = () => {
       const selectors = step.target.split(',').map(s => s.trim());
       let found = null;
@@ -3495,21 +3504,21 @@ function _tutorialNextStep() {
         const el = document.querySelector(sel);
         if (el) { const r = el.getBoundingClientRect(); if (r.width && r.height) { found = el; break; } }
       }
-      if (!found) { _tutorialNextStep(); return; }
+      if (!found) { _owlUnlockUI(); _tutorialNextStep(); return; }
       _owlFlyToAndStay(step.target, () => {
         _mathikShowSpeech(step.clickMsg, false, true);
         found.classList.add('mathik-target-pulse');
-        if (step.openNow && step.action) step.action(); // open modal/toggle immediately
+        if (step.openNow && step.action) step.action(); // open immediately
         setTimeout(() => {
           found.classList.remove('mathik-target-pulse');
-          if (step.afterDelay) step.afterDelay(); // close modal / restore at end
+          if (step.afterDelay) step.afterDelay(); // close/restore at end
           _mathikHideSpeech();
-          if (!step.openNow && step.action) step.action(); // navigate AFTER user has read
+          if (!step.openNow && step.action) step.action(); // navigate after full read
           setTimeout(_tutorialNextStep, 400);
-        }, step.delay || 2500); // default 2500ms so user can read the message
+        }, step.delay || 2500);
       });
     };
-    if (step.navigate) { step.navigate(); requestAnimationFrame(() => requestAnimationFrame(doAutoClick)); }
+    if (step.navigate) { step.navigate(); setTimeout(doAutoClick, step.navigateDelay || 80); }
     else { doAutoClick(); }
     return;
   }
@@ -3535,6 +3544,18 @@ let _owlTX = 0;
 let _owlTY = 0;
 let _owlHovering = false;
 let _owlHoverPhase = 0;
+let _owlBusy = false; // true during auto sequences — blocks ✕ and ▶ Далі
+
+function _owlLockUI() {
+  _owlBusy = true;
+  const skip = document.querySelector('.mathik-speech-skip');
+  if (skip) { skip.disabled = true; skip.style.opacity = '0.25'; skip.style.cursor = 'default'; }
+}
+function _owlUnlockUI() {
+  _owlBusy = false;
+  const skip = document.querySelector('.mathik-speech-skip');
+  if (skip) { skip.disabled = false; skip.style.opacity = ''; skip.style.cursor = ''; }
+}
 
 function _easeInOutCubic(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
 function _easeOutBack(t)    { const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); }
@@ -3675,6 +3696,10 @@ function _mathikShowSpeech(html, isLast, hideBtn) {
   document.getElementById('mathik-speech-text').innerHTML = html;
   const nextBtn = document.getElementById('mathik-speech-next');
   nextBtn.style.display = (isLast || hideBtn) ? 'none' : '';
+
+  // Unlock UI when Далі button is visible (user can interact)
+  if (!isLast && !hideBtn) _owlUnlockUI();
+  else if (isLast) _owlUnlockUI(); // also allow ✕ on final step
 
   // Progress bar & step counter
   const progEl   = document.getElementById('mathik-speech-progress');
