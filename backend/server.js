@@ -384,27 +384,38 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
 6. Один конкретний приклад після теорії
 7. Максимум 250 слів`;
 
-  try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      systemInstruction: systemPrompt
-    });
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const chatHistory = history.slice(-4).map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
 
-    // Convert history to Gemini format
-    const chatHistory = history.slice(-6).map(m => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }]
-    }));
-
+  const tryModel = async (modelName) => {
+    const model = genAI.getGenerativeModel({ model: modelName, systemInstruction: systemPrompt });
     const chat = model.startChat({ history: chatHistory });
     const result = await chat.sendMessage(message);
-    const reply = result.response.text();
+    return result.response.text();
+  };
 
-    res.json({ reply });
+  try {
+    // Try primary model first
+    const reply = await tryModel('gemini-2.5-flash');
+    return res.json({ reply });
   } catch (e) {
-    console.error('AI error:', e.message);
-    if (e.message?.includes('429') || e.status === 429 || e.message?.includes('quota') || e.message?.includes('rate')) {
+    console.error('AI error (gemini-2.5-flash):', e.message);
+
+    // On 503 overload — try fallback model
+    if (e.message?.includes('503') || e.message?.includes('overload') || e.message?.includes('unavailable') || e.message?.includes('high demand')) {
+      try {
+        console.log('Falling back to gemini-1.5-flash...');
+        const reply = await tryModel('gemini-1.5-flash');
+        return res.json({ reply });
+      } catch (e2) {
+        console.error('AI error (gemini-1.5-flash):', e2.message);
+      }
+    }
+
+    if (e.message?.includes('429') || e.message?.includes('quota') || e.message?.includes('rate')) {
       return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
     }
     res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
