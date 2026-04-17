@@ -3301,16 +3301,17 @@ const MATHIK_TUTORIAL = [
     navigateDelay: 900,
     msg: '🔢 <b>Список формул</b> — кожен рядок клікабельний!<br>Натисни будь-яку → відкриється картка з поясненням, доведенням і прикладом.' },
 
-  // 5. Деталь-модалка формули
+  // 5. Деталь-модалка формули — авто-закривається через 4с
   { navigate: () => { const r = document.querySelector('.alg-modal-row'); if(r) r.click(); },
     target: '#formula-detail-modal .fdm-content',
     navigateDelay: 500,
-    msg: '📖 Ось <b>детальна картка формули</b>!<br>• <b>Пояснення</b> — що це і навіщо<br>• <b>Доведення</b> — звідки береться<br>• <b>Приклад</b> — конкретні числа<br>Закрий ✕ і натисни ▶ Далі.' },
+    autoAdvance: 4000,
+    closeAction: () => { try { closeFormulaDetail(); closeAlgebraModal(); } catch(e){} },
+    msg: '📖 Ось <b>детальна картка формули</b>!<br>• <b>Пояснення</b> — що це і навіщо<br>• <b>Доведення</b> — звідки береться<br>• <b>Приклад</b> — конкретні числа<br><span style="opacity:.6;font-size:.78em">⏱ закривається автоматично...</span>' },
 
   // 6. VIA HOME → летить до кнопки Квіз на dashboard (НЕ до самого квізу!)
   { viaHome: true,
-    navigate: () => { try { closeFormulaDetail(); closeAlgebraModal(); } catch(e){} },
-    viaHomeDelay: 500,
+    navigate: () => { try { closeFormulaDetail(); closeAlgebraModal(); } catch(e){} }, // safety
     homeMsg: '🏠 Ось кнопка <b>Головна</b> — натискаємо і повертаємось на головну.<br>Так переходять між <b>усіма розділами</b> сайту!',
     preNavigate: () => show('dashboard'),
     dashDelay: 350,
@@ -3347,17 +3348,26 @@ const MATHIK_TUTORIAL = [
     delay: 1600,
     action: () => showGraph() },
 
-  // 12. Поле вводу функції (вже у графіках)
-  { target: '.add-func-btn, .ws-func-input',
-    msg: '✏️ <b>Введи формулу</b> тут і натисни Enter!<br>Підтримує: x^2, sin(x), cos(x), log(x), sqrt(x), pi, e...<br>🖱 Скролл = масштаб · Drag = переміщення · Кілька функцій — різними кольорами.' },
+  // 12. Graph demo — летить до "+ Додати", реально додає функцію x²
+  { autoClick: true,
+    target: 'button[onclick="addFunction()"]',
+    clickMsg: '📈 Функції вже намальовані! Натискаю <b>+ Додати</b> — добавляю <code>x²</code>!<br>🖱 Скролл = масштаб · Drag = рух · Кілька функцій — різними кольорами.',
+    delay: 3000,
+    openNow: true,
+    action: () => { try { addFunction(); } catch(e){} },
+    afterDelay: () => {} },
 
-  // 13. НМТ симулятор
+  // 13. Навігаційні кнопки у шапці (поки у графіках — ← видима)
+  { target: '#global-back-btn, #guide-btn',
+    msg: '🔙 <b>Стрілочка ←</b> — повертає до <b>попереднього розділу</b>.<br>❓ — запускає цей <b>огляд</b> знову в будь-який момент.<br>🏠 <b>Головна</b> — повертає на головну з будь-якого місця.' },
+
+  // 14. НМТ симулятор
   { navigate: () => show('dashboard'),
     target: 'a.qm-btn[href="simulator.html"]',
     navigateDelay: 80,
     msg: '📝 <b>НМТ Симулятор</b> — у швидкому меню внизу!<br>30 завдань · таймер 90 хв · умови як на реальному НМТ.<br>Після тесту — розбір кожного питання з поясненнями.' },
 
-  // 14. Зошит — летить до кнопки quick menu
+  // 15. Зошит — летить до кнопки quick menu
   { autoClick: true,
     navigate: () => { try { closePanel('calc'); closePanel('notebook'); } catch(e){} show('dashboard'); },
     target: 'button.qm-btn[onclick*="notebook"]',
@@ -3379,7 +3389,7 @@ const MATHIK_TUTORIAL = [
     action: () => openPanel('calc'),
     afterDelay: () => {} },
 
-  // 16. Темна тема — реально вмикається і вимикається
+  // 16. Темна тема — реально вмикається — реально вмикається і вимикається
   { autoClick: true,
     navigate: () => { try { closePanel('calc'); } catch(e){} },
     target: '#dark-toggle',
@@ -3528,7 +3538,18 @@ function _tutorialNextStep() {
   }
 
   if (step.target) {
-    const doFly = () => _owlFlyToAndStay(step.target, showSpeech);
+    const doFly = () => _owlFlyToAndStay(step.target, () => {
+      showSpeech();
+      // autoAdvance: lock UI, wait, run closeAction, then advance automatically
+      if (step.autoAdvance) {
+        _owlLockUI();
+        setTimeout(() => {
+          if (step.closeAction) step.closeAction();
+          _mathikHideSpeech();
+          setTimeout(_tutorialNextStep, 400);
+        }, step.autoAdvance);
+      }
+    });
     if (step.navigate) {
       step.navigate();
       setTimeout(() => requestAnimationFrame(doFly), step.navigateDelay || 50);
