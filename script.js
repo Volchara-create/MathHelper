@@ -3490,13 +3490,23 @@ function _tutorialNextStep() {
   }
   const step = MATHIK_TUTORIAL[_tutorialStep++];
 
-  // Last step: fly home then show speech for a few seconds
+  // Last step: fly home, show final speech, then open chat with returning chips
   if (step.isLast) {
     _inTutorial = false;
     localStorage.setItem('mh_tutorial_done', '1');
     _owlFlyHome(() => {
       _mathikShowSpeech(step.msg, true);
-      setTimeout(() => _mathikHideSpeech(), 5000);
+      setTimeout(() => {
+        _mathikHideSpeech();
+        // Open chat directly (bypass _mathikGreeted flag) with completion msg + chips
+        _mathikOpen = true;
+        const _c = document.getElementById('mathik-chat');
+        if (_c) _c.style.display = 'flex';
+        const _b = document.getElementById('mathik-badge');
+        if (_b) _b.style.display = 'none';
+        _mathikAddMsg('bot', '🎉 <b>Огляд завершено!</b> Тепер знаєш усі можливості MathHelper 🦉<br>Я тут якщо заблукаєш — питай про будь-який розділ! 🗺️');
+        _mathikSetChips(MATHIK_CHIPS_RETURNING);
+      }, 4000);
     });
     return;
   }
