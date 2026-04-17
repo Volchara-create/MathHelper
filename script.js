@@ -3301,6 +3301,8 @@ function _aiUpdateContextBar() {
   bar.textContent = `${ctx.grade} клас · Слабкі теми: ${weakStr}${ctx.quizStats ? ' · ' + ctx.quizStats : ''}`;
 }
 
+const _OWL_SVG = `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="width:1.8rem;height:1.8rem;display:block"><defs><linearGradient id="owlA" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c8d4e0"/><stop offset="40%" stop-color="#7a90a8"/><stop offset="70%" stop-color="#4a6070"/><stop offset="100%" stop-color="#9ab0c4"/></linearGradient><linearGradient id="owlB" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4fc3f7"/><stop offset="100%" stop-color="#0288d1"/></linearGradient></defs><ellipse cx="16" cy="20" rx="10" ry="11" fill="url(#owlA)"/><ellipse cx="16" cy="10" rx="8" ry="7" fill="url(#owlA)"/><polygon points="9,5 7,1 12,5" fill="#7a90a8"/><polygon points="23,5 25,1 20,5" fill="#7a90a8"/><circle cx="12" cy="10" r="3.5" fill="#1a2634"/><circle cx="20" cy="10" r="3.5" fill="#1a2634"/><circle cx="12" cy="10" r="2.5" fill="url(#owlB)"/><circle cx="20" cy="10" r="2.5" fill="url(#owlB)"/><circle cx="12.8" cy="9" r="0.8" fill="white" opacity="0.8"/><circle cx="20.8" cy="9" r="0.8" fill="white" opacity="0.8"/><polygon points="14.5,13 17.5,13 16,15.5" fill="#5a7080"/><ellipse cx="7" cy="22" rx="4" ry="7" fill="#5a7080" transform="rotate(-15,7,22)"/><ellipse cx="25" cy="22" rx="4" ry="7" fill="#5a7080" transform="rotate(15,25,22)"/><ellipse cx="16" cy="22" rx="5.5" ry="6" fill="#9ab0c4" opacity="0.6"/></svg>`;
+
 function _aiAddMsg(role, html, isLoading) {
   const msgs = document.getElementById('ai-messages');
   if (!msgs) return null;
@@ -3308,7 +3310,7 @@ function _aiAddMsg(role, html, isLoading) {
   div.className = 'ai-msg ai-msg--' + role;
   if (isLoading) div.id = 'ai-loading-msg';
   div.innerHTML = role === 'bot'
-    ? `<span class="ai-avatar">🤖</span><div class="ai-bubble">${html}</div>`
+    ? `<span class="ai-avatar">${_OWL_SVG}</span><div class="ai-bubble">${html}</div>`
     : `<div class="ai-bubble ai-bubble--user">${html}</div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;

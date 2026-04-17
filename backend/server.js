@@ -404,7 +404,10 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
     res.json({ reply });
   } catch (e) {
     console.error('AI error:', e.message);
-    res.status(500).json({ error: 'Помилка AI. Спробуй ще раз.' });
+    if (e.message?.includes('429') || e.status === 429 || e.message?.includes('quota') || e.message?.includes('rate')) {
+      return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
+    }
+    res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
   }
 });
 
