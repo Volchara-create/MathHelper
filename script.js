@@ -3287,84 +3287,115 @@ const MATHIK_TUTORIAL = [
 
   // 2. Таби формул
   { target: '#ftab-btn-algebra',
-    msg: '📚 Ось розділ <b>Формули</b>!<br>Вверху 4 вкладки: <b>Алгебра · Геометрія · Тригонометрія · Таблиці</b>.<br>Вміст фільтрується по твоєму класу — обери клас у ⚙️ Налаштуваннях.' },
+    msg: '📚 Ось розділ <b>Формули</b>!<br>4 вкладки: <b>Алгебра · Геометрія · Тригонометрія · Таблиці</b>.<br>Контент фільтрується по <b>твоєму класу</b> — обери клас у ⚙️ Налаштуваннях.' },
 
-  // 3. Летить до Геометрії
+  // 3. Геометрія
   { navigate: () => showFormulaTab('geometry'),
     target: '#ftab-btn-geometry',
+    navigateDelay: 80,
     msg: '📐 <b>Геометрія</b> — планіметрія і стереометрія.<br>Кожна фігура має <b>SVG-малюнок</b> з позначеннями і всіма формулами.<br>Клікни на фігуру → побачиш інтерактивну картку!' },
 
   // 4. Відкриває першу категорію алгебри → летить до рядка формули
-  { navigate: () => { showFormulaTab('algebra'); setTimeout(() => { const q = document.querySelector('.alg-cat-btn'); if(q) q.click(); }, 250); },
+  { navigate: () => { showFormulaTab('algebra'); setTimeout(() => { const q = document.querySelector('.alg-cat-btn'); if(q) q.click(); }, 260); },
     target: '.alg-modal-row',
-    msg: '🔢 <b>Список формул</b> — кожен рядок клікабельний!<br>Натисни будь-яку формулу → відкриється картка з:' },
+    navigateDelay: 400,
+    msg: '🔢 <b>Список формул</b> — кожен рядок клікабельний!<br>Натисни будь-яку формулу → відкриється картка з поясненням, доведенням і прикладом.' },
 
   // 5. Відкриває деталь-модалку формули
   { navigate: () => { const r = document.querySelector('.alg-modal-row'); if(r) r.click(); },
     target: '#formula-detail-modal .fdm-content',
-    msg: '📖 Ось <b>детальна картка</b>!<br>• <b>Пояснення</b> — що це і навіщо<br>• <b>Доведення</b> — звідки береться<br>• <b>Приклад</b> — конкретні числа<br>Закрий і натисни ▶ Далі.' },
+    navigateDelay: 200,
+    msg: '📖 Ось <b>детальна картка</b>!<br>• <b>Пояснення</b> — що це і навіщо<br>• <b>Доведення</b> — звідки береться<br>• <b>Приклад</b> — конкретні числа<br>Закрий ✕ і натисни ▶ Далі.' },
 
-  // 6. Натискає Квіз
-  { autoClick: true,
-    navigate: () => { try { closeFormulaDetail(); closeAlgebraModal(); } catch(e){} show('dashboard'); },
-    target: '#dash-quick-btns button[onclick*="quiz"]',
-    clickMsg: '🎮 Наступне — <b>Квіз</b>! Натискаю!',
-    action: () => show('quiz') },
+  // 6. VIA HOME → Quiz
+  // Сова летить до кнопки 🏠, пояснює навігацію, переходить у Квіз
+  { viaHome: true,
+    navigate: () => { try { closeFormulaDetail(); closeAlgebraModal(); } catch(e){} },
+    homeMsg: '🏠 Ось кнопка <b>Головна</b> — так переходять між розділами!<br>Натискаємо її щоб повернутись і піти далі.',
+    preNavigate: () => show('dashboard'),
+    dashAction: () => setTimeout(() => show('quiz'), 200),
+    dashDelay: 450,
+    target: '.quiz-topic-card, .quiz-full-btn',
+    msg: '🎮 <b>Квіз</b> — перевіряй себе по темах!<br>Алгебра · Геометрія · Статистика · Функції · НМТ.<br>Картки: 🟢 засвоєно · 🟡 є помилки · 🔴 слабке місце.' },
 
-  // 7. Теми квізу
-  { target: '.quiz-topic-card, .quiz-full-btn',
-    msg: '🎯 <b>Квіз</b> — перевіряй себе по темах!<br>Алгебра · Геометрія · Статистика · Функції · НМТ.<br>Картки тем підсвічуються: 🟢 засвоєно / 🟡 є помилки / 🔴 слабке місце.' },
+  // 7. Статистика квізу
+  { target: '.quiz-stats-wrap, .qs-tabs',
+    msg: '📊 <b>Статистика</b> — праворуч від тем!<br>3 вкладки: <b>Тиждень · Місяць · Весь час</b>.<br>Батьки бачать реальний прогрес — статистика не скидається!' },
 
-  // 8. Летить до статистики (права колонка)
-  { target: '.quiz-stats-wrap, .qs-tabs, #quiz-area',
-    msg: '📊 <b>Статистика</b> — праворуч від тем!<br>3 вкладки: <b>Тиждень · Місяць · Весь час</b>.<br>Батьки бачать твій прогрес — статистика не скидається!' },
+  // 8. VIA HOME → Graphs
+  // Сова летить до кнопки 🏠 з квізу, потім до Графіків
+  { viaHome: true,
+    homeMsg: '🏠 І знову через <b>Головна</b> — до Графіків функцій!<br>Так міняємо будь-який розділ на будь-який.',
+    preNavigate: () => show('dashboard'),
+    dashAction: () => setTimeout(() => showGraph(), 200),
+    dashDelay: 450,
+    target: '#ws-canvas, canvas',
+    msg: '📈 <b>Графіки функцій</b> — будуй що завгодно!<br>Введи: <code>x²</code>, <code>sin(x)</code>, <code>2x+1</code>...<br>🖱 Скролл = масштаб · Drag = переміщення' },
 
-  // 9. Натискає Графіки
-  { autoClick: true,
-    navigate: () => show('dashboard'),
-    target: '#dash-quick-btns button[onclick*="showGraph"]',
-    clickMsg: '📈 Відкриваю <b>Графіки функцій</b>!',
-    action: () => showGraph() },
-
-  // 10. Графік
-  { target: '#ws-canvas, canvas',
-    msg: '📈 <b>Графіки</b> — будуй будь-яку функцію!<br>Введи: <code>x²</code>, <code>sin(x)</code>, <code>2x+1</code>...<br>🖱 Скролл = масштаб · Drag = переміщення<br>Кілька функцій — різними кольорами!' },
-
-  // 11. Кнопка додати функцію
+  // 9. Поле вводу функції
   { target: '.add-func-btn, .ws-func-input',
-    msg: '✏️ <b>Поле вводу</b> — пиши формулу тут.<br>Підтримує: степені (x^2), тригонометрію (sin, cos, tan), логарифми (log, ln), константи (pi, e).' },
+    msg: '✏️ <b>Поле вводу</b> — пиши формулу тут.<br>Підтримує: степені (x^2), тригонометрію (sin, cos), логарифми (log, ln).<br>Кілька функцій — різними кольорами!' },
 
-  // 12. НМТ симулятор
+  // 10. НМТ симулятор
   { navigate: () => show('dashboard'),
     target: 'a.qm-btn[href="simulator.html"]',
-    msg: '📝 <b>НМТ Симулятор</b> — у швидкому меню внизу!<br><b>30 завдань · таймер 90 хв</b> — умови точно як на реальному НМТ.<br>Після тесту — повний розбір з поясненнями кожного питання.' },
+    navigateDelay: 80,
+    msg: '📝 <b>НМТ Симулятор</b> — у швидкому меню внизу!<br>30 завдань · таймер 90 хв · умови як на реальному НМТ.<br>Після тесту — розбір кожного питання з поясненнями.' },
 
-  // 13. Зошит
-  { navigate: () => { show('dashboard'); setTimeout(() => openPanel('notebook'), 300); },
-    target: '#panel-notebook, .sp-nb-body',
-    msg: '📓 <b>Зошит</b> відкрився збоку!<br>Пиши конспекти під час вивчення формул.<br>Режими: 📄 <b>Лінійки</b> і ⊞ <b>Клітинки</b>.<br>Зберігається на сервері — доступний з будь-якого пристрою!' },
+  // 11. Зошит — реально відкривається
+  { autoClick: true,
+    navigate: () => { show('dashboard'); openPanel('notebook'); },
+    target: '#panel-notebook',
+    clickMsg: '📓 <b>Зошит</b> відкрився збоку!<br>Пиши конспекти під час вивчення.<br>Режими: 📄 Лінійки і ⊞ Клітинки.',
+    delay: 2200,
+    action: () => {},
+    afterDelay: () => {} },
 
-  // 14. Калькулятор
-  { navigate: () => { try { closePanel('notebook'); } catch(e){} setTimeout(() => openPanel('calc'), 200); },
+  // 12. Калькулятор — реально відкривається
+  { autoClick: true,
+    navigate: () => { try { closePanel('notebook'); } catch(e){} openPanel('calc'); },
     target: '#panel-calc',
-    msg: '🧮 <b>Калькулятор</b> — завжди під рукою!<br>Відкрий поруч з формулами і одразу перевіряй обрахунки.<br>Перетягни за заголовок — постав куди зручно.' },
+    clickMsg: '🧮 <b>Калькулятор</b> — завжди під рукою!<br>Відкрий поруч з формулами і одразу перевіряй обрахунки.',
+    delay: 2200,
+    action: () => {},
+    afterDelay: () => {} },
 
-  // 15. Швидке меню
+  // 13. Швидке меню
   { navigate: () => { try { closePanel('calc'); } catch(e){} },
     target: '#quick-menu, .quick-menu',
     msg: '⚡ <b>Швидке меню</b> — завжди внизу!<br>🧮 Калькулятор · 📓 Зошит · 🎯 НМТ · 🤖 AI · ⭐ Pro<br>Скоро: <b>AI-помічник</b> розв\'яже будь-яку задачу покроково.' },
 
-  // 16. Темна тема
-  { target: '#dark-toggle',
-    msg: '🌙 <b>Темна тема</b> — кнопка у шапці!<br>Зручно вчитися ввечері — не навантажує очі.<br>Налаштування зберігається між сесіями.' },
+  // 14. Темна тема — реально вмикається і вимикається
+  { autoClick: true,
+    target: '#dark-toggle',
+    clickMsg: '🌙 <b>Темна тема</b> — вмикаю! Зручно вчитися ввечері.',
+    delay: 2200,
+    action: () => toggleDark(),
+    afterDelay: () => toggleDark() },
 
-  // 17. Пошук
-  { target: '#search-btn',
-    msg: '🔍 <b>Пошук</b> по всьому сайту!<br>Кнопка у шапці або клавіша <kbd>/</kbd>.<br>Знаходить: формули, теми квізу, конспекти.<br>Спробуй: "sin", "дискримінант", "похідна".' },
+  // 15. Пошук — реально відкривається
+  { autoClick: true,
+    target: '#search-btn',
+    clickMsg: '🔍 Відкриваю <b>Пошук</b>!<br>Знаходить формули, теми, конспекти...<br>Спробуй: "sin", "дискримінант", "похідна".',
+    delay: 2500,
+    action: () => searchOpen(),
+    afterDelay: () => searchClose() },
 
-  // 18. Налаштування
+  // 16. Налаштування — реально відкривається
+  { autoClick: true,
+    target: 'button[onclick="openSettings()"]',
+    clickMsg: '⚙️ Відкриваю <b>Налаштування</b>!<br>Тут вибираєш <b>свій клас (7–11)</b> — важливо зробити це першим!',
+    delay: 3000,
+    action: () => openSettings(),
+    afterDelay: () => closeSettings() },
+
+  // 17. Кнопки навігації у шапці
+  { target: '#global-back-btn, #guide-btn',
+    msg: '← <b>Назад</b> — повертає до попереднього розділу.<br>❓ — запускає цей туторіал знову в будь-який момент.<br>🏠 — повертає на головну з будь-якого місця.' },
+
+  // 18. Нагадування про клас
   { target: 'button[onclick="openSettings()"]',
-    msg: '⚙️ <b>Налаштування</b> — зроби це першим!<br>✅ Вибери <b>клас (7–11)</b> — всі розділи фільтруються по програмі<br>✅ Встанови <b>щоденну ціль</b><br>✅ Увімкни <b>нагадування</b>' },
+    msg: '⚙️ <b>Зроби це прямо зараз!</b><br>Відкрий Налаштування і встанови свій <b>клас (7–11)</b>.<br>Всі формули і квіз автоматично підлаштуються під твою програму.' },
 
   // 19. ФІНАЛ
   { isLast: true,
@@ -3428,7 +3459,28 @@ function _tutorialNextStep() {
     _mathikShowSpeech(step.msg, _tutorialStep >= MATHIK_TUTORIAL.length);
   };
 
-  // autoClick: (optional silent navigate) → fly to button → sit 1.5s → action() → next step
+  // viaHome: fly to 🏠 btn → show homeMsg → navigate to dashboard → dashAction → fly to target
+  if (step.viaHome) {
+    const doViaHome = () => {
+      _owlFlyToAndStay('#global-home-btn, #global-back-btn', () => {
+        _mathikShowSpeech(step.homeMsg || '🏠 Ось <b>Головна</b> — так переходимо між розділами!', false, true);
+        setTimeout(() => {
+          _mathikHideSpeech();
+          if (step.preNavigate) step.preNavigate();
+          if (step.dashAction) step.dashAction();
+          setTimeout(() => {
+            _owlFlyToAndStay(step.target, showSpeech);
+          }, step.dashDelay || 350);
+        }, 1900);
+      });
+    };
+    if (step.navigate) { step.navigate(); requestAnimationFrame(() => requestAnimationFrame(doViaHome)); }
+    else doViaHome();
+    return;
+  }
+
+  // autoClick: fly to target → show clickMsg → action() immediately → afterDelay() at end → next step
+  // Supports: delay (ms to linger), afterDelay (called before moving on)
   if (step.autoClick) {
     const doAutoClick = () => {
       const selectors = step.target.split(',').map(s => s.trim());
@@ -3437,16 +3489,17 @@ function _tutorialNextStep() {
         const el = document.querySelector(sel);
         if (el) { const r = el.getBoundingClientRect(); if (r.width && r.height) { found = el; break; } }
       }
-      if (!found) { _tutorialNextStep(); return; } // target not found → skip
+      if (!found) { _tutorialNextStep(); return; }
       _owlFlyToAndStay(step.target, () => {
-        _mathikShowSpeech(step.clickMsg, false, true); // no Далі button
+        _mathikShowSpeech(step.clickMsg, false, true);
         found.classList.add('mathik-target-pulse');
+        if (step.action) step.action(); // open immediately (search, settings, dark…)
         setTimeout(() => {
           found.classList.remove('mathik-target-pulse');
+          if (step.afterDelay) step.afterDelay(); // close/restore at end of linger
           _mathikHideSpeech();
-          if (step.action) step.action();
           setTimeout(_tutorialNextStep, 350);
-        }, 1500);
+        }, step.delay || 1500);
       });
     };
     if (step.navigate) { step.navigate(); requestAnimationFrame(() => requestAnimationFrame(doAutoClick)); }
@@ -3458,7 +3511,7 @@ function _tutorialNextStep() {
     const doFly = () => _owlFlyToAndStay(step.target, showSpeech);
     if (step.navigate) {
       step.navigate();
-      requestAnimationFrame(() => requestAnimationFrame(doFly));
+      setTimeout(() => requestAnimationFrame(doFly), step.navigateDelay || 50);
     } else {
       doFly();
     }
