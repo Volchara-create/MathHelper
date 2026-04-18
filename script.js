@@ -3136,12 +3136,16 @@ function openAISection() {
 
 function _sigmaRestoreBtn() {
   const today = new Date().toISOString().slice(0, 10);
-  if (localStorage.getItem('mh_sigma_date') === today) {
-    const aiBtn = document.querySelector('.qm-ai');
-    if (aiBtn) {
-      aiBtn.classList.add('sigma-btn-active');
-      _owlApplyRust(aiBtn); // apply rust based on time of day
-    }
+  const lastPlayed = localStorage.getItem('mh_sigma_date');
+  const aiBtn = document.querySelector('.qm-ai');
+  if (!aiBtn) return;
+  if (lastPlayed === today) {
+    // Same day: metallic owl visible + rust animation
+    aiBtn.classList.add('sigma-btn-active');
+    _owlApplyRust(aiBtn);
+  } else {
+    // New day: owl "rusted away" — back to robot, animation will play fresh
+    aiBtn.classList.remove('sigma-btn-active');
   }
 }
 
@@ -3178,33 +3182,31 @@ function _sigmaTransformSequence() {
     _sigmaLightning(bubble, () => {
       _sigmaMode = true;
 
-      // Step 3: transform owl to metallic mid-flight
+      // Step 3: Mathik glows electric during merge — stays as owl
       if (bubble) {
         bubble.classList.add('sigma-mode');
-        bubble.querySelector('.mathik-avatar').textContent = '🦾';
       }
 
-      // Step 4: intro speech as MathΣimus
+      // Step 4: intro speech — Mathik as glowing owl after merging with AI
       _mathikShowSpeech(
-        '⚡ Я — <b>MathΣimus</b>! Версія Mathik з майбутнього.<br>Залишаюсь тут — у кнопці ШІ 🦾<br>Mathik повернеться додому — нас тепер <b>двоє</b>!<br>Питай будь-що з математики! 🧠',
+        '⚡ <b>MathΣimus</b> — ми об\'єднались!<br>Металева сова лишається у кнопці ШІ 🦉⚡<br>Я повертаюсь додому — нас тепер <b>двоє</b>!<br>Питай будь-що з математики! 🧠',
         false, true
       );
 
-      // Step 5: after speech — metallic owl stays on AI btn, regular Mathik flies home
+      // Step 5: after speech — metallic owl appears in AI btn, Mathik flies home as normal owl
       setTimeout(() => {
         _mathikHideSpeech();
 
-        // AI button becomes active (SVG owl already there from HTML)
+        // AI button becomes active — CSS switches from 🤖 to metallic owl SVG
         if (aiBtn) {
           aiBtn.classList.add('sigma-btn-active');
           _owlApplyRust(aiBtn);
         }
 
-        // Regular Mathik flies back home and restores normal look
+        // Mathik flies back home as normal owl
         setTimeout(() => {
           if (bubble) {
             bubble.classList.remove('sigma-mode');
-            bubble.querySelector('.mathik-avatar').textContent = '🦉';
           }
           _owlFlyHome(() => _owlUnlockUI());
         }, 400);
@@ -4157,4 +4159,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initPanelResizes();
   initPanelDrag();
   spNbLoad();
+  _sigmaRestoreBtn(); // restore AI button state: metallic owl if same day, robot if new day
 });
