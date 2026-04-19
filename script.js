@@ -1806,17 +1806,29 @@ function renderStatsPage() {
   if (!wrap) return;
 
   const rawStats = JSON.parse(localStorage.getItem('mh_quiz_stats_v2') || '{}');
+  const nmtStats = JSON.parse(localStorage.getItem('mh_nmt_stats_v1') || '{}');
   const weekData = JSON.parse(localStorage.getItem('mh_quiz_week') || '{}');
 
-  // --- Summary numbers ---
+  // --- Summary numbers (quiz) ---
   const allStats = quizGetStats(null, null);
-  const totalQ = Object.values(allStats).reduce((s,t) => s + t.total, 0);
-  const totalW = Object.values(allStats).reduce((s,t) => s + t.wrong, 0);
+  const quizTotal = Object.values(allStats).reduce((s,t) => s + t.total, 0);
+  const quizWrong = Object.values(allStats).reduce((s,t) => s + t.wrong, 0);
+
+  // --- NMT summary ---
+  let nmtAttempts = 0, nmtTotalQ = 0, nmtTotalW = 0, nmtScoreSum = 0;
+  Object.values(nmtStats).forEach(arr => arr.forEach(r => {
+    nmtAttempts++; nmtTotalQ += r.total; nmtTotalW += r.wrong; nmtScoreSum += r.score;
+  }));
+  const nmtAvgScore = nmtAttempts ? Math.round(nmtScoreSum / nmtAttempts) : 0;
+
+  // Combined totals
+  const totalQ = quizTotal + nmtTotalQ;
+  const totalW = quizWrong + nmtTotalW;
   const accuracy = totalQ ? Math.round((totalQ - totalW) / totalQ * 100) : 0;
   const streak = statsCalcStreak(weekData);
   const bestTopic = statsGetBest(allStats);
 
-  // --- 30-day progress chart data ---
+  // --- 30-day progress chart — quiz + NMT combined ---
   const chartDays = [];
   for (let i = 29; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -1824,6 +1836,8 @@ function renderStatsPage() {
     const dayTopics = rawStats[key] || {};
     let t = 0, w = 0;
     Object.values(dayTopics).forEach(s => { t += s.total; w += s.wrong; });
+    // Add NMT for this day
+    (nmtStats[key] || []).forEach(r => { t += r.total; w += r.wrong; });
     chartDays.push({ key, label: i === 0 ? 'Сьогодні' : d.toLocaleDateString('uk-UA', {day:'numeric',month:'short'}), total: t, wrong: w, pct: t ? Math.round((t-w)/t*100) : null });
   }
 
@@ -1927,9 +1941,28 @@ function renderStatsPage() {
     </div>
 
     <div class="stats-topics-block">
-      <div class="stats-chart-title">📚 По темах <span style="font-size:.8rem;color:#888;font-weight:400">(натисни щоб тренуватись)</span></div>
+      <div class="stats-chart-title">📚 Квіз — по темах <span style="font-size:.8rem;color:#888;font-weight:400">(натисни щоб тренуватись)</span></div>
       <div class="stat-topics-list">${topicRows}</div>
     </div>
+
+    ${nmtAttempts > 0 ? `
+    <div class="stats-topics-block">
+      <div class="stats-chart-title">🎯 НМТ Симулятор</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px;">
+        <div class="stat-card" style="box-shadow:none;border:1.5px solid #e2e8f0;">
+          <div class="stat-card-val">${nmtAttempts}</div>
+          <div class="stat-card-label">Спроб НМТ</div>
+        </div>
+        <div class="stat-card" style="box-shadow:none;border:1.5px solid #e2e8f0;">
+          <div class="stat-card-val" style="color:${nmtAvgScore>=160?'#22c55e':nmtAvgScore>=130?'#f59e0b':'#ef4444'}">${nmtAvgScore}</div>
+          <div class="stat-card-label">Сер. бал (із 200)</div>
+        </div>
+        <div class="stat-card" style="box-shadow:none;border:1.5px solid #e2e8f0;">
+          <div class="stat-card-val">${nmtTotalQ}</div>
+          <div class="stat-card-label">Питань у НМТ</div>
+        </div>
+      </div>
+    </div>` : ''}
   `;
 }
 

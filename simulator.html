@@ -2204,6 +2204,8 @@ function submitExam() {
     }).catch(() => {});
   }
   showResults();
+  // Save NMT result to localStorage for stats page
+  _saveNmtStats();
 }
 
 // ============================================================
@@ -2272,6 +2274,37 @@ function showResults() {
 // ============================================================
 //  REVIEW
 // ============================================================
+function _saveNmtStats() {
+  const qs = state.questions;
+  let correct = 0;
+  qs.forEach((q, i) => {
+    const ans = state.answers[i];
+    if (ans === null) return;
+    const ok = q.type === 'mcq'
+      ? ans === q.correct
+      : String(ans).trim() === String(q.correct).trim();
+    if (ok) correct++;
+  });
+  const today = new Date().toISOString().slice(0, 10);
+  const total = qs.length;
+  const wrong = total - correct - Object.values(state.answers).filter(a => a === null).length;
+  // mh_nmt_stats_v1: { "2026-04-19": [{total, wrong, score}] }
+  const key = 'mh_nmt_stats_v1';
+  const data = JSON.parse(localStorage.getItem(key) || '{}');
+  if (!data[today]) data[today] = [];
+  const pct = correct / total;
+  data[today].push({ total, wrong: total - correct, score: Math.round(100 + pct * 100) });
+  localStorage.setItem(key, JSON.stringify(data));
+  // Also update mh_quiz_week so streak counts NMT days
+  const weekKey = 'mh_quiz_week';
+  const weekData = JSON.parse(localStorage.getItem(weekKey) || '{}');
+  weekData[today] = (weekData[today] || 0) + total;
+  const days = Object.keys(weekData).sort().slice(-30);
+  const trimmed = {};
+  days.forEach(d => trimmed[d] = weekData[d]);
+  localStorage.setItem(weekKey, JSON.stringify(trimmed));
+}
+
 function showReview(mode) {
   showScreen('screen-review');
   document.getElementById('review-title').textContent =
