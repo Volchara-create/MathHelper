@@ -103,6 +103,7 @@ function show(sec){
   if(sec==='textbooks') buildTextbooks();
   if(sec==='formulas') showFormulaTab('algebra');
   if(sec==='quiz') startQuiz();
+  if(sec==='stats') renderStatsPage();
   if(sec==='graph') requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1797,6 +1798,162 @@ function quizWeekStart() {
 }
 function quizMonthStart() {
   const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+}
+
+// ===== STATS PAGE =====
+function renderStatsPage() {
+  const wrap = document.getElementById('stats-content');
+  if (!wrap) return;
+
+  const rawStats = JSON.parse(localStorage.getItem('mh_quiz_stats_v2') || '{}');
+  const weekData = JSON.parse(localStorage.getItem('mh_quiz_week') || '{}');
+
+  // --- Summary numbers ---
+  const allStats = quizGetStats(null, null);
+  const totalQ = Object.values(allStats).reduce((s,t) => s + t.total, 0);
+  const totalW = Object.values(allStats).reduce((s,t) => s + t.wrong, 0);
+  const accuracy = totalQ ? Math.round((totalQ - totalW) / totalQ * 100) : 0;
+  const streak = statsCalcStreak(weekData);
+  const bestTopic = statsGetBest(allStats);
+
+  // --- 30-day progress chart data ---
+  const chartDays = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    const dayTopics = rawStats[key] || {};
+    let t = 0, w = 0;
+    Object.values(dayTopics).forEach(s => { t += s.total; w += s.wrong; });
+    chartDays.push({ key, label: i === 0 ? 'Сьогодні' : d.toLocaleDateString('uk-UA', {day:'numeric',month:'short'}), total: t, wrong: w, pct: t ? Math.round((t-w)/t*100) : null });
+  }
+
+  // --- SVG line chart ---
+  const chartW = 580, chartH = 140, padL = 32, padB = 24, padT = 12;
+  const innerW = chartW - padL - 8;
+  const innerH = chartH - padB - padT;
+  const activeDays = chartDays.filter(d => d.pct !== null);
+
+  let svgChart = '';
+  if (activeDays.length < 2) {
+    svgChart = `<div style="text-align:center;color:#aaa;padding:32px 0;font-size:.9rem;">Пройди більше тестів щоб побачити графік 📈</div>`;
+  } else {
+    const pts = chartDays.map((d, i) => {
+      if (d.pct === null) return null;
+      const x = padL + (i / (chartDays.length - 1)) * innerW;
+      const y = padT + innerH - (d.pct / 100) * innerH;
+      return { x, y, d };
+    }).filter(Boolean);
+
+    // Grid lines Y: 0, 25, 50, 75, 100
+    const gridLines = [0, 25, 50, 75, 100].map(pct => {
+      const y = padT + innerH - (pct / 100) * innerH;
+      return `<line x1="${padL}" y1="${y}" x2="${chartW - 8}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+              <text x="${padL - 4}" y="${y + 4}" font-size="9" fill="#94a3b8" text-anchor="end">${pct}%</text>`;
+    }).join('');
+
+    // Polyline
+    const polyline = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    // Fill area under line
+    const fillPath = polyline + ` L${pts[pts.length-1].x.toFixed(1)},${(padT+innerH).toFixed(1)} L${pts[0].x.toFixed(1)},${(padT+innerH).toFixed(1)} Z`;
+
+    // X-axis labels (every ~7 days)
+    const xLabels = chartDays.filter((_, i) => i % 7 === 0 || i === chartDays.length - 1).map((d, _, arr) => {
+      const i = chartDays.indexOf(d);
+      const x = padL + (i / (chartDays.length - 1)) * innerW;
+      return `<text x="${x}" y="${chartH - 4}" font-size="9" fill="#94a3b8" text-anchor="middle">${d.label}</text>`;
+    }).join('');
+
+    // Dots on active points
+    const dots = pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#1565c0" stroke="#fff" stroke-width="1.5">
+      <title>${p.d.label}: ${p.d.pct}% (${p.d.total-p.d.wrong}/${p.d.total})</title></circle>`).join('');
+
+    svgChart = `<svg viewBox="0 0 ${chartW} ${chartH}" style="width:100%;max-width:${chartW}px;display:block;">
+      <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1565c0" stop-opacity=".18"/>
+        <stop offset="100%" stop-color="#1565c0" stop-opacity="0"/>
+      </linearGradient></defs>
+      ${gridLines}
+      <path d="${fillPath}" fill="url(#sg)"/>
+      <path d="${polyline}" fill="none" stroke="#1565c0" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      ${dots}
+      ${xLabels}
+    </svg>`;
+  }
+
+  // --- Topic breakdown ---
+  const topicRows = QUIZ_TOPICS_META.map(t => {
+    const s = allStats[t.id] || { total: 0, wrong: 0 };
+    if (!s.total) return `<div class="stat-topic-row stat-topic-empty"><span>${t.name}</span><span style="color:#ccc">— ще не проходив</span></div>`;
+    const pct = Math.round((s.total - s.wrong) / s.total * 100);
+    const color = pct >= 80 ? '#22c55e' : pct >= 60 ? '#f59e0b' : '#ef4444';
+    return `<div class="stat-topic-row" onclick="startQuizTopic('${t.id}');show('quiz')">
+      <span class="stat-topic-name">${t.name}</span>
+      <div class="stat-topic-bar"><div style="width:${pct}%;background:${color};height:100%;border-radius:4px;transition:width .4s"></div></div>
+      <span class="stat-topic-pct" style="color:${color}">${pct}%</span>
+      <span class="stat-topic-count">${s.total-s.wrong}/${s.total}</span>
+    </div>`;
+  }).join('');
+
+  const accColor = accuracy >= 80 ? '#22c55e' : accuracy >= 60 ? '#f59e0b' : '#ef4444';
+
+  wrap.innerHTML = `
+    <div class="stats-header">
+      <h2>📊 Статистика прогресу</h2>
+      <button class="stats-back-btn" onclick="show('dashboard')">← Назад</button>
+    </div>
+
+    <div class="stats-summary-cards">
+      <div class="stat-card">
+        <div class="stat-card-val">${totalQ}</div>
+        <div class="stat-card-label">Питань відповіли</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-val" style="color:${accColor}">${accuracy}%</div>
+        <div class="stat-card-label">Точність</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-val" style="color:#ea580c">🔥 ${streak}</div>
+        <div class="stat-card-label">Днів підряд</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-val" style="font-size:1rem">${bestTopic || '—'}</div>
+        <div class="stat-card-label">Найсильніша тема</div>
+      </div>
+    </div>
+
+    <div class="stats-chart-block">
+      <div class="stats-chart-title">📈 Точність за останні 30 днів</div>
+      ${svgChart}
+    </div>
+
+    <div class="stats-topics-block">
+      <div class="stats-chart-title">📚 По темах <span style="font-size:.8rem;color:#888;font-weight:400">(натисни щоб тренуватись)</span></div>
+      <div class="stat-topics-list">${topicRows}</div>
+    </div>
+  `;
+}
+
+function statsCalcStreak(weekData) {
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    if (weekData[key] || (i === 0)) { if (weekData[key]) streak++; else break; }
+    else break;
+  }
+  return streak;
+}
+
+function statsGetBest(allStats) {
+  let best = null, bestPct = 0;
+  QUIZ_TOPICS_META.forEach(t => {
+    const s = allStats[t.id];
+    if (!s || s.total < 3) return;
+    const pct = Math.round((s.total - s.wrong) / s.total * 100);
+    if (pct > bestPct) { bestPct = pct; best = t.name; }
+  });
+  return best;
 }
 
 function startQuiz() {

@@ -21,7 +21,7 @@
   <meta property="og:locale" content="uk_UA">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=2026041903">
+  <link rel="stylesheet" href="style.css?v=2026041905">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -451,6 +451,11 @@
             <span class="hub-title">Калькулятор</span>
             <span class="hub-desc">Науковий калькулятор — відкривається поруч з контентом</span>
           </button>
+          <button class="hub-card" onclick="show('stats')">
+            <span class="hub-icon">📊</span>
+            <span class="hub-title">Статистика</span>
+            <span class="hub-desc">Прогрес, теми, графік активності</span>
+          </button>
           <button class="hub-card hub-card--pro" onclick="show('pricing')">
             <span class="hub-icon">⭐</span>
             <span class="hub-title">Pro доступ</span>
@@ -521,6 +526,13 @@
         <h2 style="margin-bottom:8px;">📚 Безкоштовні підручники</h2>
         <p style="color:#666;margin-bottom:24px;">Офіційні підручники МОН України — безкоштовно онлайн</p>
         <div id="textbooks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;"></div>
+      </div>
+    </section>
+
+    <!-- STATS — статистика прогресу -->
+    <section id="stats">
+      <div class="stats-wrap" id="stats-content">
+        <p style="color:#888;text-align:center;padding:40px;">Завантаження...</p>
       </div>
     </section>
 

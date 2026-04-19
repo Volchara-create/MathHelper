@@ -1375,3 +1375,31 @@ body.dark .mathik-speech-bar{background:#1e3050;}
 .mathik-bubble.owl-arrived .mathik-avatar{animation:owlLandBounce .5s ease-out;}
 .mathik-bubble.owl-flying .mathik-avatar{display:inline-block;animation:owlSpin .5s ease infinite;}
 .mathik-bubble.owl-arrived .mathik-avatar{animation:owlLand .5s cubic-bezier(.34,1.8,.64,1) forwards;}
+
+/* ===== STATS PAGE ===== */
+#stats{padding:0;}
+.stats-wrap{max-width:860px;margin:0 auto;padding:24px 20px 40px;}
+.stats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.stats-header h2{margin:0;font-size:1.4rem;color:var(--blue);}
+.stats-back-btn{background:none;border:1.5px solid var(--blue);color:var(--blue);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:.85rem;font-weight:700;}
+.stats-back-btn:hover{background:var(--blue);color:#fff;}
+.stats-summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat-card{background:#fff;border-radius:14px;padding:18px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.stat-card-val{font-size:1.7rem;font-weight:800;color:var(--blue);line-height:1.1;margin-bottom:4px;}
+.stat-card-label{font-size:.78rem;color:#888;font-weight:500;}
+.stats-chart-block,.stats-topics-block{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:20px;}
+.stats-chart-title{font-size:1rem;font-weight:700;color:#1a1a2e;margin-bottom:14px;}
+.stat-topics-list{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.stat-topic-row{display:grid;grid-template-columns:140px 1fr 48px 60px;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s;}
+.stat-topic-row:hover{background:#f0f4ff;}
+.stat-topic-empty{cursor:default;opacity:.5;}
+.stat-topic-empty:hover{background:none;}
+.stat-topic-name{font-size:.88rem;font-weight:600;color:#1a1a2e;}
+.stat-topic-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;}
+.stat-topic-pct{font-size:.88rem;font-weight:700;text-align:right;}
+.stat-topic-count{font-size:.78rem;color:#888;text-align:right;}
+body.dark .stat-card,.body.dark .stats-chart-block,.body.dark .stats-topics-block{background:#151c2a;}
+body.dark .stat-card-val{color:#7aa0e8;}
+body.dark .stat-topic-name{color:#c8dcf8;}
+@media(max-width:640px){.stats-summary-cards{grid-template-columns:repeat(2,1fr);}
+.stat-topic-row{grid-template-columns:100px 1fr 44px;}.stat-topic-count{display:none;}}
