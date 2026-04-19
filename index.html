@@ -21,7 +21,7 @@
   <meta property="og:locale" content="uk_UA">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=2026041726">
+  <link rel="stylesheet" href="style.css?v=2026041902">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -90,6 +90,7 @@
 
     <!-- Notebook side panel (floating, draggable) -->
     <div class="side-panel" id="panel-notebook">
+      <div class="sp-resize-handle" id="sp-resize-notebook" onmousedown="spResizeStart(event,'notebook')"></div>
       <div class="side-panel-head" id="panel-notebook-drag">
         <span>📓 Зошит</span>
         <div style="display:flex;gap:4px;align-items:center;">
@@ -112,10 +113,10 @@
       </div>
     </div>
 
-    <div class="ph-resize" id="ph-resize-notebook" style="display:none;"></div>
 
     <!-- Calculator side panel -->
     <div class="side-panel" id="panel-calc">
+      <div class="sp-resize-handle" id="sp-resize-calc" onmousedown="spResizeStart(event,'calc')"></div>
       <div class="side-panel-head" id="panel-calc-drag">
         <span>🧮 Калькулятор</span>
         <button class="sp-head-btn" onclick="closePanel('calc')">✕</button>
@@ -149,7 +150,6 @@
       </div>
     </div>
 
-    <div class="ph-resize" id="ph-resize-calc" style="display:none;"></div>
 
   <main>
     <!-- FORMULAS SECTION — 3 tabs -->
@@ -869,6 +869,7 @@
         <textarea class="notes-content-area notes-drawer-textarea lined" id="drawer-content-input" placeholder="Пиши свої нотатки..."></textarea>
         <div class="notes-drawer-actions">
           <button class="note-save-btn" onclick="noteDrawerSave()">💾 Зберегти</button>
+          <button class="note-pdf-btn" onclick="downloadDrawerNotePDF()" title="PDF">📥 PDF</button>
           <button class="note-delete-btn" onclick="noteDrawerDelete()">🗑</button>
           <button style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.85rem;" onclick="noteDrawerBack()">← Список</button>
         </div>
@@ -1046,7 +1047,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=2026041901"></script>
-  <script src="auth.js?v=2026041901"></script>
+  <script src="script.js?v=2026041902"></script>
+  <script src="auth.js?v=2026041902"></script>
 </body>
 </html>

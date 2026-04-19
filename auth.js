@@ -878,6 +878,31 @@ function downloadFormulasPDF(title, formulas) {
   }).from(el).save();
 }
 
+function downloadDrawerNotePDF() {
+  const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
+  if (!user.isPro) {
+    showToast('📥 PDF доступний тільки в Pro версії!');
+    return;
+  }
+  const title = document.getElementById('drawer-title-input')?.value || 'Конспект';
+  const content = document.getElementById('drawer-content-input')?.value || '';
+  const date = new Date().toLocaleDateString('uk-UA');
+  const el = document.createElement('div');
+  el.innerHTML = `
+    <div style="font-family:Georgia,serif;padding:40px;max-width:750px;margin:0 auto;">
+      <div style="border-bottom:2px solid #1565c0;padding-bottom:12px;margin-bottom:24px;">
+        <h1 style="color:#1565c0;margin:0 0 4px;font-size:24px;">${title}</h1>
+        <p style="color:#888;margin:0;font-size:13px;">MathHelper · ${date}</p>
+      </div>
+      <div style="font-size:15px;line-height:1.8;color:#222;white-space:pre-wrap;">${content.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div style="margin-top:40px;border-top:1px solid #e0e0e0;padding-top:10px;text-align:center;color:#aaa;font-size:11px;">Створено в MathHelper</div>
+    </div>`;
+  html2pdf().set({
+    margin:0, filename:`${title.replace(/[^a-zA-Zа-яА-ЯїіёЁ0-9 ]/g,'_')}.pdf`,
+    html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+  }).from(el).save();
+}
+
 // ===== FLOATING NOTES DRAWER =====
 let drawerNoteId = null;
 

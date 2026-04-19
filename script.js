@@ -2468,9 +2468,6 @@ function openPanel(name) {
   const panel = document.getElementById('panel-' + name);
   if (!panel) return;
   panel.classList.add('open');
-  const resize = document.getElementById('ph-resize-' + name);
-  if (resize) resize.style.display = '';
-  _updatePanelResizes();
   _updateQmBtnActive(name, true);
   _resizeGraphAfterPanel();
 }
@@ -2479,9 +2476,6 @@ function closePanel(name) {
   const panel = document.getElementById('panel-' + name);
   if (!panel) return;
   panel.classList.remove('open');
-  const resize = document.getElementById('ph-resize-' + name);
-  if (resize) resize.style.display = 'none';
-  _updatePanelResizes();
   _updateQmBtnActive(name, false);
   _resizeGraphAfterPanel();
 }
@@ -2504,43 +2498,38 @@ function _updateQmBtnActive(name, isOpen) {
   if (btns[idx]) btns[idx].classList.toggle('active', isOpen);
 }
 
-function _updatePanelResizes() {
-  // Only show resize handle if the panel before it is open
-  ['notebook', 'calc'].forEach(name => {
-    const panel = document.getElementById('panel-' + name);
-    const resize = document.getElementById('ph-resize-' + name);
-    if (panel && resize) {
-      resize.style.display = panel.classList.contains('open') ? '' : 'none';
-    }
-  });
+function _updatePanelResizes() {} // handles are now embedded in panels via CSS
+
+// Panel resize (horizontal) — handle is embedded inside each panel
+function spResizeStart(e, name) {
+  const handle = document.getElementById('sp-resize-' + name);
+  const panel  = document.getElementById('panel-' + name);
+  if (!panel || !panel.classList.contains('open')) return;
+  handle.classList.add('active');
+
+  const main = document.querySelector('#app-workspace main');
+  const startX = e.clientX;
+  const startW = panel.offsetWidth;
+
+  const onMove = ev => {
+    // If panel is to the right of main, dragging left expands it
+    const isRight = panel.getBoundingClientRect().left > main.getBoundingClientRect().right - 20;
+    const delta = isRight ? -(ev.clientX - startX) : (ev.clientX - startX);
+    const newW = Math.max(180, Math.min(window.innerWidth * 0.45, startW + delta));
+    panel.style.flexBasis = newW + 'px';
+    panel.style.width = newW + 'px';
+  };
+  const onUp = () => {
+    handle.classList.remove('active');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  };
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+  e.preventDefault();
 }
 
-// Panel resize (horizontal)
-function initPanelResizes() {
-  ['notebook', 'calc'].forEach(name => {
-    const handle = document.getElementById('ph-resize-' + name);
-    const panel = document.getElementById('panel-' + name);
-    if (!handle || !panel) return;
-    handle.addEventListener('mousedown', e => {
-      handle.classList.add('active');
-      const startX = e.clientX;
-      const startW = panel.offsetWidth;
-      const onMove = e => {
-        const newW = Math.max(180, Math.min(window.innerWidth * 0.5, startW + (e.clientX - startX)));
-        panel.style.flexBasis = newW + 'px';
-        panel.style.width = newW + 'px';
-      };
-      const onUp = () => {
-        handle.classList.remove('active');
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-      };
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-      e.preventDefault();
-    });
-  });
-}
+function initPanelResizes() {} // kept for compatibility
 
 // Panel drag-to-reorder (left ↔ right)
 function initPanelDrag() {
