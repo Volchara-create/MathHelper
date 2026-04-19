@@ -19,6 +19,8 @@ model User {
   email         String            @unique
   password      String
   grade         Int
+  isPro         Boolean           @default(false)
+  proExpiresAt  DateTime?
   createdAt     DateTime          @default(now())
   notes         Note[]
   pushSubs      PushSubscription[]
