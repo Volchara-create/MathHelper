@@ -60,6 +60,8 @@
     .category-modal-header h2{color:var(--blue);margin:0;position:absolute;left:50%;transform:translateX(-50%);font-size:1.8rem;}
     .category-modal-close{background:var(--accent);border:none;font-size:20px;cursor:pointer;color:#fff;width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:0.3s;position:relative;z-index:1;margin-left:auto;}
     .category-modal-close:hover{background:var(--blue);transform:rotate(90deg);}
+    .modal-pdf-btn{background:#e8f0fe;color:#1565c0;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.82rem;font-weight:700;position:relative;z-index:1;margin-left:auto;margin-right:8px;}
+    .modal-pdf-btn:hover{background:#1565c0;color:#fff;}
     .formulas-in-modal{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
     .formula-in-modal-item{background:#eaf3ff;padding:15px;border-radius:10px;cursor:pointer;transition:0.3s;flex:1 1 calc(50% - 12px);min-width:200px;}
     .formula-in-modal-item:hover{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);transform:translateY(-2px);}
@@ -796,6 +798,8 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .notes-editor-actions{display:flex;gap:8px;}
 .note-save-btn{background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700;font-size:0.85rem;}
 .note-save-btn:hover{background:#15803d;}
+.note-pdf-btn{background:#e8f0fe;color:#1565c0;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700;font-size:0.85rem;}
+.note-pdf-btn:hover{background:#1565c0;color:#fff;}
 .note-delete-btn{background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700;font-size:0.85rem;}
 .note-delete-btn:hover{background:#dc2626;color:#fff;}
 .note-close-btn{background:#f1f5f9;color:#888;border:none;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:0.85rem;}

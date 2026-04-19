@@ -23,6 +23,7 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css?v=2026041726">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <script>
   // Instantly redirect logged-in users to dashboard (prevents landing page flash)
@@ -540,6 +541,7 @@
               <input class="notes-title-input" id="note-title-input" placeholder="Назва конспекту..." maxlength="80">
               <div class="notes-editor-actions">
                 <button class="note-save-btn" onclick="noteSave()">💾 Зберегти</button>
+                <button class="note-pdf-btn" onclick="downloadNotePDF()" title="Завантажити як PDF">📥 PDF</button>
                 <button class="note-delete-btn" onclick="noteDelete()">🗑 Видалити</button>
                 <button class="note-close-btn" onclick="noteClose()">✕</button>
               </div>
@@ -682,6 +684,7 @@
     <div class="category-modal-content alg-modal-content">
       <div class="category-modal-header">
         <h2 id="alg-modal-title"></h2>
+        <button class="modal-pdf-btn" id="alg-pdf-btn" onclick="downloadCurrentAlgebraPDF()" title="Завантажити формули як PDF">📥 PDF</button>
         <button class="category-modal-close" onclick="closeAlgebraModal()">×</button>
       </div>
       <div id="alg-modal-body" class="alg-modal-body"></div>
@@ -1043,7 +1046,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=2026041725"></script>
-  <script src="auth.js?v=2026041713"></script>
+  <script src="script.js?v=2026041901"></script>
+  <script src="auth.js?v=2026041901"></script>
 </body>
 </html>

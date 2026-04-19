@@ -660,6 +660,7 @@ function buildAlgebraTab(){
 let flipTimers = [];
 
 function openAlgebraModal(idx){
+  _currentAlgebraCatIdx = idx;
   // Clear any running timers from previous modal
   flipTimers.forEach(t => clearTimeout(t));
   flipTimers = [];
@@ -715,6 +716,18 @@ function closeAlgebraModal(){
   flipTimers.forEach(t => clearTimeout(t));
   flipTimers = [];
   document.getElementById('algebra-modal').classList.remove('active');
+}
+
+let _currentAlgebraCatIdx = null;
+function downloadCurrentAlgebraPDF() {
+  if (_currentAlgebraCatIdx === null) return;
+  const cat = ALGEBRA_CATS[_currentAlgebraCatIdx];
+  const formulas = cat.formulas.map(f => ({
+    title: f.name,
+    formula: f.m || f.expr || '',
+    detail: f.detail || null
+  }));
+  downloadFormulasPDF(cat.name, formulas);
 }
 
 // Build geometry tab — по класах згідно програми України
