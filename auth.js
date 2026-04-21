@@ -296,7 +296,9 @@ window.addEventListener('DOMContentLoaded', () => {
   if (token) {
     const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
     authShowUser(user);
-    if (typeof show === 'function') show('dashboard');
+    const _initHash = location.hash.slice(1);
+    const _initSec = (typeof _VALID_SECTIONS !== 'undefined' && _VALID_SECTIONS.includes(_initHash)) ? _initHash : 'dashboard';
+    if (typeof show === 'function') show(_initSec);
     // Refresh user data from server — fix stale grade/name/daily goal
     fetch(`${API}/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.ok ? r.json() : null)
@@ -366,10 +368,14 @@ function qmGoBack() {
 function authOpen(mode) {
   document.getElementById('auth-modal').classList.add('active');
   authSwitch(mode);
+  if (location.hash !== '#' + mode) history.pushState({auth: mode}, '', '#' + mode);
 }
 
 function authClose() {
   document.getElementById('auth-modal').classList.remove('active');
+  // Повернути URL до поточної секції або dashboard
+  const cur = document.querySelector('section.active')?.id || 'dashboard';
+  history.pushState({sec: cur}, '', '#' + cur);
 }
 
 function authSwitch(mode) {
@@ -401,7 +407,7 @@ async function doLogin() {
     localStorage.setItem('mh_user', JSON.stringify(data.user));
     authShowUser(data.user);
     authClose();
-    show('dashboard');
+    const _h = location.hash.slice(1); show((typeof _VALID_SECTIONS !== "undefined" && _VALID_SECTIONS.includes(_h)) ? _h : "dashboard");
   } catch {
     errEl.textContent = 'Помилка підключення до сервера';
   } finally {

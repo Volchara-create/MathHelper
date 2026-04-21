@@ -95,8 +95,10 @@ function buildTextbooks() {
   `).join('');
 }
 
-function show(sec){
-  const grade = getUserGrade();
+const _VALID_SECTIONS = ['dashboard','formulas','quiz','graph','textbooks','stats','ai','pricing','about'];
+
+function show(sec, _skipHistory){
+  if (!document.getElementById(sec)) return;
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(sec).classList.add('active');
   document.querySelector('.qm-ai')?.classList.toggle('active', sec === 'ai');
@@ -107,7 +109,25 @@ function show(sec){
   if(sec==='stats') renderStatsPage();
   if(sec==='graph') requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
   window.scrollTo({top:0,behavior:'smooth'});
+  if (!_skipHistory) history.pushState({sec}, '', '#' + sec);
 }
+
+window.addEventListener('hashchange', () => {
+  const hash = location.hash.slice(1);
+  if (hash === 'register' || hash === 'login') {
+    if (typeof authOpen === 'function') authOpen(hash);
+  } else if (_VALID_SECTIONS.includes(hash)) {
+    show(hash, true);
+  } else if (!hash) {
+    show('dashboard', true);
+  }
+});
+
+window.addEventListener('popstate', () => {
+  const hash = location.hash.slice(1);
+  if (_VALID_SECTIONS.includes(hash)) show(hash, true);
+  else show('dashboard', true);
+});
 function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====
