@@ -352,12 +352,25 @@ const TOPIC_NAMES = {
   functions: 'Функції та графіки', nmt: 'НМТ-задачі', trig: 'Тригонометрія'
 };
 
+// Per-user rate limit: max 5 AI requests per minute
+const _aiUserCounts = new Map();
+function _checkAiRateLimit(userId) {
+  const now = Date.now();
+  const entry = _aiUserCounts.get(userId) || { count: 0, resetAt: now + 60000 };
+  if (now > entry.resetAt) { entry.count = 0; entry.resetAt = now + 60000; }
+  entry.count++;
+  _aiUserCounts.set(userId, entry);
+  return entry.count <= 5;
+}
+
 app.post('/api/ai-chat', authMiddleware, async (req, res) => {
   const { message, context, history = [] } = req.body;
   if (!message || message.trim().length < 2)
     return res.status(400).json({ error: 'Порожнє повідомлення' });
   if (!process.env.GEMINI_API_KEY)
     return res.status(503).json({ error: 'AI-помічник тимчасово недоступний' });
+  if (!_checkAiRateLimit(req.user.id))
+    return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
 
   const { grade = '?', name = 'Учень', weakTopics = {}, quizStats = '', nmtResult = '' } = context || {};
 
@@ -397,21 +410,25 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
     return result.response.text();
   };
 
+  const isRetryable = msg => msg?.includes('429') || msg?.includes('503') || msg?.includes('quota') ||
+    msg?.includes('rate') || msg?.includes('overload') || msg?.includes('unavailable') || msg?.includes('high demand');
+
   try {
-    // Try primary model first
-    const reply = await tryModel('gemini-2.5-flash');
+    const reply = await tryModel('gemini-2.0-flash');
     return res.json({ reply });
   } catch (e) {
-    console.error('AI error (gemini-2.5-flash):', e.message);
+    console.error('AI error (gemini-2.0-flash):', e.message);
 
-    // On 503 overload — try fallback model
-    if (e.message?.includes('503') || e.message?.includes('overload') || e.message?.includes('unavailable') || e.message?.includes('high demand')) {
+    if (isRetryable(e.message)) {
       try {
         console.log('Falling back to gemini-1.5-flash...');
         const reply = await tryModel('gemini-1.5-flash');
         return res.json({ reply });
       } catch (e2) {
         console.error('AI error (gemini-1.5-flash):', e2.message);
+        if (e2.message?.includes('429') || e2.message?.includes('quota') || e2.message?.includes('rate')) {
+          return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
+        }
       }
     }
 
