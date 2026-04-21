@@ -2667,6 +2667,8 @@ function closePanel(name) {
   const panel = document.getElementById('panel-' + name);
   if (!panel) return;
   panel.classList.remove('open');
+  panel.style.flexBasis = '';
+  panel.style.width = '';
   _updateQmBtnActive(name, false);
   _resizeGraphAfterPanel();
 }
