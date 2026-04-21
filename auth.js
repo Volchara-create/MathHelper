@@ -2,6 +2,28 @@ const API = window.location.hostname === 'volchara-create.github.io'
   ? 'https://rostyslavv.vibe.brobots.org.ua'
   : '';
 
+// Custom confirm dialog (replaces native confirm())
+function mhConfirm(msg, onYes, onNo) {
+  let modal = document.getElementById('mh-confirm-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'mh-confirm-modal';
+    modal.style.cssText = 'display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.45);align-items:center;justify-content:center;';
+    modal.innerHTML = `<div style="background:#fff;border-radius:16px;padding:28px 28px 20px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);font-family:Roboto,sans-serif;">
+      <p id="mh-confirm-msg" style="font-size:1rem;color:#1a3e7c;margin-bottom:20px;line-height:1.5;font-weight:600;"></p>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button id="mh-confirm-no" style="padding:9px 22px;border:1.5px solid #b3d9ff;background:#fff;color:#1a3e7c;border-radius:9px;cursor:pointer;font-weight:600;font-size:.9rem;">Скасувати</button>
+        <button id="mh-confirm-yes" style="padding:9px 22px;border:none;background:#e53935;color:#fff;border-radius:9px;cursor:pointer;font-weight:700;font-size:.9rem;">Підтвердити</button>
+      </div></div>`;
+    document.body.appendChild(modal);
+  }
+  document.getElementById('mh-confirm-msg').textContent = msg;
+  modal.style.display = 'flex';
+  const close = () => { modal.style.display = 'none'; };
+  document.getElementById('mh-confirm-yes').onclick = () => { close(); onYes && onYes(); };
+  document.getElementById('mh-confirm-no').onclick  = () => { close(); onNo && onNo(); };
+}
+
 // Toast notification
 let _toastTimer;
 function showToast(msg, duration = 3000) {
@@ -132,7 +154,7 @@ function showGoogleGradeModal(credential, name) {
   }
 
   picker.innerHTML = `
-    <h3 style="margin-bottom:8px;">Привіт, ${name}!</h3>
+    <h3 style="margin-bottom:8px;">Привіт, ${escHtml(name)}!</h3>
     <p style="color:#666;margin-bottom:20px;">Вибери свій клас щоб продовжити</p>
     <div class="grade-picker-row" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;">
       ${[7,8,9,10,11].map(g =>
@@ -235,7 +257,7 @@ function handleGoogleFallback() {
   if (window.google && clientId) {
     google.accounts.id.prompt();
   } else {
-    alert('Google авторизація тимчасово недоступна. Використай email/пароль або спробуй оновити сторінку.');
+    showToast('⚠️ Google авторизація тимчасово недоступна. Спробуй email/пароль.', 5000);
   }
 }
 
@@ -368,7 +390,7 @@ function qmGoBack() {
 function authOpen(mode) {
   document.getElementById('auth-modal').classList.add('active');
   authSwitch(mode);
-  if (location.hash !== '#' + mode) history.pushState({auth: mode}, '', '#' + mode);
+  history.replaceState({auth: mode}, '', '#' + mode);
 }
 
 function authClose() {
@@ -522,13 +544,17 @@ async function settingsSaveGrade() {
 }
 
 async function deleteAccount() {
-  if (!confirm('Видалити акаунт назавжди? Всі конспекти теж видаляться!')) return;
+  mhConfirm('Видалити акаунт назавжди? Всі конспекти теж видаляться!', async () => {
+  await _deleteAccountConfirmed();
+  });
+}
+async function _deleteAccountConfirmed() {
   const token = localStorage.getItem('mh_token');
   try {
     await fetch(`${API}/me`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
     authLogout();
   } catch {
-    alert('Помилка видалення акаунту');
+    showToast('❌ Помилка видалення акаунту');
   }
 }
 
@@ -742,9 +768,7 @@ function noteNew() {
   // Free limit: max 5 notes
   const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
   if (!user.isPro && allNotes.length >= 5) {
-    if (confirm('У безкоштовній версії максимум 5 конспектів.\n\nПерейди на Pro щоб зберігати необмежено!\n\nПереглянути плани?')) {
-      show('pricing');
-    }
+    mhConfirm('У безкоштовній версії максимум 5 конспектів. Переглянути Pro плани?', () => show('pricing'));
     return;
   }
 
@@ -765,7 +789,7 @@ async function noteSave() {
   const token = localStorage.getItem('mh_token');
   const title = document.getElementById('note-title-input').value.trim();
   const content = document.getElementById('note-content-input').value;
-  if (!title) { alert('Введи назву конспекту'); return; }
+  if (!title) { showToast('⚠️ Введи назву конспекту'); return; }
 
   try {
     let res, note;
@@ -783,7 +807,7 @@ async function noteSave() {
       });
     }
     note = await res.json();
-    if (!res.ok) { alert(note.error); return; }
+    if (!res.ok) { showToast('❌ ' + (note.error || 'Помилка')); return; }
 
     if (currentNoteId) {
       allNotes = allNotes.map(n => n.id === currentNoteId ? note : n);
@@ -793,13 +817,15 @@ async function noteSave() {
     }
     notesRender(note.id);
   } catch {
-    alert('Помилка збереження');
+    showToast('❌ Помилка збереження');
   }
 }
 
 async function noteDelete() {
   if (!currentNoteId) return;
-  if (!confirm('Видалити цей конспект?')) return;
+  mhConfirm('Видалити цей конспект?', async () => { await _noteDeleteConfirmed(); });
+}
+async function _noteDeleteConfirmed() {
   const token = localStorage.getItem('mh_token');
   try {
     const res = await fetch(`${API}/notes/${currentNoteId}`, {
@@ -812,7 +838,7 @@ async function noteDelete() {
     document.getElementById('notes-editor').style.display = 'none';
     notesRender(null);
   } catch {
-    alert('Помилка видалення');
+    showToast('❌ Помилка видалення');
   }
 }
 
@@ -1057,7 +1083,7 @@ function noteDrawerNew() {
   if (!token) { notesDrawerClose(); authOpen('login'); return; }
   const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
   if (!user.isPro && allNotes.length >= 5) {
-    if (confirm('Максимум 5 конспектів у безкоштовній версії.\nПереглянути Pro?')) { notesDrawerClose(); show('pricing'); }
+    mhConfirm('Максимум 5 конспектів у безкоштовній версії. Переглянути Pro?', () => { notesDrawerClose(); show('pricing'); });
     return;
   }
   drawerNoteId = null;
@@ -1077,7 +1103,7 @@ async function noteDrawerSave() {
   const token = localStorage.getItem('mh_token');
   const title = document.getElementById('drawer-title-input').value.trim();
   const content = document.getElementById('drawer-content-input').value;
-  if (!title) { alert('Введи назву'); return; }
+  if (!title) { showToast('⚠️ Введи назву'); return; }
   try {
     let res, note;
     if (drawerNoteId) {
@@ -1094,7 +1120,7 @@ async function noteDrawerSave() {
       });
     }
     note = await res.json();
-    if (!res.ok) { alert(note.error); return; }
+    if (!res.ok) { showToast('❌ ' + (note.error || 'Помилка')); return; }
     if (drawerNoteId) {
       allNotes = allNotes.map(n => n.id === drawerNoteId ? note : n);
     } else {
@@ -1104,20 +1130,21 @@ async function noteDrawerSave() {
     // Flash saved feedback
     const btn = document.querySelector('.notes-drawer-actions .note-save-btn');
     if (btn) { btn.textContent = '✅ Збережено'; setTimeout(() => btn.textContent = '💾 Зберегти', 1500); }
-  } catch { alert('Помилка збереження'); }
+  } catch { showToast('❌ Помилка збереження'); }
 }
 
 async function noteDrawerDelete() {
   if (!drawerNoteId) return;
-  if (!confirm('Видалити конспект?')) return;
-  const token = localStorage.getItem('mh_token');
-  try {
-    await fetch(`${API}/notes/${drawerNoteId}`, {
-      method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
-    });
-    allNotes = allNotes.filter(n => n.id !== drawerNoteId);
-    drawerRenderList();
-  } catch { alert('Помилка видалення'); }
+  mhConfirm('Видалити конспект?', async () => {
+    const token = localStorage.getItem('mh_token');
+    try {
+      await fetch(`${API}/notes/${drawerNoteId}`, {
+        method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+      });
+      allNotes = allNotes.filter(n => n.id !== drawerNoteId);
+      drawerRenderList();
+    } catch { showToast('❌ Помилка видалення'); }
+  });
 }
 
 // ===== DAILY GOAL =====
@@ -1187,7 +1214,7 @@ async function trackDaily(type) {
 
 async function pushSubscribe() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert('Твій браузер не підтримує push-сповіщення');
+    showToast('⚠️ Твій браузер не підтримує push-сповіщення');
     return;
   }
   const token = localStorage.getItem('mh_token');
@@ -1195,7 +1222,7 @@ async function pushSubscribe() {
 
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') {
-    alert('Дозвіл на сповіщення відхилено. Дозволь в налаштуваннях браузера.');
+    showToast('⚠️ Дозвіл відхилено. Дозволь сповіщення в налаштуваннях браузера.');
     return;
   }
 
@@ -1216,9 +1243,9 @@ async function pushSubscribe() {
     });
 
     updatePushBtn(true);
-    alert('✅ Нагадування увімкнено! Щодня о 18:00 нагадаємо якщо не виконаєш ціль.');
+    showToast('✅ Нагадування увімкнено! Щодня о 18:00');
   } catch (e) {
-    alert('Помилка підключення: ' + e.message);
+    showToast('❌ Помилка: ' + e.message);
   }
 }
 

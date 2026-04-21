@@ -21,12 +21,14 @@
   <meta property="og:locale" content="uk_UA">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@500;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css?v=2026041905">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta property="og:image" content="https://rostyslavv.vibe.brobots.org.ua/favicon.svg">
+  <link rel="stylesheet" href="style.css?v=2026042101">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 </head>
+<body>
 <script>
-  // Instantly redirect logged-in users to dashboard (prevents landing page flash)
   if (localStorage.getItem('mh_token')) {
     document.addEventListener('DOMContentLoaded', function() {
       var home = document.getElementById('home');
@@ -36,7 +38,6 @@
     }, { once: true });
   }
 </script>
-<body>
   <header>
     <div class="logo" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="cursor:pointer;">
       <svg class="logo-icon" viewBox="0 0 50 50" width="50" height="50" aria-hidden="true">
@@ -97,7 +98,7 @@
           <button class="sp-head-btn" id="sp-nb-lined" onclick="spNbStyle('lined')" title="Лінійка">≡</button>
           <button class="sp-head-btn" id="sp-nb-grid" onclick="spNbStyle('grid')" title="Клітинки">⊞</button>
           <button class="sp-head-btn" onclick="downloadSidePanelPDF()" title="Завантажити PDF">📥</button>
-          <button class="sp-head-btn" onclick="closePanel('notebook')">✕</button>
+          <button class="sp-head-btn" aria-label="Закрити зошит" onclick="closePanel('notebook')">✕</button>
         </div>
       </div>
       <div class="side-panel-body">
@@ -120,7 +121,7 @@
       <div class="sp-resize-handle" id="sp-resize-calc" onmousedown="spResizeStart(event,'calc')"></div>
       <div class="side-panel-head" id="panel-calc-drag">
         <span>🧮 Калькулятор</span>
-        <button class="sp-head-btn" onclick="closePanel('calc')">✕</button>
+        <button class="sp-head-btn" aria-label="Закрити калькулятор" onclick="closePanel('calc')">✕</button>
       </div>
       <div class="side-panel-body" style="overflow-y:auto;padding:10px;">
         <div class="ws-calc-disp">
@@ -470,7 +471,7 @@
         <div class="dash-section" id="dash-notes-section">
           <h2 class="dash-section-title">📓 Останні конспекти <button class="dash-new-note-btn" onclick="show('notes')">+ Новий</button></h2>
           <div id="dash-recent-notes" class="dash-recent-notes">
-            <p class="dash-empty">Немає конспектів — <a href="#" onclick="show('notes')">створи перший!</a></p>
+            <p class="dash-empty">Немає конспектів — <a href="javascript:void(0)" onclick="show('notes')">створи перший!</a></p>
           </div>
         </div>
 
@@ -720,8 +721,7 @@
     </div>
   </div>
 
-  <footer style="display:none">
-  </footer>
+
 
   <!-- Auth modal -->
   <div id="auth-modal" class="auth-modal">
@@ -734,17 +734,17 @@
         <p class="auth-sub">Увійди щоб бачити формули свого класу</p>
         <div class="auth-field">
           <label>Email</label>
-          <input type="email" id="login-email" placeholder="твій@email.com">
+          <input type="email" id="login-email" autocomplete="email" required placeholder="твій@email.com">
         </div>
         <div class="auth-field">
           <label>Пароль</label>
-          <input type="password" id="login-password" placeholder="••••••••">
+          <input type="password" id="login-password" autocomplete="current-password" required placeholder="••••••••">
         </div>
         <div id="login-error" class="auth-error"></div>
         <button class="auth-btn" onclick="doLogin()">Увійти</button>
         <div class="auth-divider"><span>або</span></div>
         <div id="google-login-btn" class="google-btn-wrap"></div>
-        <p class="auth-switch">Немає акаунту? <a href="#" onclick="authSwitch('register')">Зареєструватись</a></p>
+        <p class="auth-switch">Немає акаунту? <a href="javascript:void(0)" onclick="authSwitch('register')">Зареєструватись</a></p>
       </div>
 
       <!-- Register form -->
@@ -753,15 +753,15 @@
         <p class="auth-sub">Створи акаунт і вибери свій клас</p>
         <div class="auth-field">
           <label>Імʼя</label>
-          <input type="text" id="reg-name" placeholder="Як тебе звати?">
+          <input type="text" id="reg-name" autocomplete="name" required placeholder="Як тебе звати?">
         </div>
         <div class="auth-field">
           <label>Email</label>
-          <input type="email" id="reg-email" placeholder="твій@email.com">
+          <input type="email" id="reg-email" autocomplete="email" required placeholder="твій@email.com">
         </div>
         <div class="auth-field">
           <label>Пароль</label>
-          <input type="password" id="reg-password" placeholder="мінімум 6 символів">
+          <input type="password" id="reg-password" autocomplete="new-password" required minlength="6" placeholder="мінімум 6 символів">
         </div>
         <div class="auth-field">
           <label>Твій клас</label>
@@ -777,7 +777,7 @@
         <button class="auth-btn" onclick="doRegister()">Зареєструватись</button>
         <div class="auth-divider"><span>або</span></div>
         <div id="google-reg-btn" class="google-btn-wrap"></div>
-        <p class="auth-switch">Вже є акаунт? <a href="#" onclick="authSwitch('login')">Увійти</a></p>
+        <p class="auth-switch">Вже є акаунт? <a href="javascript:void(0)" onclick="authSwitch('login')">Увійти</a></p>
       </div>
 
     </div>

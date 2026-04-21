@@ -871,7 +871,6 @@ function flipAllCard(innerId) {
 // buildTrigTable2 removed — dead code (referenced non-existent #trig-tbody-2)
 function showGraph(){
   show('graph');
-  requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
 }
 function wsUpdateRightCol() {
   const col = document.getElementById('ws-right-col');

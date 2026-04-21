@@ -1,4 +1,4 @@
-    :root{--blue:#1a3e7c;--blue-light:#e6f0ff;--accent:#00d4ff;--text:#0d2340;}
+    :root{--blue:#1a3e7c;--blue-light:#e6f0ff;--accent:#00d4ff;--text:#0d2340;--card:#ffffff;--border:#b3d9ff;}
     *{box-sizing:border-box;margin:0;padding:0;font-family:'Roboto',sans-serif;}
     html{height:100%;overflow:hidden;}
     body{background:#f0f4f8;color:var(--text);height:100%;display:flex;flex-direction:column;overflow:hidden;}
@@ -320,7 +320,7 @@
     .ccbtn.cl{background:#fff0f3;color:#ff4d6d;}
 
     /* ===== DARK MODE ===== */
-    body.dark{--blue:#4a90e2;--blue-light:#1a2535;--accent:#00d4ff;--text:#e0eaff;background:#0d1117;color:#e0eaff;}
+    body.dark{--blue:#4a90e2;--blue-light:#1a2535;--accent:#00d4ff;--text:#e0eaff;--card:#1e293b;--border:#334155;background:#0d1117;color:#e0eaff;}
     body.dark header{background:#0d1117;border-bottom:1.5px solid #1e3050;}
     body.dark nav button{color:#aac4e0;}
     body.dark .category-card{background:#1a2535;color:#aac4e0;border:1px solid #1e3050;}
@@ -762,19 +762,19 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .dash-formulas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
 .dash-formula-card{background:#fff;border:1.5px solid var(--blue-light);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.2s;}
 .dash-formula-card:hover{border-color:var(--blue);box-shadow:0 4px 12px rgba(37,99,235,.1);}
-.dark .dash-formula-card{background:#1e293b;border-color:#334155;}
+body.dark .dash-formula-card{background:#1e293b;border-color:#334155;}
 .dash-formula-topic{font-size:0.75rem;color:#888;margin-bottom:4px;}
 .dash-formula-title{font-size:0.95rem;font-weight:700;color:var(--blue);margin-bottom:6px;}
 .dash-formula-expr{font-family:'Fira Code',monospace;font-size:0.85rem;color:var(--text);}
 .dash-recent-notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
 .dash-note-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;cursor:pointer;transition:.2s;}
 .dash-note-card:hover{border-color:var(--blue);}
-.dark .dash-note-card{background:#1e293b;border-color:#334155;}
+body.dark .dash-note-card{background:#1e293b;border-color:#334155;}
 .dash-note-title{font-weight:700;font-size:0.9rem;margin-bottom:4px;}
 .dash-note-preview{font-size:0.8rem;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .dash-empty{color:#aaa;font-size:0.9rem;}
 .dash-nmt-section{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:16px;padding:20px;}
-.dark .dash-nmt-section{background:linear-gradient(135deg,#1e3a5f,#1e293b);}
+body.dark .dash-nmt-section{background:linear-gradient(135deg,#1e3a5f,#1e293b);}
 .dash-nmt-topics{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
 .dash-nmt-topic{padding:8px 14px;background:#fff;border-radius:8px;font-size:0.85rem;font-weight:600;color:var(--blue);border:1.5px solid var(--blue-light);}
 
@@ -789,17 +789,17 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .notes-layout{display:grid;grid-template-columns:280px 1fr;gap:16px;min-height:500px;}
 @media(max-width:700px){.notes-layout{grid-template-columns:1fr;}}
 .notes-list{background:#fff;border-radius:14px;border:1.5px solid #e2e8f0;overflow:hidden;}
-.dark .notes-list{background:#1e293b;border-color:#334155;}
+body.dark .notes-list{background:#1e293b;border-color:#334155;}
 .notes-list-item{padding:14px 16px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:.15s;}
-.dark .notes-list-item{border-color:#334155;}
+body.dark .notes-list-item{border-color:#334155;}
 .notes-list-item:hover,.notes-list-item.active{background:var(--blue-light);}
 .notes-item-title{font-weight:700;font-size:0.95rem;margin-bottom:3px;}
 .notes-item-date{font-size:0.75rem;color:#aaa;}
 .notes-empty{padding:20px;color:#bbb;text-align:center;}
 .notes-editor{background:#fff;border-radius:14px;border:1.5px solid #e2e8f0;display:flex;flex-direction:column;}
-.dark .notes-editor{background:#1e293b;border-color:#334155;}
+body.dark .notes-editor{background:#1e293b;border-color:#334155;}
 .notes-editor-head{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;align-items:center;}
-.dark .notes-editor-head{border-color:#334155;}
+body.dark .notes-editor-head{border-color:#334155;}
 .notes-title-input{flex:1;border:none;outline:none;font-size:1.1rem;font-weight:700;background:transparent;color:var(--text);min-width:0;}
 .notes-editor-actions{display:flex;gap:8px;}
 .note-save-btn{background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700;font-size:0.85rem;}
@@ -827,27 +827,27 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 /* Algebra cards */
 .algebra-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
 .alg-card{background:#fff;border-radius:14px;padding:18px 20px;border:1.5px solid var(--blue-light);box-shadow:0 2px 8px rgba(0,0,0,.05);}
-.dark .alg-card{background:#1e293b;border-color:#334155;}
+body.dark .alg-card{background:#1e293b;border-color:#334155;}
 .alg-card-title{font-weight:700;font-size:1rem;color:var(--blue);margin-bottom:12px;padding-bottom:8px;border-bottom:1.5px solid var(--blue-light);}
-.dark .alg-card-title{border-color:#334155;}
+body.dark .alg-card-title{border-color:#334155;}
 .alg-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9;}
-.dark .alg-row{border-color:#1e293b;}
+body.dark .alg-row{border-color:#1e293b;}
 .alg-row:last-child{border-bottom:none;}
 .alg-name{font-size:0.82rem;color:#888;white-space:nowrap;flex-shrink:0;}
 .alg-expr{font-family:'Fira Code',monospace;font-size:0.88rem;color:var(--text);text-align:right;}
 /* Geometry grid */
 .fgeo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:8px;}
 .fgeo-card{background:#fff;border:1.5px solid var(--blue-light);border-radius:14px;padding:20px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:2rem;cursor:pointer;transition:.2s;text-align:center;}
-.dark .fgeo-card{background:#1e293b;border-color:#334155;}
+body.dark .fgeo-card{background:#1e293b;border-color:#334155;}
 .fgeo-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 6px 16px rgba(26,62,124,.12);}
 .fgeo-card span{font-size:0.85rem;font-weight:700;color:var(--text);}
 
 /* Algebra category buttons */
 .algebra-cats-grid{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
 .geo-group-label{width:100%;font-size:0.85rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;padding:4px 0 2px;border-bottom:1px solid var(--blue-light);margin-bottom:4px;}
-.dark .geo-group-label{color:#64748b;border-color:#1e3050;}
+body.dark .geo-group-label{color:#64748b;border-color:#1e3050;}
 .alg-cat-btn{background:#fff;border:1.5px solid var(--blue-light);border-radius:14px;padding:20px 16px;cursor:pointer;transition:.2s;text-align:center;width:200px;flex-shrink:0;}
-.dark .alg-cat-btn{background:#1e293b;border-color:#334155;}
+body.dark .alg-cat-btn{background:#1e293b;border-color:#334155;}
 .alg-cat-btn:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 6px 16px rgba(26,62,124,.12);}
 .alg-cat-icon{font-size:2.2rem;margin-bottom:8px;}
 .geo-cat-btn{padding:24px 16px;}
@@ -865,17 +865,17 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .alg-card-visual{font-size:1.5rem;line-height:1.7;background:#fff;border-radius:10px;padding:10px 14px;border:2px solid #bfdbfe;flex:1;min-width:140px;text-align:center;word-break:break-all;}
 .alg-card-divider{font-size:1.8rem;font-weight:700;color:var(--blue);flex-shrink:0;}
 .alg-card-math{font-family:'Fira Code',monospace;font-size:1.3rem;font-weight:700;color:var(--blue);background:#e8f4ff;border-radius:10px;padding:10px 14px;flex:1;min-width:100px;text-align:center;}
-.dark .alg-formula-card{background:#0f172a;border-color:#1e3a5f;}
-.dark .alg-card-visual{background:#1e293b;border-color:#334155;}
-.dark .alg-card-math{background:#1a2535;color:#60a5fa;}
+body.dark .alg-formula-card{background:#0f172a;border-color:#1e3a5f;}
+body.dark .alg-card-visual{background:#1e293b;border-color:#334155;}
+body.dark .alg-card-math{background:#1a2535;color:#60a5fa;}
 
 .alg-modal-body{display:flex;flex-direction:column;gap:0;}
 .alg-modal-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 16px;border-radius:10px;margin-bottom:3px;background:#f8faff;transition:.15s;cursor:pointer;}
-.dark .alg-modal-row{background:#0f172a;}
+body.dark .alg-modal-row{background:#0f172a;}
 .alg-modal-row:hover{background:#e8f0fe;transform:translateX(3px);}
-.dark .alg-modal-row:hover{background:#1e3a5f;}
+body.dark .alg-modal-row:hover{background:#1e3a5f;}
 .alg-modal-name{font-size:.9rem;color:#555;flex-shrink:0;max-width:50%;}
-.dark .alg-modal-name{color:#94a3b8;}
+body.dark .alg-modal-name{color:#94a3b8;}
 .alg-modal-expr{font-family:'Fira Code',monospace;font-size:1.05rem;font-weight:700;color:var(--blue);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50%;}
 
 /* Tables tab */
@@ -883,7 +883,7 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .mult-title{font-size:1.15rem;font-weight:700;color:var(--blue);margin-bottom:14px;}
 .mult-grid{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;min-width:400px;}
 .mult-cell{padding:7px 4px;text-align:center;border-radius:6px;font-size:0.88rem;background:#fff;border:1px solid #e8f0fe;}
-.dark .mult-cell{background:#1e293b;border-color:#334155;}
+body.dark .mult-cell{background:#1e293b;border-color:#334155;}
 .mult-header{background:var(--blue);color:#fff;font-weight:700;border:none;}
 .mult-diagonal{background:#dbeafe;font-weight:700;color:var(--blue);}
 .sq-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;min-width:300px;}
@@ -893,9 +893,9 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .table-fs-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;}
 .table-fs-modal.active{display:flex;}
 .table-fs-content{background:#fff;border-radius:18px;width:95vw;max-width:900px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
-.dark .table-fs-content{background:#1e293b;}
+body.dark .table-fs-content{background:#1e293b;}
 .table-fs-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1.5px solid #e2e8f0;}
-.dark .table-fs-header{border-color:#334155;}
+body.dark .table-fs-header{border-color:#334155;}
 .table-fs-header h2{font-size:1.3rem;color:var(--blue);}
 .table-fs-close{background:#f1f5f9;border:none;border-radius:8px;width:36px;height:36px;font-size:1.1rem;cursor:pointer;color:#666;transition:.2s;}
 .table-fs-close:hover{background:#dc2626;color:#fff;}
@@ -909,13 +909,13 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .sq-label{width:36px;flex-shrink:0;font-weight:700;color:#888;font-size:0.85rem;text-align:right;padding-right:6px;}
 .sq-row .mult-cell{flex:1;min-width:52px;padding:9px 4px;font-size:0.95rem;}
 .sq-val{font-weight:700;color:var(--blue);background:#f0f7ff;}
-.dark .sq-val{background:#1e3a5f;}
+body.dark .sq-val{background:#1e3a5f;}
 .fs-trig-table{width:100%;border-collapse:collapse;}
 .fs-trig-table th,.fs-trig-table td{padding:10px 14px;text-align:center;border-bottom:1px solid #f1f5f9;font-size:1rem;}
-.dark .fs-trig-table th,.dark .fs-trig-table td{border-color:#334155;}
+body.dark .fs-trig-table th,.dark .fs-trig-table td{border-color:#334155;}
 .fs-trig-table th{background:var(--blue);color:#fff;font-weight:700;}
 .fs-trig-table tr:hover td{background:#f0f7ff;}
-.dark .fs-trig-table tr:hover td{background:#334155;}
+body.dark .fs-trig-table tr:hover td{background:#334155;}
 
 /* Google grade picker buttons */
 .textbook-card{display:block;padding:20px;border:1.5px solid #e2e8f0;border-radius:14px;background:#fff;text-decoration:none;color:var(--text);transition:.2s;}
@@ -924,7 +924,7 @@ body.dark .hub-card--pro .hub-title{color:#fbbf24;}
 .textbook-title{font-size:1rem;font-weight:700;margin-bottom:4px;}
 .textbook-author{font-size:0.85rem;color:#888;margin-bottom:10px;}
 .textbook-link{font-size:0.85rem;color:var(--blue);font-weight:600;}
-.dark .textbook-card{background:#1e293b;border-color:#334155;}
+body.dark .textbook-card{background:#1e293b;border-color:#334155;}
 .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:10px;border:1px solid #dadce0;border-radius:8px;background:#fff;color:#3c4043;font-size:0.95rem;font-weight:500;text-decoration:none;cursor:pointer;transition:.2s;}
 .google-btn:hover{background:#f8f9fa;border-color:#bbb;}
 .danger-btn{background:#fff0f0 !important;color:#e53935 !important;border-color:#ffcdd2 !important;}
