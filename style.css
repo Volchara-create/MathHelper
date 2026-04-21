@@ -10,7 +10,7 @@
     .nav-simulator-btn{display:inline-block;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:15px;font-weight:700;margin-left:16px;text-decoration:none;padding:6px 14px;border-radius:6px;transition:.3s;font-family:'Roboto',sans-serif;}
     .nav-simulator-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(239,68,68,.4);}
     #app-workspace{display:flex;flex-direction:row;flex:1;overflow:hidden;min-height:0;}
-    #app-workspace>main{flex:1;overflow-y:auto;min-width:0;min-height:0;max-width:none;margin:0;}
+    #app-workspace>main{flex:1;overflow-y:auto;min-width:0;min-height:0;max-width:none;margin:0;display:flex;flex-direction:column;}
     main{padding:8px 24px 30px;max-width:1200px;margin:0 auto;width:100%;}
     /* ===== SIDE PANELS ===== */
     .side-panel{flex:0 0 0;width:0;display:flex;flex-direction:column;background:#fff;border-right:2px solid #b3d9ff;overflow:hidden;transition:none;position:relative;}
@@ -298,7 +298,7 @@
     .socials a{text-decoration:none;display:inline-block;transition:transform 0.3s;}
     .socials img{width:40px;height:40px;display:block;transition:transform 0.3s;}
     .socials a:hover img{transform:scale(1.2);}
-    footer{text-align:center;padding:14px 16px 68px;background:var(--blue);color:#fff;border-top:2px solid var(--accent);margin-left:-24px;margin-right:-24px;margin-bottom:-30px;}
+    footer{text-align:center;padding:14px 16px 68px;background:var(--blue);color:#fff;border-top:2px solid var(--accent);margin-left:-24px;margin-right:-24px;margin-bottom:-30px;margin-top:auto;}
     #app-workspace > main:has(section#graph.active) footer{display:none;}
 
     /* калькулятор — бічна панель */
