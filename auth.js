@@ -870,17 +870,17 @@ function downloadFormulasPDF(title, formulas) {
       </div>
     </div>`;
 
-  el.style.cssText = 'position:fixed;top:-9999px;left:0;width:750px;';
-  document.body.appendChild(el);
+  const _cleanup = () => {
+    if (el.parentNode) el.parentNode.removeChild(el);
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+  };
   html2pdf().set({
     margin: 0,
     filename: `${title.replace(/[^a-zA-Zа-яА-ЯїіёЁ0-9 ]/g,'_')}_формули.pdf`,
-    html2canvas: { scale: 2 },
+    html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  }).from(el).save().then(() => {
-    if (el.parentNode) el.parentNode.removeChild(el);
-    document.body.style.overflow = ''; document.documentElement.style.overflow = '';
-  });
+  }).from(el).save().then(_cleanup).catch(_cleanup);
 }
 
 function downloadSidePanelPDF() {
@@ -899,15 +899,15 @@ function downloadSidePanelPDF() {
       <div style="font-size:15px;line-height:1.8;color:#222;white-space:pre-wrap;">${content.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
       <div style="margin-top:40px;border-top:1px solid #e0e0e0;padding-top:10px;text-align:center;color:#aaa;font-size:11px;">Створено в MathHelper</div>
     </div>`;
-  el.style.cssText = 'position:fixed;top:-9999px;left:0;width:750px;';
-  document.body.appendChild(el);
+  const _cleanup = () => {
+    if (el.parentNode) el.parentNode.removeChild(el);
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+  };
   html2pdf().set({
     margin:0, filename:`Зошит_${date.replace(/\./g,'-')}.pdf`,
-    html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
-  }).from(el).save().then(() => {
-    if (el.parentNode) el.parentNode.removeChild(el);
-    document.body.style.overflow = ''; document.documentElement.style.overflow = '';
-  });
+    html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+  }).from(el).save().then(_cleanup).catch(_cleanup);
 }
 
 function downloadDrawerNotePDF() {
@@ -929,15 +929,15 @@ function downloadDrawerNotePDF() {
       <div style="font-size:15px;line-height:1.8;color:#222;white-space:pre-wrap;">${content.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
       <div style="margin-top:40px;border-top:1px solid #e0e0e0;padding-top:10px;text-align:center;color:#aaa;font-size:11px;">Створено в MathHelper</div>
     </div>`;
-  el.style.cssText = 'position:fixed;top:-9999px;left:0;width:750px;';
-  document.body.appendChild(el);
+  const _cleanup = () => {
+    if (el.parentNode) el.parentNode.removeChild(el);
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+  };
   html2pdf().set({
     margin:0, filename:`${title.replace(/[^a-zA-Zа-яА-ЯїіёЁ0-9 ]/g,'_')}.pdf`,
-    html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
-  }).from(el).save().then(() => {
-    if (el.parentNode) el.parentNode.removeChild(el);
-    document.body.style.overflow = ''; document.documentElement.style.overflow = '';
-  });
+    html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
+  }).from(el).save().then(_cleanup).catch(_cleanup);
 }
 
 // ===== FLOATING NOTES DRAWER =====
