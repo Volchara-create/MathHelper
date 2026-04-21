@@ -109,25 +109,24 @@ function show(sec, _skipHistory){
   if(sec==='stats') renderStatsPage();
   if(sec==='graph') requestAnimationFrame(()=>requestAnimationFrame(initOrResizeCanvas));
   window.scrollTo({top:0,behavior:'smooth'});
-  if (!_skipHistory) history.pushState({sec}, '', '#' + sec);
+  if (!_skipHistory) history.pushState({sec}, '', '/' + sec);
 }
 
-window.addEventListener('hashchange', () => {
-  const hash = location.hash.slice(1);
-  if (hash === 'register' || hash === 'login') {
-    if (typeof authOpen === 'function') authOpen(hash);
-  } else if (_VALID_SECTIONS.includes(hash)) {
-    show(hash, true);
-  } else if (!hash) {
+window.addEventListener('popstate', (e) => {
+  const sec = e.state?.sec || _pathToSection();
+  if (sec === 'register' || sec === 'login') {
+    if (typeof authOpen === 'function') authOpen(sec);
+  } else if (_VALID_SECTIONS.includes(sec)) {
+    show(sec, true);
+  } else {
     show('dashboard', true);
   }
 });
 
-window.addEventListener('popstate', () => {
-  const hash = location.hash.slice(1);
-  if (_VALID_SECTIONS.includes(hash)) show(hash, true);
-  else show('dashboard', true);
-});
+function _pathToSection() {
+  const p = location.pathname.replace(/^\//, '').split('/')[0];
+  return p || 'dashboard';
+}
 function showFormulas(){ show('formulas'); }
 
 // ===== ALGEBRA DATA =====

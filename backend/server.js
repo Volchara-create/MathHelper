@@ -439,5 +439,10 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
   }
 });
 
+// Path routing catch-all — serve index.html for any frontend route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '::', () => console.log(`Server running on port ${PORT}`));
