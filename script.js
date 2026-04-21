@@ -99,6 +99,7 @@ function show(sec){
   const grade = getUserGrade();
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(sec).classList.add('active');
+  document.querySelector('.qm-ai')?.classList.toggle('active', sec === 'ai');
   document.getElementById('category-row')?.style && (document.getElementById('category-row').style.display='none');
   if(sec==='textbooks') buildTextbooks();
   if(sec==='formulas') showFormulaTab('algebra');

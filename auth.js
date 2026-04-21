@@ -879,7 +879,7 @@ function downloadFormulasPDF(title, formulas) {
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   }).from(el).save().then(() => {
     if (el.parentNode) el.parentNode.removeChild(el);
-    document.body.style.overflow = '';
+    document.body.style.overflow = ''; document.documentElement.style.overflow = '';
   });
 }
 
@@ -906,7 +906,7 @@ function downloadSidePanelPDF() {
     html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
   }).from(el).save().then(() => {
     if (el.parentNode) el.parentNode.removeChild(el);
-    document.body.style.overflow = '';
+    document.body.style.overflow = ''; document.documentElement.style.overflow = '';
   });
 }
 
@@ -936,7 +936,7 @@ function downloadDrawerNotePDF() {
     html2canvas:{scale:2}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}
   }).from(el).save().then(() => {
     if (el.parentNode) el.parentNode.removeChild(el);
-    document.body.style.overflow = '';
+    document.body.style.overflow = ''; document.documentElement.style.overflow = '';
   });
 }
 
