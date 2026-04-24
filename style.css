@@ -172,10 +172,12 @@
     .modal-pdf-btn{background:#e8f0fe;color:#1565c0;border:none;border-radius:var(--radius-sm);padding:6px 12px;cursor:pointer;font-size:.85rem;font-weight:700;position:relative;z-index:1;margin-left:auto;margin-right:8px;}
     .modal-pdf-btn:hover{background:#1565c0;color:#fff;}
     .formulas-in-modal{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
-    .formula-in-modal-item{background:#eaf3ff;padding:15px;border-radius:var(--radius-sm);cursor:pointer;transition:.2s;flex:1 1 calc(50% - 12px);min-width:200px;}
-    .formula-in-modal-item:hover{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);transform:translateY(-2px);}
-    .formula-in-modal-title{font-family:'Fira Code',monospace;font-size:1.1rem;color:var(--blue);margin-bottom:8px;font-weight:600;}
-    .formula-in-modal-expr{font-family:'Fira Code',monospace;font-size:.95rem;color:var(--text);}
+    .formula-in-modal-item{background:var(--blue);padding:15px;border-radius:var(--radius-sm);cursor:pointer;transition:.2s;flex:1 1 calc(50% - 12px);min-width:200px;border:1.5px solid #1e5499;}
+    .formula-in-modal-item:hover{background:#cff4ff;border-color:var(--accent);box-shadow:0 4px 14px rgba(0,212,255,.25);transform:translateY(-2px);}
+    .formula-in-modal-title{font-family:'Fira Code',monospace;font-size:1.1rem;color:#fff;margin-bottom:8px;font-weight:600;transition:.2s;}
+    .formula-in-modal-item:hover .formula-in-modal-title{color:var(--blue);}
+    .formula-in-modal-expr{font-family:'Fira Code',monospace;font-size:.95rem;color:rgba(255,255,255,.8);transition:.2s;}
+    .formula-in-modal-item:hover .formula-in-modal-expr{color:var(--text);}
 
     /* ===== WORKSPACE (замість графіка) ===== */
     /* When graph is active: main becomes overflow:hidden so height:100% works correctly */
@@ -864,7 +866,7 @@ body.dark .dash-grade-badge{background:#1a2535;border-color:#334155;color:#60a5f
 /* ===== HUB GRID ===== */
 .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:32px;}
 .hub-card{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:22px 20px;border:1.5px solid #1e5499;border-radius:var(--radius-lg);background:var(--blue);cursor:pointer;text-align:left;transition:background .2s,border-color .2s,transform .15s,box-shadow .2s;text-decoration:none;color:#fff;}
-.hub-card:hover{background:var(--blue-light);border-color:#93c5fd;box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.hub-card:hover{background:#cff4ff;border-color:var(--accent);box-shadow:0 6px 20px rgba(0,212,255,.2);transform:translateY(-2px);}
 .hub-card:hover .hub-title{color:var(--blue);}
 .hub-card:hover .hub-desc{color:#4a6fa0;}
 .hub-icon{font-size:1.8rem;line-height:1;margin-bottom:8px;}
@@ -988,9 +990,11 @@ body.dark .alg-cat-btn{background:#1e293b;border-color:#334155;}
 /* Algebra big modal */
 .alg-modal-content{max-width:680px;width:94%;}
 /* Formula cards with visual+math split */
-.alg-formula-card{background:#f8faff;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;border:1.5px solid #e8f0fe;transition:.15s;}
-.alg-formula-card:hover{border-color:var(--blue);box-shadow:0 3px 10px rgba(26,62,124,.1);}
-.alg-card-name{font-size:.9rem;font-weight:700;color:#555;margin-bottom:10px;}
+.alg-formula-card{background:var(--blue);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;border:1.5px solid #1e5499;transition:.2s;cursor:pointer;}
+.alg-formula-card:hover{background:#cff4ff;border-color:var(--accent);box-shadow:0 4px 14px rgba(0,212,255,.25);transform:translateY(-1px);}
+.alg-formula-card:hover .alg-card-name{color:var(--blue);}
+.alg-formula-card:hover .alg-card-math{background:#e8f4ff;}
+.alg-card-name{font-size:.9rem;font-weight:700;color:rgba(255,255,255,.8);margin-bottom:10px;transition:.2s;}
 .alg-card-split{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
 .alg-card-visual{font-size:1.5rem;line-height:1.7;background:#fff;border-radius:var(--radius-sm);padding:10px 14px;border:2px solid #bfdbfe;flex:1;min-width:140px;text-align:center;word-break:break-all;}
 .alg-card-divider{font-size:1.8rem;font-weight:700;color:var(--blue);flex-shrink:0;}
@@ -1298,7 +1302,7 @@ body.dark .alg-modal-row .alg-modal-expr{color:#93c5fd;}
 body.dark .hero-accent{background:linear-gradient(135deg,#60a5fa,#00d4ff);-webkit-background-clip:text;background-clip:text;}
 .lp-features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:32px 0 28px;text-align:left;}
 .lp-feat-card{background:var(--blue);border:1.5px solid #1e5499;border-radius:var(--radius-lg);padding:20px 18px;transition:background .2s,border-color .2s,transform .15s,box-shadow .2s;cursor:pointer;}
-.lp-feat-card:hover{background:var(--blue-light);border-color:#93c5fd;box-shadow:var(--shadow-md);transform:translateY(-3px);}
+.lp-feat-card:hover{background:#cff4ff;border-color:var(--accent);box-shadow:0 6px 20px rgba(0,212,255,.2);transform:translateY(-3px);}
 .lp-feat-card:hover .lp-feat-title{color:var(--blue);}
 .lp-feat-card:hover .lp-feat-desc{color:#4a6fa0;}
 .lp-feat-icon{font-size:1.6rem;margin-bottom:10px;display:block;}
