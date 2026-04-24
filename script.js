@@ -285,11 +285,52 @@ const TB_LESSONS = [
     practice: [
       { q: 'Знайди значення 3x − 4, якщо x = 5:', ans: '11', hint: '3·5 − 4 = 11' },
       { q: 'Знайди значення 2a + b, якщо a = 3, b = −1:', ans: '5', hint: '2·3 + (−1) = 5' },
+      { q: 'Знайди значення x² + 2x, якщо x = 3:', ans: '15', hint: '9 + 6 = 15' },
+      { q: 'Знайди значення (a − b)², якщо a = 7, b = 2:', ans: '25', hint: '(7−2)² = 5² = 25' },
       { q: 'Вираз 5x² − 3x + 7 є (цілим/дробовим):', ans: 'цілим', hint: 'Немає ділення на змінну' },
       { q: 'Вираз 4/(x+2) є (цілим/дробовим):', ans: 'дробовим', hint: 'Є ділення на (x+2)' },
+      { q: 'Вираз 3x · (x − 1) є (цілим/дробовим):', ans: 'цілим', hint: 'Лише множення, не ділення на змінну' },
       { q: 'При якому x вираз 10/(x−3) не має змісту:', ans: '3', hint: 'x−3 = 0 → x = 3' },
+      { q: 'При якому x вираз 5/(2x+6) не має змісту:', ans: '-3', hint: '2x+6 = 0 → x = −3' },
       { q: 'Значення виразу x² − 1 при x = 4:', ans: '15', hint: '4² − 1 = 16 − 1 = 15' }
     ]
+  },
+  {
+    id: 'test-ch1',
+    icon: '📋',
+    title: 'Самостійна робота №1',
+    meta: '7 клас · Підсумок Розділу 1 · §1–4',
+    type: 'test',
+    theory: `<p>Перевір знання з Розділу 1 і §4. Підказок немає — як на справжній контрольній!</p>
+<p>Теми: рівняння та їх корені · лінійні рівняння · задачі · вирази зі змінними</p>`,
+    practice: [
+      { q: 'Знайди корінь рівняння: 4x − 3 = 13', ans: '4' },
+      { q: 'Розв\'яжи: 3(x + 2) = 2x + 10', ans: '4' },
+      { q: 'Розв\'яжи: 7x − 5 = 5x + 3', ans: '4' },
+      { q: 'Сума двох чисел 50, одне більше за інше на 10. Менше число:', ans: '20' },
+      { q: 'Рівняння 0·x = 5 має коренів (число/безліч/немає):', ans: 'немає' },
+      { q: 'Знайди значення 2x² − x, якщо x = 3:', ans: '15' },
+      { q: 'При якому значенні x вираз 8/(x+4) не має змісту:', ans: '-4' },
+      { q: 'Поїзд їхав 4 год і подолав 280 км. Його швидкість (км/год):', ans: '70' }
+    ]
+  }
+];
+
+// ===== CHAPTER STRUCTURE =====
+const TB_CHAPTERS = [
+  {
+    id: 'ch1',
+    icon: '⚖️',
+    title: 'Розділ 1. Лінійні рівняння з однією змінною',
+    color: '#1a3e7c',
+    lessons: ['equations-basics', 'linear-equation', 'word-problems', 'test-ch1']
+  },
+  {
+    id: 'ch2',
+    icon: '🔤',
+    title: 'Розділ 2. Цілі вирази',
+    color: '#0369a1',
+    lessons: ['monomials', 'polynomials', 'expressions-variables']
   }
 ];
 
@@ -301,16 +342,50 @@ function buildTextbooks() {
   lesson.style.display = 'none';
 
   const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
-  document.getElementById('tb-chapters').innerHTML = TB_LESSONS.map(l => `
-    <div class="tb-chapter-card" onclick="tbOpenLesson('${l.id}')">
-      <div class="tb-ch-icon">${l.icon}</div>
-      <div>
-        <div class="tb-ch-title">${l.title}</div>
-        <div class="tb-ch-meta">${l.meta}</div>
+  const expanded = JSON.parse(localStorage.getItem('mh_tb_expanded') || '[]');
+
+  document.getElementById('tb-chapters').innerHTML = TB_CHAPTERS.map(ch => {
+    const chLessons = ch.lessons.map(lid => TB_LESSONS.find(l => l.id === lid)).filter(Boolean);
+    const doneCount = chLessons.filter(l => done.includes(l.id)).length;
+    const isOpen = expanded.includes(ch.id);
+
+    const lessonsHtml = chLessons.map(l => {
+      const isTest = l.type === 'test';
+      const isDone = done.includes(l.id);
+      return `<div class="tb-lesson-row ${isTest ? 'tb-lesson-test' : ''}" onclick="tbOpenLesson('${l.id}')">
+        <span class="tb-lr-icon">${l.icon}</span>
+        <span class="tb-lr-title">${l.title}</span>
+        <span class="tb-lr-status ${isDone ? 'done' : ''}">${isDone ? '✓' : '→'}</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="tb-chapter-block" id="tbch-${ch.id}">
+      <div class="tb-chapter-header" onclick="tbToggleChapter('${ch.id}')">
+        <span class="tb-ch-icon">${ch.icon}</span>
+        <div style="flex:1">
+          <div class="tb-ch-title">${ch.title}</div>
+          <div class="tb-ch-meta">${doneCount}/${chLessons.length} пройдено</div>
+        </div>
+        <span class="tb-ch-arrow">${isOpen ? '▲' : '▼'}</span>
       </div>
-      <div class="tb-ch-status ${done.includes(l.id) ? 'done' : 'new'}">${done.includes(l.id) ? '✓ Пройдено' : 'Нове'}</div>
-    </div>
-  `).join('');
+      <div class="tb-chapter-lessons" id="tbchl-${ch.id}" style="${isOpen ? '' : 'display:none'}">
+        ${lessonsHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function tbToggleChapter(chId) {
+  const el = document.getElementById(`tbchl-${chId}`);
+  const arr = document.querySelector(`#tbch-${chId} .tb-ch-arrow`);
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : '';
+  arr.textContent = isOpen ? '▼' : '▲';
+  const expanded = JSON.parse(localStorage.getItem('mh_tb_expanded') || '[]');
+  const idx = expanded.indexOf(chId);
+  if (isOpen && idx > -1) expanded.splice(idx, 1);
+  else if (!isOpen && idx === -1) expanded.push(chId);
+  localStorage.setItem('mh_tb_expanded', JSON.stringify(expanded));
 }
 
 function tbOpenLesson(id) {
@@ -319,13 +394,28 @@ function tbOpenLesson(id) {
   document.getElementById('tb-list-view').style.display = 'none';
   const lv = document.getElementById('tb-lesson-view');
   lv.style.display = '';
+  const isTest = l.type === 'test';
 
-  const examples = l.examples.map(ex => `
-    <div class="tb-example">
-      <div class="tb-example-q">${ex.q}</div>
-      ${ex.steps.map((s, i) => `<div class="tb-step"><div class="tb-step-n">${i+1}</div><div>${s}</div></div>`).join('')}
-    </div>`).join('');
+  const theoryBlock = isTest ? `
+    <div class="tb-block" style="border-color:#f59e0b;">
+      <div class="tb-block-title" style="color:#d97706;">📋 Самостійна робота</div>
+      <div class="tb-theory-text">${l.theory}</div>
+    </div>` : `
+    <div class="tb-block">
+      <div class="tb-block-title">📖 Теорія</div>
+      <div class="tb-theory-text">${l.theory}</div>
+      ${l.formula ? `<div class="tb-formula-box">${l.formula}</div>` : ''}
+    </div>
+    <div class="tb-block">
+      <div class="tb-block-title">💡 Розібрані приклади</div>
+      ${(l.examples||[]).map(ex => `
+        <div class="tb-example">
+          <div class="tb-example-q">${ex.q}</div>
+          ${ex.steps.map((s,i) => `<div class="tb-step"><div class="tb-step-n">${i+1}</div><div>${s}</div></div>`).join('')}
+        </div>`).join('')}
+    </div>`;
 
+  const practiceTitle = isTest ? '✏️ Завдання (без підказок)' : '✏️ Практика';
   const practice = l.practice.map((p, i) => `
     <div class="tb-practice-q" id="tbpq-${id}-${i}">
       <div class="tb-practice-q-text">${i+1}. ${p.q}</div>
@@ -337,24 +427,16 @@ function tbOpenLesson(id) {
     </div>`).join('');
 
   lv.innerHTML = `
-    <button class="tb-back-btn" onclick="buildTextbooks()">← До списку тем</button>
+    <button class="tb-back-btn" onclick="buildTextbooks()">← До розділів</button>
     <div class="tb-lesson-title">${l.icon} ${l.title}</div>
     <div class="tb-lesson-sub">${l.meta}</div>
+    ${theoryBlock}
     <div class="tb-block">
-      <div class="tb-block-title">📖 Теорія</div>
-      <div class="tb-theory-text">${l.theory}</div>
-      <div class="tb-formula-box">${l.formula}</div>
-    </div>
-    <div class="tb-block">
-      <div class="tb-block-title">💡 Розібрані приклади</div>
-      ${examples}
-    </div>
-    <div class="tb-block">
-      <div class="tb-block-title">✏️ Практика</div>
+      <div class="tb-block-title">${practiceTitle}</div>
       ${practice}
+      ${isTest ? `<div id="tb-test-score" style="display:none;margin-top:16px;font-size:1.1rem;font-weight:700;text-align:center;"></div>` : ''}
     </div>`;
 
-  // store current lesson id for completion check
   lv.dataset.lessonId = id;
 }
 
@@ -363,18 +445,18 @@ function tbCheck(lessonId, idx) {
   const p = l.practice[idx];
   const inp = document.getElementById(`tbinp-${lessonId}-${idx}`);
   const fb = document.getElementById(`tbfb-${lessonId}-${idx}`);
-  if (!inp || !fb) return;
+  if (!inp || !fb || inp.disabled) return;
   const val = inp.value.trim().toLowerCase().replace(/\s/g, '');
   const correct = [p.ans.toLowerCase(), ...(p.altAns || []).map(a => a.toLowerCase())];
-  if (correct.includes(val)) {
+  const isCorrect = correct.includes(val);
+  if (isCorrect) {
     fb.className = 'tb-practice-feedback ok';
     fb.textContent = '✓ Правильно!';
     inp.disabled = true;
-    // check if all done
     tbCheckAllDone(lessonId);
   } else {
     fb.className = 'tb-practice-feedback err';
-    fb.textContent = `✗ Спробуй ще. Підказка: ${p.hint}`;
+    fb.textContent = l.type === 'test' ? '✗ Неправильно. Спробуй ще раз.' : `✗ Спробуй ще. Підказка: ${p.hint}`;
   }
 }
 
@@ -384,9 +466,19 @@ function tbCheckAllDone(lessonId) {
     const inp = document.getElementById(`tbinp-${lessonId}-${i}`);
     return inp && inp.disabled;
   });
-  if (allDone) {
-    const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
-    if (!done.includes(lessonId)) { done.push(lessonId); localStorage.setItem('mh_tb_done', JSON.stringify(done)); }
+  if (!allDone) return;
+  const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
+  if (!done.includes(lessonId)) { done.push(lessonId); localStorage.setItem('mh_tb_done', JSON.stringify(done)); }
+  if (l.type === 'test') {
+    const correct = l.practice.filter((_, i) => {
+      const fb = document.getElementById(`tbfb-${lessonId}-${i}`);
+      return fb && fb.classList.contains('ok');
+    }).length;
+    const total = l.practice.length;
+    const pct = Math.round(correct / total * 100);
+    const grade = pct >= 90 ? '🏆 Відмінно!' : pct >= 75 ? '✓ Добре!' : pct >= 60 ? '📚 Непогано, повтори теми' : '🔄 Варто повторити матеріал';
+    const sc = document.getElementById('tb-test-score');
+    if (sc) { sc.style.display = ''; sc.innerHTML = `Результат: ${correct}/${total} (${pct}%) — ${grade}`; sc.style.color = pct >= 75 ? '#16a34a' : '#d97706'; }
   }
 }
 
