@@ -105,11 +105,11 @@
     /* ============================================================ */
     html{height:100%;overflow:hidden;}
     body{background:#f0f4f8;color:var(--text);height:100%;display:flex;flex-direction:column;overflow:hidden;}
-    header{background:#fff;color:var(--text);padding:0 28px;height:58px;display:flex;justify-content:space-between;align-items:center;flex-wrap:nowrap;z-index:100;flex-shrink:0;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.05);}
-    .logo{font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:10px;}
+    header{background:var(--blue);color:#fff;padding:0 28px;height:58px;display:flex;justify-content:space-between;align-items:center;flex-wrap:nowrap;z-index:100;flex-shrink:0;box-shadow:0 2px 12px rgba(26,62,124,.3);}
+    .logo{font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:10px;}
     .logo-icon{flex-shrink:0;width:36px;height:36px;}
-    nav button{background:none;border:none;color:#6a8ab0;font-size:15px;margin-left:4px;cursor:pointer;font-weight:600;transition:.2s;padding:6px 10px;border-radius:var(--radius-sm);}
-    nav button:hover{background:var(--blue-light);color:var(--blue);}
+    nav button{background:none;border:none;color:rgba(255,255,255,.8);font-size:15px;margin-left:4px;cursor:pointer;font-weight:600;transition:.2s;padding:6px 10px;border-radius:var(--radius-sm);}
+    nav button:hover{background:rgba(255,255,255,.15);color:#fff;}
     .nav-simulator-btn{display:inline-block;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:15px;font-weight:700;margin-left:16px;text-decoration:none;padding:6px 14px;border-radius:var(--radius-sm);transition:.2s;font-family:'Roboto',sans-serif;}
     .nav-simulator-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(239,68,68,.4);}
     #app-workspace{display:flex;flex-direction:row;flex:1;overflow:hidden;min-height:0;}
@@ -426,10 +426,12 @@
 
     /* ===== DARK MODE ===== */
     body.dark{--blue:#4a90e2;--blue-light:#1a2535;--accent:#00d4ff;--text:#e0eaff;--card:#1e293b;--border:#334155;background:#0d1117;color:#e0eaff;}
-    body.dark header{background:#0d1117;border-bottom:1px solid #1e3050;box-shadow:none;}
-    body.dark .logo{color:#60a5fa;}
-    body.dark nav button{color:#7aa0c8;}
-    body.dark nav button:hover{background:#1e3050;color:#e0eaff;}
+    body.dark header{background:#0d1117;box-shadow:0 2px 12px rgba(0,0,0,.4);}
+    body.dark .logo{color:var(--accent);}
+    body.dark nav button{color:rgba(255,255,255,.7);}
+    body.dark nav button:hover{background:rgba(255,255,255,.08);color:#fff;}
+    body.dark .global-back-btn{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15);}
+    body.dark .global-back-btn:hover{background:rgba(0,212,255,.15);border-color:var(--accent);color:var(--accent);}
     body.dark .category-card{background:#1a2535;color:#aac4e0;border:1px solid #1e3050;}
     body.dark .formula-modal-content,body.dark .category-modal-content{background:#151c2a;color:#e0eaff;}
     body.dark .formula-display{background:#1a2535;}
@@ -526,10 +528,10 @@
     body.dark .qm-pro{opacity:.7;}
 
     /* dark mode toggle */
-    #dark-toggle{background:none;border:1.5px solid #e2e8f0;color:#6a8ab0;border-radius:var(--radius-sm);padding:5px 12px;cursor:pointer;font-size:14px;font-weight:600;transition:.2s;margin-left:4px;}
-    #dark-toggle:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue);}
-    body.dark #dark-toggle{border-color:#334155;color:#7aa0c8;}
-    body.dark #dark-toggle:hover{background:#1e3050;border-color:#60a5fa;color:#60a5fa;}
+    #dark-toggle{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:var(--radius-sm);padding:5px 10px;cursor:pointer;font-size:14px;font-weight:600;transition:.2s;margin-left:4px;}
+    #dark-toggle:hover{background:rgba(255,255,255,.2);border-color:var(--accent);}
+    body.dark #dark-toggle{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15);color:#e0eaff;}
+    body.dark #dark-toggle:hover{background:rgba(0,212,255,.15);border-color:var(--accent);}
 
     /* ===== TRIG TABLE ===== */
     #trig-content{max-width:1100px;margin:0 auto;}
@@ -756,8 +758,8 @@
     body.dark .ws-vpanel-resize{background:#1e3050;}
     .ws-props-body{padding:12px 14px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;flex:1;}
 
-    .global-back-btn{background:var(--blue-light);border:1.5px solid #b3d9ff;border-radius:var(--radius-sm);color:var(--blue);font-size:.9rem;font-weight:600;cursor:pointer;padding:5px 14px;transition:.2s;display:none;}
-    .global-back-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+    .global-back-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:var(--radius-sm);color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;padding:5px 14px;transition:.2s;display:none;}
+    .global-back-btn:hover{background:rgba(255,255,255,.22);border-color:var(--accent);color:var(--accent);}
     .global-home-btn{background:rgba(255,255,255,.1);}
     body.dark .global-back-btn{background:#1a2535;border-color:#334155;color:#7aa0c8;}
     body.dark .global-back-btn:hover{background:#3b82f6;border-color:#3b82f6;color:#fff;}
@@ -788,18 +790,27 @@
 /* ===== HEADER AUTH BLOCK ===== */
 header{flex-wrap:nowrap;gap:12px;}
 .header-auth{flex-shrink:0;display:flex;align-items:center;gap:8px;}
-.auth-nav-btn{background:none;border:1.5px solid #e2e8f0;color:var(--text);font-size:14px;padding:6px 16px;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;transition:.2s;white-space:nowrap;}
-.auth-nav-btn:hover{border-color:var(--blue);color:var(--blue);}
-.auth-nav-btn--accent{background:var(--blue);color:#fff;border-color:var(--blue);}
-.auth-nav-btn--accent:hover{background:#0d2340;border-color:#0d2340;color:#fff;}
-body.dark .auth-nav-btn{border-color:#334155;color:#e0eaff;}
-body.dark .auth-nav-btn:hover{border-color:#60a5fa;color:#60a5fa;}
-body.dark .auth-nav-btn--accent{background:#3b82f6;border-color:#3b82f6;color:#fff;}
-.user-info{display:flex;flex-direction:column;align-items:flex-end;cursor:pointer;gap:2px;}
-#user-greeting{color:var(--blue);font-weight:700;font-size:14px;white-space:nowrap;}
-#user-badge{font-size:11px;color:#6a8ab0;}
-body.dark #user-greeting{color:#60a5fa;}
-body.dark #user-badge{color:#7aa0c8;}
+.auth-nav-btn{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.3);color:#fff;font-size:13px;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;transition:.2s;white-space:nowrap;}
+.auth-nav-btn:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.5);}
+.auth-nav-btn--accent{background:var(--accent);color:var(--blue);border-color:var(--accent);font-weight:700;}
+.auth-nav-btn--accent:hover{background:#fff;border-color:#fff;color:var(--blue);}
+/* Іконки-кнопки в user-nav (🏠 ⚙️) */
+.auth-nav-btn[onclick*="dashboard"],.auth-nav-btn[onclick*="Settings"]{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
+  width:34px;height:34px;padding:0;font-size:16px;border-radius:var(--radius-sm);
+}
+.auth-nav-btn[onclick*="dashboard"]:hover,.auth-nav-btn[onclick*="Settings"]:hover{
+  background:rgba(255,255,255,.22);border-color:var(--accent);
+}
+body.dark .auth-nav-btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);}
+body.dark .auth-nav-btn--accent{background:var(--accent);color:#0d1117;}
+/* User info: ім'я та клас */
+#user-nav{display:flex;align-items:center;gap:8px;}
+.user-info{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);padding:5px 12px;cursor:default;}
+#user-greeting{color:#fff;font-weight:700;font-size:13px;white-space:nowrap;}
+#user-badge{font-size:11px;color:var(--accent);font-weight:700;}
+body.dark .user-info{background:rgba(255,255,255,.06);}
+body.dark #user-greeting{color:#e0eaff;}
 
 /* ===== PRICING ===== */
 .pricing-wrap{max-width:1100px;margin:0 auto;padding:40px 0;}
