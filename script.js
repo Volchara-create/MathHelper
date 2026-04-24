@@ -325,7 +325,6 @@ const TB_LESSONS = [
     ]
   },
   {
-  {
     id: 'poly-mult',
     icon: '🔀',
     title: 'Множення многочлена на многочлен',
