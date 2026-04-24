@@ -8,8 +8,28 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ===== DARK THEME (default) ===== */
+    /* ===== LIGHT THEME (default) ===== */
     :root {
+      --bg: #f0f4ff;
+      --card: #ffffff;
+      --card2: #eef2fb;
+      --border: #d0d9f0;
+      --accent: #1a3e7c;
+      --accent2: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --yellow: #d97706;
+      --text: #1a2744;
+      --muted: #5a6e9a;
+      --radius: 12px;
+      --header-btn-bg: rgba(26,62,124,.08);
+      --header-btn-border: rgba(26,62,124,.18);
+      --header-btn-color: #1a3e7c;
+      --blue-header: #1a3e7c;
+    }
+
+    /* ===== DARK THEME ===== */
+    body.dark {
       --bg: #0f172a;
       --card: #1e293b;
       --card2: #273449;
@@ -21,23 +41,10 @@
       --yellow: #f59e0b;
       --text: #f1f5f9;
       --muted: #94a3b8;
-      --radius: 12px;
       --header-btn-bg: rgba(255,255,255,.1);
       --header-btn-border: rgba(255,255,255,.2);
       --header-btn-color: #fff;
-    }
-
-    /* ===== LIGHT THEME ===== */
-    body.light {
-      --bg: #f0f4ff;
-      --card: #ffffff;
-      --card2: #f1f5f9;
-      --border: #cbd5e1;
-      --text: #1e293b;
-      --muted: #64748b;
-      --header-btn-bg: rgba(0,0,0,.06);
-      --header-btn-border: rgba(0,0,0,.12);
-      --header-btn-color: #1e293b;
+      --blue-header: #1e293b;
     }
 
     body {
@@ -65,30 +72,72 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.5rem;
+      padding: .8rem 1.5rem;
+      background: var(--blue-header);
+      color: #fff;
     }
     .start-back-btn {
-      color: var(--muted);
+      color: rgba(255,255,255,.85);
       text-decoration: none;
       font-size: .9rem;
-      background: var(--header-btn-bg);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
       padding: 6px 14px;
       border-radius: 20px;
       transition: background .2s;
+      font-weight: 600;
     }
-    .start-back-btn:hover { background: var(--card2); }
+    .start-back-btn:hover { background: rgba(255,255,255,.22); color: #fff; }
     .theme-toggle-btn {
-      background: var(--header-btn-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff;
       border-radius: 20px;
       padding: 6px 14px;
       font-size: 1rem;
       cursor: pointer;
       transition: background .2s;
     }
-    .theme-toggle-btn:hover { background: var(--card2); }
+    .theme-toggle-btn:hover { background: rgba(255,255,255,.22); }
+    body.dark .theme-toggle-btn { background: var(--header-btn-bg); border-color: var(--header-btn-border); }
+
+    /* Mode cards */
+    .mode-cards {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: .5rem 0;
+    }
+    .mode-card {
+      width: 220px;
+      padding: 1.2rem 1rem;
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+    }
+    .mode-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,62,124,.12); }
+    .mode-card.selected { border-color: var(--accent); background: rgba(26,62,124,.07); }
+    .mode-card-icon { font-size: 2rem; margin-bottom: .5rem; }
+    .mode-card-title { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: .3rem; }
+    .mode-card-desc { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+
+    /* Topic chips for topic mode */
+    .topic-chips {
+      display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center;
+      max-width: 600px;
+    }
+    .topic-chip {
+      padding: .4rem 1rem; border-radius: 20px;
+      border: 2px solid var(--border); background: var(--card);
+      font-size: .85rem; font-weight: 600; cursor: pointer; transition: all .15s;
+      color: var(--text);
+    }
+    .topic-chip:hover { border-color: var(--accent); color: var(--accent); }
+    .topic-chip.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
 
     .start-center {
       flex: 1;
@@ -757,15 +806,44 @@
   </div>
 
   <div class="start-center">
-    <div class="start-logo">🎯 НМТ Симулятор</div>
-    <p class="start-hint">Обери клас і розпочни</p>
+    <div class="start-logo">🎯 МатТест</div>
+    <p class="start-hint">Симулятор підготовки до НМТ</p>
 
-    <div class="grade-btns">
-      <button class="grade-btn" onclick="selectGrade(7,this)">7</button>
-      <button class="grade-btn" onclick="selectGrade(8,this)">8</button>
-      <button class="grade-btn" onclick="selectGrade(9,this)">9</button>
-      <button class="grade-btn" onclick="selectGrade(10,this)">10</button>
-      <button class="grade-btn" onclick="selectGrade(11,this)">11</button>
+    <!-- Mode selection -->
+    <div class="mode-cards">
+      <div class="mode-card" id="mode-full" onclick="selectMode('full', this)">
+        <div class="mode-card-icon">📋</div>
+        <div class="mode-card-title">Повний тест НМТ</div>
+        <div class="mode-card-desc">30 завдань · таймер 90 хв · симуляція реального іспиту</div>
+      </div>
+      <div class="mode-card" id="mode-topic" onclick="selectMode('topic', this)">
+        <div class="mode-card-icon">📚</div>
+        <div class="mode-card-title">Завдання за темами</div>
+        <div class="mode-card-desc">Вибери тему і тренуйся цілеспрямовано</div>
+      </div>
+      <div class="mode-card" id="mode-quick" onclick="selectMode('quick', this)">
+        <div class="mode-card-icon">⚡</div>
+        <div class="mode-card-title">Десятка</div>
+        <div class="mode-card-desc">10 випадкових завдань · без таймера · коли мало часу</div>
+      </div>
+    </div>
+
+    <!-- Topic chips (shown only in topic mode) -->
+    <div id="topic-select-wrap" style="display:none;flex-direction:column;align-items:center;gap:.8rem;">
+      <div style="font-size:.9rem;color:var(--muted);font-weight:600;">Оберіть тему:</div>
+      <div class="topic-chips" id="topic-chips"></div>
+    </div>
+
+    <!-- Grade selection -->
+    <div id="grade-wrap">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:.6rem;">Клас:</p>
+      <div class="grade-btns">
+        <button class="grade-btn" onclick="selectGrade(7,this)">7</button>
+        <button class="grade-btn" onclick="selectGrade(8,this)">8</button>
+        <button class="grade-btn" onclick="selectGrade(9,this)">9</button>
+        <button class="grade-btn" onclick="selectGrade(10,this)">10</button>
+        <button class="grade-btn" onclick="selectGrade(11,this)">11</button>
+      </div>
     </div>
 
     <div class="info-row" id="test-info" style="visibility:hidden;">
@@ -809,11 +887,11 @@
 
     <!-- Footer: prev | dots | next | submit -->
     <div class="exam-footer">
-      <button class="btn-nav" id="btn-prev" onclick="goPrev()">←</button>
+      <button class="btn-nav" id="btn-prev" onclick="goPrev()">Попереднє</button>
       <div class="exam-dots-scroll">
         <div class="q-nav-grid" id="q-nav-grid"></div>
       </div>
-      <button class="btn-nav" id="btn-next" onclick="goNext()">→</button>
+      <button class="btn-nav" id="btn-next" onclick="goNext()">Наступне</button>
       <button class="btn-finish" onclick="confirmFinish()">Здати</button>
     </div>
   </div>
@@ -1953,8 +2031,10 @@ QUESTIONS[11] = [
 // ============================================================
 let state = {
   grade: null,
+  mode: null,        // 'full' | 'topic' | 'quick'
+  selectedTopic: null,
   questions: [],
-  answers: [],       // null = без відповіді
+  answers: [],
   current: 0,
   timeLeft: 0,
   timerInterval: null,
@@ -1966,44 +2046,104 @@ let state = {
 // ============================================================
 //  GRADE / START
 // ============================================================
+function selectMode(mode, el) {
+  state.mode = mode;
+  state.selectedTopic = null;
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const topicWrap = document.getElementById('topic-select-wrap');
+  if (mode === 'topic') {
+    topicWrap.style.display = 'flex';
+    buildTopicChips();
+  } else {
+    topicWrap.style.display = 'none';
+  }
+  updateStartInfo();
+}
+
+function buildTopicChips() {
+  const g = state.grade || 11;
+  const pool = QUESTIONS[g] || QUESTIONS[9];
+  const topics = [...new Set(pool.map(q => q.topic))].sort();
+  const el = document.getElementById('topic-chips');
+  el.innerHTML = topics.map(t =>
+    `<button class="topic-chip" onclick="selectTopic('${t}',this)">${t}</button>`
+  ).join('');
+}
+
+function selectTopic(topic, btn) {
+  state.selectedTopic = topic;
+  document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateStartInfo();
+}
+
 function selectGrade(g, btn) {
   state.grade = g;
   document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('selected'));
   if (btn) btn.classList.add('selected');
+  if (state.mode === 'topic') buildTopicChips();
+  updateStartInfo();
+}
 
-  const isSenior = g >= 9;
-  const qCount = isSenior ? 30 : 15;
-  const minutes = isSenior ? 180 : 45;
+function updateStartInfo() {
+  const g = state.grade;
+  const mode = state.mode;
+  if (!g || !mode) { document.getElementById('btn-start').disabled = true; return; }
+  if (mode === 'topic' && !state.selectedTopic) { document.getElementById('btn-start').disabled = true; document.getElementById('test-info').style.visibility = 'hidden'; return; }
+
+  let qCount, minutes;
+  if (mode === 'full') { qCount = g >= 9 ? 30 : 15; minutes = g >= 9 ? 90 : 45; }
+  else if (mode === 'quick') { qCount = 10; minutes = 0; }
+  else {
+    const pool = QUESTIONS[g] || QUESTIONS[9];
+    qCount = pool.filter(q => q.topic === state.selectedTopic).length;
+    minutes = 0;
+  }
 
   document.getElementById('info-q').textContent = qCount;
-  document.getElementById('info-t').textContent = minutes;
+  document.getElementById('info-t').textContent = minutes > 0 ? minutes + ' хв' : 'без ліміту';
   document.getElementById('test-info').style.visibility = 'visible';
   document.getElementById('btn-start').disabled = false;
 }
 
 function startExam() {
   const g = state.grade;
-  const isSenior = g >= 9;
+  const mode = state.mode;
   const pool = QUESTIONS[g] || QUESTIONS[9];
-  const count = isSenior ? 30 : 15;
-
-  // Shuffle and pick
   const shuffled = [...pool].sort(() => Math.random() - .5);
-  state.questions = shuffled.slice(0, Math.min(count, shuffled.length));
-  state.answers = new Array(state.questions.length).fill(null);
+
+  let questions, timeLeft;
+  if (mode === 'full') {
+    const count = g >= 9 ? 30 : 15;
+    questions = shuffled.slice(0, Math.min(count, shuffled.length));
+    timeLeft = (g >= 9 ? 90 : 45) * 60;
+  } else if (mode === 'quick') {
+    questions = shuffled.slice(0, 10);
+    timeLeft = 0;
+  } else {
+    questions = shuffled.filter(q => q.topic === state.selectedTopic);
+    timeLeft = 0;
+  }
+
+  state.questions = questions;
+  state.answers = new Array(questions.length).fill(null);
   state.current = 0;
   state.violations = 0;
   state.finished = false;
-  state.timeLeft = (isSenior ? 180 : 45) * 60;
+  state.timeLeft = timeLeft;
 
   showScreen('screen-exam');
   document.getElementById('exam-grade-label').textContent = g;
-  document.getElementById('total-count').textContent = state.questions.length;
+  document.getElementById('total-count').textContent = questions.length;
+
+  const timerEl = document.getElementById('timer');
+  if (timeLeft === 0) { timerEl.style.display = 'none'; } else { timerEl.style.display = ''; startTimer(); }
 
   buildNavGrid();
   renderQuestion();
-  startTimer();
-  setupViolationDetection();
+  if (mode === 'full') setupViolationDetection();
 }
 
 // ============================================================
@@ -2417,11 +2557,17 @@ function retryExam() {
   const prevGrade = state.grade;
   // Clear old timer just in case
   if (state.timerInterval) { clearInterval(state.timerInterval); }
-  state = { grade: prevGrade, questions: [], answers: [], current: 0, timeLeft: 0, timerInterval: null, violations: 0, started: false, finished: false };
+  const prevMode = state.mode;
+  const prevTopic = state.selectedTopic;
+  state = { grade: prevGrade, mode: prevMode, selectedTopic: prevTopic, questions: [], answers: [], current: 0, timeLeft: 0, timerInterval: null, violations: 0, started: false, finished: false };
   document.querySelectorAll('.grade-btn').forEach(b => {
     b.classList.remove('selected');
     if (b.textContent.trim() == prevGrade) b.classList.add('selected');
   });
+  if (prevMode) {
+    const modeEl = document.getElementById('mode-' + prevMode);
+    if (modeEl) modeEl.classList.add('selected');
+  }
   document.getElementById('btn-start').disabled = false;
   document.getElementById('test-info').style.visibility = 'visible';
   showScreen('screen-start');
@@ -2431,9 +2577,9 @@ function retryExam() {
 //  THEME TOGGLE
 // ============================================================
 function toggleTheme() {
-  const isLight = document.body.classList.toggle('light');
-  localStorage.setItem('sim_theme', isLight ? 'light' : 'dark');
-  const icon = isLight ? '☀️' : '🌙';
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('sim_theme', isDark ? 'dark' : 'light');
+  const icon = isDark ? '☀️' : '🌙';
   document.querySelectorAll('#theme-btn, #theme-btn-exam').forEach(b => { if(b) b.textContent = icon; });
 }
 
@@ -2448,12 +2594,11 @@ function toggleTheme() {
   } catch(e) {}
 })();
 
-// Apply saved theme on load
+// Apply saved theme on load (default = light)
 (function() {
   const saved = localStorage.getItem('sim_theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (saved === 'light' || (!saved && !prefersDark)) {
-    document.body.classList.add('light');
+  if (saved === 'dark') {
+    document.body.classList.add('dark');
     document.querySelectorAll('#theme-btn, #theme-btn-exam').forEach(b => { if(b) b.textContent = '☀️'; });
   }
 })();
