@@ -503,6 +503,180 @@ const TB_LESSONS = [
     ]
   },
   {
+    id: 'perfect-square-factor',
+    icon: '🔁',
+    title: 'Розкладання на множники за формулами квадрата суми і різниці',
+    meta: '7 клас · Розділ 2 · §17',
+    theory: `<p>Формули квадрата суми і різниці можна читати зліва направо (розкривати) і <b>справа наліво</b> (розкладати на множники):</p>
+<div style="background:var(--blue);color:#fff;border-radius:12px;padding:14px 20px;margin:12px 0;text-align:center;font-size:1.05rem;font-weight:700;font-family:'Fira Code',monospace;line-height:2.4">
+  a² + 2ab + b² = (a + b)²<br>
+  a² − 2ab + b² = (a − b)²
+</div>
+<p>Тричлен виду <b>a² ± 2ab + b²</b> називають <b>повним квадратом</b> — його можна «згорнути» у квадрат двочлена.</p>
+<p>Якщо знаки не пасують (вираз від'ємний) — виноси <b>−1</b> за дужки, а тоді застосовуй формулу.</p>
+<p>Застосування до рівнянь: якщо (щось)² = 0, то це щось = 0 → один корінь.</p>`,
+    formula: 'a²+2ab+b² = (a+b)²    |    a²−2ab+b² = (a−b)²',
+    examples: [
+      {
+        q: 'Розклади: 4x² + 12x + 9',
+        steps: ['4x² = (2x)², 9 = 3², 12x = 2·2x·3 → повний квадрат!', '= (2x)² + 2·2x·3 + 3² = (2x + 3)²']
+      },
+      {
+        q: 'Знайди значення x² + 25y⁴ − 10xy², якщо x=44, y=−3',
+        steps: ['Перегрупуємо: x² − 10xy² + 25y⁴ = (x − 5y²)²', 'y=−3: 5y² = 5·9 = 45', '(44 − 45)² = (−1)² = 1']
+      },
+      {
+        q: 'Розв\'яжи рівняння: 16x² − 40x + 25 = 0',
+        steps: ['(4x)² − 2·4x·5 + 5² = (4x − 5)²', '(4x − 5)² = 0 → 4x − 5 = 0', 'x = 1,25']
+      }
+    ],
+    practice: [
+      { q: 'Розклади: x² + 6x + 9 = ?', ans: '(x+3)^2', altAns: ['(x+3)²'], hint: 'x², 2·x·3, 3²' },
+      { q: 'Розклади: a² − 10a + 25 = ?', ans: '(a-5)^2', altAns: ['(a−5)²'], hint: '2·a·5 = 10a' },
+      { q: 'Розклади: 4x² + 12x + 9 = ?', ans: '(2x+3)^2', altAns: ['(2x+3)²'], hint: '(2x)², 2·2x·3, 3²' },
+      { q: 'Розклади: 9a² − 6a + 1 = ?', ans: '(3a-1)^2', altAns: ['(3a−1)²'], hint: '(3a)², 2·3a·1, 1²' },
+      { q: 'Розв\'яжи: (x − 3)² = 0. Корінь:', ans: '3', hint: 'x − 3 = 0' },
+      { q: 'Розв\'яжи: 9x² − 12x + 4 = 0. Корінь:', ans: '0.667', altAns: ['2/3', '0,667'], hint: '(3x−2)²=0, x=2/3' },
+      { q: 'Перетвори: −16a² + 8ab − b². Відповідь:', ans: '-(4a-b)^2', altAns: ['−(4a−b)²'], hint: 'Виноси −1: −(16a²−8ab+b²) = −(4a−b)²' },
+      { q: 'Розклади: 25x² + 20xy + 4y² = ?', ans: '(5x+2y)^2', altAns: ['(5x+2y)²'], hint: '(5x)², 2·5x·2y, (2y)²' }
+    ]
+  },
+  {
+    id: 'diff-squares-mult',
+    icon: '⚡',
+    title: 'Множення різниці двох виразів на їх суму',
+    meta: '7 клас · Розділ 2 · §18',
+    theory: `<p>Перемножимо (a − b)(a + b):</p>
+<p style="text-align:center;font-family:monospace;background:#f0f6ff;padding:8px;border-radius:8px;margin:8px 0">(a − b)(a + b) = a² + ab − ab − b² = <b>a² − b²</b></p>
+<div style="background:var(--blue);color:#fff;border-radius:12px;padding:14px 20px;margin:12px 0;text-align:center;font-size:1.1rem;font-weight:700;font-family:'Fira Code',monospace">
+  (a − b)(a + b) = a² − b²
+</div>
+<p>Читається: <em>різниця двох виразів, помножена на їх суму, дорівнює різниці їх квадратів</em>.</p>
+<p>Середні члени скорочуються — тому це один із найзручніших прийомів для усного множення!</p>
+<p><b>Порада:</b> якщо множники мають різні знаки на перший погляд — переставляй доданки так, щоб побачити a+b і a−b.</p>`,
+    formula: '(a−b)(a+b) = a²−b²',
+    examples: [
+      {
+        q: 'Виконай: (2m − 3p)(2m + 3p)',
+        steps: ['a = 2m, b = 3p', '(2m)² − (3p)² = 4m² − 9p²']
+      },
+      {
+        q: 'Спрости: 4x(x−2) − (2x+3)(2x−3)',
+        steps: ['(2x+3)(2x−3) = (2x)²−3² = 4x²−9', '4x²−8x − (4x²−9) = 4x²−8x−4x²+9', '= 9 − 8x']
+      },
+      {
+        q: 'Обчисли: 4,3 · 3,7',
+        steps: ['4,3 · 3,7 = (4+0,3)(4−0,3)', '= 4² − 0,3² = 16 − 0,09 = 15,91']
+      }
+    ],
+    practice: [
+      { q: '(x − 3)(x + 3) = ?', ans: 'x^2-9', altAns: ['x²−9'], hint: 'a=x, b=3' },
+      { q: '(2a − 5b)(2a + 5b) = ?', ans: '4a^2-25b^2', altAns: ['4a²−25b²'], hint: '(2a)²−(5b)²' },
+      { q: '(x² + y)(x² − y) = ?', ans: 'x^4-y^2', altAns: ['x⁴−y²'], hint: '(x²)²−y²' },
+      { q: 'Обчисли: 6,2 · 5,8 = ?', ans: '35.96', altAns: ['35,96'], hint: '(6+0,2)(6−0,2) = 36−0,04' },
+      { q: 'Обчисли: 103 · 97 = ?', ans: '9991', hint: '(100+3)(100−3) = 10000−9' },
+      { q: 'Спрости: −2m(m−5)(m+5) = ?', ans: '-2m^3+50m', altAns: ['50m−2m³'], hint: '−2m(m²−25) = −2m³+50m' },
+      { q: '(b²−2)(b²+2)(b⁴+4) = ?', ans: 'b^8-16', altAns: ['b⁸−16'], hint: '(b⁴−4)(b⁴+4) = b⁸−16' },
+      { q: '(−5m−7a)(5m−7a) = ?', ans: '49a^2-25m^2', altAns: ['49a²−25m²'], hint: '(−7a−5m)(−7a+5m) = (7a)²−(5m)²' }
+    ]
+  },
+  {
+    id: 'diff-squares-factor',
+    icon: '✂️',
+    title: 'Розкладання різниці квадратів на множники',
+    meta: '7 клас · Розділ 2 · §19',
+    theory: `<p>Формулу множення читаємо у зворотному напрямку:</p>
+<div style="background:var(--blue);color:#fff;border-radius:12px;padding:14px 20px;margin:12px 0;text-align:center;font-size:1.1rem;font-weight:700;font-family:'Fira Code',monospace">
+  a² − b² = (a − b)(a + b)
+</div>
+<p>Різниця квадратів <b>завжди</b> розкладається на добуток суми та різниці.</p>
+<p><b>Алгоритм:</b> визнач a = √(перший) та b = √(другий), запиши (a−b)(a+b).</p>
+<p>Застосування до рівнянь: a²−b² = 0 → (a−b)(a+b) = 0 → a=b або a=−b.</p>`,
+    formula: 'a²−b² = (a−b)(a+b)',
+    examples: [
+      {
+        q: 'Розклади: 49m⁴ − 64p⁶',
+        steps: ['49m⁴ = (7m²)², 64p⁶ = (8p³)²', '= (7m²−8p³)(7m²+8p³)']
+      },
+      {
+        q: 'Розклади: 25x² − (1−2x)²',
+        steps: ['a = 5x, b = (1−2x)', '= (5x−(1−2x))(5x+(1−2x))', '= (5x−1+2x)(5x+1−2x) = (7x−1)(3x+1)']
+      },
+      {
+        q: 'Розв\'яжи: x² − 25 = 0',
+        steps: ['(x−5)(x+5) = 0', 'x = 5 або x = −5']
+      }
+    ],
+    practice: [
+      { q: 'Розклади: 16 − x² = ?', ans: '(4-x)(4+x)', altAns: ['(4+x)(4-x)'], hint: '16 = 4²' },
+      { q: 'Розклади: 9a² − 4b² = ?', ans: '(3a-2b)(3a+2b)', altAns: ['(3a+2b)(3a-2b)'], hint: '(3a)²−(2b)²' },
+      { q: 'Розклади: x⁴ − 1 = ?', ans: '(x^2-1)(x^2+1)', altAns: ['(x²−1)(x²+1)'], hint: '(x²)²−1²' },
+      { q: 'Обчисли: 105²−95² = ?', ans: '2000', hint: '(105−95)(105+95) = 10·200' },
+      { q: 'Обчисли: 47·53 = ?', ans: '2491', hint: '(50−3)(50+3) = 2500−9' },
+      { q: 'Розв\'яжи: 4x²−9=0. Більший корінь:', ans: '1.5', altAns: ['3/2', '1,5'], hint: '(2x−3)(2x+3)=0' },
+      { q: 'Розклади: 25x² − (1−2x)² = ?', ans: '(7x-1)(3x+1)', altAns: ['(3x+1)(7x-1)'], hint: '(5x−1+2x)(5x+1−2x)' },
+      { q: 'Розклади: a⁴ − b⁴ = ?', ans: '(a^2-b^2)(a^2+b^2)', altAns: ['(a²−b²)(a²+b²)', '(a-b)(a+b)(a^2+b^2)'], hint: '(a²)²−(b²)²' }
+    ]
+  },
+  {
+    id: 'sum-diff-cubes',
+    icon: '🧊',
+    title: 'Сума і різниця кубів',
+    meta: '7 клас · Розділ 2 · §20',
+    theory: `<p>Ще дві важливі формули скороченого множення:</p>
+<div style="background:var(--blue);color:#fff;border-radius:12px;padding:14px 20px;margin:12px 0;text-align:center;font-size:1rem;font-weight:700;font-family:'Fira Code',monospace;line-height:2.4">
+  a³ + b³ = (a + b)(a² − ab + b²)<br>
+  a³ − b³ = (a − b)(a² + ab + b²)
+</div>
+<p>a²−ab+b² — <b>неповний квадрат різниці</b> (не плутай з повним квадратом: тут ab, а не 2ab).</p>
+<p>a²+ab+b² — <b>неповний квадрат суми</b>.</p>
+<p>Ці формули також читаються у зворотному напрямку для розкладання на множники.</p>`,
+    formula: 'a³+b³ = (a+b)(a²−ab+b²)    |    a³−b³ = (a−b)(a²+ab+b²)',
+    examples: [
+      {
+        q: 'Розклади: x³ + 64',
+        steps: ['64 = 4³ → сума кубів', '= (x+4)(x²−4x+16)']
+      },
+      {
+        q: 'Розклади: 27a³ − m⁶',
+        steps: ['27a³ = (3a)³, m⁶ = (m²)³ → різниця кубів', '= (3a−m²)((3a)²+3a·m²+(m²)²)', '= (3a−m²)(9a²+3am²+m⁴)']
+      },
+      {
+        q: 'Перетвори: (x+2y)(x²−2xy+4y²)',
+        steps: ['x²−2xy+4y² — неповний квадрат різниці x і 2y', '= x³+(2y)³ = x³+8y³']
+      }
+    ],
+    practice: [
+      { q: 'Розклади: a³ + 8 = ?', ans: '(a+2)(a^2-2a+4)', altAns: ['(a+2)(a²−2a+4)'], hint: '8=2³, a²−a·2+2²' },
+      { q: 'Розклади: x³ − 27 = ?', ans: '(x-3)(x^2+3x+9)', altAns: ['(x−3)(x²+3x+9)'], hint: '27=3³, x²+x·3+3²' },
+      { q: 'Розклади: 8m³ + n³ = ?', ans: '(2m+n)(4m^2-2mn+n^2)', altAns: ['(2m+n)(4m²−2mn+n²)'], hint: '8m³=(2m)³' },
+      { q: 'Обчисли: (a+b)(a²−ab+b²) = ?', ans: 'a^3+b^3', altAns: ['a³+b³'], hint: 'Це формула суми кубів' },
+      { q: 'Розклади: 64x³ − 1 = ?', ans: '(4x-1)(16x^2+4x+1)', altAns: ['(4x−1)(16x²+4x+1)'], hint: '64x³=(4x)³' },
+      { q: 'Спрости: (x+2y)(x²−2xy+4y²) = ?', ans: 'x^3+8y^3', altAns: ['x³+8y³'], hint: 'Формула суми кубів' },
+      { q: 'Розклади: (p−2)³ − 1 = ?', ans: '(p-3)(p^2-3p+3)', altAns: ['(p−3)(p²−3p+3)'], hint: 'a=(p−2), b=1; a−b=p−3; розкрий (p−2)²+(p−2)+1' },
+      { q: 'Розв\'яжи: (5x−1)(25x²+5x+1) = 125x³−8x. Корінь:', ans: '0.125', altAns: ['1/8', '0,125'], hint: '125x³−1=125x³−8x → 8x=1' }
+    ]
+  },
+  {
+    id: 'test-ch4',
+    icon: '📋',
+    title: 'Самостійна робота №4',
+    meta: '7 клас · §17–§20 · Формули скороченого множення',
+    type: 'test',
+    theory: `<p>Перевір знання §17–§20. Без підказок!</p>
+<p>Теми: повний квадрат · різниця квадратів · сума і різниця кубів</p>`,
+    practice: [
+      { q: 'Розклади: 4x² − 12x + 9 = ?', ans: '(2x-3)^2', altAns: ['(2x−3)²'] },
+      { q: 'Розв\'яжи: (3x−1)² = 0. Корінь:', ans: '0.333', altAns: ['1/3', '0,333'] },
+      { q: '(5a − 2b)(5a + 2b) = ?', ans: '25a^2-4b^2', altAns: ['25a²−4b²'] },
+      { q: 'Обчисли: 62·58 = (60+2)(60−2) = ?', ans: '3596' },
+      { q: 'Розклади: 36 − x² = ?', ans: '(6-x)(6+x)', altAns: ['(6+x)(6-x)'] },
+      { q: 'Розв\'яжи: x²−16=0. Більший корінь:', ans: '4' },
+      { q: 'Розклади: x³ + 1 = ?', ans: '(x+1)(x^2-x+1)', altAns: ['(x+1)(x²−x+1)'] },
+      { q: 'Розклади: 8a³ − b³ = ?', ans: '(2a-b)(4a^2+2ab+b^2)', altAns: ['(2a−b)(4a²+2ab+b²)'] }
+    ]
+  },
+  {
     id: 'equations-basics',
     icon: '⚖️',
     title: 'Рівняння. Загальні відомості',
@@ -835,7 +1009,7 @@ const TB_CHAPTERS = [
     icon: '🔢',
     title: 'Розділ 2. Цілі вирази',
     color: '#0369a1',
-    lessons: ['expressions-variables', 'identities', 'powers', 'power-properties', 'test-ch2-p1', 'monomial-standard', 'monomial-multiply', 'polynomial-def', 'polynomial-add-sub', 'mono-poly-mult', 'factoring-common', 'poly-mult', 'factoring-group', 'square-sum-diff', 'test-ch3']
+    lessons: ['expressions-variables', 'identities', 'powers', 'power-properties', 'test-ch2-p1', 'monomial-standard', 'monomial-multiply', 'polynomial-def', 'polynomial-add-sub', 'mono-poly-mult', 'factoring-common', 'poly-mult', 'factoring-group', 'square-sum-diff', 'test-ch3', 'perfect-square-factor', 'diff-squares-mult', 'diff-squares-factor', 'sum-diff-cubes', 'test-ch4']
   }
 ];
 
