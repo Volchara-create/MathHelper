@@ -604,7 +604,7 @@
     .quiz-feedback.show-wrong{background:#f8d7da;color:#721c24;display:block;}
     .quiz-next-btn{background:var(--blue);color:#fff;border:none;padding:12px 32px;border-radius:var(--radius-sm);cursor:pointer;font-size:1rem;font-weight:700;transition:.2s;}
     .quiz-next-btn:hover{background:#0d2340;}
-    .quiz-result{text-align:center;padding:30px;}
+    .quiz-result{text-align:center;padding:30px;position:relative;}
     .quiz-result-score{font-size:3.5rem;font-weight:700;color:var(--blue);font-family:'Orbitron',sans-serif;}
     .quiz-result-msg{font-size:1.1rem;color:#6a8ab0;margin:10px 0 24px;}
     body.dark .quiz-result-msg{color:#7aa0c8;}
@@ -637,7 +637,7 @@
     .quiz-week-bar{width:100%;border-radius:4px 4px 0 0;transition:.2s;min-height:4px;}
     .quiz-week-label{font-size:.75rem;color:#888;text-transform:capitalize;}
     /* Result home button */
-    .quiz-result-home-btn{display:block;margin:0 auto 16px;padding:8px 24px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-size:.95rem;}
+    .quiz-result-home-btn{position:absolute;top:16px;left:16px;padding:6px 16px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:700;font-size:.85rem;transition:.2s;}
     .quiz-result-home-btn:hover{background:#0d2340;}
     /* Review navigation */
     .quiz-review-nav{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:16px;flex-wrap:wrap;}
