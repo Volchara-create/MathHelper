@@ -23,7 +23,7 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta property="og:image" content="https://rostyslavv.vibe.brobots.org.ua/favicon.svg">
-  <link rel="stylesheet" href="style.css?v=2026042410">
+  <link rel="stylesheet" href="style.css?v=2026042411">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 </head>
@@ -434,8 +434,8 @@
           </a>
           <button class="hub-card" onclick="show('textbooks')">
             <span class="hub-icon">📖</span>
-            <span class="hub-title">Підручники</span>
-            <span class="hub-desc">Безкоштовні підручники МОН України</span>
+            <span class="hub-title">Підручник</span>
+            <span class="hub-desc">Теорія, приклади та практика по темах</span>
           </button>
           <button class="hub-card" onclick="show('quiz')">
             <span class="hub-icon">🎮</span>
@@ -518,10 +518,16 @@
 
     <!-- TEXTBOOKS -->
     <section id="textbooks">
-      <div style="max-width:900px;margin:0 auto;padding:32px 16px;">
-        <h2 style="margin-bottom:8px;">📚 Безкоштовні підручники</h2>
-        <p style="color:#666;margin-bottom:24px;">Офіційні підручники МОН України — безкоштовно онлайн</p>
-        <div id="textbooks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;"></div>
+      <div style="max-width:860px;margin:0 auto;padding:32px 16px;" id="tb-root">
+        <!-- List view -->
+        <div id="tb-list-view">
+          <h2 style="margin-bottom:4px;">📖 Підручник</h2>
+          <p style="color:var(--text-muted);margin-bottom:24px;font-size:.95rem;">Теорія · Приклади · Практика</p>
+          <div style="margin-bottom:12px;font-size:.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;">7 клас · Алгебра</div>
+          <div class="tb-chapters" id="tb-chapters"></div>
+        </div>
+        <!-- Lesson view -->
+        <div id="tb-lesson-view" style="display:none;"></div>
       </div>
     </section>
 

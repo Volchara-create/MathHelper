@@ -1545,3 +1545,45 @@ body.dark .stat-card-val{color:#7aa0e8;}
 body.dark .stat-topic-name{color:#c8dcf8;}
 @media(max-width:640px){.stats-summary-cards{grid-template-columns:repeat(2,1fr);}
 .stat-topic-row{grid-template-columns:100px 1fr 44px;}.stat-topic-count{display:none;}}
+
+/* ===== TEXTBOOK / ПІДРУЧНИК ===== */
+.tb-chapters{display:flex;flex-direction:column;gap:10px;}
+.tb-chapter-card{background:var(--blue);border:1.5px solid #1e5499;border-radius:var(--radius-md);padding:16px 20px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:14px;}
+.tb-chapter-card:hover{background:#cff4ff;border-color:var(--accent);box-shadow:0 4px 14px rgba(0,212,255,.2);transform:translateY(-1px);}
+.tb-chapter-card:hover .tb-ch-title{color:var(--blue);}
+.tb-chapter-card:hover .tb-ch-meta{color:#4a6fa0;}
+.tb-ch-icon{font-size:1.6rem;flex-shrink:0;}
+.tb-ch-title{font-weight:700;color:#fff;font-size:1rem;transition:.2s;}
+.tb-ch-meta{font-size:.78rem;color:rgba(255,255,255,.6);margin-top:2px;transition:.2s;}
+.tb-ch-status{margin-left:auto;font-size:.75rem;padding:3px 10px;border-radius:20px;font-weight:700;flex-shrink:0;}
+.tb-ch-status.done{background:rgba(34,197,94,.2);color:#22c55e;}
+.tb-ch-status.new{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);}
+
+/* Lesson view */
+.tb-back-btn{background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 18px;cursor:pointer;font-weight:700;font-size:.9rem;margin-bottom:20px;transition:.2s;}
+.tb-back-btn:hover{background:#0d2340;}
+.tb-lesson-title{font-size:1.4rem;font-weight:700;color:var(--blue);margin-bottom:4px;}
+.tb-lesson-sub{font-size:.85rem;color:var(--text-muted);margin-bottom:24px;}
+.tb-block{background:#fff;border:1.5px solid var(--blue-light);border-radius:var(--radius-md);padding:20px 24px;margin-bottom:16px;}
+body.dark .tb-block{background:#1e293b;border-color:#334155;}
+.tb-block-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:12px;}
+.tb-theory-text{font-size:1rem;line-height:1.8;color:var(--text);}
+.tb-formula-box{background:var(--blue);color:#fff;border-radius:var(--radius-sm);padding:12px 18px;margin:12px 0;font-size:1.05rem;font-weight:700;text-align:center;font-family:'Fira Code',monospace;}
+.tb-example{border-left:3px solid var(--accent);padding-left:14px;margin:10px 0;}
+.tb-example-q{font-weight:700;color:var(--blue);margin-bottom:6px;}
+.tb-step{display:flex;gap:10px;align-items:flex-start;margin:4px 0;font-size:.95rem;line-height:1.5;}
+.tb-step-n{background:var(--blue);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+
+/* Practice */
+.tb-practice-q{background:#f0f6ff;border:1.5px solid var(--blue-light);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:10px;}
+body.dark .tb-practice-q{background:#1a2535;border-color:#1e3a5f;}
+.tb-practice-q-text{font-size:1rem;font-weight:600;color:var(--text);margin-bottom:10px;}
+.tb-practice-input-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.tb-practice-inp{border:1.5px solid var(--blue-light);border-radius:8px;padding:8px 14px;font-size:1rem;background:#fff;color:var(--text);min-width:120px;max-width:200px;transition:.15s;}
+body.dark .tb-practice-inp{background:#273449;border-color:#334155;}
+.tb-practice-inp:focus{outline:none;border-color:var(--blue);}
+.tb-practice-check-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-weight:700;cursor:pointer;font-size:.9rem;transition:.15s;}
+.tb-practice-check-btn:hover{background:#0d2340;}
+.tb-practice-feedback{font-size:.9rem;font-weight:700;margin-top:6px;}
+.tb-practice-feedback.ok{color:#16a34a;}
+.tb-practice-feedback.err{color:#dc2626;}

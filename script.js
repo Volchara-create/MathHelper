@@ -75,24 +75,148 @@ const TEXTBOOKS = [
   { grades:11, title:'Математика 11 клас', author:'Афанасьєва та ін.', url:'https://pidruchnyk.com.ua/452-matematika-afanasyeva-brodskiy-pavlov-slpenko-11-klas.html' },
 ];
 
-function buildTextbooks() {
-  const grid = document.getElementById('textbooks-grid');
-  if (!grid) return;
-  // Always rebuild (no caching — grade can change)
-  const grade = getUserGrade();
-  const books = grade ? TEXTBOOKS.filter(b => b.grades === grade) : TEXTBOOKS;
-  if (!books.length) {
-    grid.innerHTML = `<p style="color:#888;padding:20px;text-align:center;grid-column:1/-1;">Підручники для ${grade} класу незабаром з'являться тут.</p>`;
-    return;
+// ===== INTERACTIVE TEXTBOOK DATA =====
+const TB_LESSONS = [
+  {
+    id: 'monomials',
+    icon: '🔢',
+    title: 'Одночлени',
+    meta: '7 клас · Алгебра · Тема 1',
+    theory: `<p>Одночлен — це число, змінна або їх добуток. Наприклад: <b>5</b>, <b>x</b>, <b>3x²</b>, <b>−2ab</b>.</p>
+<p>Кожен одночлен має <b>коефіцієнт</b> (числова частина) і <b>літерну частину</b> (змінні).</p>
+<p>У <b>стандартній формі</b> коефіцієнт стоїть на першому місці: 3x² — коефіцієнт 3, літерна частина x².</p>`,
+    formula: 'Ступінь одночлена = сума показників усіх змінних',
+    examples: [
+      { q: 'Запиши в стандартній формі: x · 3 · x', steps: ['Збираємо числа разом: коефіцієнт = 3', 'Збираємо змінні: x · x = x²', 'Результат: 3x²'] },
+      { q: 'Знайди ступінь одночлена: 4x²y', steps: ['Показник x = 2, показник y = 1', 'Ступінь = 2 + 1 = 3'] }
+    ],
+    practice: [
+      { q: 'Коефіцієнт одночлена −5x³ дорівнює:', ans: '-5', hint: 'Це числова частина перед змінною' },
+      { q: 'Ступінь одночлена 4x²y дорівнює:', ans: '3', hint: 'Склади показники: 2 + 1' },
+      { q: 'Запиши в стандартній формі: 2 · x · x · 3. Відповідь:', ans: '6x^2', altAns: ['6x²'], hint: '2·3=6, x·x=x²' },
+      { q: 'Коефіцієнт одночлена 7ab² дорівнює:', ans: '7', hint: 'Числова частина = 7' },
+      { q: 'Ступінь одночлена −3x²y²z дорівнює:', ans: '5', hint: 'Склади: 2+2+1=5' },
+      { q: 'Спрости: (−2x)(3x²). Коефіцієнт результату:', ans: '-6', hint: '(−2)·3 = −6' }
+    ]
+  },
+  {
+    id: 'polynomials',
+    icon: '📐',
+    title: 'Многочлени',
+    meta: '7 клас · Алгебра · Тема 2',
+    theory: `<p>Многочлен — це сума одночленів. Наприклад: <b>3x² + 2x − 5</b>.</p>
+<p>Кожен одночлен у сумі називається <b>членом</b> многочлена. <b>Подібні члени</b> — ті, що мають однакову літерну частину.</p>
+<p>Щоб спростити многочлен, треба <b>звести подібні члени</b> — скласти або відняти їх коефіцієнти.</p>`,
+    formula: 'Ступінь многочлена = найбільший ступінь серед усіх членів',
+    examples: [
+      { q: 'Зведи подібні члени: 3x² + 5x − 2x² + x', steps: ['Групуємо подібні: (3x² − 2x²) + (5x + x)', 'Рахуємо: x² + 6x'] },
+      { q: 'Ступінь многочлена 4x³ − 2x + 7', steps: ['Члени: 4x³ (ступінь 3), −2x (ступінь 1), 7 (ступінь 0)', 'Найбільший = 3'] }
+    ],
+    practice: [
+      { q: 'Зведи подібні: 5x + 3x = ?', ans: '8x', hint: '5+3=8' },
+      { q: 'Зведи подібні: 7x² − 3x² = ?', ans: '4x^2', altAns: ['4x²'], hint: '7−3=4' },
+      { q: 'Ступінь многочлена 2x⁴ − x + 3:', ans: '4', hint: 'Найбільший показник = 4' },
+      { q: 'Зведи: 2x + 3y − x + y = ? Скільки членів у результаті?', ans: '2', hint: 'x + 4y — два члени' },
+      { q: 'Коефіцієнт при x² у виразі 3x³ + 5x² − x + 2:', ans: '5', hint: 'Шукаємо член з x²' }
+    ]
   }
-  grid.innerHTML = books.map(b => `
-    <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="textbook-card">
-      <div class="textbook-grade">${b.grades} клас</div>
-      <div class="textbook-title">${b.title}</div>
-      <div class="textbook-author">${b.author}</div>
-      <div class="textbook-link">📖 Читати онлайн →</div>
-    </a>
+];
+
+function buildTextbooks() {
+  const list = document.getElementById('tb-list-view');
+  const lesson = document.getElementById('tb-lesson-view');
+  if (!list) return;
+  list.style.display = '';
+  lesson.style.display = 'none';
+
+  const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
+  document.getElementById('tb-chapters').innerHTML = TB_LESSONS.map(l => `
+    <div class="tb-chapter-card" onclick="tbOpenLesson('${l.id}')">
+      <div class="tb-ch-icon">${l.icon}</div>
+      <div>
+        <div class="tb-ch-title">${l.title}</div>
+        <div class="tb-ch-meta">${l.meta}</div>
+      </div>
+      <div class="tb-ch-status ${done.includes(l.id) ? 'done' : 'new'}">${done.includes(l.id) ? '✓ Пройдено' : 'Нове'}</div>
+    </div>
   `).join('');
+}
+
+function tbOpenLesson(id) {
+  const l = TB_LESSONS.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('tb-list-view').style.display = 'none';
+  const lv = document.getElementById('tb-lesson-view');
+  lv.style.display = '';
+
+  const examples = l.examples.map(ex => `
+    <div class="tb-example">
+      <div class="tb-example-q">${ex.q}</div>
+      ${ex.steps.map((s, i) => `<div class="tb-step"><div class="tb-step-n">${i+1}</div><div>${s}</div></div>`).join('')}
+    </div>`).join('');
+
+  const practice = l.practice.map((p, i) => `
+    <div class="tb-practice-q" id="tbpq-${id}-${i}">
+      <div class="tb-practice-q-text">${i+1}. ${p.q}</div>
+      <div class="tb-practice-input-row">
+        <input class="tb-practice-inp" id="tbinp-${id}-${i}" placeholder="Відповідь..." onkeydown="if(event.key==='Enter')tbCheck('${id}',${i})">
+        <button class="tb-practice-check-btn" onclick="tbCheck('${id}',${i})">Перевірити</button>
+      </div>
+      <div class="tb-practice-feedback" id="tbfb-${id}-${i}"></div>
+    </div>`).join('');
+
+  lv.innerHTML = `
+    <button class="tb-back-btn" onclick="buildTextbooks()">← До списку тем</button>
+    <div class="tb-lesson-title">${l.icon} ${l.title}</div>
+    <div class="tb-lesson-sub">${l.meta}</div>
+    <div class="tb-block">
+      <div class="tb-block-title">📖 Теорія</div>
+      <div class="tb-theory-text">${l.theory}</div>
+      <div class="tb-formula-box">${l.formula}</div>
+    </div>
+    <div class="tb-block">
+      <div class="tb-block-title">💡 Розібрані приклади</div>
+      ${examples}
+    </div>
+    <div class="tb-block">
+      <div class="tb-block-title">✏️ Практика</div>
+      ${practice}
+    </div>`;
+
+  // store current lesson id for completion check
+  lv.dataset.lessonId = id;
+}
+
+function tbCheck(lessonId, idx) {
+  const l = TB_LESSONS.find(x => x.id === lessonId);
+  const p = l.practice[idx];
+  const inp = document.getElementById(`tbinp-${lessonId}-${idx}`);
+  const fb = document.getElementById(`tbfb-${lessonId}-${idx}`);
+  if (!inp || !fb) return;
+  const val = inp.value.trim().toLowerCase().replace(/\s/g, '');
+  const correct = [p.ans.toLowerCase(), ...(p.altAns || []).map(a => a.toLowerCase())];
+  if (correct.includes(val)) {
+    fb.className = 'tb-practice-feedback ok';
+    fb.textContent = '✓ Правильно!';
+    inp.disabled = true;
+    // check if all done
+    tbCheckAllDone(lessonId);
+  } else {
+    fb.className = 'tb-practice-feedback err';
+    fb.textContent = `✗ Спробуй ще. Підказка: ${p.hint}`;
+  }
+}
+
+function tbCheckAllDone(lessonId) {
+  const l = TB_LESSONS.find(x => x.id === lessonId);
+  const allDone = l.practice.every((_, i) => {
+    const inp = document.getElementById(`tbinp-${lessonId}-${i}`);
+    return inp && inp.disabled;
+  });
+  if (allDone) {
+    const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
+    if (!done.includes(lessonId)) { done.push(lessonId); localStorage.setItem('mh_tb_done', JSON.stringify(done)); }
+  }
 }
 
 const _VALID_SECTIONS = ['dashboard','formulas','quiz','graph','textbooks','stats','ai','pricing','about'];
