@@ -440,7 +440,7 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
 });
 
 // Path routing catch-all — serve index.html for any frontend route
-app.get('*', (req, res) => {
+app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
