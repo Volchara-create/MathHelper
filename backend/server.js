@@ -413,29 +413,24 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
   const isRetryable = msg => msg?.includes('429') || msg?.includes('503') || msg?.includes('quota') ||
     msg?.includes('rate') || msg?.includes('overload') || msg?.includes('unavailable') || msg?.includes('high demand');
 
-  try {
-    const reply = await tryModel('gemini-2.0-flash');
-    return res.json({ reply });
-  } catch (e) {
-    console.error('AI error (gemini-2.0-flash):', e.message);
-
-    if (isRetryable(e.message)) {
-      try {
-        console.log('Falling back to gemini-1.5-flash...');
-        const reply = await tryModel('gemini-1.5-flash');
-        return res.json({ reply });
-      } catch (e2) {
-        console.error('AI error (gemini-1.5-flash):', e2.message);
-        if (e2.message?.includes('429') || e2.message?.includes('quota') || e2.message?.includes('rate')) {
-          return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
-        }
+  const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-pro'];
+  for (let i = 0; i < models.length; i++) {
+    try {
+      const reply = await tryModel(models[i]);
+      return res.json({ reply });
+    } catch (e) {
+      console.error(`AI error (${models[i]}):`, e.message);
+      const isQuota = e.message?.includes('429') || e.message?.includes('quota') || e.message?.includes('rate');
+      const isRetry = isRetryable(e.message) || e.message?.includes('404');
+      if (i < models.length - 1 && isRetry) {
+        console.log(`Falling back to ${models[i + 1]}...`);
+        continue;
       }
+      if (isQuota) {
+        return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
+      }
+      return res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
     }
-
-    if (e.message?.includes('429') || e.message?.includes('quota') || e.message?.includes('rate')) {
-      return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
-    }
-    res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
   }
 });
 
