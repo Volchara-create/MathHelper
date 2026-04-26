@@ -1448,30 +1448,53 @@ const TB_LESSONS = [
 ];
 
 // ===== CHAPTER STRUCTURE =====
+const TB_PDFS = {
+  7:  [
+    { label: 'Алгебра', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/7(1).pdf' },
+    { label: 'Геометрія', author: 'Єрмаков', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/Heometriya-7-klas-Ister-2024.pdf' }
+  ],
+  8:  [
+    { label: 'Алгебра', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/8(1).pdf' },
+    { label: 'Геометрія', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/8(2)%D0%B3%D0%B5%D0%BE%D0%BC.pdf' }
+  ],
+  9:  [
+    { label: 'Алгебра', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/9(1).pdf' },
+    { label: 'Геометрія', author: 'Істер', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/Geometrija-9-klas-Ister-2017.pdf' }
+  ],
+  10: [
+    { label: 'Алгебра', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/10(1).pdf' },
+    { label: 'Геометрія', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/10(2)%D0%B3%D0%B5%D0%BE%D0%BC.pdf' }
+  ],
+  11: [
+    { label: 'Алгебра', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/11(1).pdf' },
+    { label: 'Геометрія', author: 'Мерзляк', url: 'https://raw.githubusercontent.com/Volchara-create/MathHelper/main/11(2)%D0%B3%D0%B5%D0%BE%D0%BC.pdf' }
+  ]
+};
+
 const TB_CHAPTERS = [
   {
-    id: 'ch1',
+    id: 'ch1', grade: 7,
     icon: '⚖️',
     title: 'Розділ 1. Лінійні рівняння з однією змінною',
     color: '#1a3e7c',
     lessons: ['equations-basics', 'linear-equation', 'word-problems', 'test-ch1']
   },
   {
-    id: 'ch2',
+    id: 'ch2', grade: 7,
     icon: '🔢',
     title: 'Розділ 2. Цілі вирази',
     color: '#0369a1',
     lessons: ['expressions-variables', 'identities', 'powers', 'power-properties', 'test-ch2-p1', 'monomial-standard', 'monomial-multiply', 'polynomial-def', 'polynomial-add-sub', 'mono-poly-mult', 'factoring-common', 'poly-mult', 'factoring-group', 'square-sum-diff', 'test-ch3', 'perfect-square-factor', 'diff-squares-mult', 'diff-squares-factor', 'sum-diff-cubes', 'test-ch4', 'factoring-combined']
   },
   {
-    id: 'ch3',
+    id: 'ch3', grade: 7,
     icon: '📈',
     title: 'Розділ 3. Функції',
     color: '#065f46',
     lessons: ['function-basics', 'function-graph', 'linear-function']
   },
   {
-    id: 'ch4',
+    id: 'ch4', grade: 7,
     icon: '🔗',
     title: 'Розділ 4. Системи лінійних рівнянь',
     color: '#7c3aed',
@@ -1479,17 +1502,42 @@ const TB_CHAPTERS = [
   }
 ];
 
-function buildTextbooks() {
+function buildTextbooks(grade) {
   const list = document.getElementById('tb-list-view');
   const lesson = document.getElementById('tb-lesson-view');
   if (!list) return;
   list.style.display = '';
   lesson.style.display = 'none';
 
+  const mhUser = JSON.parse(localStorage.getItem('mh_user') || 'null');
+  const userGrade = mhUser?.grade || 10;
+  const selectedGrade = grade || parseInt(localStorage.getItem('mh_tb_grade') || userGrade) || 10;
+  localStorage.setItem('mh_tb_grade', selectedGrade);
+
   const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
   const expanded = JSON.parse(localStorage.getItem('mh_tb_expanded') || '[]');
 
-  document.getElementById('tb-chapters').innerHTML = TB_CHAPTERS.map(ch => {
+  // Grade tabs
+  const tabsHtml = [7,8,9,10,11].map(g => `
+    <button class="tb-grade-tab ${g === selectedGrade ? 'active' : ''}" onclick="buildTextbooks(${g})">${g} клас</button>
+  `).join('');
+
+  // PDF cards
+  const pdfs = TB_PDFS[selectedGrade] || [];
+  const pdfsHtml = pdfs.map(p => `
+    <a class="tb-pdf-card" href="${p.url}" target="_blank" rel="noopener">
+      <span class="tb-pdf-icon">${p.label === 'Геометрія' ? '📐' : '📗'}</span>
+      <div class="tb-pdf-info">
+        <div class="tb-pdf-label">${p.label}</div>
+        <div class="tb-pdf-author">${p.author} · ${selectedGrade} клас</div>
+      </div>
+      <span class="tb-pdf-open">Відкрити ↗</span>
+    </a>
+  `).join('');
+
+  // Chapters for this grade
+  const gradeChapters = TB_CHAPTERS.filter(ch => ch.grade === selectedGrade);
+  const chaptersHtml = gradeChapters.length ? gradeChapters.map(ch => {
     const chLessons = ch.lessons.map(lid => TB_LESSONS.find(l => l.id === lid)).filter(Boolean);
     const doneCount = chLessons.filter(l => done.includes(l.id)).length;
     const isOpen = expanded.includes(ch.id);
@@ -1517,7 +1565,19 @@ function buildTextbooks() {
         ${lessonsHtml}
       </div>
     </div>`;
-  }).join('');
+  }).join('') : `<div class="tb-coming-soon">
+    <div style="font-size:2.5rem;margin-bottom:8px">🚧</div>
+    <div style="font-weight:600;margin-bottom:4px">Інтерактивні уроки для ${selectedGrade} класу</div>
+    <div style="color:var(--text-secondary);font-size:0.9rem">Скоро з'являться тут. Поки що використовуй PDF підручник вище.</div>
+  </div>`;
+
+  document.getElementById('tb-chapters').innerHTML = `
+    <div class="tb-grade-tabs">${tabsHtml}</div>
+    <div class="tb-section-label">📚 PDF Підручники</div>
+    <div class="tb-pdf-grid">${pdfsHtml}</div>
+    ${gradeChapters.length ? '<div class="tb-section-label">📝 Інтерактивні уроки</div>' : ''}
+    ${chaptersHtml}
+  `;
 }
 
 function tbToggleChapter(chId) {

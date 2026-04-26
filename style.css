@@ -1612,3 +1612,26 @@ body.dark .tb-lesson-test{background:#1f1a00;}
 .tb-lr-title{flex:1;font-size:.95rem;font-weight:600;color:var(--text);}
 .tb-lr-status{font-size:.8rem;font-weight:700;color:var(--text-muted);padding:3px 10px;border-radius:20px;background:#e8f0ff;}
 .tb-lr-status.done{background:rgba(22,163,74,.15);color:#16a34a;}
+
+/* Grade tabs */
+.tb-grade-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.tb-grade-tab{background:var(--card-bg);border:1.5px solid var(--blue-light);color:var(--text);border-radius:var(--radius-sm);padding:8px 16px;cursor:pointer;font-weight:600;font-size:.9rem;transition:.15s;}
+.tb-grade-tab:hover{border-color:var(--blue);color:var(--blue);}
+.tb-grade-tab.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+/* Section label */
+.tb-section-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin:0 0 12px;}
+
+/* PDF cards */
+.tb-pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+@media(max-width:480px){.tb-pdf-grid{grid-template-columns:1fr;}}
+.tb-pdf-card{display:flex;align-items:center;gap:12px;background:var(--card-bg);border:1.5px solid var(--blue-light);border-radius:var(--radius-md);padding:14px 16px;text-decoration:none;transition:.15s;cursor:pointer;}
+.tb-pdf-card:hover{border-color:var(--blue);transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,62,124,.12);}
+.tb-pdf-icon{font-size:1.8rem;flex-shrink:0;}
+.tb-pdf-info{flex:1;}
+.tb-pdf-label{font-weight:700;color:var(--text);font-size:.95rem;}
+.tb-pdf-author{color:var(--text-muted);font-size:.8rem;margin-top:2px;}
+.tb-pdf-open{font-size:.82rem;font-weight:700;color:var(--blue);white-space:nowrap;flex-shrink:0;}
+
+/* Coming soon block */
+.tb-coming-soon{text-align:center;padding:32px 16px;background:var(--card-bg);border:1.5px dashed var(--blue-light);border-radius:var(--radius-md);color:var(--text);}
