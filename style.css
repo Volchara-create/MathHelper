@@ -1635,3 +1635,6 @@ body.dark .tb-lesson-test{background:#1f1a00;}
 
 /* Coming soon block */
 .tb-coming-soon{text-align:center;padding:32px 16px;background:var(--card-bg);border:1.5px dashed var(--blue-light);border-radius:var(--radius-md);color:var(--text);}
+/* "Інший підручник" card */
+.tb-pdf-other{border-style:dashed;opacity:.8;}
+.tb-pdf-other:hover{opacity:1;}
