@@ -363,11 +363,36 @@ function _checkAiRateLimit(userId) {
   return entry.count <= 5;
 }
 
+// Collect all API keys from env: GEMINI_API_KEY, GEMINI_API_KEY_2, GEMINI_API_KEY_3 ...
+function _getGeminiKeys() {
+  const keys = [];
+  if (process.env.GEMINI_API_KEY) keys.push(process.env.GEMINI_API_KEY);
+  let i = 2;
+  while (process.env[`GEMINI_API_KEY_${i}`]) { keys.push(process.env[`GEMINI_API_KEY_${i}`]); i++; }
+  return keys;
+}
+// Track which keys are exhausted and when they reset (daily at midnight UTC)
+const _exhaustedKeys = new Map(); // key -> resetAt timestamp
+function _isKeyExhausted(key) {
+  const resetAt = _exhaustedKeys.get(key);
+  if (!resetAt) return false;
+  if (Date.now() > resetAt) { _exhaustedKeys.delete(key); return false; }
+  return true;
+}
+function _markKeyExhausted(key) {
+  // Reset at next midnight UTC
+  const tomorrow = new Date();
+  tomorrow.setUTCHours(24, 0, 0, 0);
+  _exhaustedKeys.set(key, tomorrow.getTime());
+  console.log(`Gemini key ...${key.slice(-6)} marked exhausted, resets at ${tomorrow.toISOString()}`);
+}
+
 app.post('/api/ai-chat', authMiddleware, async (req, res) => {
   const { message, context, history = [] } = req.body;
   if (!message || message.trim().length < 2)
     return res.status(400).json({ error: 'Порожнє повідомлення' });
-  if (!process.env.GEMINI_API_KEY)
+  const allKeys = _getGeminiKeys();
+  if (allKeys.length === 0)
     return res.status(503).json({ error: 'AI-помічник тимчасово недоступний' });
   if (!_checkAiRateLimit(req.user.id))
     return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
@@ -397,41 +422,45 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
 6. Один конкретний приклад після теорії
 7. Максимум 250 слів`;
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const chatHistory = history.slice(-4).map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }]
   }));
 
-  const tryModel = async (modelName) => {
+  const tryModel = async (apiKey, modelName) => {
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: modelName, systemInstruction: systemPrompt });
     const chat = model.startChat({ history: chatHistory });
     const result = await chat.sendMessage(message);
     return result.response.text();
   };
 
-  const isRetryable = msg => msg?.includes('429') || msg?.includes('503') || msg?.includes('quota') ||
-    msg?.includes('rate') || msg?.includes('overload') || msg?.includes('unavailable') || msg?.includes('high demand');
+  const isQuotaError = msg => msg?.includes('429') || msg?.includes('quota') || msg?.includes('rate limit');
+  const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
 
-  const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-pro'];
-  for (let i = 0; i < models.length; i++) {
-    try {
-      const reply = await tryModel(models[i]);
-      return res.json({ reply });
-    } catch (e) {
-      console.error(`AI error (${models[i]}):`, e.message);
-      const isQuota = e.message?.includes('429') || e.message?.includes('quota') || e.message?.includes('rate');
-      const isRetry = isRetryable(e.message) || e.message?.includes('404');
-      if (i < models.length - 1 && isRetry) {
-        console.log(`Falling back to ${models[i + 1]}...`);
-        continue;
+  // Try each available key, skip exhausted ones
+  const activeKeys = allKeys.filter(k => !_isKeyExhausted(k));
+  if (activeKeys.length === 0) {
+    return res.status(503).json({ error: '🔄 Денний ліміт AI вичерпано. Доступ відновиться опівночі.' });
+  }
+
+  for (const apiKey of activeKeys) {
+    for (const modelName of models) {
+      try {
+        const reply = await tryModel(apiKey, modelName);
+        return res.json({ reply });
+      } catch (e) {
+        console.error(`AI error (key ...${apiKey.slice(-6)}, ${modelName}):`, e.message);
+        if (isQuotaError(e.message)) {
+          _markKeyExhausted(apiKey);
+          break; // try next key
+        }
+        if (e.message?.includes('404')) continue; // model not found, try next model
+        return res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
       }
-      if (isQuota) {
-        return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
-      }
-      return res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
     }
   }
+  return res.status(503).json({ error: '🔄 Денний ліміт AI вичерпано. Доступ відновиться опівночі.' });
 });
 
 // Path routing catch-all — serve index.html for any frontend route
