@@ -111,7 +111,9 @@
             <button style="font-size:11px;padding:3px 8px;border:1px solid #b3d9ff;border-radius:5px;background:#fff;cursor:pointer;color:var(--blue);white-space:nowrap;" onclick="spNbSaveToServer()" title="Зберегти як конспект">💾</button>
           </div>
         </div>
-        <div class="sp-nb-body lined" id="sp-nb-body" contenteditable="true" spellcheck="false" oninput="spNbSave()"></div>
+        <div id="nb-drop-hint" class="nb-drop-hint">📌 Відпусти — вставить графік</div>
+        <div class="sp-nb-body lined" id="sp-nb-body" contenteditable="true" spellcheck="false" oninput="spNbSave()"
+          ondragover="nbOnDragOver(event)" ondragleave="nbOnDragLeave(event)" ondrop="nbOnDrop(event)"></div>
       </div>
     </div>
 
@@ -676,7 +678,6 @@
           <canvas id="graph-canvas"></canvas>
           <div class="canvas-quick-bar">
             <button class="canvas-quick-btn" onclick="autoScale()" title="Авто-масштаб">🔍 Масштаб</button>
-            <button class="canvas-quick-btn" onclick="togglePanel('calc')" title="Калькулятор">🧮 Калк.</button>
           </div>
           <div class="canvas-info" id="canvas-info">x: 0.00 | y: 0.00</div>
           <div class="graph-hint">🖱 Прокрутка — масштаб &nbsp;|&nbsp; Перетягування — переміщення &nbsp;|&nbsp; Клік на фігуру — властивості</div>
@@ -1091,7 +1092,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=2026042805"></script>
-  <script src="auth.js?v=2026042805"></script>
+  <script src="script.js?v=2026042806"></script>
+  <script src="auth.js?v=2026042806"></script>
 </body>
 </html>

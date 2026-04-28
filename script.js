@@ -3555,9 +3555,10 @@ function renderFunctionList(){
       setTimeout(()=>mc.remove(),0);
     });
     div.addEventListener('dragend',()=>{div.style.opacity='1';});
+    const sz = Math.max(7, f.expr.length + 2);
     div.innerHTML=`<div class="function-item-top">
       <span style="cursor:grab;color:#b3d9ff;font-size:14px;flex-shrink:0;" title="Перетягни у зошит">⠿</span>
-      <input class="function-input" value="${f.expr}" oninput="updateFunc(${i},this.value)" title="Функція від x" placeholder="напр. sin(x)">
+      <input class="function-input" value="${f.expr}" size="${sz}" oninput="updateFunc(${i},this.value);this.size=Math.max(7,this.value.length+2)" title="Функція від x" placeholder="sin(x)">
       <input type="color" value="${f.color}" onchange="updateColor(${i},this.value)" style="width:28px;height:28px;border:none;cursor:pointer;border-radius:4px;padding:2px;flex-shrink:0;">
       <button class="func-remove" onclick="removeFunction(${i})" title="Видалити">✕</button>
     </div>`;
@@ -4655,57 +4656,93 @@ function nbOnDragOver(e){
   e.preventDefault();
   e.dataTransfer.dropEffect = 'copy';
   e.currentTarget.classList.add('drag-over');
-  document.getElementById('nb-drop-hint').classList.add('drag-active');
+  const hint = document.getElementById('nb-drop-hint');
+  if(hint) hint.classList.add('drag-active');
 }
 
 function nbOnDragLeave(e){
   e.currentTarget.classList.remove('drag-over');
-  document.getElementById('nb-drop-hint').classList.remove('drag-active');
+  const hint = document.getElementById('nb-drop-hint');
+  if(hint) hint.classList.remove('drag-active');
 }
 
 function nbOnDrop(e){
   e.preventDefault();
   e.stopPropagation();
   e.currentTarget.classList.remove('drag-over');
-  document.getElementById('nb-drop-hint').classList.remove('drag-active');
+  const hint = document.getElementById('nb-drop-hint');
+  if (hint) hint.classList.remove('drag-active');
 
   const formula = e.dataTransfer.getData('application/nb-formula') || e.dataTransfer.getData('text/plain');
   if(!formula) return;
 
-  const body = document.getElementById('ws-notebook-body');
+  const body = document.getElementById('sp-nb-body');
+  if(!body) return;
 
-  // Build chip element
-  const chip = document.createElement('span');
-  chip.className = 'nb-formula-chip';
-  chip.textContent = formula;
-  chip.contentEditable = 'false';
+  // Build mini graph image from the function expression
+  const expr = formula.replace(/^y\s*=\s*/, '');
+  const W = 220, H = 110;
+  const mc = document.createElement('canvas');
+  mc.width = W; mc.height = H;
+  const mx = mc.getContext('2d');
+  // background
+  mx.fillStyle = '#1a3e7c'; mx.fillRect(0,0,W,H);
+  // grid
+  mx.strokeStyle = '#2a5090'; mx.lineWidth = 0.5;
+  for(let x=0;x<=W;x+=22){mx.beginPath();mx.moveTo(x,0);mx.lineTo(x,H);mx.stroke();}
+  for(let y=0;y<=H;y+=22){mx.beginPath();mx.moveTo(0,y);mx.lineTo(W,y);mx.stroke();}
+  // axes
+  mx.strokeStyle = 'rgba(255,255,255,0.3)'; mx.lineWidth = 1.2;
+  mx.beginPath();mx.moveTo(0,H/2);mx.lineTo(W,H/2);mx.stroke();
+  mx.beginPath();mx.moveTo(W/2,0);mx.lineTo(W/2,H);mx.stroke();
+  // curve
+  try {
+    const sc = W/12;
+    const parsedExpr = parseExpr(expr);
+    mx.strokeStyle = '#00d4ff'; mx.lineWidth = 2.5; mx.beginPath();
+    let started = false;
+    for(let px=0;px<W;px++){
+      const wx = (px - W/2) / sc;
+      try {
+        const wy = Function('x','"use strict";return (' + parsedExpr + ')')(wx);
+        if(!isFinite(wy)){started=false;continue;}
+        const py = H/2 - wy * sc;
+        if(!started){mx.moveTo(px,py);started=true;}else{mx.lineTo(px,py);}
+      } catch(err){started=false;}
+    }
+    mx.stroke();
+  } catch(e){}
+  // label
+  mx.fillStyle = 'rgba(255,255,255,0.9)'; mx.font = 'bold 11px monospace';
+  mx.fillText('y = ' + expr, 6, H - 8);
 
-  // Use drop coordinates to find exact caret position
+  // Create wrapper block (non-editable)
+  const wrapper = document.createElement('div');
+  wrapper.contentEditable = 'false';
+  wrapper.style.cssText = 'display:inline-block;margin:4px 2px;vertical-align:middle;';
+  const img = document.createElement('img');
+  img.src = mc.toDataURL();
+  img.style.cssText = 'width:220px;height:110px;border-radius:8px;display:block;border:2px solid #2a5090;';
+  img.title = formula;
+  wrapper.appendChild(img);
+
+  // Insert at caret position or append
   let range = null;
-  if(document.caretRangeFromPoint){
-    range = document.caretRangeFromPoint(e.clientX, e.clientY);
-  } else if(document.caretPositionFromPoint){
+  if(document.caretRangeFromPoint) range = document.caretRangeFromPoint(e.clientX, e.clientY);
+  else if(document.caretPositionFromPoint){
     const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
     if(pos){ range = document.createRange(); range.setStart(pos.offsetNode, pos.offset); }
   }
-
   if(range && body.contains(range.startContainer)){
-    range.deleteContents();
-    range.insertNode(chip);
-    range.setStartAfter(chip);
-    range.collapse(true);
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
+    range.deleteContents(); range.insertNode(wrapper);
+    range.setStartAfter(wrapper); range.collapse(true);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
   } else {
-    body.appendChild(chip);
+    body.appendChild(wrapper);
   }
-
-  // Space after chip so cursor lands after it
-  const space = document.createTextNode('\u00A0');
-  chip.after(space);
+  body.appendChild(document.createTextNode('\n'));
   body.focus();
-  nbSave();
+  spNbSave();
 }
 
 // Load notebook on page start
