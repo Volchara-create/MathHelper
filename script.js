@@ -2170,8 +2170,8 @@ function buildTextbooks(grade) {
 
   const mhUser = JSON.parse(localStorage.getItem('mh_user') || 'null');
   const userGrade = mhUser?.grade || 7;
-  const selectedGrade = grade || parseInt(localStorage.getItem('mh_tb_grade') || String(userGrade)) || userGrade;
-  localStorage.setItem('mh_tb_grade', selectedGrade);
+  // if grade explicitly passed (tab click) — use it; otherwise always default to user's own grade
+  const selectedGrade = grade ? parseInt(grade) : userGrade;
 
   const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
   const expanded = JSON.parse(localStorage.getItem('mh_tb_expanded') || '[]');
