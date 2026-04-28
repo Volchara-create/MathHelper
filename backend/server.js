@@ -387,42 +387,53 @@ function _markKeyExhausted(key) {
   console.log(`Gemini key ...${key.slice(-6)} marked exhausted, resets at ${tomorrow.toISOString()}`);
 }
 
+// Simple response cache: key = "grade:question_normalized", ttl = 12h
+const _aiCache = new Map();
+const _AI_CACHE_TTL = 12 * 60 * 60 * 1000;
+function _aiCacheKey(grade, msg) {
+  return `${grade}:${msg.toLowerCase().trim().replace(/\s+/g, ' ').slice(0, 120)}`;
+}
+function _aiCacheGet(grade, msg) {
+  const k = _aiCacheKey(grade, msg);
+  const entry = _aiCache.get(k);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) { _aiCache.delete(k); return null; }
+  return entry.reply;
+}
+function _aiCacheSet(grade, msg, reply) {
+  if (_aiCache.size > 500) {
+    const firstKey = _aiCache.keys().next().value;
+    _aiCache.delete(firstKey);
+  }
+  _aiCache.set(_aiCacheKey(grade, msg), { reply, expiresAt: Date.now() + _AI_CACHE_TTL });
+}
+
 app.post('/api/ai-chat', authMiddleware, async (req, res) => {
   const { message, context, history = [] } = req.body;
   if (!message || message.trim().length < 2)
     return res.status(400).json({ error: 'Порожнє повідомлення' });
-  const allKeys = _getGeminiKeys();
+  const allKeys = _getGeminiKeys().filter(k => k.startsWith('AIza')); // only valid Gemini API keys
   if (allKeys.length === 0)
     return res.status(503).json({ error: 'AI-помічник тимчасово недоступний' });
   if (!_checkAiRateLimit(req.user.id))
     return res.status(429).json({ error: '⏳ Забагато запитів. Зачекай 1 хвилину і спробуй ще раз.' });
 
-  const { grade = '?', name = 'Учень', weakTopics = {}, quizStats = '', nmtResult = '' } = context || {};
+  const { grade = '?', weakTopics = {} } = context || {};
+
+  // Return cached response if available (saves quota for repeated questions)
+  if (history.length === 0) {
+    const cached = _aiCacheGet(grade, message);
+    if (cached) return res.json({ reply: cached, cached: true });
+  }
 
   const weakList = Object.entries(weakTopics)
     .filter(([, v]) => v > 0)
     .map(([k, v]) => `${TOPIC_NAMES[k] || k} (${v} помилок)`)
-    .join(', ') || 'немає даних';
+    .join(', ');
 
-  const systemPrompt = `Ти — MathHelper AI, математичний репетитор для учня ${grade} класу в Україні.
+  const systemPrompt = `Ти — репетитор математики для учня ${grade} класу України. Відповідай лише українською. Пояснюй математику покроково з прикладом. Не відповідай на НЕ-математичні питання. Максимум 200 слів.${weakList ? ` Слабкі теми учня: ${weakList}.` : ''}`;
 
-ПРОФІЛЬ УЧНЯ:
-- Ім'я: ${name}
-- Клас: ${grade}
-- Слабкі теми (помилки в квізі): ${weakList}
-${quizStats ? `- Активність у квізі: ${quizStats}` : ''}
-${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
-
-ПРАВИЛА:
-1. Відповідай ТІЛЬКИ на математичні питання (алгебра, геометрія, тригонометрія, функції, НМТ)
-2. Завжди українською мовою
-3. Пояснюй ПОКРОКОВО — кожен крок з нового рядка, пронумеровано
-4. Якщо питання НЕ математика — скажи: "Я математичний репетитор 🦉 Можу допомогти лише з математикою!"
-5. Формули: x², x³, √x, π, ≤, ≥
-6. Один конкретний приклад після теорії
-7. Максимум 250 слів`;
-
-  const chatHistory = history.slice(-4).map(m => ({
+  const chatHistory = history.slice(-2).map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }]
   }));
@@ -436,9 +447,8 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
   };
 
   const isQuotaError = msg => msg?.includes('429') || msg?.includes('quota') || msg?.includes('rate limit');
-  const models = ['gemini-2.0-flash-lite', 'gemini-1.5-flash-8b', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  const models = ['gemini-2.0-flash-lite', 'gemini-1.5-flash-8b', 'gemini-2.0-flash'];
 
-  // Try each available key, skip exhausted ones
   const activeKeys = allKeys.filter(k => !_isKeyExhausted(k));
   if (activeKeys.length === 0) {
     return res.status(503).json({ error: '⚠️ AI-помічник тимчасово недоступний. Спробуй пізніше.' });
@@ -448,15 +458,19 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
     for (const modelName of models) {
       try {
         const reply = await tryModel(apiKey, modelName);
+        // Cache single-turn responses (no history context)
+        if (history.length === 0) _aiCacheSet(grade, message, reply);
         return res.json({ reply });
       } catch (e) {
-        console.error(`AI error (key ...${apiKey.slice(-6)}, ${modelName}):`, e.message);
+        console.error(`AI error (key ...${apiKey.slice(-6)}, ${modelName}):`, e.message?.slice(0, 120));
         if (isQuotaError(e.message)) {
           _markKeyExhausted(apiKey);
           break; // try next key
         }
-        if (e.message?.includes('404') || e.message?.includes('400')) continue; // model not found/invalid, try next
-        return res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
+        // skip model on 404/400/invalid model errors
+        if (e.status === 404 || e.status === 400 || e.message?.includes('404') || e.message?.includes('not found')) continue;
+        // unknown error on this key — skip to next key
+        break;
       }
     }
   }
