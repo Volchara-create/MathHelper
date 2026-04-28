@@ -3555,10 +3555,9 @@ function renderFunctionList(){
       setTimeout(()=>mc.remove(),0);
     });
     div.addEventListener('dragend',()=>{div.style.opacity='1';});
-    const sz = Math.max(7, f.expr.length + 2);
     div.innerHTML=`<div class="function-item-top">
       <span style="cursor:grab;color:#b3d9ff;font-size:14px;flex-shrink:0;" title="Перетягни у зошит">⠿</span>
-      <input class="function-input" value="${f.expr}" size="${sz}" oninput="updateFunc(${i},this.value);this.size=Math.max(7,this.value.length+2)" title="Функція від x" placeholder="sin(x)">
+      <input class="function-input" value="${f.expr}" oninput="updateFunc(${i},this.value)" title="Функція від x" placeholder="sin(x)">
       <input type="color" value="${f.color}" onchange="updateColor(${i},this.value)" style="width:28px;height:28px;border:none;cursor:pointer;border-radius:4px;padding:2px;flex-shrink:0;">
       <button class="func-remove" onclick="removeFunction(${i})" title="Видалити">✕</button>
     </div>`;
@@ -3745,11 +3744,24 @@ function autoScale(){scale=canvas.width/20;offsetX=canvas.width/2;offsetY=canvas
 
 // ─── EXPRESSION PARSER ───
 function parseExpr(expr){
-  return expr.replace(/\^/g,'**').replace(/\bsin\b/g,'Math.sin').replace(/\bcos\b/g,'Math.cos')
+  // Cyrillic х/Х → Latin x/X (common typo on Ukrainian keyboard)
+  expr = expr.replace(/х/g,'x').replace(/Х/g,'X');
+  // Replace math functions and constants
+  expr = expr.replace(/\^/g,'**')
+    .replace(/\bsin\b/g,'Math.sin').replace(/\bcos\b/g,'Math.cos')
     .replace(/\btg\b/g,'Math.tan').replace(/\btan\b/g,'Math.tan')
     .replace(/\blog\b/g,'Math.log10').replace(/\bln\b/g,'Math.log')
     .replace(/\bsqrt\b/g,'Math.sqrt').replace(/\babs\b/g,'Math.abs')
     .replace(/\bπ\b/g,'Math.PI').replace(/\bpi\b/g,'Math.PI').replace(/\be\b/g,'Math.E');
+  // Implicit multiplication: 2x→2*x, 2(→2*(, )(→)*(, )x→)*x, x(→x*(
+  expr = expr
+    .replace(/\)\s*\(/g,')*(')
+    .replace(/(\d)\s*\(/g,'$1*(')
+    .replace(/\)\s*(\d)/g,')*$1')
+    .replace(/\)\s*([a-zA-Z])/g,')*$1')
+    .replace(/(\d)\s*([a-zA-Z])/g,'$1*$2')
+    .replace(/\b([a-zA-Z])\b\s*\(/g,'$1*(');
+  return expr;
 }
 
 // ===== КАЛЬКУЛЯТОР =====

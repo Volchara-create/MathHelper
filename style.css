@@ -235,7 +235,7 @@
     .canvas-info{position:absolute;bottom:10px;right:10px;background:rgba(26,62,124,0.88);color:#fff;padding:6px 12px;border-radius:var(--radius-sm);font-size:.85rem;font-family:'Fira Code';pointer-events:none;}
     .graph-hint{position:absolute;top:10px;left:10px;background:rgba(0,212,255,0.15);color:var(--blue);padding:6px 12px;border-radius:var(--radius-sm);font-size:0.8rem;pointer-events:none;border:1px solid rgba(0,212,255,0.4);}
     /* кнопки авто-масштаб і калькулятор біля координат */
-    .canvas-quick-bar{position:absolute;bottom:82px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:10;}
+    .canvas-quick-bar{position:absolute;bottom:145px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:10;}
     .canvas-quick-btn{background:rgba(26,62,124,0.88);color:#fff;border:none;border-radius:var(--radius-sm);padding:5px 10px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap;font-family:'Roboto',sans-serif;}
     .canvas-quick-btn:hover{background:var(--accent);color:var(--blue);}
 
