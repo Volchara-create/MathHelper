@@ -436,12 +436,12 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
   };
 
   const isQuotaError = msg => msg?.includes('429') || msg?.includes('quota') || msg?.includes('rate limit');
-  const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite'];
+  const models = ['gemini-2.0-flash-lite', 'gemini-1.5-flash-8b', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 
   // Try each available key, skip exhausted ones
   const activeKeys = allKeys.filter(k => !_isKeyExhausted(k));
   if (activeKeys.length === 0) {
-    return res.status(503).json({ error: '🔄 Денний ліміт AI вичерпано. Доступ відновиться опівночі.' });
+    return res.status(503).json({ error: '⚠️ AI-помічник тимчасово недоступний. Спробуй пізніше.' });
   }
 
   for (const apiKey of activeKeys) {
@@ -455,12 +455,12 @@ ${nmtResult ? `- Останній НМТ симулятор: ${nmtResult}` : ''}
           _markKeyExhausted(apiKey);
           break; // try next key
         }
-        if (e.message?.includes('404')) continue; // model not found, try next model
+        if (e.message?.includes('404') || e.message?.includes('400')) continue; // model not found/invalid, try next
         return res.status(500).json({ error: '❌ AI тимчасово недоступний. Спробуй ще раз.' });
       }
     }
   }
-  return res.status(503).json({ error: '🔄 Денний ліміт AI вичерпано. Доступ відновиться опівночі.' });
+  return res.status(503).json({ error: '⚠️ AI-помічник тимчасово недоступний. Спробуй пізніше.' });
 });
 
 // Path routing catch-all — serve index.html for any frontend route

@@ -382,6 +382,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const homeBtn = document.getElementById('global-home-btn');
     if (homeBtn) homeBtn.style.display = (!NO_BACK.has(sec)) ? 'inline-flex' : 'none';
   };
+
+  // Apply nav button visibility for section loaded on initial page load
+  const _currentSec = document.querySelector('section.active')?.id;
+  if (_currentSec && !NO_BACK.has(_currentSec)) {
+    const homeBtn = document.getElementById('global-home-btn');
+    if (homeBtn) homeBtn.style.display = 'inline-flex';
+  }
 });
 
 function qmGoBack() {
