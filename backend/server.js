@@ -380,11 +380,11 @@ function _isKeyExhausted(key) {
   return true;
 }
 function _markKeyExhausted(key) {
-  // Reset at next midnight UTC
-  const tomorrow = new Date();
-  tomorrow.setUTCHours(24, 0, 0, 0);
-  _exhaustedKeys.set(key, tomorrow.getTime());
-  console.log(`Gemini key ...${key.slice(-6)} marked exhausted, resets at ${tomorrow.toISOString()}`);
+  // Google resets quotas at midnight Pacific Time (UTC-7/UTC-8)
+  // To be safe, reset 26 hours from now — guaranteed after Google's reset
+  const resetAt = Date.now() + 26 * 60 * 60 * 1000;
+  _exhaustedKeys.set(key, resetAt);
+  console.log(`Gemini key ...${key.slice(-6)} marked exhausted, resets at ${new Date(resetAt).toISOString()}`);
 }
 
 // Simple response cache: key = "grade:question_normalized", ttl = 12h
