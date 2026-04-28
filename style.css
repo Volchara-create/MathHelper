@@ -116,11 +116,11 @@
     #app-workspace>main{flex:1;overflow-y:auto;min-width:0;min-height:0;max-width:none;margin:0;display:flex;flex-direction:column;}
     main{padding:8px 24px 30px;max-width:1200px;margin:0 auto;width:100%;}
     /* ===== SIDE PANELS ===== */
-    .side-panel{flex:0 0 0;width:0;display:flex;flex-direction:column;background:#fff;border-right:2px solid #b3d9ff;overflow:hidden;transition:none;position:relative;}
-    .side-panel.open{flex:0 0 280px;width:280px;}
+    .side-panel{flex:0 0 0;width:0;display:flex;flex-direction:column;background:#fff;border:none;overflow:hidden;transition:none;position:relative;}
+    .side-panel.open{flex:0 0 280px;width:280px;border-right:2px solid #b3d9ff;}
     #panel-notebook.open{flex:0 0 clamp(300px,50vw,600px);width:clamp(300px,50vw,600px);}
     /* Panel placed after <main> (right side) gets left border instead */
-    main ~ .side-panel{border-right:none;border-left:2px solid #b3d9ff;}
+    main ~ .side-panel.open{border-right:none;border-left:2px solid #b3d9ff;}
     .side-panel-head{background:var(--blue);color:#fff;font-size:13px;font-weight:700;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;cursor:grab;user-select:none;}
     .side-panel-head:active{cursor:grabbing;}
     .sp-head-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:13px;cursor:pointer;padding:2px 7px;border-radius:var(--radius-sm);transition:.15s;}
