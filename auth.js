@@ -620,7 +620,6 @@ function checkDailyReward(user) {
   localStorage.setItem('mh_stars', stars);
 
   showStreakBadge(streak);
-  showDailyRewardPopup(streak, bonusStars);
 }
 
 function showStreakBadge(streak) {

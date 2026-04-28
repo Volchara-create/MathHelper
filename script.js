@@ -2169,8 +2169,8 @@ function buildTextbooks(grade) {
   lesson.style.display = 'none';
 
   const mhUser = JSON.parse(localStorage.getItem('mh_user') || 'null');
-  const userGrade = mhUser?.grade || 10;
-  const selectedGrade = grade || parseInt(localStorage.getItem('mh_tb_grade') || userGrade) || 10;
+  const userGrade = mhUser?.grade || 7;
+  const selectedGrade = grade || parseInt(localStorage.getItem('mh_tb_grade') || String(userGrade)) || userGrade;
   localStorage.setItem('mh_tb_grade', selectedGrade);
 
   const done = JSON.parse(localStorage.getItem('mh_tb_done') || '[]');
