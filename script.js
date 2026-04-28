@@ -2009,8 +2009,6 @@ const TB_LESSONS = [
   }
 ];
 
-];
-
 // ===== CHAPTER STRUCTURE =====
 const TB_PDFS = {
   7:  [
