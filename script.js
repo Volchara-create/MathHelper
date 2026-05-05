@@ -2258,57 +2258,126 @@ function tbToggleChapter(chId) {
   localStorage.setItem('mh_tb_expanded', JSON.stringify(expanded));
 }
 
+let _tbCurrentLesson = null;
+let _tbCurrentStep = 0;
+
 function tbOpenLesson(id) {
   const l = TB_LESSONS.find(x => x.id === id);
   if (!l) return;
+  _tbCurrentLesson = l;
+  _tbCurrentStep = 0;
   document.getElementById('tb-list-view').style.display = 'none';
   const lv = document.getElementById('tb-lesson-view');
   lv.style.display = '';
+  lv.dataset.lessonId = id;
+  _tbRenderStep();
+}
+
+function _tbStepLabel(step) {
+  return { theory: '📖 Теорія', examples: '💡 Приклади', practice: '✏️ Практика' }[step] || step;
+}
+
+function _tbRenderStep() {
+  const l = _tbCurrentLesson;
+  const lv = document.getElementById('tb-lesson-view');
+  if (!l || !lv) return;
+
   const isTest = l.type === 'test';
+  const steps = isTest ? ['practice'] : ['theory', 'examples', 'practice'];
+  const total = steps.length;
+  const step = steps[_tbCurrentStep];
 
-  const theoryBlock = isTest ? `
-    <div class="tb-block" style="border-color:#f59e0b;">
-      <div class="tb-block-title" style="color:#d97706;">📋 Самостійна робота</div>
-      <div class="tb-theory-text">${l.theory}</div>
-    </div>` : `
-    <div class="tb-block">
-      <div class="tb-block-title">📖 Теорія</div>
-      <div class="tb-theory-text">${l.theory}</div>
-      ${l.formula ? `<div class="tb-formula-box">${l.formula}</div>` : ''}
+  const wizardHtml = total > 1 ? `
+    <div class="tb-wizard-bar">
+      ${steps.map((s, i) => `
+        <div class="tb-wizard-dot ${i < _tbCurrentStep ? 'done' : i === _tbCurrentStep ? 'active' : ''}" onclick="tbGoStep(${i})" title="${_tbStepLabel(s)}">
+          ${i < _tbCurrentStep ? '✓' : i + 1}
+        </div>
+        ${i < steps.length - 1 ? `<div class="tb-wizard-line ${i < _tbCurrentStep ? 'done' : ''}"></div>` : ''}
+      `).join('')}
     </div>
-    <div class="tb-block">
-      <div class="tb-block-title">💡 Розібрані приклади</div>
-      ${(l.examples||[]).map(ex => `
-        <div class="tb-example">
-          <div class="tb-example-q">${ex.q}</div>
-          ${ex.steps.map((s,i) => `<div class="tb-step"><div class="tb-step-n">${i+1}</div><div>${s}</div></div>`).join('')}
-        </div>`).join('')}
-    </div>`;
+    <div class="tb-wizard-label">${_tbStepLabel(step)} · Крок ${_tbCurrentStep + 1} з ${total}</div>
+  ` : '';
 
-  const practiceTitle = isTest ? '✏️ Завдання (без підказок)' : '✏️ Практика';
-  const practice = l.practice.map((p, i) => `
-    <div class="tb-practice-q" id="tbpq-${id}-${i}">
-      <div class="tb-practice-q-text">${i+1}. ${p.q}</div>
-      <div class="tb-practice-input-row">
-        <input class="tb-practice-inp" id="tbinp-${id}-${i}" placeholder="Відповідь..." onkeydown="if(event.key==='Enter')tbCheck('${id}',${i})">
-        <button class="tb-practice-check-btn" onclick="tbCheck('${id}',${i})">Перевірити</button>
-      </div>
-      <div class="tb-practice-feedback" id="tbfb-${id}-${i}"></div>
-    </div>`).join('');
+  let contentHtml = '';
+  if (step === 'theory') {
+    contentHtml = `
+      <div class="tb-block tb-block-animated">
+        <div class="tb-block-title">📖 Теорія</div>
+        <div class="tb-theory-text">${l.theory}</div>
+        ${l.formula ? `<div class="tb-formula-box">${l.formula}</div>` : ''}
+      </div>`;
+  } else if (step === 'examples') {
+    const exHtml = (l.examples || []).map((ex, ei) => `
+      <div class="tb-example">
+        <div class="tb-example-q">${ex.q}</div>
+        ${ex.steps.map((s, i) => `
+          <div class="tb-step tb-ex-step-hidden" style="transition-delay:${i * 0.12}s">
+            <div class="tb-step-n">${i + 1}</div><div>${s}</div>
+          </div>`).join('')}
+      </div>`).join('');
+    contentHtml = `
+      <div class="tb-block tb-block-animated">
+        <div class="tb-block-title">💡 Розібрані приклади</div>
+        ${exHtml}
+      </div>`;
+  } else if (step === 'practice') {
+    const practiceHtml = l.practice.map((p, i) => `
+      <div class="tb-practice-q" id="tbpq-${l.id}-${i}">
+        <div class="tb-practice-q-text">${i + 1}. ${p.q}</div>
+        <div class="tb-practice-input-row">
+          <input class="tb-practice-inp" id="tbinp-${l.id}-${i}" placeholder="Відповідь..." onkeydown="if(event.key==='Enter')tbCheck('${l.id}',${i})">
+          <button class="tb-practice-check-btn" onclick="tbCheck('${l.id}',${i})">Перевірити</button>
+        </div>
+        <div class="tb-practice-feedback" id="tbfb-${l.id}-${i}"></div>
+      </div>`).join('');
+    contentHtml = `
+      <div class="tb-block tb-block-animated">
+        <div class="tb-block-title">${isTest ? '✏️ Завдання' : '✏️ Практика'}</div>
+        ${practiceHtml}
+        ${isTest ? `<div id="tb-test-score" style="display:none;margin-top:16px;font-size:1.1rem;font-weight:700;text-align:center;"></div>` : ''}
+      </div>`;
+  }
+
+  const isFirst = _tbCurrentStep === 0;
+  const isLast = _tbCurrentStep === total - 1;
+  const navHtml = `
+    <div class="tb-step-nav">
+      <button class="tb-back-btn" onclick="${isFirst ? 'buildTextbooks()' : 'tbPrevStep()'}">
+        ${isFirst ? '← До розділів' : '← Назад'}
+      </button>
+      ${!isLast ? `<button class="tb-next-btn" onclick="tbNextStep()">Далі →</button>` : ''}
+    </div>`;
 
   lv.innerHTML = `
-    <button class="tb-back-btn" onclick="buildTextbooks()">← До розділів</button>
-    <div class="tb-lesson-title">${l.icon} ${l.title}</div>
-    <div class="tb-lesson-sub">${l.meta}</div>
-    ${theoryBlock}
-    <div class="tb-block">
-      <div class="tb-block-title">${practiceTitle}</div>
-      ${practice}
-      ${isTest ? `<div id="tb-test-score" style="display:none;margin-top:16px;font-size:1.1rem;font-weight:700;text-align:center;"></div>` : ''}
-    </div>`;
+    <div class="tb-lesson-header">
+      <div class="tb-lesson-title">${l.icon} ${l.title}</div>
+      <div class="tb-lesson-sub">${l.meta}</div>
+    </div>
+    ${wizardHtml}
+    ${contentHtml}
+    ${navHtml}`;
 
-  lv.dataset.lessonId = id;
+  lv.scrollTop = 0;
+
+  if (step === 'examples') {
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.tb-ex-step-hidden').forEach(el => {
+        setTimeout(() => el.classList.remove('tb-ex-step-hidden'), 50);
+      });
+    });
+  }
 }
+
+function tbNextStep() {
+  if (!_tbCurrentLesson) return;
+  const steps = _tbCurrentLesson.type === 'test' ? ['practice'] : ['theory', 'examples', 'practice'];
+  if (_tbCurrentStep < steps.length - 1) { _tbCurrentStep++; _tbRenderStep(); }
+}
+function tbPrevStep() {
+  if (_tbCurrentStep > 0) { _tbCurrentStep--; _tbRenderStep(); }
+}
+function tbGoStep(i) { _tbCurrentStep = i; _tbRenderStep(); }
 
 function tbCheck(lessonId, idx) {
   const l = TB_LESSONS.find(x => x.id === lessonId);
@@ -3508,8 +3577,10 @@ function wsToggleSide(panel){
 // ─── FUNCTIONS ───
 function addFunction(){
   const colors=['#1a3e7c','#ff6b6b','#00a844','#ff9800','#9C27B0','#00d4ff'];
+  const isFirst = functions.length === 0;
   functions.push({expr:'x^2',color:colors[functions.length%colors.length]});
-  renderFunctionList();draw();
+  renderFunctionList();
+  if (isFirst) autoScale(); else draw();
 }
 function removeFunction(i){functions.splice(i,1);renderFunctionList();draw();}
 function clearAllFunctions(){functions=[];renderFunctionList();draw();wsSave();}

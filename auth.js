@@ -1200,7 +1200,6 @@ function renderDailyGoal(p) {
           <button onclick="window.location.href=getSimulatorUrl()" class="daily-goal-go">Йти →</button>
         </div>
       </div>
-      ${!done ? `<p class="daily-goal-hint">⏰ Нагадування о 18:00 якщо не виконаєш</p>` : ''}
     </div>`;
 }
 

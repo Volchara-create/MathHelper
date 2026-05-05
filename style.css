@@ -1642,3 +1642,20 @@ body.dark .tb-lesson-test{background:#1f1a00;}
 /* "Інший підручник" card */
 .tb-pdf-other{border-style:dashed;opacity:.8;}
 .tb-pdf-other:hover{opacity:1;}
+
+/* === LESSON STEP WIZARD === */
+.tb-lesson-header{margin-bottom:20px;}
+.tb-wizard-bar{display:flex;align-items:center;margin-bottom:10px;}
+.tb-wizard-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;cursor:pointer;transition:.2s;flex-shrink:0;border:2px solid var(--blue-light);background:var(--card-bg);color:var(--text-muted);}
+.tb-wizard-dot.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 0 0 4px rgba(26,62,124,.15);}
+.tb-wizard-dot.done{background:#16a34a;color:#fff;border-color:#16a34a;}
+.tb-wizard-dot:hover{transform:scale(1.1);}
+.tb-wizard-line{flex:1;height:3px;background:var(--blue-light);margin:0 4px;border-radius:2px;transition:.4s;}
+.tb-wizard-line.done{background:#16a34a;}
+.tb-wizard-label{font-size:.82rem;color:var(--text-muted);margin-bottom:20px;font-weight:600;}
+.tb-block-animated{animation:tbFadeSlide .22s ease;}
+@keyframes tbFadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.tb-ex-step-hidden{opacity:0;transform:translateX(-8px);transition:opacity .22s ease,transform .22s ease;}
+.tb-step-nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px;}
+.tb-next-btn{background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px 28px;cursor:pointer;font-weight:700;font-size:.95rem;transition:.2s;margin-left:auto;}
+.tb-next-btn:hover{background:#0d2340;transform:translateX(3px);}
