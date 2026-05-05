@@ -82,7 +82,7 @@
           <span id="user-badge"></span>
         </div>
         <button class="auth-nav-btn" onclick="show('dashboard')">🏠</button>
-        <button class="auth-nav-btn" onclick="authLogout()">Вийти</button>
+        <button class="auth-nav-btn" onclick="openSettings()">⚙️</button>
       </div>
     </div>
   </header>
@@ -283,6 +283,36 @@
       </div>
     </section>
 
+    <!-- ===== AI MATH ASSISTANT ===== -->
+    <section id="ai">
+      <div class="ai-wrap">
+        <div class="ai-header">
+          <div>
+            <h2 class="ai-title"><svg class="owl-svg owl-title" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="metalGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#c8d4e0"/><stop offset="40%" style="stop-color:#7a90a8"/><stop offset="70%" style="stop-color:#4a6070"/><stop offset="100%" style="stop-color:#9ab0c4"/></linearGradient><linearGradient id="eyeGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#4fc3f7"/><stop offset="100%" style="stop-color:#0288d1"/></linearGradient></defs><ellipse cx="16" cy="20" rx="10" ry="11" fill="url(#metalGrad2)"/><ellipse cx="16" cy="10" rx="8" ry="7" fill="url(#metalGrad2)"/><polygon points="9,5 7,1 12,5" fill="#7a90a8"/><polygon points="23,5 25,1 20,5" fill="#7a90a8"/><circle cx="12" cy="10" r="3.5" fill="#1a2634"/><circle cx="20" cy="10" r="3.5" fill="#1a2634"/><circle cx="12" cy="10" r="2.5" fill="url(#eyeGrad2)"/><circle cx="20" cy="10" r="2.5" fill="url(#eyeGrad2)"/><circle cx="12.8" cy="9" r="0.8" fill="white" opacity="0.8"/><circle cx="20.8" cy="9" r="0.8" fill="white" opacity="0.8"/><polygon points="14.5,13 17.5,13 16,15.5" fill="#5a7080"/><ellipse cx="7" cy="22" rx="4" ry="7" fill="#5a7080" transform="rotate(-15,7,22)"/><ellipse cx="25" cy="22" rx="4" ry="7" fill="#5a7080" transform="rotate(15,25,22)"/><ellipse cx="16" cy="22" rx="5.5" ry="6" fill="#9ab0c4" opacity="0.6"/></svg> MathΣimus — AI Репетитор</h2>
+            <div class="ai-context-bar" id="ai-context-bar">Завантаження профілю...</div>
+          </div>
+        </div>
+
+        <div class="ai-suggestions" id="ai-suggestions">
+          <button class="ai-chip" onclick="aiSuggest('Поясни теорему Піфагора з прикладом')">📐 Теорема Піфагора</button>
+          <button class="ai-chip" onclick="aiSuggest('Як розвʼязати квадратне рівняння?')">📊 Квадратне рівняння</button>
+          <button class="ai-chip" onclick="aiSuggest('Що таке похідна і як її знаходити?')">📈 Похідна</button>
+          <button class="ai-chip" onclick="aiSuggest('Поясни sin, cos і tg простими словами')">🔺 sin, cos, tg</button>
+          <button class="ai-chip" onclick="aiSuggest('Що перевіряє НМТ з математики і як підготуватись?')">🏆 НМТ поради</button>
+          <button class="ai-chip" onclick="aiAnalyze()">📊 Проаналізуй мій прогрес</button>
+        </div>
+
+        <div class="ai-messages" id="ai-messages"></div>
+
+        <div class="ai-input-row">
+          <textarea id="ai-input" class="ai-input" placeholder="Запитай про будь-яку математичну тему..." rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend();}"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+          <button class="ai-send-btn" onclick="aiSend()" id="ai-send-btn">➤</button>
+        </div>
+        <div class="ai-footer">Shift+Enter — новий рядок · відповідає на основі твого класу і слабких тем</div>
+      </div>
+    </section>
 
     <section id="pricing">
       <div class="pricing-wrap">
@@ -674,6 +704,21 @@
     </section>
     <!-- /РОБОЧИЙ СТІЛ -->
 
+    <footer>
+      © 2026 MathHelper &nbsp;|&nbsp;
+      <a href="https://send.monobank.ua/jar/7kcin57bo4" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:700;text-decoration:none;">☕ Підтримати проект</a>
+      <div class="socials" style="margin-top:8px;">
+        <a href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" title="TikTok">
+          <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok" loading="lazy">
+        </a>
+        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram">
+          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" loading="lazy">
+        </a>
+        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" loading="lazy">
+        </a>
+      </div>
+    </footer>
 
   </main>
   </div><!-- /#app-workspace -->
@@ -789,8 +834,150 @@
     </div>
   </div>
 
+  <!-- Quick Action Menu (bottom bar) -->
+  <div class="quick-menu" id="quick-menu" style="display:none;">
+    <button class="qm-btn" onclick="togglePanel('calc')">
+      <span class="qm-icon">🧮</span><span class="qm-label">Калькулятор</span>
+    </button>
+    <button class="qm-btn" onclick="togglePanel('notebook')">
+      <span class="qm-icon">📓</span><span class="qm-label">Зошит</span>
+    </button>
+    <a href="simulator.html" class="qm-btn">
+      <span class="qm-icon">🎯</span><span class="qm-label">НМТ</span>
+    </a>
+    <button class="qm-btn qm-ai" onclick="openAISection()" title="MathΣimus AI Репетитор">
+      <span class="qm-icon">
+        <span class="ai-robot-icon">🤖</span>
+        <svg class="owl-svg" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#e8e8e8"/>
+              <stop offset="40%" style="stop-color:#aab4c4"/>
+              <stop offset="70%" style="stop-color:#6a7d94"/>
+              <stop offset="100%" style="stop-color:#c8d4e0"/>
+            </linearGradient>
+            <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#4fc3f7"/>
+              <stop offset="100%" style="stop-color:#0288d1"/>
+            </linearGradient>
+          </defs>
+          <!-- body -->
+          <ellipse cx="16" cy="20" rx="10" ry="11" fill="url(#metalGrad)"/>
+          <!-- head -->
+          <ellipse cx="16" cy="10" rx="8" ry="7" fill="url(#metalGrad)"/>
+          <!-- ears -->
+          <polygon points="9,5 7,1 12,5" fill="#aab4c4"/>
+          <polygon points="23,5 25,1 20,5" fill="#aab4c4"/>
+          <!-- eyes -->
+          <circle cx="12" cy="10" r="3.5" fill="#1a2634"/>
+          <circle cx="20" cy="10" r="3.5" fill="#1a2634"/>
+          <circle cx="12" cy="10" r="2.5" fill="url(#eyeGrad)"/>
+          <circle cx="20" cy="10" r="2.5" fill="url(#eyeGrad)"/>
+          <circle cx="12.8" cy="9" r="0.8" fill="white" opacity="0.8"/>
+          <circle cx="20.8" cy="9" r="0.8" fill="white" opacity="0.8"/>
+          <!-- beak -->
+          <polygon points="14.5,13 17.5,13 16,15.5" fill="#8a9ab0"/>
+          <!-- wings -->
+          <ellipse cx="7" cy="22" rx="4" ry="7" fill="#8a9ab0" transform="rotate(-15,7,22)"/>
+          <ellipse cx="25" cy="22" rx="4" ry="7" fill="#8a9ab0" transform="rotate(15,25,22)"/>
+          <!-- belly -->
+          <ellipse cx="16" cy="22" rx="5.5" ry="6" fill="#c8d4e0" opacity="0.6"/>
+          <!-- feet -->
+          <line x1="13" y1="30" x2="11" y2="32" stroke="#8a9ab0" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="13" y1="30" x2="13" y2="32" stroke="#8a9ab0" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="13" y1="30" x2="15" y2="32" stroke="#8a9ab0" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="19" y1="30" x2="17" y2="32" stroke="#8a9ab0" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="19" y1="30" x2="19" y2="32" stroke="#8a9ab0" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="19" y1="30" x2="21" y2="32" stroke="#8a9ab0" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </span><span class="qm-label">ШІ</span>
+    </button>
+    <button class="qm-btn qm-pro" onclick="show('pricing')">
+      <span class="qm-icon">⭐</span><span class="qm-label">Pro</span>
+    </button>
+  </div>
 
+  <!-- Floating Notes Drawer (works on top of any section) -->
+  <div class="notes-drawer-overlay" id="notes-drawer-overlay"></div>
+  <div class="notes-drawer" id="notes-drawer">
+    <div class="notes-resize-handle" id="notes-resize-handle"></div>
+    <div class="notes-drawer-header">
+      <span class="notes-drawer-title">📓 Зошит</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="notes-new-btn" onclick="noteDrawerNew()">+ Новий</button>
+        <button class="notes-drawer-close" onclick="notesDrawerClose()">✕</button>
+      </div>
+    </div>
+    <div class="notes-drawer-body">
+      <!-- List -->
+      <div class="notes-drawer-list" id="drawer-notes-list"></div>
+      <!-- Editor -->
+      <div class="notes-drawer-editor" id="drawer-editor" style="display:none;">
+        <input class="notes-title-input" id="drawer-title-input" placeholder="Назва конспекту..." maxlength="80">
+        <div class="drawer-style-row">
+          <button class="nb-style-btn active" id="drawer-nb-lined" onclick="drawerSetStyle('lined')" title="Лінійка">≡ Лінійка</button>
+          <button class="nb-style-btn" id="drawer-nb-grid" onclick="drawerSetStyle('grid')" title="Клітинки">⊞ Клітинка</button>
+          <button class="nb-style-btn" id="drawer-nb-plain" onclick="drawerSetStyle('plain')" title="Чистий">☐ Чистий</button>
+        </div>
+        <textarea class="notes-content-area notes-drawer-textarea lined" id="drawer-content-input" placeholder="Пиши свої нотатки..."></textarea>
+        <div class="notes-drawer-actions">
+          <button class="note-save-btn" onclick="noteDrawerSave()">💾 Зберегти</button>
+          <button class="note-pdf-btn" onclick="downloadDrawerNotePDF()" title="PDF">📥 PDF</button>
+          <button class="note-delete-btn" onclick="noteDrawerDelete()">🗑</button>
+          <button style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:0.85rem;" onclick="noteDrawerBack()">← Список</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Settings Modal -->
+  <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+  <div class="settings-modal" id="settings-modal">
+    <div class="settings-header">
+      <span>⚙️ Налаштування</span>
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+      <!-- Profile block -->
+      <div class="settings-block">
+        <div class="settings-block-title">👤 Профіль</div>
+        <div class="settings-row">
+          <span class="settings-label">Ім'я</span>
+          <span id="settings-name" class="settings-value">—</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Email</span>
+          <span id="settings-email" class="settings-value">—</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Клас</span>
+          <div class="settings-grade-btns" id="settings-grade-btns"></div>
+        </div>
+        <button class="settings-save-btn" id="settings-grade-save" onclick="settingsSaveGrade()">Зберегти клас</button>
+      </div>
+      <!-- Language block (placeholder) -->
+      <div class="settings-block settings-block--disabled">
+        <div class="settings-block-title">🌐 Мова <span class="settings-soon">скоро</span></div>
+        <div class="settings-row">
+          <span class="settings-label">Інтерфейс</span>
+          <span class="settings-value">🇺🇦 Українська</span>
+        </div>
+      </div>
+      <!-- About -->
+      <div class="settings-block">
+        <div class="settings-block-title">ℹ️ Про додаток</div>
+        <div class="settings-row">
+          <span class="settings-label">MathHelper</span>
+          <button class="settings-link-btn" onclick="closeSettings();show('about')">Відкрити →</button>
+        </div>
+      </div>
+      <!-- Danger zone -->
+      <div class="settings-block settings-block--danger">
+        <div class="settings-block-title">⚠️ Небезпечна зона</div>
+        <button class="settings-danger-btn" onclick="authLogout();closeSettings()">Вийти з акаунту</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Global Floating Calculator -->
   <div id="float-calc" class="float-calc" style="display:none;">
@@ -871,6 +1058,39 @@
     <div class="search-hint">Натисни <kbd>Esc</kbd> щоб закрити · <kbd>Enter</kbd> щоб перейти · <kbd>/</kbd> щоб відкрити</div>
   </div>
 
+  <!-- ===== GUIDE MODAL ===== -->
+  <!-- ===== MATHIK CHAT ===== -->
+  <div id="mathik-bubble" class="mathik-bubble" onclick="mathikToggle()" style="display:none;">
+    <span class="mathik-avatar">🦉</span>
+    <span class="mathik-badge" id="mathik-badge" style="display:none;">1</span>
+  </div>
+  <div id="mathik-chat" class="mathik-chat" style="display:none;">
+    <div class="mathik-chat-header">
+      <span>🦉 Mathik</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-size:.72rem;opacity:.7;">помічник MathHelper</span>
+        <button class="search-close-btn" onclick="mathikClose()">✕</button>
+      </div>
+    </div>
+    <div class="mathik-messages" id="mathik-messages"></div>
+    <div class="mathik-chips" id="mathik-chips"></div>
+    <div class="mathik-input-row">
+      <input id="mathik-input" class="mathik-input" placeholder="Запитай щось..." onkeydown="if(event.key==='Enter')mathikSend()" />
+      <button class="mathik-send-btn" onclick="mathikSend()">➤</button>
+    </div>
+  </div>
+
+  <!-- ===== MATHIK TUTORIAL SPEECH BUBBLE ===== -->
+  <div id="mathik-speech" class="mathik-speech" style="display:none;">
+    <button class="mathik-speech-skip" onclick="mathikTutorialAbort()" title="Пропустити">✕</button>
+    <div class="mathik-speech-progress" id="mathik-speech-progress"></div>
+    <div class="mathik-speech-bar"><div class="mathik-speech-bar-fill" id="mathik-speech-bar-fill" style="width:0%"></div></div>
+    <div class="mathik-speech-text" id="mathik-speech-text"></div>
+    <div class="mathik-speech-footer">
+      <span id="mathik-speech-hint" style="font-size:.72rem;color:#aaa;"></span>
+      <button class="mathik-speech-next" id="mathik-speech-next" onclick="mathikTutorialNext()">▶ Далі</button>
+    </div>
+  </div>
 
   <script src="script.js?v=2026042807"></script>
   <script src="auth.js?v=2026042807"></script>
