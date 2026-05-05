@@ -5706,15 +5706,10 @@ function _sigmaTransformSequence() {
         bubble.classList.add('sigma-mode');
       }
 
-      // Step 4: intro speech — Mathik as glowing owl after merging with AI
-      _mathikShowSpeech(
-        '⚡ <b>MathΣimus</b> — ми об\'єднались!<br>Металева сова лишається у кнопці ШІ 🦉⚡<br>Я повертаюсь додому — нас тепер <b>двоє</b>!<br>Питай будь-що з математики! 🧠',
-        false, true
-      );
+      // Step 4: skipped intro speech
 
       // Step 5: after speech — metallic owl appears in AI btn, Mathik flies home as normal owl
       setTimeout(() => {
-        _mathikHideSpeech();
 
         // AI button becomes active — CSS switches from 🤖 to metallic owl SVG
         if (aiBtn) {
