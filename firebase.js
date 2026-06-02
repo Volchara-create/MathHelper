@@ -49,6 +49,7 @@ async function fbRegister(name, email, password, grade) {
 
 async function fbGoogleSignIn() {
   const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
   const result = await _fbAuth.signInWithPopup(provider);
   const firebaseUser = result.user;
   const uid = firebaseUser.uid;

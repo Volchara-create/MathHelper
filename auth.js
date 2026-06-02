@@ -441,8 +441,9 @@ function authOpen(mode) {
 
 function authClose() {
   document.getElementById('auth-modal').classList.remove('active');
-  const cur = document.querySelector('section.active')?.id || 'dashboard';
-  history.replaceState({sec: cur}, '', _BASE + cur);
+  const cur = document.querySelector('section.active')?.id || 'home';
+  const urlSec = (cur === 'home') ? '' : cur;
+  history.replaceState({sec: cur}, '', _BASE + urlSec);
 }
 
 function authSwitch(mode) {
