@@ -192,6 +192,22 @@ async function confirmGoogleGrade(tempToken) {
     return;
   }
   const grade = parseInt(selected.dataset.grade);
+
+  if (USE_FIREBASE) {
+    try {
+      const user = await fbCompleteGoogleSignIn(_fbPendingUid, _fbPendingName, _fbPendingEmail, grade);
+      localStorage.setItem('mh_token', 'firebase_' + user.id);
+      localStorage.setItem('mh_user', JSON.stringify(user));
+      authShowUser(user);
+      authClose();
+      closeGoogleGradeModal();
+      show('dashboard');
+    } catch(e) {
+      document.getElementById('google-grade-error').textContent = e.message;
+    }
+    return;
+  }
+
   try {
     const res = await fetch(`${API}/auth/google/grade`, {
       method: 'POST',
@@ -215,6 +231,16 @@ async function confirmGoogleGrade(tempToken) {
 }
 
 function initGoogleAuth() {
+  if (USE_FIREBASE) {
+    const btnHtml = `<button onclick="handleGoogleFirebase()" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 16px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;font-weight:500;color:#333;">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">Увійти через Google</button>`;
+    const loginBtn = document.getElementById('google-login-btn');
+    const regBtn = document.getElementById('google-reg-btn');
+    if (loginBtn) loginBtn.innerHTML = btnHtml;
+    if (regBtn) regBtn.innerHTML = btnHtml.replace('Увійти', 'Зареєструватись');
+    return;
+  }
+
   const clientId = document.querySelector('meta[name="google-client-id"]')?.content;
   if (!clientId || clientId === 'YOUR_GOOGLE_CLIENT_ID') return;
 
@@ -326,17 +352,18 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
       if (typeof show === 'function') show(_initSec);
     }
-    // Refresh user data from server — fix stale grade/name/daily goal
-    fetch(`${API}/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.ok ? r.json() : null)
-      .then(fresh => {
-        if (!fresh) return;
-        localStorage.setItem('mh_user', JSON.stringify(fresh));
-        document.getElementById('user-greeting').textContent = `${fresh.name} · ${fresh.grade} кл.`;
-        // Re-render dashboard with fresh data
-        dashLoad(fresh);
-      })
-      .catch(() => {});
+    // Refresh user data from server
+    if (!USE_FIREBASE) {
+      fetch(`${API}/me`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : null)
+        .then(fresh => {
+          if (!fresh) return;
+          localStorage.setItem('mh_user', JSON.stringify(fresh));
+          document.getElementById('user-greeting').textContent = `${fresh.name} · ${fresh.grade} кл.`;
+          dashLoad(fresh);
+        })
+        .catch(() => {});
+    }
   }
 
   // Grade picker click handler
@@ -428,6 +455,15 @@ async function doLogin() {
   if (btn) { btn.disabled = true; btn.textContent = 'Входжу...'; }
 
   try {
+    if (USE_FIREBASE) {
+      const user = await fbLogin(email, password);
+      localStorage.setItem('mh_token', 'firebase_' + user.id);
+      localStorage.setItem('mh_user', JSON.stringify(user));
+      authShowUser(user);
+      authClose();
+      show('dashboard');
+      return;
+    }
     const res = await fetch(`${API}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -441,8 +477,11 @@ async function doLogin() {
     authShowUser(data.user);
     authClose();
     show('dashboard');
-  } catch {
-    errEl.textContent = 'Помилка підключення до сервера';
+  } catch(e) {
+    const msg = USE_FIREBASE
+      ? (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' ? 'Невірний email або пароль' : e.message)
+      : 'Помилка підключення до сервера';
+    errEl.textContent = msg;
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Увійти'; }
   }
@@ -464,6 +503,15 @@ async function doRegister() {
   if (btn) { btn.disabled = true; btn.textContent = 'Реєструю...'; }
 
   try {
+    if (USE_FIREBASE) {
+      const user = await fbRegister(name, email, password, grade);
+      localStorage.setItem('mh_token', 'firebase_' + user.id);
+      localStorage.setItem('mh_user', JSON.stringify(user));
+      authShowUser(user);
+      authClose();
+      show('dashboard');
+      return;
+    }
     const res = await fetch(`${API}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -477,14 +525,18 @@ async function doRegister() {
     authShowUser(data.user);
     authClose();
     show('dashboard');
-  } catch {
-    errEl.textContent = 'Помилка підключення до сервера';
+  } catch(e) {
+    const msg = USE_FIREBASE
+      ? (e.code === 'auth/email-already-in-use' ? 'Email вже зареєстровано' : e.message)
+      : 'Помилка підключення до сервера';
+    errEl.textContent = msg;
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Зареєструватись'; }
   }
 }
 
 function authLogout() {
+  if (USE_FIREBASE) fbLogout().catch(() => {});
   localStorage.removeItem('mh_token');
   localStorage.removeItem('mh_user');
   document.getElementById('auth-nav').style.display = '';
@@ -535,6 +587,15 @@ async function settingsSaveGrade() {
   const btn = document.getElementById('settings-grade-save');
   btn.textContent = 'Збереження...';
   try {
+    if (USE_FIREBASE) {
+      const updated = await fbUpdateGrade(settingsSelectedGrade);
+      localStorage.setItem('mh_token', 'firebase_' + updated.id);
+      localStorage.setItem('mh_user', JSON.stringify(updated));
+      authShowUser(updated);
+      closeSettings();
+      if (typeof show === 'function') show('dashboard');
+      return;
+    }
     const res = await fetch(`${API}/me/grade`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -560,8 +621,13 @@ async function deleteAccount() {
   });
 }
 async function _deleteAccountConfirmed() {
-  const token = localStorage.getItem('mh_token');
   try {
+    if (USE_FIREBASE) {
+      await fbDeleteAccount();
+      authLogout();
+      return;
+    }
+    const token = localStorage.getItem('mh_token');
     await fetch(`${API}/me`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
     authLogout();
   } catch {
@@ -699,16 +765,20 @@ async function dashLoadRecentNotes() {
   const container = document.getElementById('dash-recent-notes');
   if (container) container.innerHTML = '<p class="dash-empty" style="color:#94a3b8;">Завантаження...</p>';
   try {
-    const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) return;
-    allNotes = await res.json();
-    const container = document.getElementById('dash-recent-notes');
+    if (USE_FIREBASE) {
+      allNotes = await fbGetNotes();
+    } else {
+      const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) return;
+      allNotes = await res.json();
+    }
+    const cont = document.getElementById('dash-recent-notes');
     if (!allNotes.length) {
-      container.innerHTML = `<p class="dash-empty">Немає конспектів — <a href="#" onclick="show('notes')">створи перший!</a></p>`;
+      cont.innerHTML = `<p class="dash-empty">Немає конспектів — <a href="#" onclick="show('notes')">створи перший!</a></p>`;
       return;
     }
-    container.innerHTML = allNotes.slice(0, 3).map(n => `
-      <div class="dash-note-card" onclick="openNoteFromDash(${n.id})">
+    cont.innerHTML = allNotes.slice(0, 3).map(n => `
+      <div class="dash-note-card" onclick="openNoteFromDash(${JSON.stringify(n.id)})">
         <div class="dash-note-title">${escHtml(n.title)}</div>
         <div class="dash-note-preview">${escHtml((n.content || 'Порожній конспект').substring(0, 60))}</div>
       </div>
@@ -731,9 +801,13 @@ async function notesInit() {
     return;
   }
   try {
-    const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) throw new Error('server error');
-    allNotes = await res.json();
+    if (USE_FIREBASE) {
+      allNotes = await fbGetNotes();
+    } else {
+      const res = await fetch(`${API}/notes`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error('server error');
+      allNotes = await res.json();
+    }
     if (!Array.isArray(allNotes)) allNotes = [];
     notesRender(null);
   } catch {
@@ -749,7 +823,7 @@ function notesRender(openId) {
     return;
   }
   list.innerHTML = allNotes.map(n => `
-    <div class="notes-list-item ${n.id === currentNoteId ? 'active' : ''}" onclick="noteOpen(${n.id})">
+    <div class="notes-list-item ${n.id === currentNoteId ? 'active' : ''}" onclick="noteOpen(${JSON.stringify(n.id)})">
       <div class="notes-item-title">${escHtml(n.title)}</div>
       <div class="notes-item-date">${new Date(n.updatedAt).toLocaleDateString('uk-UA')}</div>
     </div>
@@ -802,7 +876,21 @@ async function noteSave() {
   if (!title) { showToast('⚠️ Введи назву конспекту'); return; }
 
   try {
-    let res, note;
+    let note;
+    if (USE_FIREBASE) {
+      if (currentNoteId) {
+        note = await fbUpdateNote(currentNoteId, title, content);
+        allNotes = allNotes.map(n => n.id === currentNoteId ? note : n);
+      } else {
+        note = await fbCreateNote(title, content);
+        allNotes.unshift(note);
+        currentNoteId = note.id;
+      }
+      notesRender(note.id);
+      showToast('✅ Збережено');
+      return;
+    }
+    let res;
     if (currentNoteId) {
       res = await fetch(`${API}/notes/${currentNoteId}`, {
         method: 'PUT',
@@ -836,8 +924,16 @@ async function noteDelete() {
   mhConfirm('Видалити цей конспект?', async () => { await _noteDeleteConfirmed(); });
 }
 async function _noteDeleteConfirmed() {
-  const token = localStorage.getItem('mh_token');
   try {
+    if (USE_FIREBASE) {
+      await fbDeleteNote(currentNoteId);
+      allNotes = allNotes.filter(n => n.id !== currentNoteId);
+      currentNoteId = null;
+      document.getElementById('notes-editor').style.display = 'none';
+      notesRender(null);
+      return;
+    }
+    const token = localStorage.getItem('mh_token');
     const res = await fetch(`${API}/notes/${currentNoteId}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
@@ -1115,29 +1211,40 @@ async function noteDrawerSave() {
   const content = document.getElementById('drawer-content-input').value;
   if (!title) { showToast('⚠️ Введи назву'); return; }
   try {
-    let res, note;
-    if (drawerNoteId) {
-      res = await fetch(`${API}/notes/${drawerNoteId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title, content })
-      });
+    let note;
+    if (USE_FIREBASE) {
+      if (drawerNoteId) {
+        note = await fbUpdateNote(drawerNoteId, title, content);
+        allNotes = allNotes.map(n => n.id === drawerNoteId ? note : n);
+      } else {
+        note = await fbCreateNote(title, content);
+        allNotes.unshift(note);
+        drawerNoteId = note.id;
+      }
     } else {
-      res = await fetch(`${API}/notes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title, content })
-      });
+      let res;
+      if (drawerNoteId) {
+        res = await fetch(`${API}/notes/${drawerNoteId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ title, content })
+        });
+      } else {
+        res = await fetch(`${API}/notes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ title, content })
+        });
+      }
+      note = await res.json();
+      if (!res.ok) { showToast('❌ ' + (note.error || 'Помилка')); return; }
+      if (drawerNoteId) {
+        allNotes = allNotes.map(n => n.id === drawerNoteId ? note : n);
+      } else {
+        allNotes.unshift(note);
+        drawerNoteId = note.id;
+      }
     }
-    note = await res.json();
-    if (!res.ok) { showToast('❌ ' + (note.error || 'Помилка')); return; }
-    if (drawerNoteId) {
-      allNotes = allNotes.map(n => n.id === drawerNoteId ? note : n);
-    } else {
-      allNotes.unshift(note);
-      drawerNoteId = note.id;
-    }
-    // Flash saved feedback
     const btn = document.querySelector('.notes-drawer-actions .note-save-btn');
     if (btn) { btn.textContent = '✅ Збережено'; setTimeout(() => btn.textContent = '💾 Зберегти', 1500); }
   } catch { showToast('❌ Помилка збереження'); }
@@ -1146,11 +1253,15 @@ async function noteDrawerSave() {
 async function noteDrawerDelete() {
   if (!drawerNoteId) return;
   mhConfirm('Видалити конспект?', async () => {
-    const token = localStorage.getItem('mh_token');
     try {
-      await fetch(`${API}/notes/${drawerNoteId}`, {
-        method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
-      });
+      if (USE_FIREBASE) {
+        await fbDeleteNote(drawerNoteId);
+      } else {
+        const token = localStorage.getItem('mh_token');
+        await fetch(`${API}/notes/${drawerNoteId}`, {
+          method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+        });
+      }
       allNotes = allNotes.filter(n => n.id !== drawerNoteId);
       drawerRenderList();
     } catch { showToast('❌ Помилка видалення'); }
@@ -1168,6 +1279,10 @@ async function dashLoadDailyGoal() {
   if (!token) { el.style.display = 'none'; return; }
   el.style.display = '';
   try {
+    if (USE_FIREBASE) {
+      renderDailyGoal(fbGetDaily());
+      return;
+    }
     const res = await fetch(`${API}/daily`, { headers: { Authorization: `Bearer ${token}` } });
     const p = res.ok ? await res.json() : { quizDone: 0, nmtDone: 0 };
     renderDailyGoal(p);
@@ -1207,6 +1322,11 @@ async function trackDaily(type) {
   const token = localStorage.getItem('mh_token');
   if (!token) return;
   try {
+    if (USE_FIREBASE) {
+      const p = fbTrackDaily(type);
+      renderDailyGoal(p);
+      return;
+    }
     const res = await fetch(`${API}/daily/track`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
