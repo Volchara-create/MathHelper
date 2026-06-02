@@ -153,7 +153,13 @@ function fbTrackDaily(type) {
 
 // ===== GOOGLE SIGN-IN HANDLER (Firebase popup) =====
 
+let _googlePopupOpen = false;
+
 async function handleGoogleFirebase() {
+  if (_googlePopupOpen) return;
+  _googlePopupOpen = true;
+  // Cancel any GSI One Tap popup that might conflict
+  try { window.google?.accounts?.id?.cancel(); } catch {}
   const errEl = document.getElementById('login-error') || document.getElementById('reg-error');
   try {
     const result = await fbGoogleSignIn();
@@ -172,10 +178,14 @@ async function handleGoogleFirebase() {
       show('dashboard');
     }
   } catch(e) {
-    const msg = e.code === 'auth/popup-closed-by-user'
-      ? 'Вікно закрито. Спробуй ще раз.'
-      : (e.code === 'auth/network-request-failed' ? 'Немає інтернету' : e.message);
-    if (errEl) errEl.textContent = msg;
-    else showToast('❌ ' + msg);
+    if (e.code !== 'auth/cancelled-popup-request') {
+      const msg = e.code === 'auth/popup-closed-by-user'
+        ? 'Вікно закрито. Спробуй ще раз.'
+        : (e.code === 'auth/network-request-failed' ? 'Немає інтернету' : e.message);
+      if (errEl) errEl.textContent = msg;
+      else showToast('❌ ' + msg);
+    }
+  } finally {
+    _googlePopupOpen = false;
   }
 }
