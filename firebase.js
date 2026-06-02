@@ -169,6 +169,7 @@ async function handleGoogleFirebase() {
       show('dashboard');
     }
   } catch(e) {
+    console.error('Firebase Google error:', e.code, e.message);
     if (e.code !== 'auth/cancelled-popup-request') {
       const msg = e.code === 'auth/popup-closed-by-user'
         ? 'Вікно закрито. Спробуй ще раз.'
