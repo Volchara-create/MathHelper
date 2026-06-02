@@ -1779,10 +1779,10 @@ body.dark input,body.dark select,body.dark textarea{background:#1e293b!important
 /* === DARK THEME VARS === */
 body.dark{--card:#1e293b;--border:#334155;--text:#f1f5f9;--text-muted:#94a3b8;--bg-app:#0f172a;}
 
-/* === AI SECTION OWL — темніша (не біла) === */
-.owl-svg,.owl-title{filter:brightness(0.4) saturate(0.5) contrast(1.1)!important;}
-.qm-btn.sigma-btn-active .owl-svg{filter:brightness(0.4) saturate(0.5) contrast(1.1)!important;}
-body.dark .owl-svg,body.dark .owl-title{filter:brightness(0.6) saturate(0.4)!important;}
+/* === AI SECTION OWL — темніша, зберігаючи кольори та очі === */
+.owl-svg,.owl-title{filter:brightness(0.5) contrast(1.15)!important;}
+.qm-btn.sigma-btn-active .owl-svg{filter:brightness(0.5) contrast(1.15)!important;}
+body.dark .owl-svg,body.dark .owl-title{filter:brightness(0.7) contrast(1.1)!important;}
 
 /* === MATHIK BUBBLE — оригінальна кольорова сова === */
 .mathik-bubble{background:#1e3a8a!important;border:2px solid #1e40af!important;box-shadow:0 4px 12px rgba(30,58,138,.35)!important;}
