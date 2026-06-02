@@ -15,6 +15,12 @@ let _fbAuth, _fbDb;
 let _fbPendingName = '', _fbPendingEmail = '', _fbPendingUid = '';
 
 if (USE_FIREBASE) {
+  // Unregister any old service workers — they cause 404 errors on GitHub Pages
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(r => r.unregister());
+    });
+  }
   firebase.initializeApp(FB_CONFIG);
   _fbAuth = firebase.auth();
   _fbDb = firebase.database();
