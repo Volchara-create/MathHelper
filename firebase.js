@@ -7,7 +7,8 @@ const FB_CONFIG = {
   projectId: "proba-358ac",
   storageBucket: "proba-358ac.firebasestorage.app",
   messagingSenderId: "1063423378287",
-  appId: "1:1063423378287:web:4bcfc7d2fb867b90881e9a"
+  appId: "1:1063423378287:web:4bcfc7d2fb867b90881e9a",
+  databaseURL: "https://proba-358ac-default-rtdb.firebaseio.com"
 };
 
 let _fbAuth, _fbDb;
@@ -16,18 +17,18 @@ let _fbPendingName = '', _fbPendingEmail = '', _fbPendingUid = '';
 if (USE_FIREBASE) {
   firebase.initializeApp(FB_CONFIG);
   _fbAuth = firebase.auth();
-  _fbDb = firebase.firestore();
+  _fbDb = firebase.database();
 }
 
 // ===== USER HELPERS =====
 
 async function fbGetUserDoc(uid) {
-  const doc = await _fbDb.collection('users').doc(uid).get();
-  return doc.exists ? { id: uid, ...doc.data() } : null;
+  const snap = await _fbDb.ref('users/' + uid).once('value');
+  return snap.exists() ? { id: uid, ...snap.val() } : null;
 }
 
 async function fbSaveUser(uid, data) {
-  await _fbDb.collection('users').doc(uid).set(data, { merge: true });
+  await _fbDb.ref('users/' + uid).update(data);
 }
 
 // ===== AUTH =====
@@ -78,19 +79,14 @@ async function fbLogout() {
 async function fbUpdateGrade(grade) {
   const user = _fbAuth.currentUser;
   if (!user) return null;
-  await _fbDb.collection('users').doc(user.uid).update({ grade: parseInt(grade) });
+  await _fbDb.ref('users/' + user.uid + '/grade').set(parseInt(grade));
   return await fbGetUserDoc(user.uid);
 }
 
 async function fbDeleteAccount() {
   const user = _fbAuth.currentUser;
   if (!user) return;
-  const uid = user.uid;
-  const notesSnap = await _fbDb.collection('users').doc(uid).collection('notes').get();
-  const batch = _fbDb.batch();
-  notesSnap.forEach(d => batch.delete(d.ref));
-  batch.delete(_fbDb.collection('users').doc(uid));
-  await batch.commit();
+  await _fbDb.ref('users/' + user.uid).remove();
   await user.delete();
 }
 
@@ -99,40 +95,34 @@ async function fbDeleteAccount() {
 async function fbGetNotes() {
   const user = _fbAuth.currentUser;
   if (!user) return [];
-  const snap = await _fbDb.collection('users').doc(user.uid)
-    .collection('notes').orderBy('updatedAt', 'desc').get();
-  return snap.docs.map(d => ({
-    id: d.id,
-    title: d.data().title || '',
-    content: d.data().content || '',
-    updatedAt: d.data().updatedAt?.toDate?.()?.toISOString() || new Date().toISOString()
-  }));
+  const snap = await _fbDb.ref('users/' + user.uid + '/notes').once('value');
+  if (!snap.exists()) return [];
+  const notes = [];
+  snap.forEach(child => notes.push({ id: child.key, ...child.val() }));
+  return notes.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 }
 
 async function fbCreateNote(title, content) {
   const user = _fbAuth.currentUser;
   if (!user) throw new Error('not authenticated');
-  const ref = await _fbDb.collection('users').doc(user.uid).collection('notes').add({
-    title, content,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  return { id: ref.id, title, content, updatedAt: new Date().toISOString() };
+  const id = String(Date.now());
+  const note = { id, title, content, updatedAt: Date.now(), createdAt: Date.now() };
+  await _fbDb.ref('users/' + user.uid + '/notes/' + id).set(note);
+  return { ...note, updatedAt: new Date().toISOString() };
 }
 
 async function fbUpdateNote(id, title, content) {
   const user = _fbAuth.currentUser;
   if (!user) throw new Error('not authenticated');
-  await _fbDb.collection('users').doc(user.uid).collection('notes').doc(id).update({
-    title, content, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
+  const updatedAt = Date.now();
+  await _fbDb.ref('users/' + user.uid + '/notes/' + id).update({ title, content, updatedAt });
   return { id, title, content, updatedAt: new Date().toISOString() };
 }
 
 async function fbDeleteNote(id) {
   const user = _fbAuth.currentUser;
   if (!user) throw new Error('not authenticated');
-  await _fbDb.collection('users').doc(user.uid).collection('notes').doc(id).delete();
+  await _fbDb.ref('users/' + user.uid + '/notes/' + id).remove();
 }
 
 // ===== DAILY (localStorage-based for Firebase mode) =====
