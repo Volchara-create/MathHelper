@@ -1822,4 +1822,19 @@ body.dark .ftab.active{color:#fff!important;background:#1e3a8a!important;}
   transform:none!important;
 }
 
+/* === GRAPH TOOLBAR — більший читабельний текст === */
+.ws-tbtn{width:56px!important;height:56px!important;font-size:20px!important;color:#334155!important;border-radius:8px!important;}
+.ws-tbtn span{font-size:11px!important;font-weight:600!important;letter-spacing:0!important;color:#475569!important;}
+.ws-tbtn:hover{background:#e0ebff!important;color:#1e3a8a!important;}
+.ws-tbtn:hover span{color:#1e3a8a!important;}
+.ws-tbtn.active{background:#1e3a8a!important;color:#fff!important;}
+.ws-tbtn.active span{color:#fff!important;}
+.ws-toolbar{background:#f8fafc!important;border-right:1px solid #e2e8f0!important;flex:0 0 70px!important;}
+
+/* === SIDE PANELS — заголовки та текст === */
+.side-panel-head{background:#1e3a8a!important;color:#fff!important;font-size:13px!important;font-weight:600!important;padding:10px 14px!important;}
+.sp-head-btn{background:rgba(255,255,255,.15)!important;border:1px solid rgba(255,255,255,.25)!important;color:#fff!important;font-size:13px!important;border-radius:6px!important;padding:3px 8px!important;}
+.sp-head-btn:hover{background:rgba(255,255,255,.3)!important;}
+.sp-nb-body{font-size:14px!important;line-height:1.6!important;}
+
 /* ===== END GEMINI OVERRIDE ===== */
