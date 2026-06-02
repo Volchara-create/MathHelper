@@ -1740,8 +1740,8 @@ body.dark .task-card,body.dark .quiz-card,body.dark .feature-card,body.dark .das
   transition:var(--transition)!important;
 }
 .hub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#1e3a8a!important;border-radius:12px 12px 0 0;}
-.hub-card.hub-card--nmt::before{background:#059669!important;}
-.hub-card:hover{box-shadow:0 8px 24px rgba(30,58,138,.15)!important;border-color:#93c5fd!important;transform:translateY(-3px)!important;}
+.hub-card.hub-card--nmt::before{background:#1e3a8a!important;}
+.hub-card:hover{box-shadow:0 8px 24px rgba(30,58,138,.2)!important;border-color:#1e3a8a!important;border-width:2px!important;transform:translateY(-3px)!important;}
 .hub-title{font-size:1rem!important;font-weight:600!important;color:#1e293b!important;letter-spacing:-.01em!important;transition:color .2s!important;}
 .hub-card:hover .hub-title{color:#1e3a8a!important;}
 .hub-desc{font-size:.8125rem!important;color:#64748b!important;line-height:1.5!important;}
