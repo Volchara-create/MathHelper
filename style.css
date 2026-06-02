@@ -864,8 +864,10 @@ body.dark #user-greeting{color:#e0eaff;}
 .pricing-card-price{font-size:2rem;font-weight:700;color:var(--blue);margin-bottom:20px;}
 .pricing-card-price span{font-size:.9rem;color:#888;font-weight:400;}
 .pricing-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
-.pricing-features li{font-size:.9rem;color:var(--text);}
+.pricing-features li{font-size:.9rem;color:var(--text);padding-left:20px;position:relative;}
+.pricing-features li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#16a34a;}
 .pricing-features li.disabled{color:#bbb;}
+.pricing-features li.disabled::before{background:#d1d5db;}
 .pricing-btn{width:100%;padding:12px;border:none;border-radius:var(--radius-sm);font-size:1rem;font-weight:700;cursor:pointer;transition:.2s;}
 .pricing-btn--free{background:var(--blue-light);color:var(--blue);}
 .pricing-btn--free:hover{background:var(--blue);color:#fff;}
