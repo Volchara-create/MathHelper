@@ -382,6 +382,25 @@ window.addEventListener('DOMContentLoaded', () => {
   // Handle redirect back from Google
   handleGoogleRedirect();
 
+  // Handle Firebase Google redirect result
+  if (USE_FIREBASE) {
+    fbGoogleGetRedirectResult().then(result => {
+      if (!result) return;
+      if (result.status === 'needsGrade') {
+        _fbPendingUid = result.uid;
+        _fbPendingName = result.name;
+        _fbPendingEmail = result.email;
+        showGoogleGradeModal('fb_pending', result.name);
+      } else {
+        const user = result.user;
+        localStorage.setItem('mh_token', 'firebase_' + user.id);
+        localStorage.setItem('mh_user', JSON.stringify(user));
+        authShowUser(user);
+        show('dashboard');
+      }
+    }).catch(() => {});
+  }
+
   // Init Google after GSI loads
   if (window.google) {
     initGoogleAuth();

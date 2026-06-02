@@ -51,12 +51,18 @@ async function fbRegister(name, email, password, grade) {
 async function fbGoogleSignIn() {
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
-  const result = await _fbAuth.signInWithPopup(provider);
+  // Redirect mode — popup blocked by COOP policy on GitHub Pages
+  await _fbAuth.signInWithRedirect(provider);
+}
+
+async function fbGoogleGetRedirectResult() {
+  const result = await _fbAuth.getRedirectResult();
+  if (!result || !result.user) return null;
   const firebaseUser = result.user;
   const uid = firebaseUser.uid;
-  const doc = await _fbDb.collection('users').doc(uid).get();
-  if (doc.exists) {
-    return { status: 'ok', user: { id: uid, ...doc.data() } };
+  const snap = await _fbDb.ref('users/' + uid).once('value');
+  if (snap.exists()) {
+    return { status: 'ok', user: { id: uid, ...snap.val() } };
   }
   return {
     status: 'needsGrade',

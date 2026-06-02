@@ -4679,6 +4679,7 @@ let nbStyleCurrent = 'lined';
 function nbSetStyle(style){
   nbStyleCurrent = style;
   const body = document.getElementById('ws-notebook-body');
+  if (!body) return;
   body.classList.remove('lined','grid');
   body.classList.add(style);
   document.getElementById('nb-lined').classList.toggle('active', style==='lined');
