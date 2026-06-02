@@ -379,8 +379,27 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Handle redirect back from Google
+  // Handle redirect back from Google (legacy backend)
   handleGoogleRedirect();
+
+  // Handle Firebase Google redirect result
+  if (USE_FIREBASE) {
+    fbHandleRedirectResult().then(result => {
+      if (!result) return;
+      if (result.status === 'needsGrade') {
+        _fbPendingUid = result.uid;
+        _fbPendingName = result.name;
+        _fbPendingEmail = result.email;
+        showGoogleGradeModal('fb_pending', result.name);
+      } else {
+        const user = result.user;
+        localStorage.setItem('mh_token', 'firebase_' + user.id);
+        localStorage.setItem('mh_user', JSON.stringify(user));
+        authShowUser(user);
+        show('dashboard');
+      }
+    });
+  }
 
 
   // Init Google after GSI loads
