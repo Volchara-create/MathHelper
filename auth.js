@@ -1450,6 +1450,6 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 // Register service worker on load
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && !USE_FIREBASE) {
   navigator.serviceWorker.register('/sw.js').then(() => checkPushStatus()).catch(() => {});
 }
