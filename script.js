@@ -6558,6 +6558,12 @@ function toggleDark() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Reset dark mode after major design change (v3 = professional EdTech)
+  if (localStorage.getItem('mh_design_v') !== '3') {
+    localStorage.setItem('mh_dark', '0');
+    localStorage.setItem('mh_design_v', '3');
+    document.body.classList.remove('dark');
+  }
   // Restore dark mode preference
   if (localStorage.getItem('mh_dark') === '1') {
     document.body.classList.add('dark');
