@@ -1379,8 +1379,8 @@ body.dark .settings-link-btn{color:#60a5fa;}
 /* Before transform: show robot, hide owl */
 .qm-ai .ai-robot-icon{display:block;font-size:1.4em;line-height:1;}
 /* Owl color — темно-сіра */
-.mathik-avatar{filter:brightness(0) saturate(0) invert(0.6);}
-.mathik-bubble:hover .mathik-avatar{filter:brightness(0) saturate(0) invert(0.8);}
+.mathik-avatar{filter:none;}
+.mathik-bubble:hover .mathik-avatar{filter:none;}
 .qm-ai .owl-svg{display:none;}
 /* After transform: hide robot, show owl */
 .qm-btn.sigma-btn-active .ai-robot-icon{display:none;}
@@ -1779,15 +1779,16 @@ body.dark input,body.dark select,body.dark textarea{background:#1e293b!important
 /* === DARK THEME VARS === */
 body.dark{--card:#1e293b;--border:#334155;--text:#f1f5f9;--text-muted:#94a3b8;--bg-app:#0f172a;}
 
-/* === AI SECTION OWL — темно-сіра === */
-.owl-svg,.owl-title{filter:brightness(0) saturate(0) invert(0.45)!important;}
-.qm-btn.sigma-btn-active .owl-svg{filter:brightness(0) saturate(0) invert(0.45)!important;}
-body.dark .owl-svg,body.dark .owl-title{filter:brightness(0) saturate(0) invert(0.6)!important;}
+/* === AI SECTION OWL — темніша (не біла) === */
+.owl-svg,.owl-title{filter:brightness(0.4) saturate(0.5) contrast(1.1)!important;}
+.qm-btn.sigma-btn-active .owl-svg{filter:brightness(0.4) saturate(0.5) contrast(1.1)!important;}
+body.dark .owl-svg,body.dark .owl-title{filter:brightness(0.6) saturate(0.4)!important;}
 
-/* === MATHIK BUBBLE — нормальний синій === */
+/* === MATHIK BUBBLE — оригінальна кольорова сова === */
 .mathik-bubble{background:#1e3a8a!important;border:2px solid #1e40af!important;box-shadow:0 4px 12px rgba(30,58,138,.35)!important;}
 .mathik-bubble:hover{background:#1e40af!important;}
 .mathik-avatar{filter:none!important;}
+.mathik-bubble .mathik-avatar{filter:none!important;}
 
 /* === TABS === */
 .ftab{color:#64748b!important;border-bottom:3px solid transparent!important;font-weight:500!important;border-radius:0!important;padding:10px 20px!important;}
