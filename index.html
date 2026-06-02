@@ -64,7 +64,7 @@
     <!-- Main navigation — мінімалістична -->
     <nav>
       <button id="global-back-btn" class="global-back-btn" onclick="qmGoBack()" style="display:none;">←</button>
-      <button id="global-home-btn" class="global-back-btn global-home-btn" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="display:none;">🏠 Головна</button>
+      <button id="global-home-btn" class="global-back-btn global-home-btn" onclick="localStorage.getItem('mh_token') ? show('dashboard') : show('home')" style="display:none;">Головна</button>
       <button id="search-btn" onclick="searchOpen()" title="Пошук (натисни /)" style="display:none;">🔍</button>
       <button id="guide-btn" style="display:none;"></button>
       <button id="dark-toggle" onclick="toggleDark()">🌙</button>
@@ -93,7 +93,7 @@
     <div class="side-panel" id="panel-notebook">
       <div class="sp-resize-handle" id="sp-resize-notebook" onmousedown="spResizeStart(event,'notebook')"></div>
       <div class="side-panel-head" id="panel-notebook-drag">
-        <span>📓 Зошит</span>
+        <span>Зошит</span>
         <div style="display:flex;gap:4px;align-items:center;">
           <button class="sp-head-btn" id="sp-nb-lined" onclick="spNbStyle('lined')" title="Лінійка">≡</button>
           <button class="sp-head-btn" id="sp-nb-grid" onclick="spNbStyle('grid')" title="Клітинки">⊞</button>
@@ -122,7 +122,7 @@
     <div class="side-panel" id="panel-calc">
       <div class="sp-resize-handle" id="sp-resize-calc" onmousedown="spResizeStart(event,'calc')"></div>
       <div class="side-panel-head" id="panel-calc-drag">
-        <span>🧮 Калькулятор</span>
+        <span>Калькулятор</span>
         <button class="sp-head-btn" aria-label="Закрити калькулятор" onclick="closePanel('calc')">✕</button>
       </div>
       <div class="side-panel-body" style="overflow-y:auto;padding:10px;">
@@ -159,14 +159,14 @@
     <!-- FORMULAS SECTION — 3 tabs -->
     <section id="formulas">
       <div class="formulas-section-wrap">
-        <h2 class="formulas-section-title">📚 Формули</h2>
+        <h2 class="formulas-section-title">Формули</h2>
 
         <!-- Tabs -->
         <div class="ftabs">
-          <button class="ftab active" id="ftab-btn-algebra" onclick="showFormulaTab('algebra')">📘 Алгебра</button>
-          <button class="ftab" id="ftab-btn-geometry" onclick="showFormulaTab('geometry')">📐 Геометрія</button>
-          <button class="ftab" id="ftab-btn-trigonometry" onclick="showFormulaTab('trigonometry')">📏 Тригонометрія</button>
-          <button class="ftab" id="ftab-btn-tables" onclick="showFormulaTab('tables')">📊 Таблиці</button>
+          <button class="ftab active" id="ftab-btn-algebra" onclick="showFormulaTab('algebra')">Алгебра</button>
+          <button class="ftab" id="ftab-btn-geometry" onclick="showFormulaTab('geometry')">Геометрія</button>
+          <button class="ftab" id="ftab-btn-trigonometry" onclick="showFormulaTab('trigonometry')">Тригонометрія</button>
+          <button class="ftab" id="ftab-btn-tables" onclick="showFormulaTab('tables')">Таблиці</button>
         </div>
 
         <!-- ALGEBRA TAB — category buttons, filled by JS -->
@@ -201,7 +201,7 @@
 
     <section id="quiz">
       <div id="quiz-content">
-        <h2>🎮 Квіз з математики</h2>
+        <h2>Квіз з математики</h2>
         <p class="quiz-subtitle">Обери тему або пройди повний тест з поясненнями!</p>
         <div id="quiz-area"></div>
       </div>
@@ -211,13 +211,13 @@
     <section id="home" class="active">
       <div id="home-content">
 
-        <div class="hero-badge">🎓 Підготовка до НМТ 2026</div>
+        <div class="hero-badge">Підготовка до НМТ 2026</div>
         <h1>Math<span class="hero-accent">Helper</span></h1>
         <p class="hero-sub">Формули, квіз, графіки і симулятор НМТ — все що потрібно для підготовки.<br><b>Безкоштовно. Без реклами.</b></p>
 
         <div class="hero-btns">
           <button class="hero-btn-main" onclick="authOpen('register')">🚀 Почати безкоштовно</button>
-          <a href="simulator.html" class="hero-btn-nmt">📝 Спробувати НМТ</a>
+          <a href="simulator.html" class="hero-btn-nmt">Спробувати НМТ</a>
         </div>
 
         <div class="hero-stats">
@@ -229,32 +229,32 @@
 
         <div class="lp-features">
           <div class="lp-feat-card" onclick="show('formulas')" style="cursor:pointer;">
-            <div class="lp-feat-icon">📐</div>
+            
             <div class="lp-feat-title">Формули</div>
             <div class="lp-feat-desc">Алгебра, геометрія, тригонометрія — відфільтровано по твоєму класу</div>
           </div>
           <div class="lp-feat-card" onclick="show('quiz')" style="cursor:pointer;">
-            <div class="lp-feat-icon">🎯</div>
+            
             <div class="lp-feat-title">Квіз</div>
             <div class="lp-feat-desc">Тренуй слабкі теми, бачиш помилки і стежиш за прогресом по тижнях</div>
           </div>
           <div class="lp-feat-card" onclick="showGraph()" style="cursor:pointer;">
-            <div class="lp-feat-icon">📈</div>
+            
             <div class="lp-feat-title">Графіки</div>
             <div class="lp-feat-desc">Будуй sin(x), x² та будь-яку функцію — інтерактивно прямо в браузері</div>
           </div>
           <div class="lp-feat-card" onclick="show('textbooks')" style="cursor:pointer;">
-            <div class="lp-feat-icon">📚</div>
+            
             <div class="lp-feat-title">Підручники</div>
             <div class="lp-feat-desc">Безкоштовні офіційні підручники МОН для 7–11 класів</div>
           </div>
           <div class="lp-feat-card" onclick="authOpen('register')" style="cursor:pointer;">
-            <div class="lp-feat-icon">📓</div>
+            
             <div class="lp-feat-title">Зошит</div>
             <div class="lp-feat-desc">Особисті нотатки прямо в браузері — лінійки або клітинки</div>
           </div>
           <div class="lp-feat-card lp-feat-card--roadmap" onclick="show('about')" style="cursor:pointer;">
-            <div class="lp-feat-icon">🗺</div>
+            
             <div class="lp-feat-title">Що далі?</div>
             <div class="lp-feat-desc">ШІ-помічник, тести по темах, більше класів — в активній розробці</div>
           </div>
@@ -263,7 +263,7 @@
         <div class="hero-nmt-banner">
           <div class="hero-nmt-inner">
             <div>
-              <div class="hero-nmt-label">🏆 Симулятор НМТ</div>
+              <div class="hero-nmt-label">Симулятор НМТ</div>
               <div class="hero-nmt-title">Відчуй реальний іспит</div>
               <div class="hero-nmt-desc">30 завдань · таймер 90 хв · розбір кожної помилки</div>
             </div>
@@ -464,42 +464,34 @@
         <!-- Hub — картки розділів -->
         <div class="hub-grid" id="dash-quick-btns">
           <button class="hub-card" onclick="show('formulas')">
-            <span class="hub-icon">📚</span>
             <span class="hub-title">Формули</span>
             <span class="hub-desc">Алгебра, геометрія, тригонометрія</span>
           </button>
           <button class="hub-card" onclick="showGraph()">
-            <span class="hub-icon">📈</span>
             <span class="hub-title">Графіки</span>
             <span class="hub-desc">Будуй функції на координатній площині</span>
           </button>
           <a href="simulator.html" class="hub-card hub-card--nmt">
-            <span class="hub-icon">🎯</span>
             <span class="hub-title">НМТ Симулятор</span>
             <span class="hub-desc">30 питань · таймер · розбір помилок</span>
           </a>
           <button class="hub-card" onclick="show('textbooks')">
-            <span class="hub-icon">📖</span>
             <span class="hub-title">Підручник</span>
             <span class="hub-desc">Теорія, приклади та практика по темах</span>
           </button>
           <button class="hub-card" onclick="show('quiz')">
-            <span class="hub-icon">🎮</span>
             <span class="hub-title">Квіз</span>
             <span class="hub-desc">Перевір знання в ігровому форматі</span>
           </button>
           <button class="hub-card" onclick="togglePanel('notebook')">
-            <span class="hub-icon">📓</span>
             <span class="hub-title">Зошит</span>
             <span class="hub-desc">Нотатки, формули — відкривається поруч з контентом</span>
           </button>
           <button class="hub-card" onclick="togglePanel('calc')">
-            <span class="hub-icon">🧮</span>
             <span class="hub-title">Калькулятор</span>
             <span class="hub-desc">Науковий калькулятор — відкривається поруч з контентом</span>
           </button>
           <button class="hub-card" onclick="show('stats')">
-            <span class="hub-icon">📊</span>
             <span class="hub-title">Статистика</span>
             <span class="hub-desc">Прогрес, теми, графік активності</span>
           </button>
@@ -510,7 +502,7 @@
 
         <!-- Recent notes -->
         <div class="dash-section" id="dash-notes-section">
-          <h2 class="dash-section-title">📓 Останні конспекти <button class="dash-new-note-btn" onclick="show('notes')">+ Новий</button></h2>
+          <h2 class="dash-section-title">Останні конспекти <button class="dash-new-note-btn" onclick="show('notes')">+ Новий</button></h2>
           <div id="dash-recent-notes" class="dash-recent-notes">
             <p class="dash-empty">Немає конспектів — <a href="javascript:void(0)" onclick="show('notes')">створи перший!</a></p>
           </div>
@@ -563,7 +555,7 @@
       <div style="max-width:860px;margin:0 auto;padding:32px 16px;" id="tb-root">
         <!-- List view -->
         <div id="tb-list-view">
-          <h2 style="margin-bottom:4px;">📖 Підручник</h2>
+          <h2 style="margin-bottom:4px;">Підручник</h2>
           <p style="color:var(--text-muted);margin-bottom:24px;font-size:.95rem;">Теорія · Приклади · Практика</p>
           <div class="tb-chapters" id="tb-chapters"></div>
         </div>
@@ -616,17 +608,17 @@
         <div class="ws-toolbar">
           <button class="ws-tbtn active" id="wt-select" data-tip="Вибір / Переміщення" onclick="wsTool('select')">🖱<span>Вибір</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-func" data-tip="Функції" onclick="wsToggleSide('func')">📈<span>Графік</span></button>
+          <button class="ws-tbtn" id="wt-func" data-tip="Функції" onclick="wsToggleSide('func')"><span>Графік</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-shape" data-tip="Фігура" onclick="wsToggleSide('shape')">📐<span>Фігура</span></button>
+          <button class="ws-tbtn" id="wt-shape" data-tip="Фігура" onclick="wsToggleSide('shape')"><span>Фігура</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-note" data-tip="Нотатка" onclick="wsAddNote()">📝<span>Нотатка</span></button>
+          <button class="ws-tbtn" id="wt-note" data-tip="Нотатка" onclick="wsAddNote()"><span>Нотатка</span></button>
           <div class="ws-divider"></div>
           <button class="ws-tbtn" id="wt-del" data-tip="Видалити" onclick="wsDelete()" style="color:#ff4d6d;">🗑<span>Видал.</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-notebook" data-tip="Зошит" onclick="togglePanel('notebook')">📓<span>Зошит</span></button>
+          <button class="ws-tbtn" id="wt-notebook" data-tip="Зошит" onclick="togglePanel('notebook')"><span>Зошит</span></button>
           <div class="ws-divider"></div>
-          <button class="ws-tbtn" id="wt-calc" data-tip="Калькулятор" onclick="togglePanel('calc')">🧮<span>Калк.</span></button>
+          <button class="ws-tbtn" id="wt-calc" data-tip="Калькулятор" onclick="togglePanel('calc')"><span>Калк.</span></button>
           <div class="ws-divider"></div>
           <button class="ws-tbtn" data-tip="Скинути вигляд" onclick="resetView()">↺<span>Скинути</span></button>
         </div>
@@ -902,7 +894,7 @@
   <div class="notes-drawer" id="notes-drawer">
     <div class="notes-resize-handle" id="notes-resize-handle"></div>
     <div class="notes-drawer-header">
-      <span class="notes-drawer-title">📓 Зошит</span>
+      <span class="notes-drawer-title">Зошит</span>
       <div style="display:flex;gap:8px;align-items:center;">
         <button class="notes-new-btn" onclick="noteDrawerNew()">+ Новий</button>
         <button class="notes-drawer-close" onclick="notesDrawerClose()">✕</button>
@@ -982,7 +974,7 @@
   <!-- Global Floating Calculator -->
   <div id="float-calc" class="float-calc" style="display:none;">
     <div class="float-calc-head" id="float-calc-drag">
-      <span>🧮 Калькулятор</span>
+      <span>Калькулятор</span>
       <div style="display:flex;gap:4px;">
         <button class="float-calc-btn-head" onclick="toggleFloatCalc()">✕</button>
       </div>

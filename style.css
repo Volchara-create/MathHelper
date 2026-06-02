@@ -893,17 +893,15 @@ body.dark .dash-grade-badge{background:#1a2535;border-color:#334155;color:#60a5f
 
 /* ===== HUB GRID ===== */
 .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:32px;}
-.hub-card{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:22px 20px;border:1.5px solid #1e5499;border-radius:var(--radius-lg);background:var(--blue);cursor:pointer;text-align:left;transition:background .2s,border-color .2s,transform .15s,box-shadow .2s;text-decoration:none;color:#fff;}
-.hub-card:hover{background:#cff4ff;border-color:var(--accent);box-shadow:0 6px 20px rgba(16,185,129,.2);transform:translateY(-2px);}
+.hub-card{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:20px 20px 20px 18px;border:1px solid rgba(6,182,212,.2);border-left:3px solid var(--blue);border-radius:var(--radius-lg);background:rgba(15,23,42,.7);cursor:pointer;text-align:left;transition:all .2s;text-decoration:none;color:var(--text);}
+.hub-card:hover{border-color:var(--blue);border-left-color:var(--accent);box-shadow:0 0 20px rgba(6,182,212,.15);transform:translateY(-2px);background:rgba(6,182,212,.06);}
 .hub-card:hover .hub-title{color:var(--blue);}
-.hub-card:hover .hub-desc{color:#4a6fa0;}
-.hub-icon{font-size:1.8rem;line-height:1;margin-bottom:8px;}
-.hub-title{font-size:.95rem;font-weight:700;color:#fff;transition:.2s;}
+.hub-card:hover .hub-desc{color:var(--text);}
+.hub-icon{display:none;}
+.hub-title{font-size:.95rem;font-weight:700;color:#e2e8f0;transition:.2s;letter-spacing:-.01em;}
 .hub-desc{font-size:.78rem;color:rgba(255,255,255,.65);line-height:1.5;margin-top:2px;transition:.2s;}
-.hub-card--nmt{border-color:#1e5499;background:var(--blue);}
-.hub-card--nmt:hover{background:#cff4ff;border-color:var(--accent);}
-.hub-card--nmt .hub-title{color:#fff;}
-.hub-card--nmt:hover .hub-title{color:var(--blue);}
+.hub-card--nmt{border-left-color:var(--accent);}
+.hub-card--nmt:hover{border-color:var(--accent);}
 .hub-card--pro{border-color:#b45309;background:#d97706;}
 .hub-card--pro:hover{background:#fffbeb;border-color:#fde68a;}
 .hub-card--pro .hub-title{color:#fff;}
