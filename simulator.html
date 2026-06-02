@@ -89,17 +89,18 @@
     }
     .start-back-btn:hover { background: rgba(255,255,255,.22); color: #fff; }
     .theme-toggle-btn {
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.25);
-      color: #fff;
-      border-radius: 20px;
+      background: transparent;
+      border: 1.5px solid #e2e8f0;
+      color: #374151;
+      border-radius: 8px;
       padding: 6px 14px;
       font-size: 1rem;
       cursor: pointer;
-      transition: background .2s;
+      transition: background .15s, border-color .15s;
     }
-    .theme-toggle-btn:hover { background: rgba(255,255,255,.22); }
-    body.dark .theme-toggle-btn { background: var(--header-btn-bg); border-color: var(--header-btn-border); }
+    .theme-toggle-btn:hover { background: #f1f5f9; border-color: #6366f1; }
+    body.dark .theme-toggle-btn { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: #e0eaff; }
+    body.dark .theme-toggle-btn:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.4); }
 
     /* Mode cards */
     .mode-cards {
@@ -265,6 +266,18 @@
       width: 100%;
       padding: 1.5rem 1.5rem 0;
       gap: 0;
+    }
+    /* Fullscreen: розтягнути на весь екран */
+    :fullscreen .exam-body,
+    :-webkit-full-screen .exam-body,
+    :-moz-full-screen .exam-body {
+      max-width: none;
+      padding: 1.5rem 3rem 0;
+    }
+    :fullscreen .exam-footer,
+    :-webkit-full-screen .exam-footer,
+    :-moz-full-screen .exam-footer {
+      max-width: none;
     }
 
     /* Question navigator — now hidden sidebar (moved to footer) */
