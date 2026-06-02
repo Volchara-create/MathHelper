@@ -2,8 +2,8 @@
       --blue:#4f46e5;--blue-light:#eef2ff;--accent:#059669;--text:#111827;--text-muted:#6b7280;--card:#ffffff;--border:#e5e7eb;
       --primary:#4f46e5;--primary-dark:#4338ca;--secondary:#a855f7;
       --bg-app:#f9fafb;
-      /* радіуси */
-      --radius-sm:10px;--radius-md:14px;--radius-lg:18px;--radius-pill:30px;
+      /* радіуси — Vercel/Linear стиль */
+      --radius-sm:8px;--radius-md:10px;--radius-lg:12px;--radius-pill:30px;
       /* тіні — Stripe/Linear стиль */
       --shadow-sm:0 1px 2px rgba(0,0,0,.05);
       --shadow-md:0 1px 3px rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);
@@ -11,7 +11,7 @@
       /* відступи */
       --sp-1:8px;--sp-2:16px;--sp-3:24px;--sp-4:32px;
       /* кнопки */
-      --btn-h:42px;--btn-font:15px;
+      --btn-h:40px;--btn-font:14px;
       /* інпути */
       --stroke:rgba(99,102,241,.3);
     }
@@ -81,16 +81,17 @@
     input:not([type=checkbox]):not([type=radio]):not([type=range]),
     select, textarea{
       border-radius:var(--radius-sm);
-      border:1.5px solid var(--stroke);
+      border:1px solid #e2e8f0;
       outline:none;
       background:#fff;
       font-size:14px;
+      box-shadow:0 1px 2px rgba(0,0,0,.05);
       transition:border-color .15s,box-shadow .15s;
     }
     input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,
     select:focus, textarea:focus{
-      border-color:rgba(16,185,129,.85);
-      box-shadow:0 0 0 3px rgba(16,185,129,.14);
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(79,70,229,.1);
     }
     body.dark input:not([type=checkbox]):not([type=radio]):not([type=range]),
     body.dark select, body.dark textarea{

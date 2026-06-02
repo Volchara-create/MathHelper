@@ -6001,11 +6001,11 @@ const MATHIK_QA = [
 ];
 
 const MATHIK_CHIPS_DEFAULT = [
-  { label: '🎓 Огляд сайту', msg: 'покажи огляд' },
   { label: '📐 Формули', msg: 'формули' },
   { label: '🎯 Квіз', msg: 'квіз' },
   { label: '🏆 НМТ', msg: 'нмт' },
-  { label: '📧 Контакт', msg: "зв'язок з розробником" },
+  { label: '📊 Графіки', msg: 'графіки' },
+  { label: '📓 Зошит', msg: 'зошит' },
   { label: '⚙️ Налаштування', msg: 'налаштування' },
 ];
 
@@ -6014,7 +6014,7 @@ const MATHIK_CHIPS_RETURNING = [
   { label: '🎯 Квіз', msg: 'квіз' },
   { label: '🏆 НМТ', msg: 'нмт' },
   { label: '📊 Графіки', msg: 'графіки' },
-  { label: '🎓 Огляд знову', msg: 'покажи огляд' },
+  { label: '📓 Зошит', msg: 'зошит' },
   { label: '⚙️ Налаштування', msg: 'налаштування' },
 ];
 
@@ -6034,10 +6034,10 @@ function mathikOpen() {
     _mathikGreeted = true;
     const tutorialDone = localStorage.getItem('mh_tutorial_done') === '1';
     if (tutorialDone) {
-      _mathikAddMsg('bot', '👋 З поверненням! Я <b>Mathik</b> 🦉 — твій навігатор по MathHelper.<br>Покажу шлях куди треба — питай про будь-який розділ! 🗺️<br><span style="opacity:.6;font-size:.82em">⚠️ Я не ШІ — задачі не розвʼязую, але сайт знаю ідеально.</span>');
+      _mathikAddMsg('bot', '👋 З поверненням! Я <b>Mathik</b> 🦉 — твій навігатор.<br>Обери розділ нижче або напиши що шукаєш 👇');
       _mathikSetChips(MATHIK_CHIPS_RETURNING);
     } else {
-      _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> 🦉 — твій навігатор по MathHelper.<br>🗺️ Знаю кожен куточок сайту і покажу шлях куди треба.<br>Вперше тут? Натисни <b>🎓 Огляд сайту</b>!');
+      _mathikAddMsg('bot', '👋 Привіт! Я <b>Mathik</b> 🦉 — твій навігатор по MathHelper.<br>Обери розділ нижче або запитай що шукаєш 👇');
       _mathikSetChips(MATHIK_CHIPS_DEFAULT);
     }
   }
