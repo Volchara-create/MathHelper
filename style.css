@@ -1373,6 +1373,9 @@ body.dark .settings-link-btn{color:#60a5fa;}
 /* After transformation: blue glow */
 /* Before transform: show robot, hide owl */
 .qm-ai .ai-robot-icon{display:block;font-size:1.4em;line-height:1;}
+/* Owl color — темно-сіра */
+.mathik-avatar{filter:brightness(0) saturate(0) invert(0.6);}
+.mathik-bubble:hover .mathik-avatar{filter:brightness(0) saturate(0) invert(0.8);}
 .qm-ai .owl-svg{display:none;}
 /* After transform: hide robot, show owl */
 .qm-btn.sigma-btn-active .ai-robot-icon{display:none;}
@@ -1476,7 +1479,7 @@ body.dark .search-hint kbd{background:#1e3050;border-color:#2a4060;}
 /* Tutorial pointer + highlight */
 @keyframes mathikPulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,.65)}50%{box-shadow:0 0 0 18px rgba(37,99,235,0)}}
 .mathik-target-pulse{animation:mathikPulse 1s ease-in-out infinite;outline:3px solid #6366f1;outline-offset:5px;border-radius:var(--radius-sm);z-index:9998;position:relative;}
-.mathik-bubble{position:fixed;bottom:80px;right:16px;width:52px;height:52px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.35);z-index:700;transition:.2s;border:2px solid var(--accent);}
+.mathik-bubble{position:fixed;bottom:80px;right:16px;width:52px;height:52px;background:#334155;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:700;transition:.2s;border:2px solid #475569;}
 .mathik-bubble:hover{transform:scale(1.08);}
 .mathik-avatar{font-size:1.5rem;line-height:1;}
 .mathik-badge{position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;border-radius:50%;width:18px;height:18px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
