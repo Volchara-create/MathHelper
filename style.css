@@ -1790,10 +1790,11 @@ body.dark .owl-svg,body.dark .owl-title{filter:brightness(0.7) contrast(1.1)!imp
 .mathik-avatar{filter:none!important;}
 .mathik-bubble .mathik-avatar{filter:none!important;}
 
-/* === TABS === */
-.ftab{color:#64748b!important;border-bottom:3px solid transparent!important;font-weight:500!important;border-radius:0!important;padding:10px 20px!important;}
-.ftab:hover{color:#1e3a8a!important;background:#eff6ff!important;}
-.ftab.active{color:#1e3a8a!important;border-bottom-color:#1e3a8a!important;background:#eff6ff!important;}
+/* === TABS — яскраве виділення активної === */
+.ftab{color:#64748b!important;border-bottom:3px solid transparent!important;font-weight:500!important;border-radius:8px 8px 0 0!important;padding:10px 22px!important;transition:all .15s!important;}
+.ftab:hover{color:#1e3a8a!important;background:#e0ebff!important;}
+.ftab.active{color:#fff!important;background:#1e3a8a!important;border-bottom-color:#1e3a8a!important;font-weight:600!important;}
+body.dark .ftab.active{color:#fff!important;background:#1e3a8a!important;}
 
 /* === CATEGORY CARDS === */
 .category-card{background:#eff6ff!important;color:#1e293b!important;border-radius:10px!important;transition:var(--transition)!important;}
@@ -1809,14 +1810,16 @@ body.dark .owl-svg,body.dark .owl-title{filter:brightness(0.7) contrast(1.1)!imp
   background:rgba(255,255,255,.1)!important;
   border:1px solid rgba(255,255,255,.2)!important;
   color:#fff!important;
-  width:36px!important;height:36px!important;
-  padding:0!important;font-size:16px!important;
+  width:36px!important;height:36px!important;min-height:36px!important;
+  padding:0!important;font-size:18px!important;line-height:1!important;
   border-radius:8px!important;
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex-shrink:0!important;
 }
 .auth-nav-btn[onclick*="dashboard"]:hover,.auth-nav-btn[onclick*="Settings"]:hover{
   background:rgba(255,255,255,.2)!important;
   border-color:rgba(255,255,255,.4)!important;
+  transform:none!important;
 }
 
 /* ===== END GEMINI OVERRIDE ===== */
