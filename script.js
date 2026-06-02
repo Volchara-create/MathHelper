@@ -5711,16 +5711,14 @@ function openAISection() {
   const today = new Date().toISOString().slice(0, 10);
   const lastPlayed = localStorage.getItem('mh_sigma_date');
   if (lastPlayed !== today) {
-    // First click today: big transformation
     localStorage.setItem('mh_sigma_date', today);
-    setTimeout(() => _sigmaTransformSequence(), 400);
-  } else {
-    // Already transformed today: restore button + repair animation
+    // DISABLED: setTimeout(() => _sigmaTransformSequence(), 400);
     const aiBtn = document.querySelector('.qm-ai');
-    if (aiBtn) {
-      aiBtn.classList.add('sigma-btn-active');
-      _owlRepairAnimation(aiBtn);
-    }
+    if (aiBtn) aiBtn.classList.add('sigma-btn-active');
+  } else {
+    const aiBtn = document.querySelector('.qm-ai');
+    if (aiBtn) aiBtn.classList.add('sigma-btn-active');
+    // DISABLED: _owlRepairAnimation(aiBtn);
   }
 }
 
@@ -5740,24 +5738,11 @@ function _sigmaRestoreBtn() {
 }
 
 function _owlApplyRust(aiBtn) {
-  // Calculate rust level: 0% at midnight, 100% by end of day
-  const now = new Date();
-  const secondsElapsed = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  const dayFraction = secondsElapsed / 86400; // 0.0 → 1.0
-  const owl = aiBtn ? aiBtn.querySelector('.owl-svg') : null;
-  if (!owl) return;
-  // Sync rust animation to current time of day using negative delay
-  owl.style.animation = 'owlRust 86400s linear forwards';
-  owl.style.animationDelay = `-${Math.floor(secondsElapsed)}s`;
+  return; // DISABLED
 }
 
 function _owlRepairAnimation(aiBtn) {
-  const owl = aiBtn ? aiBtn.querySelector('.owl-svg') : null;
-  if (!owl) return;
-  // Stop rust, flash repair, restart rust from current point
-  owl.style.animation = 'owlRepair 1.2s ease-out forwards';
-  owl.style.animationDelay = '0s';
-  setTimeout(() => _owlApplyRust(aiBtn), 1300);
+  return; // DISABLED
 }
 
 function _sigmaTransformSequence() {
@@ -6510,19 +6495,8 @@ function _easeInOutCubic(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2
 function _easeOutBack(t)    { const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); }
 function _easeInQuad(t)     { return t*t; }
 
-// Hover bob: sine-wave up-down ±9px while owl sits at a target
-function _owlStartHover() {
-  _owlHovering = true;
-  _owlHoverPhase = 0;
-  const bubble = document.getElementById('mathik-bubble');
-  (function loop() {
-    if (!_owlHovering || !bubble) return;
-    _owlHoverPhase += 0.032;
-    const dy = Math.sin(_owlHoverPhase) * 9;
-    bubble.style.transform = `translate(${_owlTX}px,${_owlTY + dy}px)`;
-    requestAnimationFrame(loop);
-  })();
-}
+// Hover bob: DISABLED
+function _owlStartHover() { /* disabled */ }
 function _owlStopHover() {
   _owlHovering = false;
   const bubble = document.getElementById('mathik-bubble');
@@ -6561,79 +6535,20 @@ function _animOwlBezier(fromTX, fromTY, toTX, toTY, duration, onDone) {
   requestAnimationFrame(step);
 }
 
-// Fly owl to a CSS selector via bezier arc
+// Fly owl to target: DISABLED (teleport instantly)
 function _owlFlyToAndStay(selector, callback) {
-  if (_owlFlying) { if (callback) callback(); return; }
-  _owlStopHover(); // stop hover bob before flying
-
-  const selectors = selector.split(',').map(s => s.trim());
-  let target = null;
-  for (const sel of selectors) {
-    const el = document.querySelector(sel);
-    if (el) { const r = el.getBoundingClientRect(); if (r.width && r.height) { target = el; break; } }
-  }
-  if (!target) { if (callback) callback(); return; }
-
-  _owlFlying = true;
-  const bubble = document.getElementById('mathik-bubble');
-  const hr     = bubble.getBoundingClientRect();
-  const homeL  = hr.left - _owlTX;
-  const homeT  = hr.top  - _owlTY;
-
-  const tr    = target.getBoundingClientRect();
-  const destL = Math.min(Math.max(8, tr.left + tr.width/2 - 26), window.innerWidth  - 64);
-  const destT = Math.max(8, Math.min(tr.top - 62, window.innerHeight - 64));
-
-  const toTX = destL - homeL;
-  const toTY = destT - homeT;
-
-  const dist     = Math.sqrt((toTX-_owlTX)**2 + (toTY-_owlTY)**2);
-  const duration = Math.min(Math.max(dist * 1.4, 700), 1600);
-
-  bubble.classList.add('owl-flying');
-  bubble.classList.remove('owl-arrived');
-  target.classList.add('mathik-target-pulse');
-
-  _animOwlBezier(_owlTX, _owlTY, toTX, toTY, duration, () => {
-    _owlTX = toTX; _owlTY = toTY;
-    bubble.style.transform = `translate(${toTX}px,${toTY}px)`;
-    bubble.classList.remove('owl-flying');
-    bubble.classList.add('owl-arrived');
-    target.classList.remove('mathik-target-pulse');
-    _owlFlying = false;
-    setTimeout(() => bubble.classList.remove('owl-arrived'), 600);
-    _owlStartHover(); // start hover bob after landing
-    if (callback) callback();
-  });
+  if (callback) callback();
 }
 
-// Fly owl home via arc
+// Fly owl home: DISABLED (teleport instantly)
 function _owlFlyHome(callback) {
   _owlStopHover();
+  _owlTX = 0; _owlTY = 0;
+  _owlAtHome = true;
+  _owlFlying = false;
   const bubble = document.getElementById('mathik-bubble');
-  if (_owlTX === 0 && _owlTY === 0) {
-    bubble.style.transform = '';
-    _owlAtHome = true;
-    if (callback) callback();
-    return;
-  }
-
-  _owlFlying = true;
-  bubble.classList.add('owl-flying');
-
-  const dist     = Math.sqrt(_owlTX**2 + _owlTY**2);
-  const duration = Math.min(Math.max(dist * 1.2, 600), 1400);
-
-  _animOwlBezier(_owlTX, _owlTY, 0, 0, duration, () => {
-    _owlTX = 0; _owlTY = 0;
-    bubble.style.transform = '';
-    bubble.classList.remove('owl-flying');
-    bubble.classList.add('owl-arrived');
-    _owlAtHome = true;
-    _owlFlying = false;
-    setTimeout(() => bubble.classList.remove('owl-arrived'), 600);
-    if (callback) callback();
-  });
+  if (bubble) bubble.style.transform = '';
+  if (callback) callback();
 }
 
 // Show speech bubble near owl's current bounding rect
