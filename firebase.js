@@ -51,7 +51,8 @@ async function fbRegister(name, email, password, grade) {
 async function fbGoogleSignIn() {
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
-  // Redirect mode — popup blocked by COOP policy on GitHub Pages
+  // Reset to base URL so Firebase redirects back to /MathHelper/, not /MathHelper/login
+  history.replaceState(null, null, '/MathHelper/');
   await _fbAuth.signInWithRedirect(provider);
 }
 
