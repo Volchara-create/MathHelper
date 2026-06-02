@@ -6237,17 +6237,8 @@ let _inTutorial  = false;
 let _owlAtHome   = true; // tracks if owl is in right/bottom positioning
 
 function mathikStartTutorial() {
-  _tutorialStep = 0;
-  _inTutorial   = true;
-  _owlAtHome    = true;
-  _owlFlying    = false;
-  // Reset any stale translate
-  const b = document.getElementById('mathik-bubble');
-  if (b) { _owlTX = 0; _owlTY = 0; b.style.transform = ''; }
-  mathikClose();
-  _mathikSetChips([]);
-  _mathikHideSpeech();
-  setTimeout(() => _tutorialNextStep(), 150);
+  // DISABLED — туторіал вимкнено
+  mathikOpen();
 }
 
 function mathikTutorialNext() {
@@ -6464,8 +6455,10 @@ function _owlFlyHome(callback) {
   if (callback) callback();
 }
 
-// Show speech bubble near owl's current bounding rect
+// Show speech bubble — DISABLED
 function _mathikShowSpeech(html, isLast, hideBtn) {
+  _owlUnlockUI();
+  return;
   const sp     = document.getElementById('mathik-speech');
   const bubble = document.getElementById('mathik-bubble');
   if (!sp) return;
@@ -6530,12 +6523,12 @@ function _mathikReply(text) {
     _tutorialNextStep();
     return;
   }
-  // Tutorial keywords
+  // Tutorial keywords — disabled, just show nav help
   if (text.toLowerCase().includes('туторіал') || text.toLowerCase().includes('tutorial') ||
-      text.toLowerCase().includes('навчи') || text.toLowerCase().includes('покажи') ||
-      text.toLowerCase().includes('гід') || text.toLowerCase().includes('огляд')) {
-    _mathikSetChips([]);
-    mathikStartTutorial();
+      text.toLowerCase().includes('навчи') || text.toLowerCase().includes('гід') ||
+      text.toLowerCase().includes('огляд')) {
+    _mathikAddMsg('bot', '🗺️ Питай про будь-який розділ — покажу куди йти!');
+    _mathikSetChips(MATHIK_CHIPS_DEFAULT);
     return;
   }
   const q = text.toLowerCase();
