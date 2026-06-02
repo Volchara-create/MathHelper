@@ -344,7 +344,12 @@ window.addEventListener('DOMContentLoaded', () => {
   if (token) {
     const user = JSON.parse(localStorage.getItem('mh_user') || '{}');
     authShowUser(user);
-    const _initPath = location.pathname.replace(/^\//, '').split('/')[0];
+    // Handle ?p= redirect from 404.html
+    const _redirectPath = new URLSearchParams(location.search).get('p');
+    if (_redirectPath) history.replaceState(null, null, _BASE + _redirectPath.replace(/^\//, ''));
+
+    const _rawPath = (_redirectPath || location.pathname).replace(/^\/MathHelper\/?/, '').replace(/^\//, '').split('/')[0].split('?')[0];
+    const _initPath = _rawPath;
     const _initSec = (typeof _VALID_SECTIONS !== 'undefined' && _VALID_SECTIONS.includes(_initPath)) ? _initPath : 'dashboard';
     if (_initPath === 'register' || _initPath === 'login') {
       if (typeof show === 'function') show('dashboard');
@@ -426,16 +431,18 @@ function qmGoBack() {
 
 // ===== AUTH =====
 
+const _BASE = window.location.hostname === 'volchara-create.github.io' ? '/MathHelper/' : '/';
+
 function authOpen(mode) {
   document.getElementById('auth-modal').classList.add('active');
   authSwitch(mode);
-  history.replaceState({auth: mode}, '', '/' + mode);
+  history.replaceState({auth: mode}, '', _BASE + mode);
 }
 
 function authClose() {
   document.getElementById('auth-modal').classList.remove('active');
   const cur = document.querySelector('section.active')?.id || 'dashboard';
-  history.replaceState({sec: cur}, '', '/' + cur);
+  history.replaceState({sec: cur}, '', _BASE + cur);
 }
 
 function authSwitch(mode) {

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script>
+    // Redirect all 404s back to index.html, preserving the path in a query param
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.host + '/MathHelper/' +
+      '?p=' + encodeURIComponent(l.pathname.replace('/MathHelper', '') + l.search) +
+      (l.hash || '')
+    );
+  </script>
+</head>
+<body></body>
+</html>
