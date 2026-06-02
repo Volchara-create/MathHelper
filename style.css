@@ -1804,4 +1804,19 @@ body.dark .owl-svg,body.dark .owl-title{filter:brightness(0.7) contrast(1.1)!imp
 .formula-in-modal-item:hover{background:#eff6ff!important;border-color:#1e3a8a!important;}
 .formula-in-modal-item:hover .formula-in-modal-title{color:#1e3a8a!important;}
 
+/* === ICON BUTTONS (🏠 ⚙️) у header === */
+.auth-nav-btn[onclick*="dashboard"],.auth-nav-btn[onclick*="Settings"]{
+  background:rgba(255,255,255,.1)!important;
+  border:1px solid rgba(255,255,255,.2)!important;
+  color:#fff!important;
+  width:36px!important;height:36px!important;
+  padding:0!important;font-size:16px!important;
+  border-radius:8px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+}
+.auth-nav-btn[onclick*="dashboard"]:hover,.auth-nav-btn[onclick*="Settings"]:hover{
+  background:rgba(255,255,255,.2)!important;
+  border-color:rgba(255,255,255,.4)!important;
+}
+
 /* ===== END GEMINI OVERRIDE ===== */
