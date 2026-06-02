@@ -51,14 +51,7 @@ async function fbRegister(name, email, password, grade) {
 async function fbGoogleSignIn() {
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
-  // Reset to base URL so Firebase redirects back to /MathHelper/, not /MathHelper/login
-  history.replaceState(null, null, '/MathHelper/');
-  await _fbAuth.signInWithRedirect(provider);
-}
-
-async function fbGoogleGetRedirectResult() {
-  const result = await _fbAuth.getRedirectResult();
-  if (!result || !result.user) return null;
+  const result = await _fbAuth.signInWithPopup(provider);
   const firebaseUser = result.user;
   const uid = firebaseUser.uid;
   const snap = await _fbDb.ref('users/' + uid).once('value');
