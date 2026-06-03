@@ -57,30 +57,24 @@ async function fbRegister(name, email, password, grade) {
 async function fbGoogleSignIn() {
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
-  history.replaceState(null, null, '/MathHelper/');
-  await _fbAuth.signInWithRedirect(provider);
+  const result = await _fbAuth.signInWithPopup(provider);
+  if (!result || !result.user) return null;
+  const firebaseUser = result.user;
+  const uid = firebaseUser.uid;
+  const snap = await _fbDb.ref('users/' + uid).once('value');
+  if (snap.exists()) {
+    return { status: 'ok', user: { id: uid, ...snap.val() } };
+  }
+  return {
+    status: 'needsGrade',
+    uid,
+    name: firebaseUser.displayName || 'Учень',
+    email: firebaseUser.email || ''
+  };
 }
 
 async function fbHandleRedirectResult() {
-  try {
-    const result = await _fbAuth.getRedirectResult();
-    if (!result || !result.user) return null;
-    const firebaseUser = result.user;
-    const uid = firebaseUser.uid;
-    const snap = await _fbDb.ref('users/' + uid).once('value');
-    if (snap.exists()) {
-      return { status: 'ok', user: { id: uid, ...snap.val() } };
-    }
-    return {
-      status: 'needsGrade',
-      uid,
-      name: firebaseUser.displayName || 'Учень',
-      email: firebaseUser.email || ''
-    };
-  } catch(e) {
-    console.error('Redirect result error:', e.code, e.message);
-    return null;
-  }
+  return null;
 }
 
 async function fbCompleteGoogleSignIn(uid, name, email, grade) {
