@@ -1,5 +1,5 @@
-// Firebase integration — active only on GitHub Pages
-const USE_FIREBASE = window.location.hostname === 'volchara-create.github.io';
+// Firebase disabled — using backend API + Google GSI everywhere
+const USE_FIREBASE = false;
 
 const FB_CONFIG = {
   apiKey: "AIzaSyAyRP7a0Si0YtOYROkp7oADbmqD-ldYEcw",

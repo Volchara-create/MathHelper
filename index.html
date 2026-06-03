@@ -25,13 +25,10 @@
   <meta property="og:image" content="https://rostyslavv.vibe.brobots.org.ua/favicon.svg">
   <link rel="stylesheet" href="style.css?v=2026042802">
   <script>
-    // Load GSI only on non-Firebase environments
-    if (window.location.hostname !== 'volchara-create.github.io') {
-      var s = document.createElement('script');
-      s.src = 'https://accounts.google.com/gsi/client';
-      s.async = true; s.defer = true;
-      document.head.appendChild(s);
-    }
+    var s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true; s.defer = true;
+    document.head.appendChild(s);
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 </head>
